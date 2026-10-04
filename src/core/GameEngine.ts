@@ -63,10 +63,37 @@ export class GameEngine {
   public onObstacleBreak?: (obstacle: Obstacle) => void;
 
   /**
-   * GameEngine のインスタンスを生成し、初期フロアを生成してゲームを開始します。
+   * GameEngine のインスタンスを生成し、デフォルトステータスと初期マップを準備します。
+   * 中断セーブデータの有無を破壊せず保持します。
    */
   constructor() {
-    this.startNewGame();
+    this.initDefaultState();
+  }
+
+  /**
+   * 現在のゲーム状態（プレイヤー、マップ、ログ）をlocalStorageおよびIndexedDBに永続化保存します。
+   */
+  public saveGame(): void {
+    if (!this.player || !this.player.isAlive || !this.map) return;
+    StorageManager.saveCurrentRun({
+      player: this.player,
+      map: this.map,
+      logs: this.logs,
+      timestamp: Date.now(),
+    });
+  }
+
+  /**
+   * ブラウザ終了・ページ遷移時用の完全同期セーブ処理。
+   */
+  public saveGameSync(): void {
+    if (!this.player || !this.player.isAlive || !this.map) return;
+    StorageManager.saveCurrentRunSync({
+      player: this.player,
+      map: this.map,
+      logs: this.logs,
+      timestamp: Date.now(),
+    });
   }
 
   /**
@@ -82,7 +109,7 @@ export class GameEngine {
   }
 
   /**
-   * IndexedDBの中断セーブデータを読み込み、前回の冒険を再開します。
+   * IndexedDBまたはlocalStorageの中断セーブデータを読み込み、前回の冒険を再開します。
    *
    * @returns 再開に成功した場合は true、データがない場合は false
    */
@@ -96,6 +123,7 @@ export class GameEngine {
       }
       this.logs = saved.logs || [];
       this.lastDefeatCause = '';
+      FOV.compute(this.map, { x: this.player.x, y: this.player.y });
       this.addLog('前回の冒険の続きを再開した。', 'turn-header');
       this.notify();
       return true;
@@ -109,6 +137,7 @@ export class GameEngine {
   public sortInventory(): void {
     ItemSystem.sortInventory(this.player);
     this.addLog('持ち物を種類順に整理整頓した。', 'info');
+    this.saveGame();
     this.notify();
   }
 
@@ -144,12 +173,9 @@ export class GameEngine {
   }
 
   /**
-   * 新しいゲームを初期ステータス（地下1階、初期アイテム所持）で開始します。
-   * 既存のセーブデータはクリアされます。
+   * ゲームエンジン用の初期ステータスとマップを用意します（既存の中断セーブデータはクリアしません）。
    */
-  public startNewGame(): void {
-    StorageManager.clearCurrentRun();
-
+  public initDefaultState(): void {
     this.player = {
       x: 0,
       y: 0,
@@ -189,6 +215,17 @@ export class GameEngine {
   }
 
   /**
+   * 新しいゲームを初期ステータス（地下1階、初期アイテム所持）で開始します。
+   * 既存のセーブデータは完全に消去され、新データが即座に保存されます。
+   */
+  public startNewGame(): void {
+    StorageManager.clearCurrentRun();
+    this.initDefaultState();
+    this.saveGame();
+    this.notify();
+  }
+
+  /**
    * 指定した階層番号のフロアを生成し、プレイヤーを開始位置へ配置して初期視界を計算します。
    *
    * @param floorNum - 生成する階層番号（1 = B1F）
@@ -204,6 +241,7 @@ export class GameEngine {
     // 視界の初期計算
     FOV.compute(this.map, { x: this.player.x, y: this.player.y });
 
+    this.saveGame();
     this.notify();
   }
 
@@ -568,14 +606,9 @@ export class GameEngine {
     // 4. 視界更新
     FOV.compute(this.map, { x: this.player.x, y: this.player.y });
 
-    // 5. IndexedDB へ1ターン自動セーブ
+    // 5. IndexedDB & localStorage へ1ターン自動セーブ
     if (this.player.isAlive) {
-      StorageManager.saveCurrentRun({
-        player: this.player,
-        map: this.map,
-        logs: this.logs,
-        timestamp: Date.now(),
-      });
+      this.saveGame();
     }
   }
 

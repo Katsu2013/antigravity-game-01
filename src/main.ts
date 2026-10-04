@@ -62,15 +62,36 @@ window.addEventListener('DOMContentLoaded', async () => {
     ui.update();
   });
 
-  // 6. 初回フレームの描画およびUI反映
+  // 6. 中断セーブデータの確認と自動復元
+  // ブラウザを閉じてしまったりリロードした場合、直前の進行中セーブがあれば即座にゲーム画面へ直接復帰
+  const resumed = await engine.resumeSavedGame();
+  if (resumed) {
+    ui.hideTitleScreen();
+    ui.showToast(`B${engine.player.floor}F の直前の状態から復帰しました`, 3000);
+  } else {
+    // セーブデータがない場合（初回起動や敗北後）はタイトル画面を表示
+    await ui.showTitleScreen();
+  }
+
+  // 7. 初回フレームの描画およびUI反映
   renderer.render();
   ui.update();
 
-  // 7. タイトル画面の表示（セーブデータの有無を判定してボタンを活性化）
-  await ui.showTitleScreen();
+  // 8. ブラウザ終了・タブ閉じ・ページリロード・アプリ切り替え時の直前同期セーブ
+  window.addEventListener('beforeunload', () => {
+    engine.saveGameSync();
+  });
+  window.addEventListener('pagehide', () => {
+    engine.saveGameSync();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      engine.saveGameSync();
+    }
+  });
 
-  // 8. 完全オフラインPWAのための Service Worker 登録
+  // 9. 完全オフラインPWAのための Service Worker 登録
   registerServiceWorker();
 
-  console.log('RogueLabyrinth initialized successfully with offline support & title screen.');
+  console.log('RogueLabyrinth initialized successfully with auto-resume & offline support.');
 });

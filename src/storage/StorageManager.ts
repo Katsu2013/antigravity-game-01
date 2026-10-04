@@ -60,6 +60,9 @@ export class StorageManager {
   /** 中断セーブデータのプライマリキー名 */
   private static readonly KEY_ACTIVE_RUN = 'active';
 
+  /** ブラウザ終了・クラッシュ時にも即時同期書き込み可能なlocalStorageバックアップキー名 */
+  private static readonly LOCAL_STORAGE_KEY = 'RogueLabyrinth_ActiveRun';
+
   /** 開かれたIDBDatabaseインスタンスのキャッシュ */
   private static dbPromise: Promise<IDBDatabase> | null = null;
 
@@ -109,12 +112,24 @@ export class StorageManager {
   }
 
   /**
-   * 現在のゲーム状態（プレイヤー、マップ、ログ）をIndexedDBに自動保存します。
+   * 現在のゲーム状態（プレイヤー、マップ、ログ）をlocalStorage（同期即時書き込み）
+   * および IndexedDB（大容量非同期）に二重保存します。
+   * ブラウザが強制終了された場合でも、直前の1手が確実に保持されます。
    *
    * @param data - 保存する中断セーブデータ
    * @returns 保存完了を示すPromise
    */
   public static async saveCurrentRun(data: SavedRunData): Promise<void> {
+    // 1. 同期即時保存（localStorage）: ブラウザ即時終了時のデータ消失を完全に防止
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(this.LOCAL_STORAGE_KEY, JSON.stringify(data));
+      }
+    } catch (e) {
+      console.warn('Failed to save run to localStorage backup:', e);
+    }
+
+    // 2. 非同期永続化（IndexedDB）
     try {
       const db = await this.getDB();
       return new Promise((resolve, reject) => {
@@ -131,14 +146,32 @@ export class StorageManager {
   }
 
   /**
-   * IndexedDBから進行中の中断セーブデータを読み込みます。
+   * ブラウザ終了（beforeunload / pagehide）イベント用の完全同期セーブ処理。
+   * イベントループ終了による非同期中断を防ぐため localStorage へ即座にコミットします。
+   *
+   * @param data - 保存する中断セーブデータ
+   */
+  public static saveCurrentRunSync(data: SavedRunData): void {
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(this.LOCAL_STORAGE_KEY, JSON.stringify(data));
+      }
+    } catch (e) {
+      console.warn('Failed to save sync run to localStorage:', e);
+    }
+  }
+
+  /**
+   * IndexedDBまたはlocalStorageから進行中の中断セーブデータを読み込みます。
+   * IndexedDBから読み込めない場合でも、localStorageの同期バックアップから自動フォールバック復元します。
    *
    * @returns 保存されていたセーブデータ。存在しない場合は null
    */
   public static async loadCurrentRun(): Promise<SavedRunData | null> {
+    // 1. まず IndexedDB からの読み込みを試行
     try {
       const db = await this.getDB();
-      return new Promise((resolve, reject) => {
+      const idbData = await new Promise<SavedRunData | null>((resolve) => {
         const tx = db.transaction(this.STORE_CURRENT_RUN, 'readonly');
         const store = tx.objectStore(this.STORE_CURRENT_RUN);
         const req = store.get(this.KEY_ACTIVE_RUN);
@@ -146,20 +179,51 @@ export class StorageManager {
         req.onsuccess = () => {
           resolve((req.result as SavedRunData) || null);
         };
-        req.onerror = () => reject(req.error);
+        req.onerror = () => resolve(null);
       });
+
+      if (idbData && idbData.player && idbData.player.isAlive) {
+        return idbData;
+      }
     } catch (err) {
-      console.warn('Failed to load run data from IndexedDB:', err);
-      return null;
+      console.warn('IndexedDB read failed, falling back to localStorage:', err);
     }
+
+    // 2. フォールバック: localStorage からの復元
+    try {
+      if (typeof localStorage !== 'undefined') {
+        const raw = localStorage.getItem(this.LOCAL_STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw) as SavedRunData;
+          if (parsed && parsed.player && parsed.player.isAlive) {
+            return parsed;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to load backup run from localStorage:', e);
+    }
+
+    return null;
   }
 
   /**
    * 進行中のセーブデータを完全に削除します（プレイヤー死亡時やゲームリセット時に呼び出されます）。
+   * IndexedDBおよびlocalStorageの両方のキャッシュを消去します。
    *
    * @returns 削除完了を示すPromise
    */
   public static async clearCurrentRun(): Promise<void> {
+    // 1. localStorage から消去
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem(this.LOCAL_STORAGE_KEY);
+      }
+    } catch (e) {
+      console.warn('Failed to clear localStorage backup:', e);
+    }
+
+    // 2. IndexedDB から消去
     try {
       const db = await this.getDB();
       return new Promise((resolve, reject) => {

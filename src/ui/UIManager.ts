@@ -99,6 +99,9 @@ export class UIManager {
   /** モーダルが開かれたタイムスタンプ（スマホタッチ直後の合成クリックによる即時クローズ防止用） */
   private modalOpenTimestamps: Map<string, number> = new Map();
 
+  /** トースト通知消去用タイマーID */
+  private toastTimerId: number | null = null;
+
   /**
    * UIManager のインスタンスを生成し、DOM要素を取得して初回描画を行います。
    *
@@ -664,15 +667,32 @@ export class UIManager {
 
   /**
    * 画面中央上部に一時的なトースト通知メッセージを表示します。
+   * ゲーム再開時や新階層到達時に呼び出されます。
+   *
+   * @param text - 表示する通知メッセージ本文
+   * @param durationMs - 表示時間（ミリ秒、デフォルト 2400ms）
+   */
+  public showToast(text: string, durationMs = 2400): void {
+    if (this.toastTimerId !== null) {
+      window.clearTimeout(this.toastTimerId);
+      this.toastTimerId = null;
+    }
+
+    this.floorToastEl.textContent = text;
+    this.floorToastEl.classList.remove('hidden');
+
+    this.toastTimerId = window.setTimeout(() => {
+      this.floorToastEl.classList.add('hidden');
+      this.toastTimerId = null;
+    }, durationMs);
+  }
+
+  /**
+   * 新フロア到達時のトースト通知を表示します。
    *
    * @param text - 表示する通知メッセージ本文
    */
   private showFloorToast(text: string): void {
-    this.floorToastEl.textContent = text;
-    this.floorToastEl.classList.remove('hidden');
-
-    setTimeout(() => {
-      this.floorToastEl.classList.add('hidden');
-    }, 2200);
+    this.showToast(text, 2200);
   }
 }
