@@ -10,6 +10,7 @@ import { BiomeType, Item, Monster, TileType } from '../core/types';
 import { AnimationEngine } from './AnimationEngine';
 import { SVGSprites, SpriteId } from './sprites/SVGSprites';
 import { TileSprites } from './sprites/TileSprites';
+import { EquipmentSprites } from './sprites/EquipmentSprites';
 
 /**
  * 2D Canvas描画管理クラス。
@@ -337,13 +338,21 @@ export class CanvasRenderer {
         ctx.drawImage(wallSprite, x, y, s, s);
       } else {
         // ロード前のフォールバック
-        ctx.fillStyle = '#334155';
+        ctx.fillStyle = '#090d16';
         ctx.fillRect(x, y, s, s);
       }
 
+      // 壁の立体天板ハイライト（上端に微細な明るいライン）
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+      ctx.fillRect(x, y, s, Math.max(1, s * 0.04));
+
+      // 壁の接地面ベースライン（下端に漆黒の境界線を引き、床との境界をクッキリ分離）
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+      ctx.fillRect(x, y + s - Math.max(2, s * 0.06), s, Math.max(2, s * 0.06));
+
       // 未視界（探索済みの記憶）の場合は暗色半透明マスクを被せる
       if (!isVisible) {
-        ctx.fillStyle = 'rgba(3, 7, 18, 0.62)';
+        ctx.fillStyle = 'rgba(3, 7, 18, 0.65)';
         ctx.fillRect(x, y, s, s);
       }
       return;
@@ -355,22 +364,22 @@ export class CanvasRenderer {
       if (floorSprite) {
         ctx.drawImage(floorSprite, x, y, s, s);
       } else {
-        ctx.fillStyle = '#1e293b';
+        ctx.fillStyle = '#253346';
         ctx.fillRect(x, y, s, s);
       }
 
       // 壁の下のマスに対する立体ドロップシャドウ（上が壁タイルなら上端に影を落とす）
       if (gridY > 0 && map.tiles[gridY - 1]?.[gridX] === TileType.Wall) {
-        const shadowGrad = ctx.createLinearGradient(x, y, x, y + s * 0.35);
-        shadowGrad.addColorStop(0, 'rgba(0, 0, 0, 0.55)');
+        const shadowGrad = ctx.createLinearGradient(x, y, x, y + s * 0.45);
+        shadowGrad.addColorStop(0, 'rgba(0, 0, 0, 0.7)');
         shadowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
         ctx.fillStyle = shadowGrad;
-        ctx.fillRect(x, y, s, s * 0.35);
+        ctx.fillRect(x, y, s, s * 0.45);
       }
 
       // 未視界の暗がりマスク
       if (!isVisible) {
-        ctx.fillStyle = 'rgba(3, 7, 18, 0.62)';
+        ctx.fillStyle = 'rgba(3, 7, 18, 0.65)';
         ctx.fillRect(x, y, s, s);
       }
       return;
@@ -966,6 +975,29 @@ export class CanvasRenderer {
         ctx.beginPath();
         ctx.arc(0, 0, size * 0.38, 0, Math.PI * 2);
         ctx.fill();
+      }
+
+      // 装備中の盾スプライト（装備している場合のみ手元/背中に動的合成）
+      const playerState = this.engine.player;
+      if (playerState.equippedShield) {
+        const shieldImg = EquipmentSprites.getShieldSprite(
+          playerState.equippedShield.name,
+          dir
+        );
+        if (shieldImg) {
+          ctx.drawImage(shieldImg, -size / 2, -size / 2, size, size);
+        }
+      }
+
+      // 装備中の武器スプライト（装備している場合のみ手元/背中に動的合成）
+      if (playerState.equippedWeapon) {
+        const weaponImg = EquipmentSprites.getWeaponSprite(
+          playerState.equippedWeapon.name,
+          dir
+        );
+        if (weaponImg) {
+          ctx.drawImage(weaponImg, -size / 2, -size / 2, size, size);
+        }
       }
 
       // 4. 攻撃アクション中の剣撃スラッシュ（斬撃の光条）エフェクト

@@ -89,6 +89,16 @@ export class ItemSystem {
           };
         }
 
+        if (item.name === '剛力の秘薬') {
+          player.baseAtk += 2;
+          CombatSystem.updatePlayerStats(player);
+          player.inventory.splice(index, 1);
+          return {
+            success: true,
+            message: `${item.name} を飲み干した！全身に凄まじい力がみなぎる！(基礎攻撃力+2永続上昇)`,
+          };
+        }
+
         const heal = Math.min(item.value, player.maxHp - player.hp);
         player.hp += heal;
         // 消費してインベントリから削除
@@ -148,6 +158,45 @@ export class ItemSystem {
       }
 
       case 'SCROLL': {
+        if (item.name === '雷の巻物') {
+          // 部屋全体、または視界内の敵全員に15ダメージ
+          const targetMonsters: string[] = [];
+          for (let i = map.monsters.length - 1; i >= 0; i--) {
+            const m = map.monsters[i];
+            if (map.visible[m.y][m.x]) {
+              m.hp -= 15;
+              if (m.hp <= 0) {
+                targetMonsters.push(`${m.name}を撃破`);
+                player.exp += m.expValue;
+                CombatSystem.checkLevelUp(player);
+                map.monsters.splice(i, 1);
+              } else {
+                targetMonsters.push(`${m.name}に15ダメージ`);
+              }
+            }
+          }
+          player.inventory.splice(index, 1);
+          const detail = targetMonsters.length > 0 ? ` (${targetMonsters.join(', ')})` : ' (周囲に敵はいなかった)';
+          return {
+            success: true,
+            message: `${item.name} を読んだ！轟音とともに激しい稲妻が視界の敵を焼き払った！${detail}`,
+          };
+        }
+
+        if (item.name === 'あかりの巻物') {
+          // フロア全域の探索済みフラグを有効化
+          for (let y = 0; y < map.height; y++) {
+            for (let x = 0; x < map.width; x++) {
+              map.explored[y][x] = true;
+            }
+          }
+          player.inventory.splice(index, 1);
+          return {
+            success: true,
+            message: `${item.name} を読んだ！神秘の輝きがダンジョンを満たし、フロア全体の構造が明らかになった！`,
+          };
+        }
+
         // ワープの巻物: ランダムな部屋の空きマスへ移動
         const randomRoom =
           map.rooms[Math.floor(Math.random() * map.rooms.length)];

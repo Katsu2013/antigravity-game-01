@@ -71,17 +71,7 @@ export class CombatSystem {
       player.exp += expGained;
 
       // レベルアップ判定
-      while (player.exp >= player.nextExp) {
-        didLevelUp = true;
-        player.level += 1;
-        player.maxHp += 5;
-        player.hp = player.maxHp; // レベルアップで全快
-        player.baseAtk += 2;
-        player.baseDef += 1;
-        player.nextExp = Math.round(player.nextExp * 1.8);
-      }
-
-      this.updatePlayerStats(player);
+      didLevelUp = this.checkLevelUp(player);
     }
 
     return {
@@ -119,5 +109,30 @@ export class CombatSystem {
       damage,
       isDefeated,
     };
+  }
+
+  /**
+   * プレイヤーの現在経験値に基づき、必要経験値を満たしていればレベルアップを実行します。
+   *
+   * @param player - 対象のプレイヤーステータス
+   * @returns レベルアップが発生したかどうか
+   */
+  public static checkLevelUp(player: PlayerState): boolean {
+    let didLevelUp = false;
+    while (player.exp >= player.nextExp) {
+      didLevelUp = true;
+      player.level += 1;
+      player.maxHp += 5;
+      player.hp = player.maxHp; // レベルアップで全快
+      player.baseAtk += 2;
+      player.baseDef += 1;
+      player.nextExp = Math.round(player.nextExp * 1.8);
+    }
+
+    if (didLevelUp) {
+      this.updatePlayerStats(player);
+    }
+
+    return didLevelUp;
   }
 }
