@@ -1335,93 +1335,98 @@ export class CanvasRenderer {
     }
 
     // 4. メイン沼地プール（有機的な形状とシームレス連結）
-    const cornerR = s * 0.38; // 境界の丸み半径
+    const m = s * 0.08; // 陸地境界のマージン
+    const r = s * 0.38; // 陸地境界の角丸み半径
+
+    // 有機的なうねり（境界の端点では0になり、接続面で段差が生じない）
+    const waveU = !upS ? Math.sin((gridX * 7 + gridY * 13) % 7) * (s * 0.035) : 0;
+    const waveD = !downS ? Math.sin((gridX * 9 + gridY * 17) % 7) * (s * 0.035) : 0;
+    const waveL = !leftS ? Math.cos((gridX * 13 + gridY * 7) % 7) * (s * 0.035) : 0;
+    const waveR = !rightS ? Math.cos((gridX * 11 + gridY * 5) % 7) * (s * 0.035) : 0;
 
     ctx.save();
     ctx.beginPath();
 
-    // (A) 左上開始点
+    // --- (A) 左上開始点 ---
     if (!upS && !leftS) {
-      ctx.moveTo(x + cornerR, y + s * 0.08);
+      ctx.moveTo(x + r, y + m);
     } else if (!upS) {
-      ctx.moveTo(x, y + s * 0.08);
+      ctx.moveTo(x, y + m);
     } else if (!leftS) {
-      ctx.moveTo(x + s * 0.08, y);
+      ctx.moveTo(x + m, y);
     } else {
       ctx.moveTo(x, y);
     }
 
-    // (B) 上辺〜右上
+    // --- (B) 上辺 〜 右上 ---
     if (!upS) {
-      const waveMid = Math.sin((gridX * 7 + gridY * 13) % 7) * (s * 0.04);
-      ctx.lineTo(x + s * 0.5, y + s * 0.08 + waveMid);
+      ctx.lineTo(x + s * 0.5, y + m + waveU);
       if (!rightS) {
-        ctx.quadraticCurveTo(
-          x + s - s * 0.08,
-          y + s * 0.08,
-          x + s - s * 0.08,
-          y + cornerR
-        );
+        ctx.lineTo(x + s - r, y + m);
+        ctx.quadraticCurveTo(x + s - m, y + m, x + s - m, y + r);
       } else {
-        ctx.lineTo(x + s, y + s * 0.08);
+        ctx.lineTo(x + s, y + m);
       }
     } else {
-      ctx.lineTo(x + s, y);
+      if (!rightS) {
+        ctx.lineTo(x + s - m, y);
+      } else {
+        ctx.lineTo(x + s, y);
+      }
     }
 
-    // (C) 右辺〜右下
+    // --- (C) 右辺 〜 右下 ---
     if (!rightS) {
-      const waveRight = Math.cos((gridX * 11 + gridY * 5) % 7) * (s * 0.04);
-      ctx.lineTo(x + s - s * 0.08 + waveRight, y + s * 0.5);
+      ctx.lineTo(x + s - m + waveR, y + s * 0.5);
       if (!downS) {
-        ctx.quadraticCurveTo(
-          x + s - s * 0.08,
-          y + s - s * 0.08,
-          x + s - cornerR,
-          y + s - s * 0.08
-        );
+        ctx.lineTo(x + s - m, y + s - r);
+        ctx.quadraticCurveTo(x + s - m, y + s - m, x + s - r, y + s - m);
       } else {
-        ctx.lineTo(x + s - s * 0.08, y + s);
+        ctx.lineTo(x + s - m, y + s);
       }
     } else {
-      ctx.lineTo(x + s, y + s);
+      if (!downS) {
+        ctx.lineTo(x + s, y + s - m);
+      } else {
+        ctx.lineTo(x + s, y + s);
+      }
     }
 
-    // (D) 下辺〜左下
+    // --- (D) 下辺 〜 左下 ---
     if (!downS) {
-      const waveDown = Math.sin((gridX * 9 + gridY * 17) % 7) * (s * 0.04);
-      ctx.lineTo(x + s * 0.5, y + s - s * 0.08 + waveDown);
+      ctx.lineTo(x + s * 0.5, y + s - m + waveD);
       if (!leftS) {
-        ctx.quadraticCurveTo(
-          x + s * 0.08,
-          y + s - s * 0.08,
-          x + s * 0.08,
-          y + s - cornerR
-        );
+        ctx.lineTo(x + r, y + s - m);
+        ctx.quadraticCurveTo(x + m, y + s - m, x + m, y + s - r);
       } else {
-        ctx.lineTo(x, y + s - s * 0.08);
+        ctx.lineTo(x, y + s - m);
       }
     } else {
-      ctx.lineTo(x, y + s);
+      if (!leftS) {
+        ctx.lineTo(x + m, y + s);
+      } else {
+        ctx.lineTo(x, y + s);
+      }
     }
 
-    // (E) 左辺〜左上クローズ
+    // --- (E) 左辺 〜 左上クローズ ---
     if (!leftS) {
-      const waveLeft = Math.cos((gridX * 13 + gridY * 7) % 7) * (s * 0.04);
-      ctx.lineTo(x + s * 0.08 + waveLeft, y + s * 0.5);
+      ctx.lineTo(x + m + waveL, y + s * 0.5);
       if (!upS) {
-        ctx.quadraticCurveTo(
-          x + s * 0.08,
-          y + s * 0.08,
-          x + cornerR,
-          y + s * 0.08
-        );
+        ctx.lineTo(x + m, y + r);
+        ctx.quadraticCurveTo(x + m, y + m, x + r, y + m);
       } else {
-        ctx.lineTo(x + s * 0.08, y);
+        ctx.lineTo(x + m, y);
       }
     } else {
-      ctx.closePath();
+      if (!upS) {
+        ctx.lineTo(x, y + m);
+      } else {
+        ctx.lineTo(x, y);
+      }
     }
+
+    ctx.closePath();
 
     // 沼地ベースの塗りつぶし（中央ほど深くなるラジアルグラデーション）
     const swampGrad = ctx.createRadialGradient(
@@ -1437,53 +1442,152 @@ export class CanvasRenderer {
     swampGrad.addColorStop(1, colors.surface);
     ctx.fillStyle = swampGrad;
     ctx.fill();
+    ctx.restore();
 
-    // 泥の盛り上がり・フチのハイライトリップル（陸地境界のみ）
-    if (!upS || !downS || !leftS || !rightS) {
-      ctx.strokeStyle = colors.rim;
-      ctx.lineWidth = Math.max(1.2, s * 0.035);
+    // --- 陸地に面している境界のみにフチ（rim）を描画 ---
+    // ※隣が沼（繋がっている部分）には絶対に描画しない！
+    ctx.save();
+    ctx.strokeStyle = colors.rim;
+    ctx.lineWidth = Math.max(1.2, s * 0.035);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    // 1. 上辺の陸地境界
+    if (!upS) {
+      ctx.beginPath();
+      const startX = leftS ? x : (!leftS ? x + r : x + m);
+      const endX = rightS ? x + s : (!rightS ? x + s - r : x + s - m);
+      ctx.moveTo(startX, y + m);
+      ctx.lineTo(x + s * 0.5, y + m + waveU);
+      ctx.lineTo(endX, y + m);
       ctx.stroke();
     }
 
-    ctx.restore();
+    // 2. 右上アウターコーナー
+    if (!upS && !rightS) {
+      ctx.beginPath();
+      ctx.moveTo(x + s - r, y + m);
+      ctx.quadraticCurveTo(x + s - m, y + m, x + s - m, y + r);
+      ctx.stroke();
+    }
 
-    // 5. インナーコーナー（斜めだけが陸地の場合の泥岸の切り込み）
+    // 3. 右辺の陸地境界
+    if (!rightS) {
+      ctx.beginPath();
+      const startY = upS ? y : (!upS ? y + r : y + m);
+      const endY = downS ? y + s : (!downS ? y + s - r : y + s - m);
+      ctx.moveTo(x + s - m, startY);
+      ctx.lineTo(x + s - m + waveR, y + s * 0.5);
+      ctx.lineTo(x + s - m, endY);
+      ctx.stroke();
+    }
+
+    // 4. 右下アウターコーナー
+    if (!downS && !rightS) {
+      ctx.beginPath();
+      ctx.moveTo(x + s - m, y + s - r);
+      ctx.quadraticCurveTo(x + s - m, y + s - m, x + s - r, y + s - m);
+      ctx.stroke();
+    }
+
+    // 5. 下辺の陸地境界
+    if (!downS) {
+      ctx.beginPath();
+      const startX = rightS ? x + s : (!rightS ? x + s - r : x + s - m);
+      const endX = leftS ? x : (!leftS ? x + r : x + m);
+      ctx.moveTo(startX, y + s - m);
+      ctx.lineTo(x + s * 0.5, y + s - m + waveD);
+      ctx.lineTo(endX, y + s - m);
+      ctx.stroke();
+    }
+
+    // 6. 左下アウターコーナー
+    if (!downS && !leftS) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y + s - m);
+      ctx.quadraticCurveTo(x + m, y + s - m, x + m, y + s - r);
+      ctx.stroke();
+    }
+
+    // 7. 左辺の陸地境界
+    if (!leftS) {
+      ctx.beginPath();
+      const startY = downS ? y + s : (!downS ? y + s - r : y + s - m);
+      const endY = upS ? y : (!upS ? y + r : y + m);
+      ctx.moveTo(x + m, startY);
+      ctx.lineTo(x + m + waveL, y + s * 0.5);
+      ctx.lineTo(x + m, endY);
+      ctx.stroke();
+    }
+
+    // 8. 左上アウターコーナー
+    if (!upS && !leftS) {
+      ctx.beginPath();
+      ctx.moveTo(x + m, y + r);
+      ctx.quadraticCurveTo(x + m, y + m, x + r, y + m);
+      ctx.stroke();
+    }
+
+    // 9. インナーコーナー（斜めだけが陸地の場合の泥岸の切り込み）
+    // カーブ部分のみにフチを引き、タイルの外枠には絶対に線を引かない
     if (upS && leftS && !ulS) {
       ctx.fillStyle = colors.wet;
       ctx.beginPath();
       ctx.moveTo(x, y);
-      ctx.lineTo(x + s * 0.25, y);
-      ctx.quadraticCurveTo(x + s * 0.1, y + s * 0.1, x, y + s * 0.25);
+      ctx.lineTo(x + s * 0.22, y);
+      ctx.quadraticCurveTo(x + s * 0.08, y + s * 0.08, x, y + s * 0.22);
       ctx.closePath();
       ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(x + s * 0.22, y);
+      ctx.quadraticCurveTo(x + s * 0.08, y + s * 0.08, x, y + s * 0.22);
+      ctx.stroke();
     }
     if (upS && rightS && !urS) {
       ctx.fillStyle = colors.wet;
       ctx.beginPath();
       ctx.moveTo(x + s, y);
-      ctx.lineTo(x + s - s * 0.25, y);
-      ctx.quadraticCurveTo(x + s - s * 0.1, y + s * 0.1, x + s, y + s * 0.25);
+      ctx.lineTo(x + s - s * 0.22, y);
+      ctx.quadraticCurveTo(x + s - s * 0.08, y + s * 0.08, x + s, y + s * 0.22);
       ctx.closePath();
       ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(x + s - s * 0.22, y);
+      ctx.quadraticCurveTo(x + s - s * 0.08, y + s * 0.08, x + s, y + s * 0.22);
+      ctx.stroke();
     }
     if (downS && leftS && !dlS) {
       ctx.fillStyle = colors.wet;
       ctx.beginPath();
       ctx.moveTo(x, y + s);
-      ctx.lineTo(x + s * 0.25, y + s);
-      ctx.quadraticCurveTo(x + s * 0.1, y + s - s * 0.1, x, y + s - s * 0.25);
+      ctx.lineTo(x + s * 0.22, y + s);
+      ctx.quadraticCurveTo(x + s * 0.08, y + s - s * 0.08, x, y + s - s * 0.22);
       ctx.closePath();
       ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(x + s * 0.22, y + s);
+      ctx.quadraticCurveTo(x + s * 0.08, y + s - s * 0.08, x, y + s - s * 0.22);
+      ctx.stroke();
     }
     if (downS && rightS && !drS) {
       ctx.fillStyle = colors.wet;
       ctx.beginPath();
       ctx.moveTo(x + s, y + s);
-      ctx.lineTo(x + s - s * 0.25, y + s);
-      ctx.quadraticCurveTo(x + s - s * 0.1, y + s - s * 0.1, x + s, y + s - s * 0.25);
+      ctx.lineTo(x + s - s * 0.22, y + s);
+      ctx.quadraticCurveTo(x + s - s * 0.08, y + s - s * 0.08, x + s, y + s - s * 0.22);
       ctx.closePath();
       ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(x + s - s * 0.22, y + s);
+      ctx.quadraticCurveTo(x + s - s * 0.08, y + s - s * 0.08, x + s, y + s - s * 0.22);
+      ctx.stroke();
     }
+
+    ctx.restore();
 
     // 6. 表面ディテール: 半分沈んだ小石や泥のシワ
     const detailHash = Math.abs((gridX * 6173 ^ gridY * 9887) % 4);
