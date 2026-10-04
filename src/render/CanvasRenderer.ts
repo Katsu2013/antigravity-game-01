@@ -171,13 +171,14 @@ export class CanvasRenderer {
     if (this.engine.map.obstacles) {
       for (const obstacle of this.engine.map.obstacles) {
         validIds.add(obstacle.id);
-        const speedMult = obstacle.isSliding ? 2.5 : obstacle.isPushable ? 0.8 : 1.0;
+        const speedMult = obstacle.isSliding ? 2.5 : obstacle.isPushable ? 0.2 : 1.0;
         this.anim.syncPosition(
           obstacle.id,
           obstacle.x,
           obstacle.y,
           obstacle.isSliding,
-          speedMult
+          speedMult,
+          obstacle.isPushable
         );
       }
     }

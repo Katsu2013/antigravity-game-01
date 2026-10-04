@@ -181,6 +181,7 @@ export class UIManager {
     document.getElementById('btn-restart')?.addEventListener('click', () => {
       this.cancelGameOverTimer();
       this.gameOverModalEl.classList.add('hidden');
+      StorageManager.saveCurrentScreen('playing');
       this.engine.executeAction({ type: 'RESTART' });
     });
 
@@ -540,6 +541,7 @@ export class UIManager {
    */
   public async showTitleScreen(): Promise<void> {
     this.cancelGameOverTimer();
+    StorageManager.saveCurrentScreen('title');
     const hasSave = await StorageManager.hasCurrentRun();
     if (hasSave) {
       this.btnTitleContinueEl.disabled = false;
@@ -555,6 +557,7 @@ export class UIManager {
    * タイトル画面を非表示にしてゲーム画面を開始します。
    */
   public hideTitleScreen(): void {
+    StorageManager.saveCurrentScreen('playing');
     this.titleScreenEl.classList.add('hidden');
   }
 

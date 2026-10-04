@@ -53,6 +53,8 @@ export interface EntityAnimState {
   isWalking: boolean;
   /** 滑走・高速スライド中かどうかの真偽値 */
   isSliding: boolean;
+  /** 押せる大石（極めて低速かつ等速の重厚移動）かどうかの真偽値 */
+  isPushable?: boolean;
   /** スライド移動速度倍率 */
   moveSpeedMultiplier: number;
   /** 歩行ステップサイクルの積算時間（手足のステップ・バウンス計算用） */
@@ -166,15 +168,17 @@ export class AnimationEngine {
    * @param id - エンティティID
    * @param gridX - 現在の論理グリッドX座標
    * @param gridY - 現在の論理グリッドY座標
-   * @param isSliding - 滑走・スライド移動中かどうか（氷塊や石押し等）
-   * @param speedMultiplier - 移動補間速度倍率（氷塊は2.0倍、石押しは0.8倍等）
+   * @param isSliding - 滑走・スライド移動中かどうか（氷塊等）
+   * @param speedMultiplier - 移動補間速度倍率（氷塊は2.0倍等）
+   * @param isPushable - 押せる大石かどうか（極めて低速かつ等速の重厚移動）
    */
   public syncPosition(
     id: string,
     gridX: number,
     gridY: number,
     isSliding = false,
-    speedMultiplier = 1.0
+    speedMultiplier = 1.0,
+    isPushable = false
   ): void {
     const state = this.getState(id, gridX, gridY);
 
@@ -182,6 +186,7 @@ export class AnimationEngine {
     const dy = gridY - state.targetY;
 
     state.isSliding = isSliding;
+    state.isPushable = isPushable;
     state.moveSpeedMultiplier = speedMultiplier;
 
     // 移動が生じた場合、進行方向へ方位（8方向: 上・下・左・右・斜め4方向）を自動更新
@@ -198,9 +203,9 @@ export class AnimationEngine {
       state.direction = dy > 0 ? 'down' : 'up';
     }
 
-    // 階層移動やワープ等で急激なジャンプがあった場合は即時テレポート（※滑走移動中はテレポートせずスライド）
+    // 階層移動やワープ等で急激なジャンプがあった場合は即時テレポート（※滑走移動中や大石押しはテレポートせずスライド）
     const dist = Math.hypot(state.targetX - gridX, state.targetY - gridY);
-    if (!isSliding && dist > 3.5) {
+    if (!isSliding && !isPushable && dist > 3.5) {
       state.renderX = gridX;
       state.renderY = gridY;
     }
@@ -323,26 +328,50 @@ export class AnimationEngine {
 
     // 1. 各エンティティの状態補間
     for (const state of this.states.values()) {
-      const moveLerpSpeed =
-        16.0 * (state.moveSpeedMultiplier || 1.0) * (state.isSliding ? 1.5 : 1.0);
-
       const dx = state.targetX - state.renderX;
       const dy = state.targetY - state.renderY;
       const dist = Math.hypot(dx, dy);
 
-      if (dist > 0.01) {
-        state.isWalking = true;
-        state.walkTime += dt * 16.0;
+      if (state.isPushable) {
+        // 重い大石の移動演出:
+        // 通常の指数Lerpではなく、等速で極めてゆっくり（1秒あたり約1.2マス）地面を擦るように「ズズズズ……」と移動
+        const rockSpeed = 1.2; // マス / 秒（2マス移動に約1.67秒かけてじっくり重厚に移動）
+        const maxStep = rockSpeed * dt;
 
-        const step = Math.min(1.0, moveLerpSpeed * dt);
-        state.renderX += dx * step;
-        state.renderY += dy * step;
+        if (dist > 0.01) {
+          state.isWalking = true;
+          const ratio = Math.min(1.0, maxStep / dist);
+          state.renderX += dx * ratio;
+          state.renderY += dy * ratio;
+
+          // 大石の移動中は継続して土煙・砂埃パーティクルを舞い上げる
+          if (Math.random() < dt * 12) {
+            this.triggerDustParticles(state.renderX, state.renderY);
+          }
+        } else {
+          state.renderX = state.targetX;
+          state.renderY = state.targetY;
+          state.isWalking = false;
+          state.isSliding = false;
+        }
       } else {
-        state.renderX = state.targetX;
-        state.renderY = state.targetY;
-        state.isWalking = false;
-        state.isSliding = false;
-        state.walkTime *= Math.max(0, 1.0 - 15.0 * dt);
+        const moveLerpSpeed =
+          16.0 * (state.moveSpeedMultiplier || 1.0) * (state.isSliding ? 1.5 : 1.0);
+
+        if (dist > 0.01) {
+          state.isWalking = true;
+          state.walkTime += dt * 16.0;
+
+          const step = Math.min(1.0, moveLerpSpeed * dt);
+          state.renderX += dx * step;
+          state.renderY += dy * step;
+        } else {
+          state.renderX = state.targetX;
+          state.renderY = state.targetY;
+          state.isWalking = false;
+          state.isSliding = false;
+          state.walkTime *= Math.max(0, 1.0 - 15.0 * dt);
+        }
       }
 
       // 攻撃オフセットの減衰復帰

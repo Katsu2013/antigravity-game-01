@@ -63,6 +63,9 @@ export class StorageManager {
   /** ブラウザ終了・クラッシュ時にも即時同期書き込み可能なlocalStorageバックアップキー名 */
   private static readonly LOCAL_STORAGE_KEY = 'RogueLabyrinth_ActiveRun';
 
+  /** 現在表示されている画面状態（タイトルかプレイ中か）を記録するlocalStorageキー名 */
+  private static readonly LOCAL_STORAGE_SCREEN_KEY = 'RogueLabyrinth_CurrentScreen';
+
   /** 開かれたIDBDatabaseインスタンスのキャッシュ */
   private static dbPromise: Promise<IDBDatabase> | null = null;
 
@@ -223,6 +226,9 @@ export class StorageManager {
       console.warn('Failed to clear localStorage backup:', e);
     }
 
+    // 画面状態をタイトル画面にリセット
+    this.saveCurrentScreen('title');
+
     // 2. IndexedDB から消去
     try {
       const db = await this.getDB();
@@ -237,6 +243,41 @@ export class StorageManager {
     } catch (err) {
       console.warn('Failed to clear run data from IndexedDB:', err);
     }
+  }
+
+  /**
+   * 現在の画面状態（タイトル画面かプレイ画面か）をlocalStorageに即時保存します。
+   *
+   * @param screen - 画面状態 ('title' | 'playing')
+   */
+  public static saveCurrentScreen(screen: 'title' | 'playing'): void {
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(this.LOCAL_STORAGE_SCREEN_KEY, screen);
+      }
+    } catch (e) {
+      console.warn('Failed to save current screen state:', e);
+    }
+  }
+
+  /**
+   * 前回の画面状態（タイトル画面かプレイ画面か）を取得します。
+   * 未設定の場合はデフォルトで 'title' を返します。
+   *
+   * @returns 画面状態 ('title' | 'playing')
+   */
+  public static loadCurrentScreen(): 'title' | 'playing' {
+    try {
+      if (typeof localStorage !== 'undefined') {
+        const screen = localStorage.getItem(this.LOCAL_STORAGE_SCREEN_KEY);
+        if (screen === 'playing' || screen === 'title') {
+          return screen;
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to load current screen state:', e);
+    }
+    return 'title';
   }
 
   /**

@@ -8,6 +8,7 @@
 import { GameEngine } from './core/GameEngine';
 import { InputManager } from './input/InputManager';
 import { CanvasRenderer } from './render/CanvasRenderer';
+import { StorageManager } from './storage/StorageManager';
 import { UIManager } from './ui/UIManager';
 
 /**
@@ -62,14 +63,22 @@ window.addEventListener('DOMContentLoaded', async () => {
     ui.update();
   });
 
-  // 6. 中断セーブデータの確認と自動復元
-  // ブラウザを閉じてしまったりリロードした場合、直前の進行中セーブがあれば即座にゲーム画面へ直接復帰
-  const resumed = await engine.resumeSavedGame();
-  if (resumed) {
-    ui.hideTitleScreen();
-    ui.showToast(`B${engine.player.floor}F の直前の状態から復帰しました`, 3000);
+  // 6. 画面状態と中断セーブデータの確認
+  // ユーザーが「ゲームプレイ中」にブラウザを閉じた場合のみ直接ゲーム画面へ復帰。
+  // 「タイトル画面」にいた場合や、まだ開始していない場合はタイトル画面を表示（再開ボタンは活性化）。
+  const currentScreen = StorageManager.loadCurrentScreen();
+  const hasSave = await StorageManager.hasCurrentRun();
+
+  if (currentScreen === 'playing' && hasSave) {
+    const resumed = await engine.resumeSavedGame();
+    if (resumed) {
+      ui.hideTitleScreen();
+      ui.showToast(`B${engine.player.floor}F の直前の状態から復帰しました`, 3000);
+    } else {
+      await ui.showTitleScreen();
+    }
   } else {
-    // セーブデータがない場合（初回起動や敗北後）はタイトル画面を表示
+    // タイトル画面で閉じられた場合、またはセーブがない場合はタイトル画面を表示
     await ui.showTitleScreen();
   }
 

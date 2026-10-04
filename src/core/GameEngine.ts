@@ -759,13 +759,25 @@ export class GameEngine {
         return true;
       }
 
-      // 2回目（規定回数）: 奥へ1〜5マス（障害物・壁・水路・敵等にぶつかるまで）一気に移動！
+      // 2回目（規定回数）: 大石の押し出し。基本的には2マス動く確率を最頻出（約65%）に設定
+      const rand = Math.random();
+      let targetMaxDist = 2; // 最頻値: 2マス
+      if (rand < 0.20) {
+        targetMaxDist = 1; // 20%: 1マス
+      } else if (rand < 0.85) {
+        targetMaxDist = 2; // 65%: 基本的に2マス
+      } else if (rand < 0.97) {
+        targetMaxDist = 3; // 12%: 3マス
+      } else {
+        targetMaxDist = 4; // 3%: 4マス
+      }
+
       let curX = obstacle.x;
       let curY = obstacle.y;
       let movedDist = 0;
       let hitMonster: Monster | undefined;
 
-      while (movedDist < 5) {
+      while (movedDist < targetMaxDist) {
         const nextX = curX + dx;
         const nextY = curY + dy;
 
