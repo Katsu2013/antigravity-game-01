@@ -521,7 +521,7 @@ export class CanvasRenderer {
 
     // 3.8. 特殊環境ギミック床 (Ice, Mud, Poison)
     if (tile === TileType.Ice || tile === TileType.Mud || tile === TileType.Poison) {
-      this.drawGimmickTile(ctx, x, y, s, isVisible, tile, gridX, gridY);
+      this.drawGimmickTile(ctx, x, y, s, isVisible, tile, gridX, gridY, biome);
       return;
     }
 
@@ -727,114 +727,360 @@ export class CanvasRenderer {
     gridY: number
   ): void {
     const map = this.engine.map;
-    // 水面ベース（床スプライトをうっすら下敷きにして水深感を演出）
+
+    // 1. 水底ベース（床スプライトを下敷きにして川底の質感を演出）
     const floorSprite = TileSprites.getFloorSprite(biome, gridX, gridY);
     if (floorSprite) {
       ctx.drawImage(floorSprite, x, y, s, s);
     }
 
-    // バイオーム別の水面トーン
+    // 2. バイオーム別の水面・岸辺パレット
     const waterColors: Record<
       BiomeType,
-      { base: string; wave: string; bank: string; deep: string }
+      {
+        base: string;
+        deep: string;
+        shallow: string;
+        wave: string;
+        bank: string;
+        highlight: string;
+      }
     > = {
-      STONE: { base: 'rgba(2, 132, 199, 0.72)', wave: '#7dd3fc', bank: '#1e293b', deep: '#0369a1' },
-      EARTH: { base: 'rgba(13, 148, 136, 0.75)', wave: '#5eead4', bank: '#2e1002', deep: '#0f766e' },
-      FOREST: { base: 'rgba(5, 150, 105, 0.75)', wave: '#6ee7b7', bank: '#052e16', deep: '#047857' },
-      RIVER: { base: 'rgba(37, 99, 235, 0.72)', wave: '#93c5fd', bank: '#0f172a', deep: '#1d4ed8' },
-      LAKE: { base: 'rgba(8, 145, 178, 0.78)', wave: '#67e8f9', bank: '#0f172a', deep: '#0e7490' },
-      SNOW: { base: 'rgba(56, 189, 248, 0.65)', wave: '#e0f2fe', bank: '#334155', deep: '#0284c7' },
-      ICE: { base: 'rgba(14, 165, 233, 0.75)', wave: '#bae6fd', bank: '#021324', deep: '#0369a1' },
-      SWAMP: { base: 'rgba(21, 128, 61, 0.78)', wave: '#86efac', bank: '#142316', deep: '#14532d' },
-      TOXIC: { base: 'rgba(126, 34, 206, 0.82)', wave: '#d8b4fe', bank: '#24043d', deep: '#581c87' },
-      MECHA: { base: 'rgba(180, 83, 9, 0.75)', wave: '#fde68a', bank: '#1a1109', deep: '#78350f' },
-      ISLAND: { base: 'rgba(14, 116, 144, 0.85)', wave: '#67e8f9', bank: '#0f172a', deep: '#164e63' },
+      STONE: {
+        base: 'rgba(2, 132, 199, 0.76)',
+        deep: 'rgba(3, 105, 161, 0.88)',
+        shallow: 'rgba(56, 189, 248, 0.60)',
+        wave: '#bae6fd',
+        bank: '#1e293b',
+        highlight: 'rgba(255, 255, 255, 0.75)',
+      },
+      EARTH: {
+        base: 'rgba(13, 148, 136, 0.78)',
+        deep: 'rgba(15, 118, 110, 0.90)',
+        shallow: 'rgba(45, 212, 191, 0.60)',
+        wave: '#99f6e4',
+        bank: '#2e1002',
+        highlight: 'rgba(254, 243, 199, 0.75)',
+      },
+      FOREST: {
+        base: 'rgba(5, 150, 105, 0.78)',
+        deep: 'rgba(4, 120, 87, 0.90)',
+        shallow: 'rgba(52, 211, 153, 0.60)',
+        wave: '#a7f3d0',
+        bank: '#052e16',
+        highlight: 'rgba(255, 255, 255, 0.75)',
+      },
+      RIVER: {
+        base: 'rgba(37, 99, 235, 0.76)',
+        deep: 'rgba(29, 78, 216, 0.90)',
+        shallow: 'rgba(96, 165, 250, 0.62)',
+        wave: '#bfdbfe',
+        bank: '#0f172a',
+        highlight: 'rgba(255, 255, 255, 0.85)',
+      },
+      LAKE: {
+        base: 'rgba(8, 145, 178, 0.80)',
+        deep: 'rgba(14, 116, 144, 0.92)',
+        shallow: 'rgba(34, 211, 238, 0.62)',
+        wave: '#a5f3fc',
+        bank: '#0f172a',
+        highlight: 'rgba(255, 255, 255, 0.85)',
+      },
+      SNOW: {
+        base: 'rgba(56, 189, 248, 0.70)',
+        deep: 'rgba(2, 132, 199, 0.85)',
+        shallow: 'rgba(186, 230, 253, 0.55)',
+        wave: '#f0f9ff',
+        bank: '#334155',
+        highlight: 'rgba(255, 255, 255, 0.90)',
+      },
+      ICE: {
+        base: 'rgba(14, 165, 233, 0.78)',
+        deep: 'rgba(3, 105, 161, 0.92)',
+        shallow: 'rgba(125, 211, 252, 0.60)',
+        wave: '#e0f2fe',
+        bank: '#021324',
+        highlight: 'rgba(255, 255, 255, 0.90)',
+      },
+      SWAMP: {
+        base: 'rgba(21, 128, 61, 0.80)',
+        deep: 'rgba(20, 83, 45, 0.92)',
+        shallow: 'rgba(74, 222, 128, 0.62)',
+        wave: '#bbf7d0',
+        bank: '#142316',
+        highlight: 'rgba(254, 240, 138, 0.75)',
+      },
+      TOXIC: {
+        base: 'rgba(126, 34, 206, 0.82)',
+        deep: 'rgba(88, 28, 135, 0.94)',
+        shallow: 'rgba(192, 132, 252, 0.65)',
+        wave: '#e9d5ff',
+        bank: '#24043d',
+        highlight: 'rgba(240, 171, 252, 0.85)',
+      },
+      MECHA: {
+        base: 'rgba(180, 83, 9, 0.78)',
+        deep: 'rgba(120, 53, 15, 0.92)',
+        shallow: 'rgba(245, 158, 11, 0.62)',
+        wave: '#fef08a',
+        bank: '#1a1109',
+        highlight: 'rgba(255, 255, 255, 0.75)',
+      },
+      ISLAND: {
+        base: 'rgba(14, 116, 144, 0.85)',
+        deep: 'rgba(19, 78, 74, 0.94)',
+        shallow: 'rgba(45, 212, 191, 0.65)',
+        wave: '#99f6e4',
+        bank: '#0f172a',
+        highlight: 'rgba(255, 255, 255, 0.85)',
+      },
     };
     const wc = waterColors[biome] || waterColors.STONE;
 
-    ctx.fillStyle = wc.base;
-    ctx.fillRect(x, y, s, s);
-
+    // 周辺8マスの水流判定
     const isWater = (gx: number, gy: number): boolean => {
       if (gx < 0 || gx >= map.width || gy < 0 || gy >= map.height) return false;
       return map.tiles[gy][gx] === TileType.Water;
     };
 
-    const upWater = isWater(gridX, gridY - 1);
-    const downWater = isWater(gridX, gridY + 1);
-    const leftWater = isWater(gridX - 1, gridY);
-    const rightWater = isWater(gridX + 1, gridY);
+    const upW = isWater(gridX, gridY - 1);
+    const downW = isWater(gridX, gridY + 1);
+    const leftW = isWater(gridX - 1, gridY);
+    const rightW = isWater(gridX + 1, gridY);
+    const ulW = isWater(gridX - 1, gridY - 1);
+    const urW = isWater(gridX + 1, gridY - 1);
+    const dlW = isWater(gridX - 1, gridY + 1);
+    const drW = isWater(gridX + 1, gridY + 1);
 
-    // 岸辺（バンクエッジ）のオートタイリング
-    // 1. 上が陸地なら：上端に岸壁段差と深層シャドウ
-    if (!upWater) {
-      ctx.fillStyle = wc.bank;
-      ctx.fillRect(x, y, s, Math.max(2, s * 0.08));
-      const bankGrad = ctx.createLinearGradient(x, y, x, y + s * 0.35);
-      bankGrad.addColorStop(0, 'rgba(0, 0, 0, 0.65)');
+    // 川底の砂利・丸小石（水を通して透けて見える川底テクスチャ）
+    const stoneHash = Math.abs((gridX * 4391 ^ gridY * 8537) % 5);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.22)';
+    if (stoneHash === 0) {
+      ctx.beginPath();
+      ctx.ellipse(x + s * 0.35, y + s * 0.45, s * 0.08, s * 0.05, 0.4, 0, Math.PI * 2);
+      ctx.ellipse(x + s * 0.65, y + s * 0.7, s * 0.07, s * 0.05, -0.3, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (stoneHash === 1) {
+      ctx.beginPath();
+      ctx.ellipse(x + s * 0.5, y + s * 0.35, s * 0.09, s * 0.06, -0.2, 0, Math.PI * 2);
+      ctx.ellipse(x + s * 0.25, y + s * 0.65, s * 0.06, s * 0.04, 0.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 3. 水流ボディの描画（深水と浅瀬のグラデーション）
+    const isDeep = upW && downW && leftW && rightW;
+    if (isDeep) {
+      // 四方が水: 深淵な深水面
+      const deepGrad = ctx.createRadialGradient(
+        x + s * 0.5,
+        y + s * 0.5,
+        s * 0.1,
+        x + s * 0.5,
+        y + s * 0.5,
+        s * 0.75
+      );
+      deepGrad.addColorStop(0, wc.deep);
+      deepGrad.addColorStop(1, wc.base);
+      ctx.fillStyle = deepGrad;
+      ctx.fillRect(x, y, s, s);
+    } else {
+      // 陸地に近い浅瀬: 透き通るベース
+      ctx.fillStyle = wc.base;
+      ctx.fillRect(x, y, s, s);
+    }
+
+    // 4. 有機的な岸辺（バンクエッジ）と角丸アウター/インナーコーナー
+    const cornerR = s * 0.36; // 岸辺の丸み半径
+
+    // (A) 上が陸地（北岸）: 突き出た陸地からの深層ドロップシャドウと土手ライン
+    if (!upW) {
+      // 陸地段差シャドウ
+      const bankGrad = ctx.createLinearGradient(x, y, x, y + s * 0.45);
+      bankGrad.addColorStop(0, 'rgba(0, 0, 0, 0.70)');
+      bankGrad.addColorStop(0.5, 'rgba(0, 0, 0, 0.30)');
       bankGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = bankGrad;
-      ctx.fillRect(x, y, s, s * 0.35);
-    }
+      ctx.fillRect(x, y, s, s * 0.45);
 
-    // 2. 下が陸地なら：下端に波打ち際リップルライン
-    if (!downWater) {
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
-      ctx.fillRect(x, y + s - Math.max(1.5, s * 0.05), s, Math.max(1.5, s * 0.05));
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-      ctx.fillRect(x, y + s - Math.max(3, s * 0.09), s, Math.max(1.5, s * 0.04));
-    }
-
-    // 3. 左が陸地なら：左端に岸壁ライン
-    if (!leftWater) {
+      // 土手ヘリ
       ctx.fillStyle = wc.bank;
-      ctx.fillRect(x, y, Math.max(2, s * 0.06), s);
+      ctx.fillRect(x, y, s, Math.max(2, s * 0.08));
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+      ctx.fillRect(x, y + Math.max(2, s * 0.08), s, 1);
     }
 
-    // 4. 右が陸地なら：右端に岸壁ライン
-    if (!rightWater) {
+    // (B) 下が陸地（南岸）: 浅瀬に打ち寄せる波の白泡リップル
+    if (!downW) {
       ctx.fillStyle = wc.bank;
-      ctx.fillRect(x + s - Math.max(2, s * 0.06), y, Math.max(2, s * 0.06), s);
+      ctx.fillRect(x, y + s - Math.max(2, s * 0.06), s, Math.max(2, s * 0.06));
+
+      // 白泡ライン
+      ctx.fillStyle = wc.highlight;
+      ctx.fillRect(x, y + s - Math.max(3, s * 0.1), s, Math.max(1.5, s * 0.04));
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+      ctx.fillRect(x, y + s - Math.max(4.5, s * 0.14), s, 1);
     }
 
-    // 水面アニメーション波紋（視界内のみ）
+    // (C) 左が陸地（西岸）
+    if (!leftW) {
+      ctx.fillStyle = wc.bank;
+      ctx.fillRect(x, y, Math.max(2, s * 0.07), s);
+      const leftShadow = ctx.createLinearGradient(x, y, x + s * 0.3, y);
+      leftShadow.addColorStop(0, 'rgba(0, 0, 0, 0.45)');
+      leftShadow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = leftShadow;
+      ctx.fillRect(x, y, s * 0.3, s);
+    }
+
+    // (D) 右が陸地（東岸）
+    if (!rightW) {
+      ctx.fillStyle = wc.bank;
+      ctx.fillRect(x + s - Math.max(2, s * 0.07), y, Math.max(2, s * 0.07), s);
+      const rightShadow = ctx.createLinearGradient(x + s, y, x + s - s * 0.3, y);
+      rightShadow.addColorStop(0, 'rgba(0, 0, 0, 0.45)');
+      rightShadow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = rightShadow;
+      ctx.fillRect(x + s - s * 0.3, y, s * 0.3, s);
+    }
+
+    // (E) アウターコーナー（凸角）の自然なカーブ処理
+    if (!upW && !leftW) {
+      ctx.fillStyle = wc.bank;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + cornerR, y);
+      ctx.quadraticCurveTo(x + cornerR * 0.4, y + cornerR * 0.4, x, y + cornerR);
+      ctx.closePath();
+      ctx.fill();
+    }
+    if (!upW && !rightW) {
+      ctx.fillStyle = wc.bank;
+      ctx.beginPath();
+      ctx.moveTo(x + s, y);
+      ctx.lineTo(x + s - cornerR, y);
+      ctx.quadraticCurveTo(x + s - cornerR * 0.4, y + cornerR * 0.4, x + s, y + cornerR);
+      ctx.closePath();
+      ctx.fill();
+    }
+    if (!downW && !leftW) {
+      ctx.fillStyle = wc.bank;
+      ctx.beginPath();
+      ctx.moveTo(x, y + s);
+      ctx.lineTo(x + cornerR, y + s);
+      ctx.quadraticCurveTo(x + cornerR * 0.4, y + s - cornerR * 0.4, x, y + s - cornerR);
+      ctx.closePath();
+      ctx.fill();
+    }
+    if (!downW && !rightW) {
+      ctx.fillStyle = wc.bank;
+      ctx.beginPath();
+      ctx.moveTo(x + s, y + s);
+      ctx.lineTo(x + s - cornerR, y + s);
+      ctx.quadraticCurveTo(x + s - cornerR * 0.4, y + s - cornerR * 0.4, x + s, y + s - cornerR);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // (F) インナーコーナー（凹角）の処理
+    if (upW && leftW && !ulW) {
+      ctx.fillStyle = wc.bank;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + s * 0.22, y);
+      ctx.quadraticCurveTo(x + s * 0.08, y + s * 0.08, x, y + s * 0.22);
+      ctx.closePath();
+      ctx.fill();
+    }
+    if (upW && rightW && !urW) {
+      ctx.fillStyle = wc.bank;
+      ctx.beginPath();
+      ctx.moveTo(x + s, y);
+      ctx.lineTo(x + s - s * 0.22, y);
+      ctx.quadraticCurveTo(x + s - s * 0.08, y + s * 0.08, x + s, y + s * 0.22);
+      ctx.closePath();
+      ctx.fill();
+    }
+    if (downW && leftW && !dlW) {
+      ctx.fillStyle = wc.bank;
+      ctx.beginPath();
+      ctx.moveTo(x, y + s);
+      ctx.lineTo(x + s * 0.22, y + s);
+      ctx.quadraticCurveTo(x + s * 0.08, y + s - s * 0.08, x, y + s - s * 0.22);
+      ctx.closePath();
+      ctx.fill();
+    }
+    if (downW && rightW && !drW) {
+      ctx.fillStyle = wc.bank;
+      ctx.beginPath();
+      ctx.moveTo(x + s, y + s);
+      ctx.lineTo(x + s - s * 0.22, y + s);
+      ctx.quadraticCurveTo(x + s - s * 0.08, y + s - s * 0.08, x + s, y + s - s * 0.22);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // 5. 生きた水流アニメーションと光の屈折（コースティクス波紋）
     if (isVisible) {
       const time = this.anim.globalTime;
-      const waveOffset1 =
-        Math.sin(time * 2.6 + gridX * 0.8 + gridY * 0.5) * (s * 0.12);
-      const waveOffset2 =
-        Math.cos(time * 2.2 + gridX * 0.5 + gridY * 0.9) * (s * 0.1);
+      const flowT = time * 1.8;
+
+      const cOffset1 = Math.sin(flowT + gridX * 0.9 + gridY * 0.7) * (s * 0.08);
+      const cOffset2 = Math.cos(flowT * 1.2 + gridX * 0.6 + gridY * 1.1) * (s * 0.07);
 
       ctx.strokeStyle = wc.wave;
-      ctx.lineWidth = Math.max(1, s * 0.04);
+      ctx.lineWidth = Math.max(1.2, s * 0.04);
       ctx.lineCap = 'round';
 
+      // メイン波紋ライン1
       ctx.beginPath();
-      ctx.moveTo(x + s * 0.18, y + s * 0.45 + waveOffset1);
-      ctx.quadraticCurveTo(
-        x + s * 0.5,
-        y + s * 0.45 + waveOffset1 - 2,
-        x + s * 0.82,
-        y + s * 0.45 + waveOffset1
+      ctx.moveTo(x + s * 0.15, y + s * 0.38 + cOffset1);
+      ctx.bezierCurveTo(
+        x + s * 0.38,
+        y + s * 0.38 + cOffset1 - 3,
+        x + s * 0.62,
+        y + s * 0.38 + cOffset1 + 3,
+        x + s * 0.85,
+        y + s * 0.38 + cOffset1
       );
       ctx.stroke();
 
+      // サブ波紋ライン2
       ctx.beginPath();
-      ctx.moveTo(x + s * 0.28, y + s * 0.72 + waveOffset2);
-      ctx.quadraticCurveTo(
-        x + s * 0.55,
-        y + s * 0.72 + waveOffset2 + 2,
-        x + s * 0.72,
-        y + s * 0.72 + waveOffset2
+      ctx.moveTo(x + s * 0.25, y + s * 0.68 + cOffset2);
+      ctx.bezierCurveTo(
+        x + s * 0.45,
+        y + s * 0.68 + cOffset2 + 2,
+        x + s * 0.68,
+        y + s * 0.68 + cOffset2 - 2,
+        x + s * 0.88,
+        y + s * 0.68 + cOffset2
       );
       ctx.stroke();
 
-      // きらめきハイライト
-      const sparkle = Math.sin(time * 4.0 + gridX * 1.7 + gridY * 2.3);
-      if (sparkle > 0.6) {
+      // 光の屈折コースティクス網目
+      ctx.strokeStyle = wc.highlight;
+      ctx.lineWidth = 1;
+      const ringPulse = (Math.sin(flowT * 2.5 + gridX * 2.3 + gridY * 1.9) + 1) * 0.5;
+      if (ringPulse > 0.45) {
+        ctx.beginPath();
+        ctx.ellipse(
+          x + s * 0.52,
+          y + s * 0.5,
+          s * 0.18 * ringPulse,
+          s * 0.09 * ringPulse,
+          0.3,
+          0,
+          Math.PI * 2
+        );
+        ctx.stroke();
+      }
+
+      // キラリと光る水面反射ハイライト
+      const sparkle = Math.sin(time * 3.8 + gridX * 1.9 + gridY * 2.7);
+      if (sparkle > 0.65) {
         ctx.fillStyle = '#ffffff';
         ctx.beginPath();
-        ctx.arc(x + s * 0.6, y + s * 0.3, Math.max(1, s * 0.03), 0, Math.PI * 2);
+        ctx.arc(x + s * 0.62, y + s * 0.28, Math.max(1.2, s * 0.035), 0, Math.PI * 2);
         ctx.fill();
       }
     } else {
@@ -946,19 +1192,37 @@ export class CanvasRenderer {
     isVisible: boolean,
     tile: TileType,
     gridX: number,
-    gridY: number
+    gridY: number,
+    biome: BiomeType
   ): void {
     const map = this.engine.map;
+
+    // 泥濘 (Mud) および 毒沼 (Poison) は高精細な有機的オートタイリングで描画
+    if (tile === TileType.Mud || tile === TileType.Poison) {
+      this.drawSwampAutoTile(
+        ctx,
+        x,
+        y,
+        s,
+        isVisible,
+        tile,
+        gridX,
+        gridY,
+        biome
+      );
+      return;
+    }
+
+    // 氷 (Ice) の描画（床スプライトを下敷きに、滑らかな半透明氷床を重ねる）
+    const floorSprite = TileSprites.getFloorSprite(biome, gridX, gridY);
+    if (floorSprite) {
+      ctx.drawImage(floorSprite, x, y, s, s);
+    }
     const gimmickSprite = TileSprites.getGimmickSprite(tile);
     if (gimmickSprite) {
       ctx.drawImage(gimmickSprite, x, y, s, s);
     } else {
-      ctx.fillStyle =
-        tile === TileType.Ice
-          ? '#38bdf8'
-          : tile === TileType.Mud
-          ? '#78350f'
-          : '#7e22ce';
+      ctx.fillStyle = '#38bdf8';
       ctx.fillRect(x, y, s, s);
     }
 
@@ -972,6 +1236,306 @@ export class CanvasRenderer {
     }
 
     if (!isVisible) {
+      ctx.fillStyle = 'rgba(3, 7, 18, 0.62)';
+      ctx.fillRect(x, y, s, s);
+    }
+  }
+
+  /**
+   * 沼地（泥濘: Mud / 毒沼: Poison）の高精細有機的オートタイリング描画。
+   * 周辺8方向の隣接判定、陸地床との湿潤シャドウ・境界ブレンディング、
+   * 沼同士がシームレスに結合する深泥プール、有機的な境界カーブ、
+   * およびポコポコと湧き出る気泡アニメーション・泥濘ディテールを描画します。
+   */
+  private drawSwampAutoTile(
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    s: number,
+    isVisible: boolean,
+    tile: TileType,
+    gridX: number,
+    gridY: number,
+    biome: BiomeType
+  ): void {
+    const map = this.engine.map;
+    const isPoison = tile === TileType.Poison;
+
+    // 1. 下敷き床スプライト（沼地以外の陸地との境界ブレンディング用）
+    const floorSprite = TileSprites.getFloorSprite(biome, gridX, gridY);
+    if (floorSprite) {
+      ctx.drawImage(floorSprite, x, y, s, s);
+    }
+
+    // 周辺8マスの同種沼判定
+    const isSwamp = (gx: number, gy: number): boolean => {
+      if (gx < 0 || gx >= map.width || gy < 0 || gy >= map.height) return false;
+      const t = map.tiles[gy][gx];
+      return t === tile;
+    };
+
+    const upS = isSwamp(gridX, gridY - 1);
+    const downS = isSwamp(gridX, gridY + 1);
+    const leftS = isSwamp(gridX - 1, gridY);
+    const rightS = isSwamp(gridX + 1, gridY);
+    const ulS = isSwamp(gridX - 1, gridY - 1);
+    const urS = isSwamp(gridX + 1, gridY - 1);
+    const dlS = isSwamp(gridX - 1, gridY + 1);
+    const drS = isSwamp(gridX + 1, gridY + 1);
+
+    // 2. パレット設定（Mud: リアルな泥褐色 / Poison: 腐食妖毒紫）
+    const colors = isPoison
+      ? {
+          deep: '#1e052c',
+          base: '#3b0764',
+          surface: '#581c87',
+          rim: '#a855f7',
+          bubble: '#22c55e',
+          bubbleHi: '#86efac',
+          wet: 'rgba(30, 5, 45, 0.55)',
+        }
+      : {
+          deep: '#291002',
+          base: '#451a03',
+          surface: '#6b2d0a',
+          rim: '#b45309',
+          bubble: '#d97706',
+          bubbleHi: '#fef3c7',
+          wet: 'rgba(35, 15, 5, 0.50)',
+        };
+
+    // 3. 境界湿潤シャドウ（床へジワリと染み出す泥の湿り気グラデーション）
+    if (!upS || !downS || !leftS || !rightS) {
+      ctx.fillStyle = colors.wet;
+      ctx.fillRect(x, y, s, s);
+    }
+
+    // 4. メイン沼地プール（有機的な形状とシームレス連結）
+    const cornerR = s * 0.38; // 境界の丸み半径
+
+    ctx.save();
+    ctx.beginPath();
+
+    // (A) 左上開始点
+    if (!upS && !leftS) {
+      ctx.moveTo(x + cornerR, y + s * 0.08);
+    } else if (!upS) {
+      ctx.moveTo(x, y + s * 0.08);
+    } else if (!leftS) {
+      ctx.moveTo(x + s * 0.08, y);
+    } else {
+      ctx.moveTo(x, y);
+    }
+
+    // (B) 上辺〜右上
+    if (!upS) {
+      const waveMid = Math.sin((gridX * 7 + gridY * 13) % 7) * (s * 0.04);
+      ctx.lineTo(x + s * 0.5, y + s * 0.08 + waveMid);
+      if (!rightS) {
+        ctx.quadraticCurveTo(
+          x + s - s * 0.08,
+          y + s * 0.08,
+          x + s - s * 0.08,
+          y + cornerR
+        );
+      } else {
+        ctx.lineTo(x + s, y + s * 0.08);
+      }
+    } else {
+      ctx.lineTo(x + s, y);
+    }
+
+    // (C) 右辺〜右下
+    if (!rightS) {
+      const waveRight = Math.cos((gridX * 11 + gridY * 5) % 7) * (s * 0.04);
+      ctx.lineTo(x + s - s * 0.08 + waveRight, y + s * 0.5);
+      if (!downS) {
+        ctx.quadraticCurveTo(
+          x + s - s * 0.08,
+          y + s - s * 0.08,
+          x + s - cornerR,
+          y + s - s * 0.08
+        );
+      } else {
+        ctx.lineTo(x + s - s * 0.08, y + s);
+      }
+    } else {
+      ctx.lineTo(x + s, y + s);
+    }
+
+    // (D) 下辺〜左下
+    if (!downS) {
+      const waveDown = Math.sin((gridX * 9 + gridY * 17) % 7) * (s * 0.04);
+      ctx.lineTo(x + s * 0.5, y + s - s * 0.08 + waveDown);
+      if (!leftS) {
+        ctx.quadraticCurveTo(
+          x + s * 0.08,
+          y + s - s * 0.08,
+          x + s * 0.08,
+          y + s - cornerR
+        );
+      } else {
+        ctx.lineTo(x, y + s - s * 0.08);
+      }
+    } else {
+      ctx.lineTo(x, y + s);
+    }
+
+    // (E) 左辺〜左上クローズ
+    if (!leftS) {
+      const waveLeft = Math.cos((gridX * 13 + gridY * 7) % 7) * (s * 0.04);
+      ctx.lineTo(x + s * 0.08 + waveLeft, y + s * 0.5);
+      if (!upS) {
+        ctx.quadraticCurveTo(
+          x + s * 0.08,
+          y + s * 0.08,
+          x + cornerR,
+          y + s * 0.08
+        );
+      } else {
+        ctx.lineTo(x + s * 0.08, y);
+      }
+    } else {
+      ctx.closePath();
+    }
+
+    // 沼地ベースの塗りつぶし（中央ほど深くなるラジアルグラデーション）
+    const swampGrad = ctx.createRadialGradient(
+      x + s * 0.5,
+      y + s * 0.5,
+      s * 0.1,
+      x + s * 0.5,
+      y + s * 0.5,
+      s * 0.7
+    );
+    swampGrad.addColorStop(0, colors.deep);
+    swampGrad.addColorStop(0.7, colors.base);
+    swampGrad.addColorStop(1, colors.surface);
+    ctx.fillStyle = swampGrad;
+    ctx.fill();
+
+    // 泥の盛り上がり・フチのハイライトリップル（陸地境界のみ）
+    if (!upS || !downS || !leftS || !rightS) {
+      ctx.strokeStyle = colors.rim;
+      ctx.lineWidth = Math.max(1.2, s * 0.035);
+      ctx.stroke();
+    }
+
+    ctx.restore();
+
+    // 5. インナーコーナー（斜めだけが陸地の場合の泥岸の切り込み）
+    if (upS && leftS && !ulS) {
+      ctx.fillStyle = colors.wet;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + s * 0.25, y);
+      ctx.quadraticCurveTo(x + s * 0.1, y + s * 0.1, x, y + s * 0.25);
+      ctx.closePath();
+      ctx.fill();
+    }
+    if (upS && rightS && !urS) {
+      ctx.fillStyle = colors.wet;
+      ctx.beginPath();
+      ctx.moveTo(x + s, y);
+      ctx.lineTo(x + s - s * 0.25, y);
+      ctx.quadraticCurveTo(x + s - s * 0.1, y + s * 0.1, x + s, y + s * 0.25);
+      ctx.closePath();
+      ctx.fill();
+    }
+    if (downS && leftS && !dlS) {
+      ctx.fillStyle = colors.wet;
+      ctx.beginPath();
+      ctx.moveTo(x, y + s);
+      ctx.lineTo(x + s * 0.25, y + s);
+      ctx.quadraticCurveTo(x + s * 0.1, y + s - s * 0.1, x, y + s - s * 0.25);
+      ctx.closePath();
+      ctx.fill();
+    }
+    if (downS && rightS && !drS) {
+      ctx.fillStyle = colors.wet;
+      ctx.beginPath();
+      ctx.moveTo(x + s, y + s);
+      ctx.lineTo(x + s - s * 0.25, y + s);
+      ctx.quadraticCurveTo(x + s - s * 0.1, y + s - s * 0.1, x + s, y + s - s * 0.25);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // 6. 表面ディテール: 半分沈んだ小石や泥のシワ
+    const detailHash = Math.abs((gridX * 6173 ^ gridY * 9887) % 4);
+    if (detailHash === 0) {
+      // 沈んだ小石
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.7)';
+      ctx.beginPath();
+      ctx.ellipse(x + s * 0.35, y + s * 0.6, s * 0.08, s * 0.05, 0.3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#64748b';
+      ctx.beginPath();
+      ctx.ellipse(x + s * 0.35, y + s * 0.58, s * 0.05, s * 0.03, 0.3, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (detailHash === 1) {
+      // 泥の粘性シワ
+      ctx.strokeStyle = colors.deep;
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.arc(x + s * 0.65, y + s * 0.4, s * 0.14, 0.5, 2.8);
+      ctx.stroke();
+    }
+
+    // 7. 生きたアニメーション気泡（泡の膨張・パチンと弾ける演出）
+    if (isVisible) {
+      const time = this.anim.globalTime;
+
+      // 気泡1
+      const phase1 = (time * 1.6 + gridX * 0.7 + gridY * 1.1) % (Math.PI * 2);
+      const bScale1 = Math.sin(phase1);
+      if (bScale1 > 0) {
+        const bRad1 = s * 0.07 * (0.4 + 0.6 * bScale1);
+        const bx1 = x + s * (0.28 + ((gridX * 17) % 3) * 0.05);
+        const by1 = y + s * (0.35 + ((gridY * 19) % 3) * 0.05);
+
+        ctx.fillStyle = colors.bubble;
+        ctx.beginPath();
+        ctx.arc(bx1, by1, bRad1, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = colors.bubbleHi;
+        ctx.beginPath();
+        ctx.arc(bx1 - bRad1 * 0.3, by1 - bRad1 * 0.3, bRad1 * 0.35, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // 気泡2（少し遅れて発生するサブ気泡）
+      const phase2 = (time * 2.1 + gridX * 1.3 + gridY * 0.8 + 2.0) % (Math.PI * 2);
+      const bScale2 = Math.sin(phase2);
+      if (bScale2 > 0.2) {
+        const bRad2 = s * 0.055 * (0.5 + 0.5 * bScale2);
+        const bx2 = x + s * (0.68 - ((gridY * 13) % 3) * 0.05);
+        const by2 = y + s * (0.65 - ((gridX * 23) % 3) * 0.05);
+
+        ctx.fillStyle = colors.bubble;
+        ctx.beginPath();
+        ctx.arc(bx2, by2, bRad2, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = colors.bubbleHi;
+        ctx.beginPath();
+        ctx.arc(bx2 - bRad2 * 0.3, by2 - bRad2 * 0.3, bRad2 * 0.35, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // 毒沼特有の有毒ガス胞パルス
+      if (isPoison) {
+        const pulse = (Math.sin(time * 3.2 + gridX * 2.1 + gridY * 1.7) + 1) * 0.5;
+        if (pulse > 0.6) {
+          ctx.strokeStyle = '#a855f7';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.arc(x + s * 0.5, y + s * 0.5, s * 0.22 * pulse, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      }
+    } else {
       ctx.fillStyle = 'rgba(3, 7, 18, 0.62)';
       ctx.fillRect(x, y, s, s);
     }

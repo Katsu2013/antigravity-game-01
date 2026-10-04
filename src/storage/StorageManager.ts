@@ -171,10 +171,13 @@ export class StorageManager {
    * @returns 保存されていたセーブデータ。存在しない場合は null
    */
   public static async loadCurrentRun(): Promise<SavedRunData | null> {
-    // 1. まず IndexedDB からの読み込みを試行
+    let idbData: SavedRunData | null = null;
+    let localData: SavedRunData | null = null;
+
+    // 1. IndexedDB からの読み込み
     try {
       const db = await this.getDB();
-      const idbData = await new Promise<SavedRunData | null>((resolve) => {
+      idbData = await new Promise<SavedRunData | null>((resolve) => {
         const tx = db.transaction(this.STORE_CURRENT_RUN, 'readonly');
         const store = tx.objectStore(this.STORE_CURRENT_RUN);
         const req = store.get(this.KEY_ACTIVE_RUN);
@@ -184,27 +187,32 @@ export class StorageManager {
         };
         req.onerror = () => resolve(null);
       });
-
-      if (idbData && idbData.player && idbData.player.isAlive) {
-        return idbData;
-      }
     } catch (err) {
-      console.warn('IndexedDB read failed, falling back to localStorage:', err);
+      console.warn('IndexedDB read failed:', err);
     }
 
-    // 2. フォールバック: localStorage からの復元
+    // 2. localStorage からの読み込み
     try {
       if (typeof localStorage !== 'undefined') {
         const raw = localStorage.getItem(this.LOCAL_STORAGE_KEY);
         if (raw) {
-          const parsed = JSON.parse(raw) as SavedRunData;
-          if (parsed && parsed.player && parsed.player.isAlive) {
-            return parsed;
-          }
+          localData = JSON.parse(raw) as SavedRunData;
         }
       }
     } catch (e) {
       console.warn('Failed to load backup run from localStorage:', e);
+    }
+
+    const isIdbValid = idbData && idbData.player && idbData.player.isAlive && idbData.map;
+    const isLocalValid = localData && localData.player && localData.player.isAlive && localData.map;
+
+    if (isIdbValid && isLocalValid) {
+      // タイムスタンプがより新しい方を採用
+      return (localData!.timestamp || 0) >= (idbData!.timestamp || 0) ? localData : idbData;
+    } else if (isLocalValid) {
+      return localData;
+    } else if (isIdbValid) {
+      return idbData;
     }
 
     return null;

@@ -213,7 +213,7 @@ export class GameEngine {
     this.player.inventory[0].color = '#10b981';
 
     this.logs = [];
-    this.generateFloor(1);
+    this.generateFloor(1, false);
     this.addLog('ダンジョン深部への冒険が始まった。', 'info');
   }
 
@@ -224,6 +224,7 @@ export class GameEngine {
   public startNewGame(): void {
     StorageManager.clearCurrentRun();
     this.initDefaultState();
+    StorageManager.saveCurrentScreen('playing');
     this.saveGame();
     this.notify();
   }
@@ -232,8 +233,9 @@ export class GameEngine {
    * 指定した階層番号のフロアを生成し、プレイヤーを開始位置へ配置して初期視界を計算します。
    *
    * @param floorNum - 生成する階層番号（1 = B1F）
+   * @param shouldSave - 生成後に自動セーブを行うかどうか（デフォルト: true）
    */
-  public generateFloor(floorNum: number): void {
+  public generateFloor(floorNum: number, shouldSave = true): void {
     this.player.floor = floorNum;
     this.map = DungeonGenerator.generate(floorNum, 48, 36);
 
@@ -244,7 +246,9 @@ export class GameEngine {
     // 視界の初期計算
     FOV.compute(this.map, { x: this.player.x, y: this.player.y });
 
-    this.saveGame();
+    if (shouldSave) {
+      this.saveGame();
+    }
     this.notify();
   }
 
