@@ -724,13 +724,49 @@ export class GameEngine {
       }
 
       if (hitMonster) {
-        // モンスターに直撃！20大ダメージ
+        // 衝突位置に座標を更新（破砕パーティクルが激突マスで発生するようにする）
+        obstacle.x = hitMonster.x;
+        obstacle.y = hitMonster.y;
+        this.actionLockUntil = Date.now() + 650; // 滑走・激突演出ロック
+
+        // 直撃を受けたモンスターはスタン（気絶・怯み・手前に歩いてこない）
+        hitMonster.isStunned = true;
+        if (hitMonster.isDormant) {
+          hitMonster.isDormant = false;
+        }
+
+        // モンスターを奥へノックバック吹き飛ばし
+        const behindX = hitMonster.x + dx;
+        const behindY = hitMonster.y + dy;
+        const isBehindBlocked =
+          behindX < 0 ||
+          behindX >= this.map.width ||
+          behindY < 0 ||
+          behindY >= this.map.height ||
+          this.map.tiles[behindY][behindX] === TileType.Wall ||
+          this.map.tiles[behindY][behindX] === TileType.Water ||
+          this.map.monsters.some((m) => m.x === behindX && m.y === behindY) ||
+          (this.map.obstacles || []).some((o) => o.x === behindX && o.y === behindY);
+
+        let damage = 20;
+        if (!isBehindBlocked) {
+          hitMonster.x = behindX;
+          hitMonster.y = behindY;
+          this.addLog(
+            `${obstacle.name} が ${hitMonster.name} に激突！ 20 の大ダメージを与えて吹き飛ばし、粉砕した！`,
+            'damage'
+          );
+        } else {
+          damage = 28; // 壁激突追加ダメージ
+          this.addLog(
+            `${obstacle.name} が ${hitMonster.name} を壁に叩きつけて激突！ 28 の大ダメージを与えて粉砕した！`,
+            'damage'
+          );
+        }
+
         this.onDamage?.(hitMonster.id);
-        hitMonster.hp -= 20;
-        this.addLog(
-          `${obstacle.name} が ${hitMonster.name} に激突！ 20 の大ダメージを与えて粉砕した！`,
-          'damage'
-        );
+        hitMonster.hp -= damage;
+
         // 氷塊は粉砕・消滅
         this.map.obstacles = this.map.obstacles.filter(
           (o) => o.id !== obstacle.id
@@ -822,6 +858,7 @@ export class GameEngine {
       let curY = obstacle.y;
       let movedDist = 0;
       let hitMonster: Monster | undefined;
+      let monsterPinned = false; // 壁挟みフラグ
 
       while (movedDist < targetMaxDist) {
         const nextX = curX + dx;
@@ -842,17 +879,6 @@ export class GameEngine {
           break;
         }
 
-        // モンスター衝突判定
-        hitMonster = this.map.monsters.find(
-          (m) => m.x === nextX && m.y === nextY
-        );
-        if (hitMonster) {
-          curX = nextX;
-          curY = nextY;
-          movedDist += 1;
-          break;
-        }
-
         // 他の障害物判定
         const hitOtherObstacle = (this.map.obstacles || []).find(
           (o) => o.id !== obstacle.id && o.x === nextX && o.y === nextY
@@ -861,12 +887,50 @@ export class GameEngine {
           break;
         }
 
+        // モンスター衝突判定
+        hitMonster = this.map.monsters.find(
+          (m) => m.x === nextX && m.y === nextY
+        );
+        if (hitMonster) {
+          // モンスターの奥のマス (behindX, behindY) を判定
+          const behindX = nextX + dx;
+          const behindY = nextY + dy;
+
+          const isBehindBlocked =
+            behindX < 0 ||
+            behindX >= this.map.width ||
+            behindY < 0 ||
+            behindY >= this.map.height ||
+            this.map.tiles[behindY][behindX] === TileType.Wall ||
+            this.map.tiles[behindY][behindX] === TileType.Water ||
+            this.map.monsters.some((m) => m.x === behindX && m.y === behindY) ||
+            (this.map.obstacles || []).some((o) => o.x === behindX && o.y === behindY);
+
+          if (!isBehindBlocked) {
+            // モンスターを奥のマスへノックバック吹き飛ばし！
+            hitMonster.x = behindX;
+            hitMonster.y = behindY;
+            // 大石はモンスターが元いたマスへ前進！
+            curX = nextX;
+            curY = nextY;
+            movedDist += 1;
+            monsterPinned = false;
+          } else {
+            // モンスターの奥が壁などで塞がっている！
+            // 大石はモンスターの手前マス (curX, curY) で停止し、壁と挟み撃ちにする！
+            monsterPinned = true;
+          }
+
+          // 激突したため大石の移動はここで終了
+          break;
+        }
+
         curX = nextX;
         curY = nextY;
         movedDist += 1;
       }
 
-      if (movedDist === 0) {
+      if (movedDist === 0 && !hitMonster) {
         this.addLog(`奥が塞がっていて ${obstacle.name} を押せない！`, 'warning');
         obstacle.pushAttempts = 0;
         return false;
@@ -876,19 +940,32 @@ export class GameEngine {
       obstacle.y = curY;
       obstacle.pushAttempts = 0;
       // 岩が画面上で目的マスに到着するまで入力を完全ロック（1マスあたり約750ms、2マスで約1500ms）
-      this.actionLockUntil = Date.now() + Math.max(1450, movedDist * 750);
+      this.actionLockUntil = Date.now() + Math.max(1450, Math.max(1, movedDist) * 750);
       this.onObstaclePush?.(obstacle, dx, dy);
 
       if (hitMonster) {
-        this.onDamage?.(hitMonster.id);
-        hitMonster.hp -= 10;
+        // 直撃を受けたモンスターはスタン（気絶・怯み・手前に歩いてこない）
+        hitMonster.isStunned = true;
         if (hitMonster.isDormant) {
           hitMonster.isDormant = false;
         }
-        this.addLog(
-          `ゴゴゴゴッ！ ${obstacle.name} が重い地響きを立てて動き出し、${hitMonster.name} に激突して 10 のダメージを与えた！（${movedDist}マス移動）`,
-          'damage'
-        );
+
+        this.onDamage?.(hitMonster.id);
+        const damage = monsterPinned ? 20 : 12;
+        hitMonster.hp -= damage;
+
+        if (monsterPinned) {
+          this.addLog(
+            `ゴゴゴゴッ！ ${obstacle.name} が ${hitMonster.name} を壁に激しく押し潰した！ 20 の圧殺大ダメージ！`,
+            'damage'
+          );
+        } else {
+          this.addLog(
+            `ゴゴゴゴッ！ ${obstacle.name} が重い地響きを立てて動き出し、${hitMonster.name} を奥へ吹き飛ばして 12 のダメージを与えた！（${movedDist}マス移動）`,
+            'damage'
+          );
+        }
+
         if (hitMonster.hp <= 0) {
           this.addLog(
             `${hitMonster.name} を圧殺撃破した！ (${hitMonster.expValue} EXP獲得)`,
@@ -1169,6 +1246,12 @@ export class GameEngine {
     const playerPos = { x: this.player.x, y: this.player.y };
 
     for (const monster of this.map.monsters) {
+      // 0. 大石や氷塊の直撃でスタン（気絶・怯み）中のモンスターは行動不能（1ターン行動スキップ）
+      if (monster.isStunned) {
+        monster.isStunned = false;
+        continue;
+      }
+
       // 1. 擬態・休眠中のミミック（MIMIC）は刺激されるまで動かない
       if (monster.isDormant) {
         continue;

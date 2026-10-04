@@ -214,6 +214,8 @@ export interface Monster {
   rangedAttackType?: 'magic' | 'fire';
   /** 索敵視野が正面向き限定のアホな敵かどうか（背後から近づけば気付かない） */
   hasBackBlindSpot?: boolean;
+  /** 衝撃によるスタン・気絶中かどうか（大石や氷塊直撃時: 1ターン行動不能） */
+  isStunned?: boolean;
   /** 画面描画用シンボル文字（例: 's', 'g', 'k'） */
   symbol: string;
   /** 画面描画用カラーコード */
