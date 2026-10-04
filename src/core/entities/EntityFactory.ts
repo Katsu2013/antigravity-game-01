@@ -52,6 +52,18 @@ export class EntityFactory {
       else if (roll < 0.7) type = 'BAT';
       else if (roll < 0.85) type = 'GHOST';
       else type = 'SLIME';
+    } else if (biome === 'SNOW') {
+      if (floor >= 8 && roll < 0.25) type = 'DRAGON';
+      else if (roll < 0.35) type = 'GHOST';
+      else if (roll < 0.6) type = 'BAT';
+      else if (roll < 0.8) type = 'SKELETON';
+      else type = 'GOLEM';
+    } else if (biome === 'ICE') {
+      if (floor >= 8 && roll < 0.3) type = 'DRAGON';
+      else if (roll < 0.4) type = 'MAGE';
+      else if (roll < 0.65) type = 'GHOST';
+      else if (roll < 0.85) type = 'GOLEM';
+      else type = 'BAT';
     } else {
       // STONE
       if (floor === 1) {

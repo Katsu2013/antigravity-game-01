@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="18" ry="5" fill="rgba(0,0,0,0.3)"/>
+  <!-- ローブ裾 -->
+  <path d="M22 28 L14 54 L50 54 L42 28 Z" fill="#3b0764" stroke="#1e1b4b" stroke-width="2"/>
+  <path d="M28 28 L24 54 L40 54 L36 28 Z" fill="#581c87"/>
+  <!-- 尖がりフード頭部 -->
+  <path d="M20 28 Q32 2 44 28 Q32 24 20 28 Z" fill="#581c87" stroke="#1e1b4b" stroke-width="2"/>
+  <!-- フードの陰影と輝く目 -->
+  <path d="M22 26 Q32 22 42 26 Q32 30 22 26 Z" fill="#0f172a"/>
+  <circle cx="28" cy="26" r="2" fill="#e879f9"/>
+  <circle cx="36" cy="26" r="2" fill="#e879f9"/>
+  <!-- 魔力の杖（右手） -->
+  <line x1="48" y1="12" x2="48" y2="52" stroke="#78350f" stroke-width="2.5"/>
+  <circle cx="48" cy="12" r="5" fill="#a855f7" stroke="#c084fc" stroke-width="1.5"/>
+  <circle cx="48" cy="12" r="2" fill="#ffffff"/>
+</svg>

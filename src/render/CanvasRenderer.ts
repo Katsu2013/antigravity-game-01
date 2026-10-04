@@ -297,6 +297,9 @@ export class CanvasRenderer {
       }
     }
 
+    // 6.5. 環境パーティクル演出（SNOWの粉雪、ICEの氷晶きらめき）
+    this.drawBiomeAtmosphere(ctx, width, height, biome);
+
     // 7. ミニマップオーバーレイ描画
     if (this.showMinimap) {
       this.drawMinimap(ctx, width, height);
@@ -403,6 +406,8 @@ export class CanvasRenderer {
         FOREST: { base: 'rgba(5, 150, 105, 0.75)', wave: '#6ee7b7', deep: '#047857' },
         RIVER: { base: 'rgba(37, 99, 235, 0.72)', wave: '#93c5fd', deep: '#1d4ed8' },
         LAKE: { base: 'rgba(8, 145, 178, 0.78)', wave: '#67e8f9', deep: '#0e7490' },
+        SNOW: { base: 'rgba(56, 189, 248, 0.65)', wave: '#e0f2fe', deep: '#0284c7' },
+        ICE: { base: 'rgba(14, 165, 233, 0.75)', wave: '#bae6fd', deep: '#0369a1' },
       };
       const wc = waterColors[biome] || waterColors.STONE;
 
@@ -461,6 +466,51 @@ export class CanvasRenderer {
         }
       } else {
         // 視界外マスク
+        ctx.fillStyle = 'rgba(3, 7, 18, 0.62)';
+        ctx.fillRect(x, y, s, s);
+      }
+      return;
+    }
+
+    // 3.5. 木の橋タイルの描画 (TileType.Bridge)
+    if (tile === TileType.Bridge) {
+      // 水流を下敷きとして描画
+      const waterColors: Record<
+        BiomeType,
+        { base: string }
+      > = {
+        STONE: { base: 'rgba(2, 132, 199, 0.72)' },
+        EARTH: { base: 'rgba(13, 148, 136, 0.75)' },
+        FOREST: { base: 'rgba(5, 150, 105, 0.75)' },
+        RIVER: { base: 'rgba(37, 99, 235, 0.72)' },
+        LAKE: { base: 'rgba(8, 145, 178, 0.78)' },
+        SNOW: { base: 'rgba(56, 189, 248, 0.65)' },
+        ICE: { base: 'rgba(14, 165, 233, 0.75)' },
+      };
+      const wc = waterColors[biome] || waterColors.RIVER;
+      ctx.fillStyle = wc.base;
+      ctx.fillRect(x, y, s, s);
+
+      // 木の橋スプライトの描画
+      const bridgeSprite = TileSprites.getBridgeSprite(gridX, gridY);
+      if (bridgeSprite) {
+        ctx.drawImage(bridgeSprite, x, y, s, s);
+      } else {
+        ctx.fillStyle = '#b45309';
+        ctx.fillRect(x, y + s * 0.15, s, s * 0.7);
+      }
+
+      // 上が壁なら橋にも影
+      if (gridY > 0 && map.tiles[gridY - 1]?.[gridX] === TileType.Wall) {
+        const shadowGrad = ctx.createLinearGradient(x, y, x, y + s * 0.4);
+        shadowGrad.addColorStop(0, 'rgba(0, 0, 0, 0.6)');
+        shadowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = shadowGrad;
+        ctx.fillRect(x, y, s, s * 0.4);
+      }
+
+      // 視界外マスク
+      if (!isVisible) {
         ctx.fillStyle = 'rgba(3, 7, 18, 0.62)';
         ctx.fillRect(x, y, s, s);
       }
@@ -1224,6 +1274,8 @@ export class CanvasRenderer {
       FOREST: { wall: '#166534', floorVis: '#064e3b', floorDim: '#022c22', waterVis: '#34d399', waterDim: '#047857' },
       RIVER: { wall: '#334155', floorVis: '#1e3a8a', floorDim: '#0f172a', waterVis: '#38bdf8', waterDim: '#1d4ed8' },
       LAKE: { wall: '#0e7490', floorVis: '#083344', floorDim: '#041c26', waterVis: '#67e8f9', waterDim: '#0e7490' },
+      SNOW: { wall: '#334155', floorVis: '#cbd5e1', floorDim: '#64748b', waterVis: '#93c5fd', waterDim: '#1e3a8a' },
+      ICE: { wall: '#0369a1', floorVis: '#0284c7', floorDim: '#082f49', waterVis: '#38bdf8', waterDim: '#0369a1' },
     };
     const mp = minimapPalettes[biome] || minimapPalettes.STONE;
 
@@ -1244,6 +1296,9 @@ export class CanvasRenderer {
           ctx.fillRect(cx, cy, cellW, cellH);
         } else if (tile === TileType.Water) {
           ctx.fillStyle = map.visible[y][x] ? mp.waterVis : mp.waterDim;
+          ctx.fillRect(cx, cy, cellW, cellH);
+        } else if (tile === TileType.Bridge) {
+          ctx.fillStyle = map.visible[y][x] ? '#d97706' : '#78350f';
           ctx.fillRect(cx, cy, cellW, cellH);
         } else if (tile === TileType.StairsDown) {
           ctx.fillStyle = '#fbbf24';
@@ -1293,5 +1348,57 @@ export class CanvasRenderer {
     const gridY = Math.floor((screenY - cameraY) / effectiveTileSize);
 
     return { x: gridX, y: gridY };
+  }
+
+  /**
+   * 特定のバイオーム（SNOWの粉雪、ICEの氷晶）に応じた環境大気パーティクルを描画します。
+   *
+   * @param ctx - Canvas描画コンテキスト
+   * @param width - 描画領域幅
+   * @param height - 描画領域高さ
+   * @param biome - 現在のバイオーム
+   */
+  private drawBiomeAtmosphere(
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    biome: BiomeType
+  ): void {
+    if (biome !== 'SNOW' && biome !== 'ICE') return;
+
+    const t = this.anim.globalTime;
+    ctx.save();
+    if (biome === 'SNOW') {
+      // 舞い落ちる白銀の粉雪パーティクル
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+      const flakeCount = 35;
+      for (let i = 0; i < flakeCount; i++) {
+        const speed = 40 + (i % 5) * 15;
+        const drift = Math.sin(t * 1.5 + i) * 20;
+        const x = ((i * 73 + t * 25 + drift) % width + width) % width;
+        const y = ((i * 127 + t * speed) % height + height) % height;
+        const r = 1.2 + (i % 3) * 0.8;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    } else if (biome === 'ICE') {
+      // 煌めく氷晶・ダイヤモンドダストのきらめき
+      const sparkCount = 25;
+      for (let i = 0; i < sparkCount; i++) {
+        const x = ((i * 97 + Math.sin(i * 3) * 50) % width + width) % width;
+        const y = ((i * 149 + Math.cos(i * 5) * 50) % height + height) % height;
+        const phase = Math.sin(t * 3.5 + i * 2.1);
+        if (phase > 0.3) {
+          const alpha = ((phase - 0.3) / 0.7) * 0.8;
+          ctx.fillStyle = `rgba(186, 230, 253, ${alpha})`;
+          const r = 1.5 + (i % 2) * 1.0;
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    }
+    ctx.restore();
   }
 }

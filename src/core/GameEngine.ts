@@ -259,7 +259,7 @@ export class GameEngine {
 
             if (result.didLevelUp) {
               this.addLog(
-                `レベルが上がった！ (Lv.${this.player.level} / 最大HP: ${this.player.maxHp})`,
+                `レベルが上がった！ (Lv.${this.player.level} / 最大HP+5 / 攻撃+2 / 防御+1 / HP+5回復)`,
                 'turn-header'
               );
             }

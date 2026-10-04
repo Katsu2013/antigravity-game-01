@@ -77,7 +77,7 @@ npm run doc
 - 🗺️ **[開発ロードマップ & マイルストーン](docs/03_roadmap.md)**: 開発工程とフェーズ詳細
 - 👾 **[キャラクター一覧＆グラフィック設計書](docs/04_characters.md)**: 各キャラクターのSVGグラフィックプレビュー、AI、アニメーション仕様
 - 🏆 **[タイトル画面＆スコア履歴設計書](docs/05_title_and_scores.md)**: タイトルUI、スコア算出式、ランキング仕様、パーマデス連携
-- 🌲 **[ダンジョンバイオーム＆フロア構成設計書](docs/06_biomes_and_floors.md)**: 5大バイオーム（石・赤土・旧遺跡・水流・地下湖）、水域アルゴリズム、正面敵攻撃・素振り仕様
+- 🌲 **[ダンジョンバイオーム＆フロア構成設計書](docs/06_biomes_and_floors.md)**: 7大バイオーム（石・赤土・旧遺跡・清流洞・地下湖・雪原・氷窟）、連続水流・木橋アルゴリズム、正面敵攻撃・素振り仕様
 - 📚 **[TypeDoc APIリファレンス (HTML)](docs/api/index.html)**: 各クラス・メソッド・型の詳細仕様（`npm run doc` で生成）
 
 ---
@@ -88,18 +88,21 @@ npm run doc
 
 | ファイル | 概要・役割 |
 |---|---|
-| [`src/core/types.ts`](src/core/types.ts) | タイル種別(`TileType`)、座標(`Point`)、アクション(`ActionType`)、ステータス等の型定義 |
-| [`src/core/algorithms/DungeonGenerator.ts`](src/core/algorithms/DungeonGenerator.ts) | 手続き型ダンジョン自動生成（部屋配置・重なり判定・通路掘削・スタート/階段/敵/アイテム配置） |
+| [`src/core/types.ts`](src/core/types.ts) | タイル種別(`TileType`)、バイオーム(`BiomeType`)、座標(`Point`)、アクション(`ActionType`)、ステータス等の型定義 |
+| [`src/core/algorithms/DungeonGenerator.ts`](src/core/algorithms/DungeonGenerator.ts) | 手続き型ダンジョン自動生成（部屋配置・重なり判定・通路掘削・7大バイオーム・連続水流・木橋・全域到達性保証） |
 | [`src/core/algorithms/FOV.ts`](src/core/algorithms/FOV.ts) | プレイヤー視界計算（部屋一括可視化 ＋ 360度レイキャスティング） |
 | [`src/core/algorithms/Pathfinding.ts`](src/core/algorithms/Pathfinding.ts) | A*（A-Star）探索によるモンスターの最短経路探索アルゴリズム |
-| [`src/core/entities/EntityFactory.ts`](src/core/entities/EntityFactory.ts) | モンスターおよびアイテムのインスタンス生成・階層スケーリングファクトリ |
-| [`src/core/systems/CombatSystem.ts`](src/core/systems/CombatSystem.ts) | 近接攻撃、ダメージ計算式、撃破判定、経験値獲得およびレベルアップ処理 |
+| [`src/core/entities/EntityFactory.ts`](src/core/entities/EntityFactory.ts) | モンスター（全10種）およびアイテム（全16種）のインスタンス生成・階層スケーリングファクトリ |
+| [`src/core/systems/CombatSystem.ts`](src/core/systems/CombatSystem.ts) | 近接攻撃、ダメージ計算式、撃破判定、経験値獲得およびレベルアップ処理（HP回復バランス調整済み） |
 | [`src/core/systems/ItemSystem.ts`](src/core/systems/ItemSystem.ts) | アイテム拾得、使用・消費・装備変更、および足元投棄処理 |
 | [`src/core/GameEngine.ts`](src/core/GameEngine.ts) | コアゲームステート統括、ターン進行、モンスター自律AI、行動ログ管理 |
 | [`src/storage/StorageManager.ts`](src/storage/StorageManager.ts) | IndexedDB による1ターンごとの自動中断セーブ・復元・パーマデス消去・ハイスコア記録 |
-| [`src/render/sprites/SVGSprites.ts`](src/render/sprites/SVGSprites.ts) | 100%ベクターSVGスプライト定義（プレイヤー8方向＋倒れ姿、モンスター全6種8方向、全アイテム、下り階段） |
+| [`src/render/sprites/SVGSprites.ts`](src/render/sprites/SVGSprites.ts) | 100%ベクターSVGスプライト定義（プレイヤー素体8方向＋歩行アニメ・倒れ姿、モンスター、基本アイテム、下り階段） |
+| [`src/render/sprites/EquipmentSprites.ts`](src/render/sprites/EquipmentSprites.ts) | 装備品（武器5種・盾5種×各5方向＝全50種）の動的オーバーレイ（ペーパードールシステム）スプライト |
+| [`src/render/sprites/MonsterAndItemSprites.ts`](src/render/sprites/MonsterAndItemSprites.ts) | 拡張モンスター4種（コウモリ・亡霊・メイジ・ドラゴン）および拡張アイテムスプライト |
+| [`src/render/sprites/TileSprites.ts`](src/render/sprites/TileSprites.ts) | 7大バイオーム壁・床（高コントラスト設計）および木製の橋スプライト |
 | [`src/render/AnimationEngine.ts`](src/render/AnimationEngine.ts) | 移動イージング補間、歩行ステップ、攻撃スラッシュ、被弾フラッシュ＆振動、死亡ダウン演出管理 |
-| [`src/render/CanvasRenderer.ts`](src/render/CanvasRenderer.ts) | HiDPI対応 60fps連続描画エンジン、SVGキャラ描画、ミニマップオーバーレイ |
+| [`src/render/CanvasRenderer.ts`](src/render/CanvasRenderer.ts) | HiDPI対応 60fps描画エンジン、装備ペーパードール合成、環境大気パーティクル（粉雪・氷晶）、ミニマップ |
 | [`src/input/InputManager.ts`](src/input/InputManager.ts) | PCキーボード/マウス ＋ スマホ仮想十字キー＆4ボタンの入力を統一アクションへ変換 |
 | [`src/ui/UIManager.ts`](src/ui/UIManager.ts) | レスポンシブDOM UI（HUD、インベントリ、行動ログ、モーダルダイアログ）の更新 |
 | [`src/main.ts`](src/main.ts) | アプリケーションエントリーポイント（Service Worker登録・中断データ復元） |

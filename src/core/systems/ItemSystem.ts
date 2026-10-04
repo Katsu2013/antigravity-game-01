@@ -160,6 +160,7 @@ export class ItemSystem {
       case 'SCROLL': {
         if (item.name === '雷の巻物') {
           // 部屋全体、または視界内の敵全員に15ダメージ
+          let didLevelUp = false;
           const targetMonsters: string[] = [];
           for (let i = map.monsters.length - 1; i >= 0; i--) {
             const m = map.monsters[i];
@@ -168,7 +169,9 @@ export class ItemSystem {
               if (m.hp <= 0) {
                 targetMonsters.push(`${m.name}を撃破`);
                 player.exp += m.expValue;
-                CombatSystem.checkLevelUp(player);
+                if (CombatSystem.checkLevelUp(player)) {
+                  didLevelUp = true;
+                }
                 map.monsters.splice(i, 1);
               } else {
                 targetMonsters.push(`${m.name}に15ダメージ`);
@@ -177,9 +180,10 @@ export class ItemSystem {
           }
           player.inventory.splice(index, 1);
           const detail = targetMonsters.length > 0 ? ` (${targetMonsters.join(', ')})` : ' (周囲に敵はいなかった)';
+          const lvUpMsg = didLevelUp ? ` レベルが上がった！ (Lv.${player.level} / 最大HP+5 / 攻撃+2 / 防御+1 / HP+5回復)` : '';
           return {
             success: true,
-            message: `${item.name} を読んだ！轟音とともに激しい稲妻が視界の敵を焼き払った！${detail}`,
+            message: `${item.name} を読んだ！轟音とともに激しい稲妻が視界の敵を焼き払った！${detail}${lvUpMsg}`,
           };
         }
 
@@ -203,8 +207,11 @@ export class ItemSystem {
         let targetX = randomRoom.x + Math.floor(Math.random() * randomRoom.w);
         let targetY = randomRoom.y + Math.floor(Math.random() * randomRoom.h);
 
-        // 安全な床マスを探索
-        if (map.tiles[targetY][targetX] === TileType.Floor) {
+        // 安全な床・橋マスを探索
+        if (
+          map.tiles[targetY][targetX] === TileType.Floor ||
+          map.tiles[targetY][targetX] === TileType.Bridge
+        ) {
           player.x = targetX;
           player.y = targetY;
         }

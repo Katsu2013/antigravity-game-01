@@ -177,7 +177,7 @@ export class DungeonGenerator {
         const isStairs = mx === stairsDown.x && my === stairsDown.y;
         const isOccupied = monsters.some((mon) => mon.x === mx && mon.y === my);
 
-        if (!isStairs && !isOccupied && tiles[my][mx] === TileType.Floor) {
+        if (!isStairs && !isOccupied && (tiles[my][mx] === TileType.Floor || tiles[my][mx] === TileType.Bridge)) {
           monsters.push(
             EntityFactory.createMonster(floor, mx, my, biomeInfo.biome)
           );
@@ -191,7 +191,7 @@ export class DungeonGenerator {
         const isStairs = ix === stairsDown.x && iy === stairsDown.y;
         const isItemOccupied = items.some((it) => it.x === ix && it.y === iy);
 
-        if (!isStairs && !isItemOccupied && tiles[iy][ix] === TileType.Floor) {
+        if (!isStairs && !isItemOccupied && (tiles[iy][ix] === TileType.Floor || tiles[iy][ix] === TileType.Bridge)) {
           items.push(EntityFactory.createRandomItem(ix, iy));
         }
       }
@@ -257,7 +257,7 @@ export class DungeonGenerator {
 
   /**
    * 階層番号に基づいてフロアのバイオーム分類および和名を決定します。
-   * 5階層周期で変化し、ダンジョン探索の単調さを防ぎます。
+   * 7階層周期で変化し、ダンジョン探索の単調さを防ぎます。
    *
    * @param floor - 階層番号
    * @returns バイオーム種別と和名のオブジェクト
@@ -266,7 +266,7 @@ export class DungeonGenerator {
     biome: BiomeType;
     name: string;
   } {
-    const cycle = (floor - 1) % 5;
+    const cycle = (floor - 1) % 7;
     switch (cycle) {
       case 0:
         return { biome: 'STONE', name: '石造りの地下迷宮' };
@@ -275,17 +275,22 @@ export class DungeonGenerator {
       case 2:
         return { biome: 'FOREST', name: '草木が生い茂る旧遺跡' };
       case 3:
-        return { biome: 'RIVER', name: '地下水流と清流洞' };
+        return { biome: 'RIVER', name: '地下水流と木橋の清流洞' };
       case 4:
         return { biome: 'LAKE', name: '水没せし蒼玉の地下湖' };
+      case 5:
+        return { biome: 'SNOW', name: '白銀の雪原回廊' };
+      case 6:
+        return { biome: 'ICE', name: '永久凍土と蒼氷窟' };
       default:
         return { biome: 'STONE', name: '石造りの地下迷宮' };
     }
   }
 
   /**
-   * バイオームに応じて、安全な水路（川・湖）タイルを配置します。
-   * プレイヤー開始位置、階段、および部屋の主要通路が塞がれないよう配慮して配置されます。
+   * バイオームに応じて、安全な水路（川・湖）および木製の橋（Bridge）タイルを配置します。
+   * 川バイオームでは孤立した水たまりではなく、部屋を貫通する連続水流と渡り橋を生成し、
+   * プレイヤー開始位置、階段、および部屋の主要動線が必ず通行可能であることを保証します。
    *
    * @param tiles - タイルグリッド配列
    * @param biome - バイオーム分類
@@ -300,35 +305,59 @@ export class DungeonGenerator {
     startPos: Point,
     stairsDown: Point
   ): void {
-    if (biome !== 'RIVER' && biome !== 'LAKE') {
+    if (
+      biome !== 'RIVER' &&
+      biome !== 'LAKE' &&
+      biome !== 'SNOW' &&
+      biome !== 'ICE'
+    ) {
       return;
     }
 
     if (biome === 'RIVER') {
-      // 川バイオーム: いくつかの部屋の片隅に小川を生成
+      // 川バイオーム: 部屋を横断または縦断する連続した水流を流し、その上に木橋（Bridge）を架ける
       for (const room of rooms) {
-        if (room.w >= 6 && room.h >= 6 && Math.random() < 0.65) {
+        if (room.w >= 5 && room.h >= 5 && Math.random() < 0.75) {
           const isHoriz = Math.random() < 0.5;
           if (isHoriz) {
+            // 水平方向に部屋を貫通する川
             const riverY = room.y + Math.floor(room.h / 2);
-            for (let rx = room.x + 1; rx < room.x + room.w - 1; rx++) {
-              // 飛び石として1マス置きにFloorを残し、通行可能にする
-              if (rx % 3 !== 0) {
+            for (let rx = room.x; rx < room.x + room.w; rx++) {
+              if (tiles[riverY][rx] === TileType.Floor) {
                 tiles[riverY][rx] = TileType.Water;
               }
             }
+            // 川の中央に木製の橋を架ける
+            const bridgeX1 = room.x + Math.floor(room.w / 2);
+            tiles[riverY][bridgeX1] = TileType.Bridge;
+
+            // 部屋の横幅が広い場合は2本目の橋を架けて往来しやすくする
+            if (room.w >= 8) {
+              const bridgeX2 = room.x + 2;
+              tiles[riverY][bridgeX2] = TileType.Bridge;
+            }
           } else {
+            // 垂直方向に部屋を貫通する川
             const riverX = room.x + Math.floor(room.w / 2);
-            for (let ry = room.y + 1; ry < room.y + room.h - 1; ry++) {
-              if (ry % 3 !== 0) {
+            for (let ry = room.y; ry < room.y + room.h; ry++) {
+              if (tiles[ry][riverX] === TileType.Floor) {
                 tiles[ry][riverX] = TileType.Water;
               }
+            }
+            // 川の中央に木製の橋を架ける
+            const bridgeY1 = room.y + Math.floor(room.h / 2);
+            tiles[bridgeY1][riverX] = TileType.Bridge;
+
+            // 部屋の縦幅が広い場合は2本目の橋
+            if (room.h >= 8) {
+              const bridgeY2 = room.y + 2;
+              tiles[bridgeY2][riverX] = TileType.Bridge;
             }
           }
         }
       }
     } else if (biome === 'LAKE') {
-      // 湖バイオーム: 部屋の中央に円形・長方形の湖を生成（外周2マスはFloorを保証）
+      // 湖バイオーム: 部屋の中央に雄大な湖を生成し、湖を渡る木橋桟橋を設置
       for (const room of rooms) {
         if (room.w >= 7 && room.h >= 7) {
           const innerW = room.w - 4;
@@ -338,11 +367,29 @@ export class DungeonGenerator {
               tiles[ry][rx] = TileType.Water;
             }
           }
+          // 湖を横断する木製桟橋（Bridge）
+          const bridgeY = room.y + Math.floor(room.h / 2);
+          for (let rx = room.x + 2; rx < room.x + 2 + innerW; rx++) {
+            if (Math.random() < 0.6) {
+              tiles[bridgeY][rx] = TileType.Bridge;
+            }
+          }
+        }
+      }
+    } else if (biome === 'SNOW' || biome === 'ICE') {
+      // 雪・氷バイオーム: 凍結した小水路や氷池
+      for (const room of rooms) {
+        if (room.w >= 7 && room.h >= 7 && Math.random() < 0.45) {
+          const midX = room.x + Math.floor(room.w / 2);
+          const midY = room.y + Math.floor(room.h / 2);
+          tiles[midY][midX] = TileType.Water;
+          if (tiles[midY][midX + 1] === TileType.Floor) tiles[midY][midX + 1] = TileType.Water;
+          if (tiles[midY + 1]?.[midX] === TileType.Floor) tiles[midY + 1][midX] = TileType.Water;
         }
       }
     }
 
-    // スタート地点と階段地点、およびその隣接3x3マスは確実に歩行可能（Floor / StairsDown）にリセット
+    // スタート地点と階段地点、およびその隣接3x3マスは確実に歩行可能にリセット
     for (let dy = -1; dy <= 1; dy++) {
       for (let dx = -1; dx <= 1; dx++) {
         const sx = startPos.x + dx;
@@ -361,5 +408,76 @@ export class DungeonGenerator {
 
     tiles[stairsDown.y][stairsDown.x] = TileType.StairsDown;
     tiles[startPos.y][startPos.x] = TileType.Floor;
+
+    // 通行到達性の保証（BFSでstartPosからstairsDownへの経路を検証）
+    this.ensureReachability(tiles, startPos, stairsDown);
+  }
+
+  /**
+   * スタート地点から下り階段への到達可能性をBFS（幅優先探索）で検証し、
+   * 万一水路等で分断されていた場合は交差地点を木橋（Bridge）に置換して開通を保証します。
+   *
+   * @param tiles - タイルグリッド配列
+   * @param startPos - プレイヤー開始地点
+   * @param stairsDown - 階段位置
+   */
+  private static ensureReachability(
+    tiles: TileType[][],
+    startPos: Point,
+    stairsDown: Point
+  ): void {
+    const height = tiles.length;
+    const width = tiles[0].length;
+    const visited: boolean[][] = Array.from({ length: height }, () =>
+      Array.from({ length: width }, () => false)
+    );
+
+    const queue: Point[] = [startPos];
+    visited[startPos.y][startPos.x] = true;
+
+    const isWalkable = (t: TileType) =>
+      t === TileType.Floor || t === TileType.Bridge || t === TileType.StairsDown;
+
+    while (queue.length > 0) {
+      const current = queue.shift()!;
+      if (current.x === stairsDown.x && current.y === stairsDown.y) {
+        return; // 到達可能！
+      }
+
+      for (const [dx, dy] of [
+        [0, 1],
+        [0, -1],
+        [1, 0],
+        [-1, 0],
+      ]) {
+        const nx = current.x + dx;
+        const ny = current.y + dy;
+        if (
+          nx >= 0 &&
+          nx < width &&
+          ny >= 0 &&
+          ny < height &&
+          !visited[ny][nx] &&
+          isWalkable(tiles[ny][nx])
+        ) {
+          visited[ny][nx] = true;
+          queue.push({ x: nx, y: ny });
+        }
+      }
+    }
+
+    // もし到達不能な場合、水路で分断されている箇所をBridgeに置換して開通させる
+    let cx = startPos.x;
+    let cy = startPos.y;
+    while (cx !== stairsDown.x || cy !== stairsDown.y) {
+      if (cx < stairsDown.x) cx++;
+      else if (cx > stairsDown.x) cx--;
+      else if (cy < stairsDown.y) cy++;
+      else if (cy > stairsDown.y) cy--;
+
+      if (tiles[cy]?.[cx] === TileType.Water) {
+        tiles[cy][cx] = TileType.Bridge;
+      }
+    }
   }
 }

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- 左右の頑丈な支持梁・ロープ -->
+  <rect x="2" y="0" width="6" height="64" fill="#451a03" stroke="#260e02" stroke-width="1"/>
+  <rect x="56" y="0" width="6" height="64" fill="#451a03" stroke="#260e02" stroke-width="1"/>
+  <!-- 横木板 4枚 -->
+  <!-- 板1 -->
+  <rect x="4" y="3" width="56" height="12" rx="1.5" fill="#92400e" stroke="#451a03" stroke-width="1.5"/>
+  <line x1="8" y1="6" x2="52" y2="6" stroke="#b45309" stroke-width="1.2"/>
+  <circle cx="8" cy="9" r="1.5" fill="#1e293b"/>
+  <circle cx="56" cy="9" r="1.5" fill="#1e293b"/>
+  <!-- 板2 -->
+  <rect x="4" y="18" width="56" height="12" rx="1.5" fill="#b45309" stroke="#451a03" stroke-width="1.5"/>
+  <line x1="8" y1="21" x2="52" y2="21" stroke="#d97706" stroke-width="1.2"/>
+  <circle cx="8" cy="24" r="1.5" fill="#1e293b"/>
+  <circle cx="56" cy="24" r="1.5" fill="#1e293b"/>
+  <!-- 板3 -->
+  <rect x="4" y="33" width="56" height="12" rx="1.5" fill="#92400e" stroke="#451a03" stroke-width="1.5"/>
+  <line x1="8" y1="36" x2="52" y2="36" stroke="#b45309" stroke-width="1.2"/>
+  <circle cx="8" cy="39" r="1.5" fill="#1e293b"/>
+  <circle cx="56" cy="39" r="1.5" fill="#1e293b"/>
+  <!-- 板4 -->
+  <rect x="4" y="48" width="56" height="12" rx="1.5" fill="#78350f" stroke="#451a03" stroke-width="1.5"/>
+  <line x1="8" y1="51" x2="52" y2="51" stroke="#92400e" stroke-width="1.2"/>
+  <circle cx="8" cy="54" r="1.5" fill="#1e293b"/>
+  <circle cx="56" cy="54" r="1.5" fill="#1e293b"/>
+  <!-- 両端の固定ロープ巻き -->
+  <line x1="5" y1="15" x2="5" y2="18" stroke="#d97706" stroke-width="2"/>
+  <line x1="5" y1="30" x2="5" y2="33" stroke="#d97706" stroke-width="2"/>
+  <line x1="59" y1="15" x2="59" y2="18" stroke="#d97706" stroke-width="2"/>
+  <line x1="59" y1="30" x2="59" y2="33" stroke="#d97706" stroke-width="2"/>
+</svg>

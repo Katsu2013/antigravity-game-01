@@ -16,6 +16,8 @@ export enum TileType {
   StairsDown = 'StairsDown',
   /** 通行不能な水路・川・湖タイル（視界は透過） */
   Water = 'Water',
+  /** 水路上に架けられた通行可能な木の橋タイル */
+  Bridge = 'Bridge',
 }
 
 /**
@@ -25,8 +27,10 @@ export type BiomeType =
   | 'STONE'  // 石造りの迷宮 (Classic Stone)
   | 'EARTH'  // 岩と赤土の洞窟 (Earthy Cavern)
   | 'FOREST' // 草木と旧遺跡 (Overgrowth Ruins)
-  | 'RIVER'  // 地下水流と清流洞 (Subterranean River)
-  | 'LAKE';  // 水没せし蒼玉の地下湖 (Sunken Lake)
+  | 'RIVER'  // 地下水流と木橋の清流洞 (Subterranean River & Bridges)
+  | 'LAKE'   // 水没せし蒼玉の地下湖 (Sunken Lake)
+  | 'SNOW'   // 白銀の雪原回廊 (Silver Snow Realm)
+  | 'ICE';   // 永久凍土と蒼氷窟 (Glacial Ice Cavern)
 
 /**
  * 2次元グリッド上の整数座標を表すインターフェース。

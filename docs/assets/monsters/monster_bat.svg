@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="56" rx="14" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <!-- 左翼 -->
+  <path d="M30 30 Q16 16 2 24 Q10 36 18 36 Q22 42 30 36 Z" fill="#581c87" stroke="#3b0764" stroke-width="1.5"/>
+  <!-- 右翼 -->
+  <path d="M34 30 Q48 16 62 24 Q54 36 46 36 Q42 42 34 36 Z" fill="#581c87" stroke="#3b0764" stroke-width="1.5"/>
+  <!-- 胴体 -->
+  <ellipse cx="32" cy="34" rx="7" ry="9" fill="#3b0764" stroke="#1e1b4b" stroke-width="1.5"/>
+  <!-- 尖った耳 -->
+  <polygon points="27,27 25,18 30,24" fill="#a855f7" stroke="#3b0764" stroke-width="1"/>
+  <polygon points="37,27 39,18 34,24" fill="#a855f7" stroke="#3b0764" stroke-width="1"/>
+  <!-- 赤い瞳 -->
+  <circle cx="29" cy="32" r="2" fill="#ef4444"/>
+  <circle cx="35" cy="32" r="2" fill="#ef4444"/>
+  <!-- 小さな牙 -->
+  <polygon points="30,37 31,40 32,37" fill="#ffffff"/>
+  <polygon points="32,37 33,40 34,37" fill="#ffffff"/>
+</svg>

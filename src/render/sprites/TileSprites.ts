@@ -45,7 +45,24 @@ export type TileSpriteId =
   | 'tile_lake_floor_3'
   | 'tile_lake_floor_4'
   | 'tile_lake_wall_1'
-  | 'tile_lake_wall_2';
+  | 'tile_lake_wall_2'
+  // 6. 白銀の雪原回廊 (SNOW)
+  | 'tile_snow_floor_1'
+  | 'tile_snow_floor_2'
+  | 'tile_snow_floor_3'
+  | 'tile_snow_floor_4'
+  | 'tile_snow_wall_1'
+  | 'tile_snow_wall_2'
+  // 7. 永久凍土と蒼氷窟 (ICE)
+  | 'tile_ice_floor_1'
+  | 'tile_ice_floor_2'
+  | 'tile_ice_floor_3'
+  | 'tile_ice_floor_4'
+  | 'tile_ice_wall_1'
+  | 'tile_ice_wall_2'
+  // 木の橋 (BRIDGE)
+  | 'tile_bridge_1'
+  | 'tile_bridge_2';
 
 /**
  * ダンジョンの床・壁のベクターグラフィックスプライト管理クラス。
@@ -496,6 +513,259 @@ export class TileSprites {
 </svg>
 `.trim();
 
+  // ==========================================
+  // 6. 白銀の雪原回廊 (SNOW) SVG 定義
+  // 床: 純白・淡青の積雪敷石と雪の結晶 (#cbd5e1〜#f8fafc)
+  // 壁: 冠雪した漆黒凍結巨石壁・氷柱 (#0a1120〜#1e293b)
+  // ==========================================
+
+  /** 雪原・積雪した古代石畳 */
+  public static readonly SNOW_FLOOR_1_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" fill="#94a3b8"/>
+  <rect x="2" y="2" width="36" height="26" rx="3" fill="#e2e8f0" stroke="#64748b" stroke-width="1.2"/>
+  <path d="M4 4 Q20 2 34 6 Q28 14 4 10 Z" fill="#ffffff" opacity="0.9"/>
+  <rect x="41" y="2" width="21" height="26" rx="3" fill="#e2e8f0" stroke="#64748b" stroke-width="1.2"/>
+  <path d="M43 4 Q54 3 60 7" stroke="#ffffff" stroke-width="2" fill="none"/>
+  <rect x="2" y="31" width="24" height="31" rx="3" fill="#cbd5e1" stroke="#64748b" stroke-width="1.2"/>
+  <rect x="29" y="31" width="33" height="31" rx="3" fill="#f1f5f9" stroke="#64748b" stroke-width="1.2"/>
+  <circle cx="44" cy="45" r="4" fill="#ffffff"/>
+  <circle cx="14" cy="44" r="2.5" fill="#f8fafc"/>
+</svg>
+`.trim();
+
+  /** 雪原・雪の結晶が刻まれた霜板 */
+  public static readonly SNOW_FLOOR_2_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" fill="#94a3b8"/>
+  <rect x="2" y="2" width="60" height="60" rx="4" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+  <path d="M4 4 L60 4 L56 12 L10 12 Z" fill="#ffffff"/>
+  <!-- 雪の結晶レリーフ -->
+  <line x1="32" y1="18" x2="32" y2="46" stroke="#38bdf8" stroke-width="2"/>
+  <line x1="18" y1="32" x2="46" y2="32" stroke="#38bdf8" stroke-width="2"/>
+  <line x1="22" y1="22" x2="42" y2="42" stroke="#38bdf8" stroke-width="1.5"/>
+  <line x1="22" y1="42" x2="42" y2="22" stroke="#38bdf8" stroke-width="1.5"/>
+  <circle cx="32" cy="32" r="3" fill="#ffffff" stroke="#38bdf8" stroke-width="1.5"/>
+</svg>
+`.trim();
+
+  /** 雪原・踏み固められた足跡タイル */
+  public static readonly SNOW_FLOOR_3_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" fill="#94a3b8"/>
+  <rect x="2" y="2" width="60" height="60" rx="3" fill="#e2e8f0" stroke="#64748b" stroke-width="1.2"/>
+  <!-- 足跡 -->
+  <ellipse cx="24" cy="24" rx="4" ry="7" transform="rotate(-15 24 24)" fill="#64748b" opacity="0.65"/>
+  <ellipse cx="23" cy="20" rx="3" ry="5" transform="rotate(-15 23 20)" fill="#475569" opacity="0.6"/>
+  <ellipse cx="40" cy="40" rx="4" ry="7" transform="rotate(-10 40 40)" fill="#64748b" opacity="0.65"/>
+  <ellipse cx="39" cy="36" rx="3" ry="5" transform="rotate(-10 39 36)" fill="#475569" opacity="0.6"/>
+  <!-- 粉雪ハイライト -->
+  <circle cx="16" cy="48" r="3" fill="#ffffff"/>
+  <circle cx="50" cy="18" r="2" fill="#ffffff"/>
+</svg>
+`.trim();
+
+  /** 雪原・凍結クラックと吹き溜まり */
+  public static readonly SNOW_FLOOR_4_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" fill="#94a3b8"/>
+  <rect x="2" y="2" width="60" height="60" rx="3" fill="#e2e8f0" stroke="#64748b" stroke-width="1.2"/>
+  <path d="M12 12 L26 24 L20 36 L38 44 L52 38" stroke="#38bdf8" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+  <path d="M26 24 L34 20" stroke="#38bdf8" stroke-width="1.2" fill="none"/>
+  <ellipse cx="48" cy="50" rx="10" ry="6" fill="#ffffff"/>
+  <ellipse cx="14" cy="16" rx="8" ry="4" fill="#ffffff"/>
+</svg>
+`.trim();
+
+  /** 雪原・冠雪した凍結暗岩壁1 */
+  public static readonly SNOW_WALL_1_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- 天板部と積雪 -->
+  <rect x="0" y="0" width="64" height="18" fill="#1e293b" stroke="#020617" stroke-width="2"/>
+  <path d="M0 0 L64 0 L64 8 Q48 14 32 8 Q16 13 0 7 Z" fill="#f8fafc"/>
+  <line x1="0" y1="18" x2="64" y2="18" stroke="#000000" stroke-width="2.5"/>
+  <!-- 壁正面（漆黒に近い凍土岩） -->
+  <rect x="0" y="18" width="64" height="46" fill="#080e1a"/>
+  <rect x="2" y="20" width="28" height="20" rx="2" fill="#0f172a" stroke="#020617" stroke-width="1.5"/>
+  <rect x="33" y="20" width="29" height="20" rx="2" fill="#0f172a" stroke="#020617" stroke-width="1.5"/>
+  <rect x="2" y="42" width="22" height="20" rx="2" fill="#0a101d" stroke="#020617" stroke-width="1.5"/>
+  <rect x="26" y="42" width="36" height="20" rx="2" fill="#0f172a" stroke="#020617" stroke-width="1.5"/>
+  <!-- つらら -->
+  <polygon points="12,18 14,26 16,18" fill="#bae6fd"/>
+  <polygon points="38,18 40,29 43,18" fill="#e0f2fe"/>
+  <polygon points="52,18 53,24 55,18" fill="#bae6fd"/>
+  <line x1="0" y1="63" x2="64" y2="63" stroke="#000000" stroke-width="2"/>
+</svg>
+`.trim();
+
+  /** 雪原・霜降る巨石岩壁2 */
+  public static readonly SNOW_WALL_2_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect x="0" y="0" width="64" height="18" fill="#1e293b" stroke="#020617" stroke-width="2"/>
+  <path d="M0 0 L64 0 L64 6 Q40 12 24 6 Q12 11 0 6 Z" fill="#f8fafc"/>
+  <line x1="0" y1="18" x2="64" y2="18" stroke="#000000" stroke-width="2.5"/>
+  <rect x="0" y="18" width="64" height="46" fill="#080e1a"/>
+  <path d="M0 24 L28 28 L64 22" stroke="#020617" stroke-width="2.2" fill="none"/>
+  <path d="M0 44 L36 48 L64 42" stroke="#020617" stroke-width="2.2" fill="none"/>
+  <line x1="20" y1="18" x2="22" y2="28" stroke="#bae6fd" stroke-width="1.5"/>
+  <line x1="46" y1="18" x2="48" y2="30" stroke="#bae6fd" stroke-width="1.5"/>
+  <line x1="0" y1="63" x2="64" y2="63" stroke="#000000" stroke-width="2"/>
+</svg>
+`.trim();
+
+  // ==========================================
+  // 7. 永久凍土と蒼氷窟 (ICE) SVG 定義
+  // 床: 透き通る蒼氷タイル・結晶反射 (#0284c7〜#7dd3fc)
+  // 壁: 深淵の氷結暗黒岩・鋭利な氷晶 (#031326〜#0c4a6e)
+  // ==========================================
+
+  /** 蒼氷窟・透明氷ブロックタイル */
+  public static readonly ICE_FLOOR_1_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" fill="#0369a1"/>
+  <rect x="3" y="3" width="27" height="27" rx="3" fill="#38bdf8" stroke="#0284c7" stroke-width="1.5"/>
+  <polygon points="5,5 28,5 25,12 8,12" fill="#bae6fd" opacity="0.8"/>
+  <rect x="34" y="3" width="27" height="27" rx="3" fill="#0ea5e9" stroke="#0284c7" stroke-width="1.5"/>
+  <polygon points="36,5 59,5 56,12 39,12" fill="#bae6fd" opacity="0.8"/>
+  <rect x="3" y="34" width="27" height="27" rx="3" fill="#0ea5e9" stroke="#0284c7" stroke-width="1.5"/>
+  <rect x="34" y="34" width="27" height="27" rx="3" fill="#38bdf8" stroke="#0284c7" stroke-width="1.5"/>
+  <circle cx="32" cy="32" r="3" fill="#ffffff"/>
+</svg>
+`.trim();
+
+  /** 蒼氷窟・氷晶クラックタイル */
+  public static readonly ICE_FLOOR_2_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" fill="#0369a1"/>
+  <rect x="2" y="2" width="60" height="60" rx="4" fill="#38bdf8" stroke="#0284c7" stroke-width="1.5"/>
+  <path d="M10 20 L28 32 L46 22 L56 38" stroke="#ffffff" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M28 32 L26 50 L38 58" stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <path d="M46 22 L52 14" stroke="#ffffff" stroke-width="1.5" fill="none"/>
+  <polygon points="28,28 32,32 28,36 24,32" fill="#ffffff"/>
+</svg>
+`.trim();
+
+  /** 蒼氷窟・六角氷晶レリーフタイル */
+  public static readonly ICE_FLOOR_3_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" fill="#0369a1"/>
+  <rect x="2" y="2" width="60" height="60" rx="3" fill="#0284c7" stroke="#075985" stroke-width="1.5"/>
+  <polygon points="32,10 50,21 50,43 32,54 14,43 14,21" fill="#38bdf8" stroke="#bae6fd" stroke-width="1.8"/>
+  <polygon points="32,18 43,25 43,39 32,46 21,39 21,25" fill="#7dd3fc" stroke="#ffffff" stroke-width="1.2"/>
+  <circle cx="32" cy="32" r="4" fill="#ffffff"/>
+</svg>
+`.trim();
+
+  /** 蒼氷窟・光屈折滑走氷床 */
+  public static readonly ICE_FLOOR_4_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" fill="#0284c7"/>
+  <polygon points="2,2 62,2 48,32 2,16" fill="#38bdf8" opacity="0.9"/>
+  <polygon points="62,2 62,62 32,48 48,32" fill="#0ea5e9" opacity="0.8"/>
+  <polygon points="2,16 48,32 32,48 2,62" fill="#7dd3fc" opacity="0.85"/>
+  <polygon points="2,62 32,48 62,62" fill="#38bdf8" opacity="0.9"/>
+  <line x1="6" y1="6" x2="26" y2="12" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="48" cy="20" r="2.5" fill="#ffffff"/>
+</svg>
+`.trim();
+
+  /** 蒼氷窟・鋭利な氷晶巨壁1 */
+  public static readonly ICE_WALL_1_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect x="0" y="0" width="64" height="18" fill="#0369a1" stroke="#021424" stroke-width="2"/>
+  <line x1="2" y1="2" x2="62" y2="2" stroke="#7dd3fc" stroke-width="2"/>
+  <line x1="0" y1="18" x2="64" y2="18" stroke="#000000" stroke-width="2.5"/>
+  <!-- 正面（漆黒氷結岩） -->
+  <rect x="0" y="18" width="64" height="46" fill="#021324"/>
+  <polygon points="8,22 28,26 24,42 6,38" fill="#0c2d4a" stroke="#021424" stroke-width="1.5"/>
+  <polygon points="34,22 58,26 54,42 32,38" fill="#0c2d4a" stroke="#021424" stroke-width="1.5"/>
+  <polygon points="12,44 48,46 44,60 10,58" fill="#082138" stroke="#021424" stroke-width="1.5"/>
+  <!-- 突き出た氷晶 -->
+  <polygon points="26,24 32,18 36,25 30,30" fill="#38bdf8" stroke="#ffffff" stroke-width="1"/>
+  <polygon points="48,42 54,36 58,44 52,48" fill="#7dd3fc" stroke="#ffffff" stroke-width="1"/>
+  <line x1="0" y1="63" x2="64" y2="63" stroke="#000000" stroke-width="2"/>
+</svg>
+`.trim();
+
+  /** 蒼氷窟・水晶鉱脈氷壁2 */
+  public static readonly ICE_WALL_2_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect x="0" y="0" width="64" height="18" fill="#0369a1" stroke="#021424" stroke-width="2"/>
+  <line x1="2" y1="2" x2="62" y2="2" stroke="#bae6fd" stroke-width="2"/>
+  <line x1="0" y1="18" x2="64" y2="18" stroke="#000000" stroke-width="2.5"/>
+  <rect x="0" y="18" width="64" height="46" fill="#021324"/>
+  <line x1="8" y1="24" x2="56" y2="28" stroke="#0369a1" stroke-width="2"/>
+  <line x1="4" y1="44" x2="60" y2="40" stroke="#0369a1" stroke-width="2"/>
+  <polygon points="20,32 25,26 30,33 24,38" fill="#38bdf8" stroke="#ffffff" stroke-width="1"/>
+  <line x1="0" y1="63" x2="64" y2="63" stroke="#000000" stroke-width="2"/>
+</svg>
+`.trim();
+
+  // ==========================================
+  // 木の橋 (BRIDGE) SVG 定義
+  // 水流の上に架けられた厚板の桟橋
+  // ==========================================
+
+  /** 木の橋・厚板桟橋1 */
+  public static readonly BRIDGE_1_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- 左右の頑丈な支持梁・ロープ -->
+  <rect x="2" y="0" width="6" height="64" fill="#451a03" stroke="#260e02" stroke-width="1"/>
+  <rect x="56" y="0" width="6" height="64" fill="#451a03" stroke="#260e02" stroke-width="1"/>
+  <!-- 横木板 4枚 -->
+  <!-- 板1 -->
+  <rect x="4" y="3" width="56" height="12" rx="1.5" fill="#92400e" stroke="#451a03" stroke-width="1.5"/>
+  <line x1="8" y1="6" x2="52" y2="6" stroke="#b45309" stroke-width="1.2"/>
+  <circle cx="8" cy="9" r="1.5" fill="#1e293b"/>
+  <circle cx="56" cy="9" r="1.5" fill="#1e293b"/>
+  <!-- 板2 -->
+  <rect x="4" y="18" width="56" height="12" rx="1.5" fill="#b45309" stroke="#451a03" stroke-width="1.5"/>
+  <line x1="8" y1="21" x2="52" y2="21" stroke="#d97706" stroke-width="1.2"/>
+  <circle cx="8" cy="24" r="1.5" fill="#1e293b"/>
+  <circle cx="56" cy="24" r="1.5" fill="#1e293b"/>
+  <!-- 板3 -->
+  <rect x="4" y="33" width="56" height="12" rx="1.5" fill="#92400e" stroke="#451a03" stroke-width="1.5"/>
+  <line x1="8" y1="36" x2="52" y2="36" stroke="#b45309" stroke-width="1.2"/>
+  <circle cx="8" cy="39" r="1.5" fill="#1e293b"/>
+  <circle cx="56" cy="39" r="1.5" fill="#1e293b"/>
+  <!-- 板4 -->
+  <rect x="4" y="48" width="56" height="12" rx="1.5" fill="#78350f" stroke="#451a03" stroke-width="1.5"/>
+  <line x1="8" y1="51" x2="52" y2="51" stroke="#92400e" stroke-width="1.2"/>
+  <circle cx="8" cy="54" r="1.5" fill="#1e293b"/>
+  <circle cx="56" cy="54" r="1.5" fill="#1e293b"/>
+  <!-- 両端の固定ロープ巻き -->
+  <line x1="5" y1="15" x2="5" y2="18" stroke="#d97706" stroke-width="2"/>
+  <line x1="5" y1="30" x2="5" y2="33" stroke="#d97706" stroke-width="2"/>
+  <line x1="59" y1="15" x2="59" y2="18" stroke="#d97706" stroke-width="2"/>
+  <line x1="59" y1="30" x2="59" y2="33" stroke="#d97706" stroke-width="2"/>
+</svg>
+`.trim();
+
+  /** 木の橋・年季の入った古桟橋2 */
+  public static readonly BRIDGE_2_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect x="2" y="0" width="6" height="64" fill="#451a03" stroke="#260e02" stroke-width="1"/>
+  <rect x="56" y="0" width="6" height="64" fill="#451a03" stroke="#260e02" stroke-width="1"/>
+  <!-- 板1 -->
+  <rect x="4" y="3" width="56" height="12" rx="1.5" fill="#78350f" stroke="#451a03" stroke-width="1.5"/>
+  <circle cx="8" cy="9" r="1.5" fill="#1e293b"/>
+  <circle cx="56" cy="9" r="1.5" fill="#1e293b"/>
+  <!-- 板2 -->
+  <rect x="4" y="18" width="56" height="12" rx="1.5" fill="#92400e" stroke="#451a03" stroke-width="1.5"/>
+  <circle cx="8" cy="24" r="1.5" fill="#1e293b"/>
+  <circle cx="56" cy="24" r="1.5" fill="#1e293b"/>
+  <path d="M22 22 Q26 24 24 28" stroke="#047857" stroke-width="1.5" fill="none"/>
+  <!-- 板3 -->
+  <rect x="4" y="33" width="56" height="12" rx="1.5" fill="#b45309" stroke="#451a03" stroke-width="1.5"/>
+  <circle cx="8" cy="39" r="1.5" fill="#1e293b"/>
+  <circle cx="56" cy="39" r="1.5" fill="#1e293b"/>
+  <!-- 板4 -->
+  <rect x="4" y="48" width="56" height="12" rx="1.5" fill="#78350f" stroke="#451a03" stroke-width="1.5"/>
+  <circle cx="8" cy="54" r="1.5" fill="#1e293b"/>
+  <circle cx="56" cy="54" r="1.5" fill="#1e293b"/>
+</svg>
+`.trim();
+
   /**
    * 全タイルスプライトの事前ロードを開始します。
    *
@@ -542,6 +812,23 @@ export class TileSprites {
       tile_lake_floor_4: this.LAKE_FLOOR_4_SVG,
       tile_lake_wall_1: this.LAKE_WALL_1_SVG,
       tile_lake_wall_2: this.LAKE_WALL_2_SVG,
+      // SNOW
+      tile_snow_floor_1: this.SNOW_FLOOR_1_SVG,
+      tile_snow_floor_2: this.SNOW_FLOOR_2_SVG,
+      tile_snow_floor_3: this.SNOW_FLOOR_3_SVG,
+      tile_snow_floor_4: this.SNOW_FLOOR_4_SVG,
+      tile_snow_wall_1: this.SNOW_WALL_1_SVG,
+      tile_snow_wall_2: this.SNOW_WALL_2_SVG,
+      // ICE
+      tile_ice_floor_1: this.ICE_FLOOR_1_SVG,
+      tile_ice_floor_2: this.ICE_FLOOR_2_SVG,
+      tile_ice_floor_3: this.ICE_FLOOR_3_SVG,
+      tile_ice_floor_4: this.ICE_FLOOR_4_SVG,
+      tile_ice_wall_1: this.ICE_WALL_1_SVG,
+      tile_ice_wall_2: this.ICE_WALL_2_SVG,
+      // BRIDGE
+      tile_bridge_1: this.BRIDGE_1_SVG,
+      tile_bridge_2: this.BRIDGE_2_SVG,
     };
 
     const promises: Promise<void>[] = [];
@@ -618,5 +905,20 @@ export class TileSprites {
     const biomeLower = biome.toLowerCase();
     const id = `tile_${biomeLower}_wall_${hash}` as TileSpriteId;
     return this.imageCache.get(id);
+  }
+
+  /**
+   * グリッド座標ハッシュから、木製の橋タイルスプライトを取得します。
+   *
+   * @param x - グリッドX座標
+   * @param y - グリッドY座標
+   * @returns 適合する橋タイルのHTMLImageElement
+   */
+  public static getBridgeSprite(
+    x: number,
+    y: number
+  ): HTMLImageElement | undefined {
+    const hash = (x + y) % 2 === 0 ? 'tile_bridge_1' : 'tile_bridge_2';
+    return this.imageCache.get(hash);
   }
 }

@@ -122,8 +122,10 @@ export class CombatSystem {
     while (player.exp >= player.nextExp) {
       didLevelUp = true;
       player.level += 1;
-      player.maxHp += 5;
-      player.hp = player.maxHp; // レベルアップで全快
+      const hpGain = 5;
+      player.maxHp += hpGain;
+      // レベルアップ時は全快ではなく、最大HPの上昇分（+5）のみHPを回復して緊張感を維持
+      player.hp = Math.min(player.maxHp, player.hp + hpGain);
       player.baseAtk += 2;
       player.baseDef += 1;
       player.nextExp = Math.round(player.nextExp * 1.8);

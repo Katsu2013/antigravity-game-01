@@ -14,6 +14,9 @@
     "src/render/CanvasRenderer.ts",
     "src/render/AnimationEngine.ts",
     "src/render/sprites/SVGSprites.ts",
+    "src/render/sprites/EquipmentSprites.ts",
+    "src/render/sprites/MonsterAndItemSprites.ts",
+    "src/render/sprites/TileSprites.ts",
     "src/input/InputManager.ts",
     "src/ui/UIManager.ts"
   ],

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="56" rx="16" ry="5" fill="rgba(0,0,0,0.25)"/>
+  <!-- 揺らめく霊体オーラ -->
+  <path d="M32 10 Q48 10 48 30 Q48 48 40 52 Q32 44 24 52 Q16 48 16 30 Q16 10 32 10 Z" fill="#0891b2" opacity="0.4"/>
+  <!-- 霊体本体 -->
+  <path d="M32 12 Q46 12 46 30 Q46 44 38 48 Q32 42 26 48 Q18 44 18 30 Q18 12 32 12 Z" fill="#67e8f9" stroke="#0e7490" stroke-width="1.5"/>
+  <!-- 霊体の腕 -->
+  <path d="M18 28 Q8 32 14 38 Q20 34 20 30 Z" fill="#a5f3fc"/>
+  <path d="M46 28 Q56 32 50 38 Q44 34 44 30 Z" fill="#a5f3fc"/>
+  <!-- 怪しく光る目 -->
+  <ellipse cx="26" cy="24" rx="3.5" ry="5" fill="#083344"/>
+  <circle cx="26" cy="23" r="1.5" fill="#ffffff"/>
+  <ellipse cx="38" cy="24" rx="3.5" ry="5" fill="#083344"/>
+  <circle cx="38" cy="23" r="1.5" fill="#ffffff"/>
+  <!-- 不気味な口 -->
+  <ellipse cx="32" cy="34" rx="4" ry="5" fill="#083344"/>
+</svg>
