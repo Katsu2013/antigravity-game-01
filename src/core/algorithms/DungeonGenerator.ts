@@ -226,7 +226,10 @@ export class DungeonGenerator {
           obstacles.some((ob) => ob.x === ox && ob.y === oy);
 
         if (!isStairs && !isStart && !isOccupied && isWalkableTile(tiles[oy][ox])) {
-          const obstacleType = this.chooseObstacleTypeForBiome(biomeInfo.biome);
+          const obstacleType = this.chooseObstacleTypeForBiome(
+            biomeInfo.biome,
+            floor
+          );
           obstacles.push(EntityFactory.createObstacle(obstacleType, ox, oy));
         }
       }
@@ -352,31 +355,61 @@ export class DungeonGenerator {
   }
 
   /**
-   * バイオームに応じて適切な障害物種別を抽選します。
+   * バイオームおよび階層に応じて適切な障害物種別を厳格に限定して抽選します。
+   * 土のフロアは土塊、岩のフロアは大石、雪原は雪山、氷窟は氷塊など、フロア特性を忠実に反映します。
    *
    * @param biome - フロアのバイオーム
+   * @param floor - 現在の階層
    * @returns 障害物種別
    */
-  private static chooseObstacleTypeForBiome(biome: BiomeType): ObstacleType {
+  private static chooseObstacleTypeForBiome(
+    biome: BiomeType,
+    floor: number
+  ): ObstacleType {
     const roll = Math.random();
     switch (biome) {
-      case 'ICE':
-        return roll < 0.6 ? 'ICE_BLOCK' : 'SNOW_MOUND';
-      case 'SNOW':
-        return roll < 0.6 ? 'SNOW_MOUND' : 'DIRT_BLOCK';
-      case 'FOREST':
-        return roll < 0.6 ? 'TREE_STUMP' : 'DIRT_BLOCK';
-      case 'SWAMP':
-        return roll < 0.5 ? 'TREE_STUMP' : roll < 0.8 ? 'DIRT_BLOCK' : 'PUSH_ROCK';
       case 'EARTH':
+        // 赤土の洞窟: 土の塊がメイン（100% 土塊）
+        return 'DIRT_BLOCK';
+
       case 'STONE':
-        return roll < 0.5 ? 'DIRT_BLOCK' : 'PUSH_ROCK';
+        // 石造りの迷宮: 押せる大石がメイン（1階のみ脱出難易度配慮で土塊混在）
+        if (floor === 1) return roll < 0.6 ? 'DIRT_BLOCK' : 'PUSH_ROCK';
+        return roll < 0.15 ? 'DIRT_BLOCK' : 'PUSH_ROCK';
+
+      case 'FOREST':
+        // 樹木・旧遺跡: 倒木・切り株のみ（100%）
+        return 'TREE_STUMP';
+
+      case 'SNOW':
+        // 白銀の雪原: 雪の塊のみ（100%）
+        return 'SNOW_MOUND';
+
+      case 'ICE':
+        // 永久凍土: 滑る氷塊がメイン（85% 氷塊、15% 雪の塊）
+        return roll < 0.85 ? 'ICE_BLOCK' : 'SNOW_MOUND';
+
+      case 'SWAMP':
+        // 湿地・泥濘: 倒木・切り株がメイン（75% 切り株、25% 泥土塊）
+        return roll < 0.75 ? 'TREE_STUMP' : 'DIRT_BLOCK';
+
       case 'MECHA':
-        return roll < 0.65 ? 'PUSH_ROCK' : 'DIRT_BLOCK';
+        // 機巧回廊: 古代石塊・金属ブロック（100% 押せる石）
+        return 'PUSH_ROCK';
+
       case 'TOXIC':
-        return roll < 0.5 ? 'DIRT_BLOCK' : 'PUSH_ROCK';
+        // 腐蝕の毒沼: 有毒な泥土塊（100% 土塊）
+        return 'DIRT_BLOCK';
+
       case 'ISLAND':
-        return roll < 0.5 ? 'TREE_STUMP' : 'PUSH_ROCK';
+        // 孤島群: ヤシの倒木（70%）と岩（30%）
+        return roll < 0.7 ? 'TREE_STUMP' : 'PUSH_ROCK';
+
+      case 'RIVER':
+      case 'LAKE':
+        // 地下水流・地下湖: 流木（60%）と川石（40%）
+        return roll < 0.6 ? 'TREE_STUMP' : 'PUSH_ROCK';
+
       default:
         return roll < 0.5 ? 'DIRT_BLOCK' : 'PUSH_ROCK';
     }

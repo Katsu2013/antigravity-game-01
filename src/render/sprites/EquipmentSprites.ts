@@ -95,9 +95,9 @@ export class EquipmentSprites {
 
   private static readonly DAGGER_SIDE = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <rect x="36" y="25" width="14" height="3" rx="1" fill="#d97706" stroke="#92400e" stroke-width="1"/>
-  <polygon points="50,25 54,26.5 50,28" fill="#f59e0b"/>
-  <rect x="34" y="23.5" width="2.5" height="6" fill="#78350f"/>
+  <rect x="39" y="31.5" width="14" height="3" rx="1" fill="#d97706" stroke="#92400e" stroke-width="1"/>
+  <polygon points="53,31.5 56.5,33 53,34.5" fill="#f59e0b"/>
+  <rect x="37" y="30" width="2.5" height="6" fill="#78350f"/>
 </svg>`.trim();
 
   private static readonly DAGGER_DIAG_DOWN = `
@@ -136,10 +136,10 @@ export class EquipmentSprites {
 
   private static readonly IRON_SWORD_SIDE = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <rect x="36" y="24" width="22" height="4" rx="1" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1"/>
-  <polygon points="58,24 62,26 58,28" fill="#ffffff"/>
-  <rect x="34" y="21" width="3" height="10" fill="#d97706"/>
-  <circle cx="31" cy="26" r="2" fill="#fbbf24"/>
+  <rect x="39" y="31" width="21" height="4" rx="1" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1"/>
+  <polygon points="60,31 63.5,33 60,35" fill="#ffffff"/>
+  <rect x="37" y="28" width="3" height="10" fill="#d97706"/>
+  <circle cx="34" cy="33" r="2" fill="#fbbf24"/>
 </svg>`.trim();
 
   private static readonly IRON_SWORD_DIAG_DOWN = `
@@ -180,10 +180,10 @@ export class EquipmentSprites {
 
   private static readonly MITHRIL_SWORD_SIDE = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <rect x="36" y="23.5" width="24" height="4.5" rx="1" fill="#c7d2fe" stroke="#6366f1" stroke-width="1.2"/>
-  <polygon points="60,23.5 64,25.7 60,28" fill="#ffffff"/>
-  <rect x="34" y="20.5" width="3" height="11" rx="1" fill="#4338ca"/>
-  <circle cx="31" cy="25.7" r="2.5" fill="#818cf8"/>
+  <rect x="39" y="30.5" width="22" height="4.5" rx="1" fill="#c7d2fe" stroke="#6366f1" stroke-width="1.2"/>
+  <polygon points="61,30.5 64.5,32.7 61,35" fill="#ffffff"/>
+  <rect x="37" y="27" width="3" height="11" rx="1" fill="#4338ca"/>
+  <circle cx="34" cy="32.5" r="2.5" fill="#818cf8"/>
 </svg>`.trim();
 
   private static readonly MITHRIL_SWORD_DIAG_DOWN = `
@@ -222,9 +222,9 @@ export class EquipmentSprites {
 
   private static readonly FLAME_SWORD_SIDE = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <rect x="36" y="23.5" width="24" height="4.5" rx="1" fill="#ef4444" stroke="#b91c1c" stroke-width="1.2"/>
-  <polygon points="60,22 64,25.7 60,29" fill="#fef08a"/>
-  <rect x="34" y="20.5" width="3" height="11" rx="1" fill="#991b1b"/>
+  <rect x="39" y="30.5" width="22" height="4.5" rx="1" fill="#ef4444" stroke="#b91c1c" stroke-width="1.2"/>
+  <polygon points="61,29 65,32.7 61,36" fill="#fef08a"/>
+  <rect x="37" y="27" width="3" height="11" rx="1" fill="#991b1b"/>
 </svg>`.trim();
 
   private static readonly FLAME_SWORD_DIAG_DOWN = `
@@ -263,9 +263,9 @@ export class EquipmentSprites {
 
   private static readonly RUNE_SWORD_SIDE = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <rect x="36" y="23" width="25" height="5" rx="1" fill="#a855f7" stroke="#6b21a8" stroke-width="1.2"/>
-  <polygon points="61,23 65,25.5 61,28" fill="#e9d5ff"/>
-  <rect x="34" y="20" width="3" height="12" rx="1" fill="#581c87"/>
+  <rect x="39" y="30" width="23" height="5" rx="1" fill="#a855f7" stroke="#6b21a8" stroke-width="1.2"/>
+  <polygon points="62,30 65.5,32.5 62,35" fill="#e9d5ff"/>
+  <rect x="37" y="26.5" width="3" height="12" rx="1" fill="#581c87"/>
 </svg>`.trim();
 
   private static readonly RUNE_SWORD_DIAG_DOWN = `

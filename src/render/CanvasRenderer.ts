@@ -1671,77 +1671,131 @@ export class CanvasRenderer {
         }
       }
 
-      // 4. 攻撃アクション中の剣撃スラッシュ（斬撃の光条）エフェクト
+      // 4. 攻撃アクション中のエフェクト（武器装備時は剣撃斬撃、素手時は渾身のパンチ打撃）
       const isAttacking =
         Math.hypot(anim.attackOffsetX, anim.attackOffsetY) > 0.05;
       if (isAttacking) {
-        ctx.strokeStyle = '#38bdf8';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        if (dir === 'up') {
-          ctx.arc(
-            0,
-            -size * 0.25,
-            size * 0.42,
-            -Math.PI * 0.85,
-            -Math.PI * 0.15
-          );
-        } else if (dir === 'down') {
-          ctx.arc(0, size * 0.25, size * 0.42, Math.PI * 0.15, Math.PI * 0.85);
-        } else if (dir === 'up_right' || dir === 'up_left') {
-          ctx.arc(
-            size * 0.18,
-            -size * 0.18,
-            size * 0.44,
-            -Math.PI * 0.6,
-            Math.PI * 0.1
-          );
-        } else if (dir === 'down_right' || dir === 'down_left') {
-          ctx.arc(
-            size * 0.18,
-            size * 0.18,
-            size * 0.44,
-            -Math.PI * 0.1,
-            Math.PI * 0.6
-          );
-        } else {
-          ctx.arc(size * 0.25, 0, size * 0.45, -Math.PI * 0.35, Math.PI * 0.35);
-        }
-        ctx.stroke();
+        if (playerState.equippedWeapon) {
+          // --- 【武器装備時: 鋭い剣撃スラッシュ（斬撃の光条）】 ---
+          ctx.strokeStyle = '#38bdf8';
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          if (dir === 'up') {
+            ctx.arc(
+              0,
+              -size * 0.25,
+              size * 0.42,
+              -Math.PI * 0.85,
+              -Math.PI * 0.15
+            );
+          } else if (dir === 'down') {
+            ctx.arc(0, size * 0.25, size * 0.42, Math.PI * 0.15, Math.PI * 0.85);
+          } else if (dir === 'up_right' || dir === 'up_left') {
+            ctx.arc(
+              size * 0.18,
+              -size * 0.18,
+              size * 0.44,
+              -Math.PI * 0.6,
+              Math.PI * 0.1
+            );
+          } else if (dir === 'down_right' || dir === 'down_left') {
+            ctx.arc(
+              size * 0.18,
+              size * 0.18,
+              size * 0.44,
+              -Math.PI * 0.1,
+              Math.PI * 0.6
+            );
+          } else {
+            ctx.arc(size * 0.25, 0, size * 0.45, -Math.PI * 0.35, Math.PI * 0.35);
+          }
+          ctx.stroke();
 
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        if (dir === 'up') {
-          ctx.arc(
-            0,
-            -size * 0.25,
-            size * 0.38,
-            -Math.PI * 0.75,
-            -Math.PI * 0.25
-          );
-        } else if (dir === 'down') {
-          ctx.arc(0, size * 0.25, size * 0.38, Math.PI * 0.25, Math.PI * 0.75);
-        } else if (dir === 'up_right' || dir === 'up_left') {
-          ctx.arc(
-            size * 0.18,
-            -size * 0.18,
-            size * 0.4,
-            -Math.PI * 0.5,
-            0
-          );
-        } else if (dir === 'down_right' || dir === 'down_left') {
-          ctx.arc(
-            size * 0.18,
-            size * 0.18,
-            size * 0.4,
-            0,
-            Math.PI * 0.5
-          );
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          if (dir === 'up') {
+            ctx.arc(
+              0,
+              -size * 0.25,
+              size * 0.38,
+              -Math.PI * 0.75,
+              -Math.PI * 0.25
+            );
+          } else if (dir === 'down') {
+            ctx.arc(0, size * 0.25, size * 0.38, Math.PI * 0.25, Math.PI * 0.75);
+          } else if (dir === 'up_right' || dir === 'up_left') {
+            ctx.arc(
+              size * 0.18,
+              -size * 0.18,
+              size * 0.4,
+              -Math.PI * 0.5,
+              0
+            );
+          } else if (dir === 'down_right' || dir === 'down_left') {
+            ctx.arc(
+              size * 0.18,
+              size * 0.18,
+              size * 0.4,
+              0,
+              Math.PI * 0.5
+            );
+          } else {
+            ctx.arc(size * 0.25, 0, size * 0.42, -Math.PI * 0.25, Math.PI * 0.25);
+          }
+          ctx.stroke();
         } else {
-          ctx.arc(size * 0.25, 0, size * 0.42, -Math.PI * 0.25, Math.PI * 0.25);
+          // --- 【素手時: 渾身のパンチ・ナックル打撃インパクトエフェクト】 ---
+          let punchX = 0;
+          let punchY = 0;
+          if (dir === 'up') {
+            punchX = 0;
+            punchY = -size * 0.38;
+          } else if (dir === 'down') {
+            punchX = 0;
+            punchY = size * 0.38;
+          } else if (dir === 'up_right' || dir === 'up_left') {
+            punchX = size * 0.3;
+            punchY = -size * 0.25;
+          } else if (dir === 'down_right' || dir === 'down_left') {
+            punchX = size * 0.3;
+            punchY = size * 0.25;
+          } else {
+            punchX = size * 0.38;
+            punchY = 0;
+          }
+
+          ctx.save();
+          ctx.translate(punchX, punchY);
+
+          // 1. 拳のインパクト衝撃波リング
+          ctx.strokeStyle = '#f59e0b';
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.arc(0, 0, size * 0.2, 0, Math.PI * 2);
+          ctx.stroke();
+
+          // 2. 放射状の打撃インパクト閃光（バシッ！というナックルヒット）
+          ctx.strokeStyle = '#fef08a';
+          ctx.lineWidth = 2;
+          for (let a = 0; a < 6; a++) {
+            const angle = (a * Math.PI) / 3;
+            const r1 = size * 0.1;
+            const r2 = size * 0.26;
+            ctx.beginPath();
+            ctx.moveTo(Math.cos(angle) * r1, Math.sin(angle) * r1);
+            ctx.lineTo(Math.cos(angle) * r2, Math.sin(angle) * r2);
+            ctx.stroke();
+          }
+
+          // 3. 中心部の強打撃ナックルコア
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(0, 0, size * 0.08, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.restore();
         }
-        ctx.stroke();
       }
 
       ctx.restore();

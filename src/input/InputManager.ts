@@ -40,6 +40,12 @@ export class InputManager {
   /** 方向キーの同時押し合成用バッファタイマーID */
   private moveTimer: number | null = null;
 
+  /** 仮想パッドの長押しリピート用ディレイタイマーID */
+  private repeatDelayTimer: number | null = null;
+
+  /** 仮想パッドの長押し連続実行用インターバルタイマーID */
+  private repeatIntervalTimer: number | null = null;
+
   /**
    * InputManager のインスタンスを生成し、各種イベントリスナーを登録します。
    *
@@ -395,35 +401,70 @@ export class InputManager {
   }
 
   /**
+   * 仮想ボタンの長押しオートリピートを安全に停止・クリーンアップします。
+   */
+  private stopButtonRepeat(): void {
+    if (this.repeatDelayTimer !== null) {
+      window.clearTimeout(this.repeatDelayTimer);
+      this.repeatDelayTimer = null;
+    }
+    if (this.repeatIntervalTimer !== null) {
+      window.clearInterval(this.repeatIntervalTimer);
+      this.repeatIntervalTimer = null;
+    }
+  }
+
+  /**
    * モバイル画面上の仮想十字キー（D-pad）および4ボタン（A, B, X, Y）のクリック・タッチをバインドします。
+   * 十字キーおよび足踏みボタンは長押しオートリピート（押しっぱなしで連続移動・連続足踏み）に対応します。
    */
   private bindUIButtons(): void {
-    // 仮想D-padボタン（8方向＋中央待機）
+    // 画面外やボタン外で指が離れた場合に確実にリピートを停止
+    window.addEventListener('pointerup', () => this.stopButtonRepeat());
+    window.addEventListener('pointercancel', () => this.stopButtonRepeat());
+
+    // 仮想D-padボタン（8方向＋中央待機・長押し連続移動対応）
     const dpadButtons = document.querySelectorAll<HTMLButtonElement>('.dpad-btn');
     dpadButtons.forEach((btn) => {
-      const handlePress = (e: Event) => {
-        e.preventDefault();
+      const getAction = (): ActionType | null => {
         const dir = btn.dataset.dir;
-        let action: ActionType | null = null;
-
         switch (dir) {
-          case 'N': action = { type: 'MOVE', dx: 0, dy: -1 }; break;
-          case 'S': action = { type: 'MOVE', dx: 0, dy: 1 }; break;
-          case 'W': action = { type: 'MOVE', dx: -1, dy: 0 }; break;
-          case 'E': action = { type: 'MOVE', dx: 1, dy: 0 }; break;
-          case 'NW': action = { type: 'MOVE', dx: -1, dy: -1 }; break;
-          case 'NE': action = { type: 'MOVE', dx: 1, dy: -1 }; break;
-          case 'SW': action = { type: 'MOVE', dx: -1, dy: 1 }; break;
-          case 'SE': action = { type: 'MOVE', dx: 1, dy: 1 }; break;
-          case 'WAIT': action = { type: 'WAIT' }; break;
-        }
-
-        if (action) {
-          this.dispatchAction(action);
+          case 'N': return { type: 'MOVE', dx: 0, dy: -1 };
+          case 'S': return { type: 'MOVE', dx: 0, dy: 1 };
+          case 'W': return { type: 'MOVE', dx: -1, dy: 0 };
+          case 'E': return { type: 'MOVE', dx: 1, dy: 0 };
+          case 'NW': return { type: 'MOVE', dx: -1, dy: -1 };
+          case 'NE': return { type: 'MOVE', dx: 1, dy: -1 };
+          case 'SW': return { type: 'MOVE', dx: -1, dy: 1 };
+          case 'SE': return { type: 'MOVE', dx: 1, dy: 1 };
+          case 'WAIT': return { type: 'WAIT' };
+          default: return null;
         }
       };
 
-      btn.addEventListener('pointerdown', handlePress);
+      btn.addEventListener('pointerdown', (e: PointerEvent) => {
+        e.preventDefault();
+        const action = getAction();
+        if (!action) return;
+
+        this.stopButtonRepeat();
+        // 初回即時実行
+        this.dispatchAction(action);
+
+        // 長押しディレイ（230ms）後に連続移動リピート（130ms周期）開始
+        this.repeatDelayTimer = window.setTimeout(() => {
+          this.repeatIntervalTimer = window.setInterval(() => {
+            const currentAction = getAction();
+            if (currentAction) {
+              this.dispatchAction(currentAction);
+            }
+          }, 130);
+        }, 230);
+      });
+
+      btn.addEventListener('pointerup', () => this.stopButtonRepeat());
+      btn.addEventListener('pointercancel', () => this.stopButtonRepeat());
+      btn.addEventListener('pointerleave', () => this.stopButtonRepeat());
     });
 
     // [Aボタン] 決定 / 拾う / 階段
@@ -432,11 +473,24 @@ export class InputManager {
       this.dispatchAction({ type: 'INTERACT' });
     });
 
-    // [Bボタン] 足踏み
-    document.getElementById('btn-pad-b')?.addEventListener('pointerdown', (e) => {
-      e.preventDefault();
-      this.dispatchAction({ type: 'WAIT' });
-    });
+    // [Bボタン] 足踏み（長押しで連続足踏み回復対応）
+    const btnB = document.getElementById('btn-pad-b');
+    if (btnB) {
+      btnB.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        this.stopButtonRepeat();
+        this.dispatchAction({ type: 'WAIT' });
+
+        this.repeatDelayTimer = window.setTimeout(() => {
+          this.repeatIntervalTimer = window.setInterval(() => {
+            this.dispatchAction({ type: 'WAIT' });
+          }, 110);
+        }, 230);
+      });
+      btnB.addEventListener('pointerup', () => this.stopButtonRepeat());
+      btnB.addEventListener('pointercancel', () => this.stopButtonRepeat());
+      btnB.addEventListener('pointerleave', () => this.stopButtonRepeat());
+    }
 
     // [Xボタン] 持ち物開閉
     const btnX = document.getElementById('btn-pad-x');

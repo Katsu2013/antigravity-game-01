@@ -419,10 +419,7 @@ export class UIManager {
         icon.textContent = item.symbol;
       }
 
-      // アイテム名・説明
-      const info = document.createElement('div');
-      info.className = 'item-info';
-
+      // アイテム名・装備タグ
       const nameRow = document.createElement('div');
       nameRow.className = 'item-name-row';
 
@@ -437,13 +434,6 @@ export class UIManager {
         tag.textContent = 'E';
         nameRow.appendChild(tag);
       }
-
-      const desc = document.createElement('div');
-      desc.className = 'item-desc';
-      desc.textContent = item.description;
-
-      info.appendChild(nameRow);
-      info.appendChild(desc);
 
       // 操作ボタン群
       const actions = document.createElement('div');
@@ -476,9 +466,20 @@ export class UIManager {
       actions.appendChild(useBtn);
       actions.appendChild(dropBtn);
 
-      card.appendChild(icon);
-      card.appendChild(info);
-      card.appendChild(actions);
+      // 上段: アイコン ＋ アイテム名・装備タグ ＋ 操作ボタン
+      const topRow = document.createElement('div');
+      topRow.className = 'item-top-row';
+      topRow.appendChild(icon);
+      topRow.appendChild(nameRow);
+      topRow.appendChild(actions);
+
+      // 下段: 詳細説明・性能テキスト（小画面でも全文読めるように独立配置）
+      const desc = document.createElement('div');
+      desc.className = 'item-desc';
+      desc.textContent = item.description;
+
+      card.appendChild(topRow);
+      card.appendChild(desc);
 
       container.appendChild(card);
     }

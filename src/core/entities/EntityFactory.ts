@@ -37,100 +37,9 @@ export class EntityFactory {
   ): Monster {
     const id = `monster_${++this.idCounter}`;
 
-    // バイオームと階層に基づく出現種族の重み付け抽選
-    let type: MonsterType = 'SLIME';
+    // バイオームと階層に基づく出現種族の重み付け抽選（序盤から理不尽な強敵が出現しないよう階層制限）
     const roll = Math.random();
-
-    if (biome === 'EARTH') {
-      if (floor >= 8 && roll < 0.2) type = 'DRAGON';
-      else if (roll < 0.4) type = 'GOLEM';
-      else if (roll < 0.6) type = 'BAT';
-      else if (roll < 0.75) type = 'MUMMY';
-      else if (roll < 0.88) type = 'GOBLIN';
-      else type = 'SKELETON';
-    } else if (biome === 'FOREST') {
-      if (floor >= 8 && roll < 0.2) type = 'MAGE';
-      else if (roll < 0.4) type = 'MANDRAGORA';
-      else if (roll < 0.6) type = 'GHOST';
-      else if (roll < 0.75) type = 'IMP';
-      else if (roll < 0.88) type = 'SLIME';
-      else type = 'GOBLIN';
-    } else if (biome === 'RIVER' || biome === 'LAKE') {
-      if (floor >= 8 && roll < 0.2) type = 'DRAGON';
-      else if (roll < 0.4) type = 'SAHAGIN';
-      else if (roll < 0.6) type = 'BAT';
-      else if (roll < 0.75) type = 'MIMIC';
-      else if (roll < 0.88) type = 'GHOST';
-      else type = 'SLIME';
-    } else if (biome === 'SNOW') {
-      if (floor >= 8 && roll < 0.25) type = 'DRAGON';
-      else if (roll < 0.35) type = 'GHOST';
-      else if (roll < 0.55) type = 'BAT';
-      else if (roll < 0.75) type = 'SKELETON';
-      else if (roll < 0.88) type = 'IMP';
-      else type = 'GOLEM';
-    } else if (biome === 'ICE') {
-      if (floor >= 8 && roll < 0.3) type = 'DRAGON';
-      else if (roll < 0.4) type = 'MAGE';
-      else if (roll < 0.6) type = 'GHOST';
-      else if (roll < 0.75) type = 'GOLEM';
-      else if (roll < 0.88) type = 'MIMIC';
-      else type = 'BAT';
-    } else if (biome === 'SWAMP') {
-      if (floor >= 8 && roll < 0.2) type = 'DRAGON';
-      else if (roll < 0.35) type = 'ZOMBIE';
-      else if (roll < 0.55) type = 'MANDRAGORA';
-      else if (roll < 0.75) type = 'SAHAGIN';
-      else if (roll < 0.88) type = 'SLIME';
-      else type = 'GHOST';
-    } else if (biome === 'TOXIC') {
-      if (floor >= 8 && roll < 0.25) type = 'MAGE';
-      else if (roll < 0.4) type = 'ZOMBIE';
-      else if (roll < 0.6) type = 'SLIME';
-      else if (roll < 0.75) type = 'BAT';
-      else if (roll < 0.88) type = 'IMP';
-      else type = 'MIMIC';
-    } else if (biome === 'MECHA') {
-      if (floor >= 8 && roll < 0.25) type = 'DRAGON';
-      else if (roll < 0.4) type = 'GOLEM';
-      else if (roll < 0.6) type = 'IMP';
-      else if (roll < 0.75) type = 'SKELETON';
-      else if (roll < 0.88) type = 'MAGE';
-      else type = 'MIMIC';
-    } else if (biome === 'ISLAND') {
-      if (floor >= 8 && roll < 0.2) type = 'DRAGON';
-      else if (roll < 0.45) type = 'SAHAGIN';
-      else if (roll < 0.65) type = 'BAT';
-      else if (roll < 0.8) type = 'SLIME';
-      else if (roll < 0.9) type = 'MIMIC';
-      else type = 'GOBLIN';
-    } else {
-      // STONE
-      if (floor === 1) {
-        type = roll < 0.5 ? 'SLIME' : roll < 0.8 ? 'GOBLIN' : 'BAT';
-      } else if (floor <= 3) {
-        if (roll < 0.25) type = 'SLIME';
-        else if (roll < 0.5) type = 'GOBLIN';
-        else if (roll < 0.7) type = 'BAT';
-        else if (roll < 0.85) type = 'SKELETON';
-        else type = 'ZOMBIE';
-      } else if (floor <= 6) {
-        if (roll < 0.15) type = 'GOBLIN';
-        else if (roll < 0.35) type = 'SKELETON';
-        else if (roll < 0.55) type = 'BAT';
-        else if (roll < 0.7) type = 'GHOST';
-        else if (roll < 0.82) type = 'IMP';
-        else if (roll < 0.92) type = 'MIMIC';
-        else type = 'MAGE';
-      } else {
-        if (roll < 0.2) type = 'SKELETON';
-        else if (roll < 0.4) type = 'MAGE';
-        else if (roll < 0.6) type = 'MUMMY';
-        else if (roll < 0.75) type = 'GHOST';
-        else if (roll < 0.88) type = 'MIMIC';
-        else type = 'DRAGON';
-      }
-    }
+    const type: MonsterType = this.chooseMonsterType(biome, floor, roll);
 
     // 階層スケーリング（深層ほど基本ステータス微増）
     const floorScale = 1 + (floor - 1) * 0.15;
@@ -359,6 +268,182 @@ export class EntityFactory {
           symbol: 'M',
           color: '#d4d4d8',
         };
+    }
+  }
+
+  /**
+   * フロアの階層（floor）および環境バイオームに基づいて、適切な難易度ティアのモンスター種族を決定します。
+   * 1階では初心者が即死しないよう最弱級モンスターに限定し、深層へ進むにつれて段階的に強敵を解禁します。
+   *
+   * @param biome - フロアの環境バイオーム
+   * @param floor - 地下階層番号
+   * @param roll - 0.0〜1.0 のランダム抽選値
+   * @returns 抽選されたモンスター種別
+   */
+  private static chooseMonsterType(
+    biome: BiomeType,
+    floor: number,
+    roll: number
+  ): MonsterType {
+    // 1階: 初心者向け最弱級モンスター限定（スライム、コウモリ、ゴブリンなどHP6〜14の敵のみ）
+    if (floor === 1) {
+      if (biome === 'FOREST') {
+        return roll < 0.45 ? 'SLIME' : roll < 0.75 ? 'BAT' : 'MANDRAGORA';
+      } else if (biome === 'RIVER' || biome === 'LAKE' || biome === 'ISLAND') {
+        return roll < 0.5 ? 'SLIME' : roll < 0.8 ? 'BAT' : 'GOBLIN';
+      } else if (biome === 'SNOW' || biome === 'ICE') {
+        return roll < 0.55 ? 'SLIME' : roll < 0.85 ? 'BAT' : 'GOBLIN';
+      } else {
+        return roll < 0.5 ? 'SLIME' : roll < 0.8 ? 'GOBLIN' : 'BAT';
+      }
+    }
+
+    // 2〜3階: 序盤（スライム、コウモリ、ゴブリンを主軸に、バイオーム特色の初級〜中級が少量出現）
+    if (floor <= 3) {
+      switch (biome) {
+        case 'EARTH':
+        case 'STONE':
+          if (roll < 0.3) return 'SLIME';
+          if (roll < 0.55) return 'GOBLIN';
+          if (roll < 0.75) return 'BAT';
+          if (roll < 0.9) return 'SKELETON';
+          return 'ZOMBIE';
+        case 'FOREST':
+          if (roll < 0.35) return 'SLIME';
+          if (roll < 0.6) return 'MANDRAGORA';
+          if (roll < 0.8) return 'GOBLIN';
+          return 'IMP';
+        case 'RIVER':
+        case 'LAKE':
+        case 'ISLAND':
+          if (roll < 0.35) return 'SLIME';
+          if (roll < 0.6) return 'BAT';
+          if (roll < 0.8) return 'GOBLIN';
+          return 'SAHAGIN';
+        case 'SNOW':
+        case 'ICE':
+          if (roll < 0.35) return 'SLIME';
+          if (roll < 0.6) return 'BAT';
+          if (roll < 0.8) return 'GOBLIN';
+          return 'SKELETON';
+        case 'SWAMP':
+        case 'TOXIC':
+          if (roll < 0.35) return 'SLIME';
+          if (roll < 0.6) return 'BAT';
+          if (roll < 0.8) return 'ZOMBIE';
+          return 'MANDRAGORA';
+        case 'MECHA':
+          if (roll < 0.35) return 'BAT';
+          if (roll < 0.65) return 'GOBLIN';
+          if (roll < 0.85) return 'IMP';
+          return 'SKELETON';
+      }
+    }
+
+    // 4〜6階: 中盤（スケルトン、ゾンビ、インプ、ゴースト、サハギンなどが主力。稀にゴーレムやメイジ、ミミック）
+    if (floor <= 6) {
+      switch (biome) {
+        case 'EARTH':
+          if (roll < 0.2) return 'GOBLIN';
+          if (roll < 0.45) return 'SKELETON';
+          if (roll < 0.65) return 'MUMMY';
+          if (roll < 0.85) return 'BAT';
+          return 'GOLEM';
+        case 'FOREST':
+          if (roll < 0.25) return 'MANDRAGORA';
+          if (roll < 0.5) return 'IMP';
+          if (roll < 0.7) return 'GHOST';
+          if (roll < 0.85) return 'GOBLIN';
+          return 'MAGE';
+        case 'RIVER':
+        case 'LAKE':
+          if (roll < 0.35) return 'SAHAGIN';
+          if (roll < 0.55) return 'BAT';
+          if (roll < 0.75) return 'GHOST';
+          if (roll < 0.9) return 'MIMIC';
+          return 'MAGE';
+        case 'SNOW':
+        case 'ICE':
+          if (roll < 0.3) return 'SKELETON';
+          if (roll < 0.55) return 'GHOST';
+          if (roll < 0.75) return 'IMP';
+          if (roll < 0.9) return 'MIMIC';
+          return 'GOLEM';
+        case 'SWAMP':
+        case 'TOXIC':
+          if (roll < 0.3) return 'ZOMBIE';
+          if (roll < 0.55) return 'SAHAGIN';
+          if (roll < 0.75) return 'MANDRAGORA';
+          if (roll < 0.9) return 'IMP';
+          return 'MAGE';
+        case 'MECHA':
+          if (roll < 0.3) return 'SKELETON';
+          if (roll < 0.55) return 'IMP';
+          if (roll < 0.75) return 'GOLEM';
+          if (roll < 0.9) return 'MIMIC';
+          return 'MAGE';
+        case 'ISLAND':
+          if (roll < 0.35) return 'SAHAGIN';
+          if (roll < 0.6) return 'BAT';
+          if (roll < 0.8) return 'GHOST';
+          if (roll < 0.92) return 'MIMIC';
+          return 'GOBLIN';
+        default: // STONE
+          if (roll < 0.2) return 'GOBLIN';
+          if (roll < 0.45) return 'SKELETON';
+          if (roll < 0.65) return 'GHOST';
+          if (roll < 0.8) return 'IMP';
+          if (roll < 0.9) return 'MIMIC';
+          return 'MAGE';
+      }
+    }
+
+    // 7階以上: 深層（強力な魔導士、岩石ゴーレム、古代ミイラ、そして8階以上でドラゴン降臨！）
+    const dragonChance = floor >= 8 ? 0.22 : 0;
+    if (roll < dragonChance) return 'DRAGON';
+
+    const subRoll = dragonChance > 0 ? (roll - dragonChance) / (1 - dragonChance) : roll;
+    switch (biome) {
+      case 'EARTH':
+        if (subRoll < 0.35) return 'GOLEM';
+        if (subRoll < 0.6) return 'MUMMY';
+        if (subRoll < 0.8) return 'SKELETON';
+        return 'MAGE';
+      case 'FOREST':
+        if (subRoll < 0.35) return 'MAGE';
+        if (subRoll < 0.6) return 'GHOST';
+        if (subRoll < 0.8) return 'MANDRAGORA';
+        return 'MIMIC';
+      case 'RIVER':
+      case 'LAKE':
+      case 'ISLAND':
+        if (subRoll < 0.35) return 'SAHAGIN';
+        if (subRoll < 0.6) return 'MAGE';
+        if (subRoll < 0.8) return 'MIMIC';
+        return 'GHOST';
+      case 'SNOW':
+      case 'ICE':
+        if (subRoll < 0.35) return 'GOLEM';
+        if (subRoll < 0.6) return 'MAGE';
+        if (subRoll < 0.8) return 'GHOST';
+        return 'MIMIC';
+      case 'SWAMP':
+      case 'TOXIC':
+        if (subRoll < 0.35) return 'MAGE';
+        if (subRoll < 0.6) return 'ZOMBIE';
+        if (subRoll < 0.8) return 'MUMMY';
+        return 'SAHAGIN';
+      case 'MECHA':
+        if (subRoll < 0.35) return 'GOLEM';
+        if (subRoll < 0.6) return 'MAGE';
+        if (subRoll < 0.8) return 'MIMIC';
+        return 'SKELETON';
+      default: // STONE
+        if (subRoll < 0.3) return 'GOLEM';
+        if (subRoll < 0.55) return 'MAGE';
+        if (subRoll < 0.75) return 'MUMMY';
+        if (subRoll < 0.9) return 'GHOST';
+        return 'SKELETON';
     }
   }
 
