@@ -6,6 +6,7 @@
  */
 
 import { ItemCategory } from '../../core/types';
+import { TileSprites } from './TileSprites';
 
 /**
  * 利用可能なキャラクタースプライトおよびアイテムスプライトの識別子。
@@ -1223,7 +1224,7 @@ export class SVGSprites {
       promises.push(p);
     }
 
-    this.readyPromise = Promise.all(promises).then(() => {});
+    this.readyPromise = Promise.all([...promises, TileSprites.init()]).then(() => {});
     return this.readyPromise;
   }
 

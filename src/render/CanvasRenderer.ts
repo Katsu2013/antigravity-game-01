@@ -9,6 +9,7 @@ import { GameEngine } from '../core/GameEngine';
 import { BiomeType, Item, Monster, TileType } from '../core/types';
 import { AnimationEngine } from './AnimationEngine';
 import { SVGSprites, SpriteId } from './sprites/SVGSprites';
+import { TileSprites } from './sprites/TileSprites';
 
 /**
  * 2D Canvas描画管理クラス。
@@ -240,7 +241,9 @@ export class CanvasRenderer {
           screenY,
           effectiveTileSize,
           isVisible,
-          biome
+          biome,
+          x,
+          y
         );
       }
     }
@@ -300,7 +303,8 @@ export class CanvasRenderer {
   }
 
   /**
-   * 1つのタイルをバイオームに応じたカラーパレットおよび波紋アニメーション付きで描画します。
+   * 1つのタイルをバイオームに応じた高品質ベクターSVGスプライト、
+   * アニメーション波紋、および記憶表現付きで描画します。
    *
    * @param ctx - Canvas描画コンテキスト
    * @param tile - タイル種別
@@ -309,6 +313,8 @@ export class CanvasRenderer {
    * @param size - 描画サイズ（ピクセル）
    * @param isVisible - 現在視界内に入っているかどうか
    * @param biome - 現在フロアのバイオーム種別
+   * @param gridX - マップ上のグリッドX座標
+   * @param gridY - マップ上のグリッドY座標
    */
   private drawTile(
     ctx: CanvasRenderingContext2D,
@@ -317,169 +323,160 @@ export class CanvasRenderer {
     y: number,
     size: number,
     isVisible: boolean,
-    biome: BiomeType
+    biome: BiomeType,
+    gridX: number,
+    gridY: number
   ): void {
     const s = Math.ceil(size);
+    const map = this.engine.map;
 
-    // バイオーム別の配色パレットテーブル
-    const palettes: Record<
-      BiomeType,
-      {
-        wallTop: string;
-        wallBody: string;
-        wallBorder: string;
-        wallDarkTop: string;
-        wallDarkBody: string;
-        floorBody: string;
-        floorBorder: string;
-        floorDot: string;
-        floorDarkBody: string;
-        floorDarkBorder: string;
-        waterBody: string;
-        waterWave: string;
-        waterDarkBody: string;
-      }
-    > = {
-      STONE: {
-        wallTop: '#475569',
-        wallBody: '#334155',
-        wallBorder: '#1e293b',
-        wallDarkTop: '#1e293b',
-        wallDarkBody: '#111827',
-        floorBody: '#1e293b',
-        floorBorder: '#273549',
-        floorDot: '#334155',
-        floorDarkBody: '#0f172a',
-        floorDarkBorder: '#172033',
-        waterBody: '#0284c7',
-        waterWave: '#38bdf8',
-        waterDarkBody: '#082f49',
-      },
-      EARTH: {
-        wallTop: '#92400e',
-        wallBody: '#78350f',
-        wallBorder: '#451a03',
-        wallDarkTop: '#451a03',
-        wallDarkBody: '#291003',
-        floorBody: '#3e2723',
-        floorBorder: '#4e342e',
-        floorDot: '#5d4037',
-        floorDarkBody: '#1c1210',
-        floorDarkBorder: '#2e1c18',
-        waterBody: '#0d9488',
-        waterWave: '#5eead4',
-        waterDarkBody: '#134e4a',
-      },
-      FOREST: {
-        wallTop: '#166534',
-        wallBody: '#14532d',
-        wallBorder: '#052e16',
-        wallDarkTop: '#0f381e',
-        wallDarkBody: '#052e16',
-        floorBody: '#064e3b',
-        floorBorder: '#047857',
-        floorDot: '#10b981',
-        floorDarkBody: '#022c22',
-        floorDarkBorder: '#034435',
-        waterBody: '#059669',
-        waterWave: '#34d399',
-        waterDarkBody: '#064e3b',
-      },
-      RIVER: {
-        wallTop: '#334155',
-        wallBody: '#1e293b',
-        wallBorder: '#0f172a',
-        wallDarkTop: '#1e293b',
-        wallDarkBody: '#0f172a',
-        floorBody: '#172554',
-        floorBorder: '#1e3a8a',
-        floorDot: '#2563eb',
-        floorDarkBody: '#0c142c',
-        floorDarkBorder: '#172554',
-        waterBody: '#0284c7',
-        waterWave: '#38bdf8',
-        waterDarkBody: '#082f49',
-      },
-      LAKE: {
-        wallTop: '#155e75',
-        wallBody: '#0e7490',
-        wallBorder: '#083344',
-        wallDarkTop: '#0e7490',
-        wallDarkBody: '#083344',
-        floorBody: '#083344',
-        floorBorder: '#0e7490',
-        floorDot: '#06b6d4',
-        floorDarkBody: '#041c26',
-        floorDarkBorder: '#083344',
-        waterBody: '#0284c7',
-        waterWave: '#67e8f9',
-        waterDarkBody: '#082f49',
-      },
-    };
-
-    const p = palettes[biome] || palettes.STONE;
-
+    // 1. 壁タイルの描画
     if (tile === TileType.Wall) {
-      if (isVisible) {
-        ctx.fillStyle = p.wallBody;
-        ctx.fillRect(x, y, s, s);
-        ctx.fillStyle = p.wallTop;
-        ctx.fillRect(x, y, s, Math.max(2, s * 0.2));
-        ctx.strokeStyle = p.wallBorder;
-        ctx.strokeRect(x, y, s, s);
+      const wallSprite = TileSprites.getWallSprite(biome, gridX, gridY);
+      if (wallSprite) {
+        ctx.drawImage(wallSprite, x, y, s, s);
       } else {
-        ctx.fillStyle = p.wallDarkBody;
+        // ロード前のフォールバック
+        ctx.fillStyle = '#334155';
         ctx.fillRect(x, y, s, s);
-        ctx.fillStyle = p.wallDarkTop;
-        ctx.fillRect(x, y, s, Math.max(2, s * 0.2));
       }
-    } else if (tile === TileType.Floor) {
-      if (isVisible) {
-        ctx.fillStyle = p.floorBody;
-        ctx.fillRect(x, y, s, s);
-        ctx.strokeStyle = p.floorBorder;
-        ctx.strokeRect(x, y, s, s);
-        ctx.fillStyle = p.floorDot;
-        ctx.fillRect(
-          x + s * 0.45,
-          y + s * 0.45,
-          Math.max(1, s * 0.1),
-          Math.max(1, s * 0.1)
-        );
-      } else {
-        ctx.fillStyle = p.floorDarkBody;
-        ctx.fillRect(x, y, s, s);
-        ctx.strokeStyle = p.floorDarkBorder;
-        ctx.strokeRect(x, y, s, s);
-      }
-    } else if (tile === TileType.Water) {
-      // 水路・湖タイル
-      if (isVisible) {
-        ctx.fillStyle = p.waterBody;
-        ctx.fillRect(x, y, s, s);
 
-        // 水面の緩やかなアニメーション波紋（時間経過で揺らぐ）
-        const waveOffset = Math.sin(this.anim.globalTime * 2.5 + x * 0.05 + y * 0.05) * (s * 0.15);
-        ctx.strokeStyle = p.waterWave;
-        ctx.lineWidth = 1.2;
-        ctx.beginPath();
-        ctx.moveTo(x + s * 0.2, y + s * 0.5 + waveOffset);
-        ctx.lineTo(x + s * 0.8, y + s * 0.5 + waveOffset);
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.moveTo(x + s * 0.3, y + s * 0.75 - waveOffset);
-        ctx.lineTo(x + s * 0.7, y + s * 0.75 - waveOffset);
-        ctx.stroke();
-      } else {
-        ctx.fillStyle = p.waterDarkBody;
+      // 未視界（探索済みの記憶）の場合は暗色半透明マスクを被せる
+      if (!isVisible) {
+        ctx.fillStyle = 'rgba(3, 7, 18, 0.62)';
         ctx.fillRect(x, y, s, s);
       }
-    } else if (tile === TileType.StairsDown) {
-      // 階段タイル: 重厚な石造り下り階段SVGスプライトで描画
-      const floorBg = isVisible ? p.floorBody : p.floorDarkBody;
-      ctx.fillStyle = floorBg;
+      return;
+    }
+
+    // 2. 床タイルの描画
+    if (tile === TileType.Floor) {
+      const floorSprite = TileSprites.getFloorSprite(biome, gridX, gridY);
+      if (floorSprite) {
+        ctx.drawImage(floorSprite, x, y, s, s);
+      } else {
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(x, y, s, s);
+      }
+
+      // 壁の下のマスに対する立体ドロップシャドウ（上が壁タイルなら上端に影を落とす）
+      if (gridY > 0 && map.tiles[gridY - 1]?.[gridX] === TileType.Wall) {
+        const shadowGrad = ctx.createLinearGradient(x, y, x, y + s * 0.35);
+        shadowGrad.addColorStop(0, 'rgba(0, 0, 0, 0.55)');
+        shadowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = shadowGrad;
+        ctx.fillRect(x, y, s, s * 0.35);
+      }
+
+      // 未視界の暗がりマスク
+      if (!isVisible) {
+        ctx.fillStyle = 'rgba(3, 7, 18, 0.62)';
+        ctx.fillRect(x, y, s, s);
+      }
+      return;
+    }
+
+    // 3. 水路・湖タイルの描画
+    if (tile === TileType.Water) {
+      // 水面ベース（床スプライトをうっすら下敷きにして水深感を演出）
+      const floorSprite = TileSprites.getFloorSprite(biome, gridX, gridY);
+      if (floorSprite) {
+        ctx.drawImage(floorSprite, x, y, s, s);
+      }
+
+      // バイオーム別の水面トーン
+      const waterColors: Record<
+        BiomeType,
+        { base: string; wave: string; deep: string }
+      > = {
+        STONE: { base: 'rgba(2, 132, 199, 0.72)', wave: '#7dd3fc', deep: '#0369a1' },
+        EARTH: { base: 'rgba(13, 148, 136, 0.75)', wave: '#5eead4', deep: '#0f766e' },
+        FOREST: { base: 'rgba(5, 150, 105, 0.75)', wave: '#6ee7b7', deep: '#047857' },
+        RIVER: { base: 'rgba(37, 99, 235, 0.72)', wave: '#93c5fd', deep: '#1d4ed8' },
+        LAKE: { base: 'rgba(8, 145, 178, 0.78)', wave: '#67e8f9', deep: '#0e7490' },
+      };
+      const wc = waterColors[biome] || waterColors.STONE;
+
+      // 水面カラー塗り
+      ctx.fillStyle = wc.base;
       ctx.fillRect(x, y, s, s);
+
+      // 上が壁なら水面にも影
+      if (gridY > 0 && map.tiles[gridY - 1]?.[gridX] === TileType.Wall) {
+        const shadowGrad = ctx.createLinearGradient(x, y, x, y + s * 0.4);
+        shadowGrad.addColorStop(0, 'rgba(0, 0, 0, 0.6)');
+        shadowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = shadowGrad;
+        ctx.fillRect(x, y, s, s * 0.4);
+      }
+
+      if (isVisible) {
+        // 水面の緩やかなアニメーション波紋（時間経過で揺らぐ二重波線）
+        const time = this.anim.globalTime;
+        const waveOffset1 =
+          Math.sin(time * 2.6 + gridX * 0.8 + gridY * 0.5) * (s * 0.12);
+        const waveOffset2 =
+          Math.cos(time * 2.2 + gridX * 0.5 + gridY * 0.9) * (s * 0.1);
+
+        ctx.strokeStyle = wc.wave;
+        ctx.lineWidth = Math.max(1, s * 0.04);
+        ctx.lineCap = 'round';
+
+        ctx.beginPath();
+        ctx.moveTo(x + s * 0.18, y + s * 0.45 + waveOffset1);
+        ctx.quadraticCurveTo(
+          x + s * 0.5,
+          y + s * 0.45 + waveOffset1 - 2,
+          x + s * 0.82,
+          y + s * 0.45 + waveOffset1
+        );
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(x + s * 0.28, y + s * 0.72 + waveOffset2);
+        ctx.quadraticCurveTo(
+          x + s * 0.55,
+          y + s * 0.72 + waveOffset2 + 2,
+          x + s * 0.72,
+          y + s * 0.72 + waveOffset2
+        );
+        ctx.stroke();
+
+        // きらめきハイライト
+        const sparkle = Math.sin(time * 4.0 + gridX * 1.7 + gridY * 2.3);
+        if (sparkle > 0.6) {
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(x + s * 0.6, y + s * 0.3, Math.max(1, s * 0.03), 0, Math.PI * 2);
+          ctx.fill();
+        }
+      } else {
+        // 視界外マスク
+        ctx.fillStyle = 'rgba(3, 7, 18, 0.62)';
+        ctx.fillRect(x, y, s, s);
+      }
+      return;
+    }
+
+    // 4. 階段タイル (TileType.StairsDown)
+    if (tile === TileType.StairsDown) {
+      // 下敷きとなる床
+      const floorSprite = TileSprites.getFloorSprite(biome, gridX, gridY);
+      if (floorSprite) {
+        ctx.drawImage(floorSprite, x, y, s, s);
+      } else {
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(x, y, s, s);
+      }
+
+      // 上が壁なら影
+      if (gridY > 0 && map.tiles[gridY - 1]?.[gridX] === TileType.Wall) {
+        const shadowGrad = ctx.createLinearGradient(x, y, x, y + s * 0.35);
+        shadowGrad.addColorStop(0, 'rgba(0, 0, 0, 0.55)');
+        shadowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = shadowGrad;
+        ctx.fillRect(x, y, s, s * 0.35);
+      }
 
       const stairsImg = SVGSprites.get('tile_stairs_down');
 
@@ -488,7 +485,14 @@ export class CanvasRenderer {
         const glowPulse = 0.35 + Math.sin(this.anim.globalTime * 3.0) * 0.15;
         const cx = x + s / 2;
         const cy = y + s / 2;
-        const glowGrad = ctx.createRadialGradient(cx, cy, s * 0.1, cx, cy, s * 0.55);
+        const glowGrad = ctx.createRadialGradient(
+          cx,
+          cy,
+          s * 0.1,
+          cx,
+          cy,
+          s * 0.55
+        );
         glowGrad.addColorStop(0, `rgba(251, 191, 36, ${glowPulse})`);
         glowGrad.addColorStop(1, 'rgba(251, 191, 36, 0)');
         ctx.fillStyle = glowGrad;
@@ -504,7 +508,7 @@ export class CanvasRenderer {
           ctx.fillText('▼', cx, cy);
         }
       } else {
-        // 未視界（探索済み暗がり）: 薄暗い半透明トーンで配置記憶を表示
+        // 未視界（探索済み暗がり）: 薄暗いトーンで配置記憶を表示
         if (stairsImg) {
           ctx.save();
           ctx.globalAlpha = 0.45;
@@ -517,6 +521,8 @@ export class CanvasRenderer {
           ctx.textBaseline = 'middle';
           ctx.fillText('▼', x + s / 2, y + s / 2);
         }
+        ctx.fillStyle = 'rgba(3, 7, 18, 0.4)';
+        ctx.fillRect(x, y, s, s);
       }
     }
   }
@@ -1175,6 +1181,20 @@ export class CanvasRenderer {
     const startX = boxX + padding;
     const startY = boxY + padding + 12;
 
+    // バイオーム別のミニマップカラー
+    const biome = map.biome || 'STONE';
+    const minimapPalettes: Record<
+      BiomeType,
+      { wall: string; floorVis: string; floorDim: string; waterVis: string; waterDim: string }
+    > = {
+      STONE: { wall: '#475569', floorVis: '#334155', floorDim: '#1e293b', waterVis: '#38bdf8', waterDim: '#0369a1' },
+      EARTH: { wall: '#78350f', floorVis: '#4e342e', floorDim: '#2e1c18', waterVis: '#5eead4', waterDim: '#0f766e' },
+      FOREST: { wall: '#166534', floorVis: '#064e3b', floorDim: '#022c22', waterVis: '#34d399', waterDim: '#047857' },
+      RIVER: { wall: '#334155', floorVis: '#1e3a8a', floorDim: '#0f172a', waterVis: '#38bdf8', waterDim: '#1d4ed8' },
+      LAKE: { wall: '#0e7490', floorVis: '#083344', floorDim: '#041c26', waterVis: '#67e8f9', waterDim: '#0e7490' },
+    };
+    const mp = minimapPalettes[biome] || minimapPalettes.STONE;
+
     // 各セルの描画
     for (let y = 0; y < map.height; y++) {
       for (let x = 0; x < map.width; x++) {
@@ -1185,13 +1205,13 @@ export class CanvasRenderer {
         const cy = startY + y * cellH;
 
         if (tile === TileType.Wall) {
-          ctx.fillStyle = '#475569';
+          ctx.fillStyle = mp.wall;
           ctx.fillRect(cx, cy, cellW, cellH);
         } else if (tile === TileType.Floor) {
-          ctx.fillStyle = map.visible[y][x] ? '#334155' : '#1e293b';
+          ctx.fillStyle = map.visible[y][x] ? mp.floorVis : mp.floorDim;
           ctx.fillRect(cx, cy, cellW, cellH);
         } else if (tile === TileType.Water) {
-          ctx.fillStyle = map.visible[y][x] ? '#38bdf8' : '#0369a1';
+          ctx.fillStyle = map.visible[y][x] ? mp.waterVis : mp.waterDim;
           ctx.fillRect(cx, cy, cellW, cellH);
         } else if (tile === TileType.StairsDown) {
           ctx.fillStyle = '#fbbf24';
