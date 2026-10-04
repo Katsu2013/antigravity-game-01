@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#111827" />
+  <meta name="description" content="完全オフラインで遊べるWebローグライクゲーム" />
+  <title>RogueLabyrinth</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="RogueLabyrinth" />
+  <link rel="stylesheet" href="./src/style.css" />
+</head>
+<body class="bg-gray-950 text-gray-100 select-none overflow-hidden m-0 p-0">
+  <div id="app" class="app-layout">
+    <!-- Top HUD Bar -->
+    <header id="hud" class="hud-bar">
+      <div class="hud-item"><span class="hud-label">階層:</span> <span id="hud-floor" class="hud-val text-amber-400">B1F</span></div>
+      <div class="hud-item"><span class="hud-label">Lv:</span> <span id="hud-level" class="hud-val text-cyan-400">1</span></div>
+      <div class="hud-item hud-hp-container">
+        <span class="hud-label">HP:</span>
+        <span id="hud-hp" class="hud-val text-emerald-400">20/20</span>
+        <div class="hud-bar-track hud-hp-track" title="HPゲージ">
+          <div id="hud-hp-bar" class="hud-bar-fill hud-hp-fill" style="width: 100%;"></div>
+        </div>
+      </div>
+      <div class="hud-item hud-hunger-container">
+        <span class="hud-label">満腹度:</span>
+        <span id="hud-hunger" class="hud-val text-yellow-300">100%</span>
+        <div class="hud-bar-track hud-hunger-track" title="満腹度ゲージ">
+          <div id="hud-hunger-bar" class="hud-bar-fill hud-hunger-fill" style="width: 100%;"></div>
+        </div>
+      </div>
+      <div class="hud-item"><span class="hud-label">攻/防:</span> <span id="hud-stats" class="hud-val text-orange-300">5/1</span></div>
+      <div class="hud-item"><span class="hud-label">Turn:</span> <span id="hud-turn" class="hud-val text-sky-400">1</span></div>
+      <div class="hud-actions">
+        <button id="btn-toggle-map" class="hud-btn highlight" title="ミニマップ表示切替 (M/V)">MAP: ON</button>
+        <button id="btn-inventory-top" class="hud-btn" title="持ち物一覧 (I/C)">持ち物</button>
+        <button id="btn-to-title" class="hud-btn" title="タイトル画面へ戻る">タイトル</button>
+        <button id="btn-regen" class="hud-btn" title="フロア再生成 (R)">再生成</button>
+      </div>
+    </header>
+
+    <!-- Main Content Area (Canvas + Side Panel) -->
+    <main class="main-content">
+      <!-- Game Canvas Container -->
+      <div id="canvas-container" class="canvas-container">
+        <canvas id="game-canvas"></canvas>
+        <div id="floor-toast" class="floor-toast hidden">B1F に到達</div>
+      </div>
+
+      <!-- Desktop Side Panel -->
+      <aside id="side-panel" class="side-panel">
+        <div class="panel-section">
+          <div class="panel-header-row">
+            <h2 class="panel-title">持ち物</h2>
+            <span id="inventory-capacity" class="capacity-badge">0/12</span>
+          </div>
+          <div id="desktop-inventory-list" class="desktop-inventory-list"></div>
+        </div>
+
+        <div class="panel-section log-section">
+          <h2 class="panel-title">冒険の記録</h2>
+          <div id="log-list" class="log-list"></div>
+        </div>
+
+        <div class="panel-section help-section">
+          <h2 class="panel-title">操作方法 (シンプル4ボタン)</h2>
+          <ul class="help-list">
+            <li><span>移動 / 方向転換:</span> <kbd>WASD</kbd> / <kbd>矢印</kbd> (同時押しで斜め)</li>
+            <li><span>[A] 正面攻撃/決定:</span> <kbd>Z</kbd> / <kbd>Enter</kbd></li>
+            <li><span>[B] 足踏み/素振り:</span> <kbd>X</kbd> / <kbd>Space</kbd></li>
+            <li><span>[X] 持ち物:</span> <kbd>C</kbd> / <kbd>I</kbd></li>
+            <li><span>[Y] ミニマップ切替:</span> <kbd>V</kbd> / <kbd>M</kbd></li>
+          </ul>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Gamepad Virtual Controls (十字キー ＋ 4ボタン) -->
+    <footer id="mobile-controls" class="gamepad-controls">
+      <!-- Left: D-Pad -->
+      <div class="pad-left">
+        <div class="dpad-grid">
+          <button class="dpad-btn diag" data-dir="NW">↖</button>
+          <button class="dpad-btn" data-dir="N">↑</button>
+          <button class="dpad-btn diag" data-dir="NE">↗</button>
+
+          <button class="dpad-btn" data-dir="W">←</button>
+          <button class="dpad-btn center-btn" data-dir="WAIT">●</button>
+          <button class="dpad-btn" data-dir="E">→</button>
+
+          <button class="dpad-btn diag" data-dir="SW">↙</button>
+          <button class="dpad-btn" data-dir="S">↓</button>
+          <button class="dpad-btn diag" data-dir="SE">↘</button>
+        </div>
+      </div>
+
+      <!-- Center: Mini Log Ticker -->
+      <div class="pad-center">
+        <div id="mobile-ticker" class="mobile-ticker">
+          ダンジョン探索中
+        </div>
+      </div>
+
+      <!-- Right: 4-Button Cluster (Diamond: X, Y, A, B) -->
+      <div class="pad-right">
+        <div class="btn-cluster">
+          <button id="btn-pad-x" class="pad-btn btn-x" title="持ち物 (C/I)">
+            <span class="btn-letter">X</span>
+            <span class="btn-sub">持物</span>
+          </button>
+          <button id="btn-pad-y" class="pad-btn btn-y" title="ミニマップ (V/M)">
+            <span class="btn-letter">Y</span>
+            <span class="btn-sub">MAP</span>
+          </button>
+          <button id="btn-pad-b" class="pad-btn btn-b" title="足踏み (X/Space)">
+            <span class="btn-letter">B</span>
+            <span class="btn-sub">足踏</span>
+          </button>
+          <button id="btn-pad-a" class="pad-btn btn-a" title="決定/拾う/階段 (Z/Enter)">
+            <span class="btn-letter">A</span>
+            <span class="btn-sub">決定</span>
+          </button>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Inventory Modal Dialog (Mobile & Quick-Access) -->
+    <div id="inventory-modal" class="modal-overlay hidden">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <h3 class="modal-title">所持品一覧</h3>
+          <button id="btn-close-inventory" class="modal-close-btn">&times;</button>
+        </div>
+        <div id="modal-inventory-list" class="modal-body inventory-scroll-body"></div>
+      </div>
+    </div>
+
+    <!-- Game Over Modal Dialog -->
+    <div id="gameover-modal" class="modal-overlay hidden">
+      <div class="modal-dialog gameover-dialog">
+        <h2 class="gameover-title">GAME OVER</h2>
+        <p class="gameover-desc" id="gameover-cause">あなたの冒険はここで幕を閉じた……</p>
+        <div id="gameover-stats" class="gameover-stats"></div>
+        <div class="gameover-actions">
+          <button id="btn-restart" class="restart-btn">もう一度挑戦する</button>
+          <button id="btn-gameover-scores" class="secondary-modal-btn">冒険の記録を見る</button>
+          <button id="btn-gameover-title" class="secondary-modal-btn">タイトル画面へ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scores History Modal -->
+    <div id="scores-modal" class="modal-overlay hidden">
+      <div class="modal-dialog scores-dialog">
+        <div class="modal-header">
+          <h3 class="modal-title">🏆 冒険の記録（過去の戦歴・スコア）</h3>
+          <button id="btn-close-scores" class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body scores-scroll-body">
+          <div id="scores-list" class="scores-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Help Modal Dialog -->
+    <div id="help-modal" class="modal-overlay hidden">
+      <div class="modal-dialog help-dialog">
+        <div class="modal-header">
+          <h3 class="modal-title">📜 遊び方・操作説明</h3>
+          <button id="btn-close-help" class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body help-scroll-body">
+          <div class="help-content-section">
+            <h4 class="help-subtitle">🎮 操作方法（十字キー ＋ 4ボタン）</h4>
+            <div class="help-table-wrap">
+              <table class="help-table">
+                <thead>
+                  <tr><th>ボタン</th><th>PCキーボード</th><th>スマホ</th><th>役割</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>十字キー</td><td>WASD / 矢印 (同時押しで斜め)<br/><span class="text-xs text-gray-400">Q/E/Y/U/B/N/テンキー1379</span></td><td>画面左側パッド (8方向)</td><td>8方向移動 / 向き変更</td></tr>
+                  <tr><td>[A] 決定</td><td>Z / J / Enter</td><td>[A 決定] (緑)</td><td>正面の敵へ攻撃 / 階段降り / 拾う / 素振り</td></tr>
+                  <tr><td>[B] 足踏</td><td>X / K / Space</td><td>[B 足踏] (赤)</td><td>1ターン足踏み (HP回復)</td></tr>
+                  <tr><td>[X] 持物</td><td>C / I / Tab</td><td>[X 持物] (青)</td><td>所持品一覧を開閉 / アイテム使用</td></tr>
+                  <tr><td>[Y] MAP</td><td>V / M</td><td>[Y MAP] (黄)</td><td>ミニマップ表示のON / OFF切替</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h4 class="help-subtitle">🏰 冒険の心得</h4>
+            <ul class="help-rule-list">
+              <li><strong>ターン制 & 正面攻撃</strong>: 移動せずに敵の方向を向いて[A 決定]を押すことで、その場から安全に正面の敵を近接攻撃できます（正面に敵がいない時は素振りでターン送り・敵誘導が可能です）。</li>
+              <li><strong>多彩なダンジョンフロア</strong>: 5階層ごとに石の迷宮、赤土の洞窟、旧遺跡、清流洞、水没せし地下湖と雰囲気が変化。水路は進入不可ですが矢や視界は通ります。</li>
+              <li><strong>斜め移動・攻撃</strong>: PCキーボード（テンキーや矢印同時押し）または画面十字キーの斜めボタンで8方向に攻撃・移動が可能です。</li>
+              <li><strong>満腹度</strong>: 10ターンごとに1%消費します。0%になると餓死ダメージを受けるので「大きなパン」を定期的に補給しましょう。</li>
+              <li><strong>自動セーブ</strong>: 毎ターン自動でブラウザ（IndexedDB）に中断セーブされます。いつでも中断・再開できます。</li>
+              <li><strong>パーマデス</strong>: HPが0になるとゲームオーバー。所持品とレベルはリセットされますが、到達記録はスコアとして永遠に残ります。</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Title Screen Overlay -->
+    <div id="title-screen" class="title-overlay">
+      <div class="title-container">
+        <!-- Emblem Logo -->
+        <div class="title-emblem-wrap">
+          <svg class="title-emblem" viewBox="0 0 100 100" width="110" height="110">
+            <circle cx="50" cy="50" r="46" fill="none" stroke="#d97706" stroke-width="2" stroke-dasharray="4,2"/>
+            <circle cx="50" cy="50" r="41" fill="#0f172a" stroke="#fbbf24" stroke-width="2.5"/>
+            <!-- 剣1 -->
+            <g transform="rotate(45 50 50)">
+              <rect x="48" y="16" width="4" height="60" rx="1.5" fill="#f8fafc" stroke="#94a3b8" stroke-width="1"/>
+              <rect x="42" y="60" width="16" height="4" rx="1.5" fill="#d97706"/>
+              <rect x="48.5" y="64" width="3" height="12" fill="#78350f"/>
+              <circle cx="50" cy="78" r="3" fill="#fbbf24"/>
+            </g>
+            <!-- 剣2 -->
+            <g transform="rotate(-45 50 50)">
+              <rect x="48" y="16" width="4" height="60" rx="1.5" fill="#f8fafc" stroke="#94a3b8" stroke-width="1"/>
+              <rect x="42" y="60" width="16" height="4" rx="1.5" fill="#d97706"/>
+              <rect x="48.5" y="64" width="3" height="12" fill="#78350f"/>
+              <circle cx="50" cy="78" r="3" fill="#fbbf24"/>
+            </g>
+            <!-- 中央盾 -->
+            <path d="M36 32 L64 32 Q64 54 50 68 Q36 54 36 32 Z" fill="#1e3a8a" stroke="#fbbf24" stroke-width="2.5"/>
+            <circle cx="50" cy="46" r="5" fill="#ef4444" stroke="#fbbf24" stroke-width="1.5"/>
+          </svg>
+        </div>
+
+        <h1 class="title-main-text">RogueLabyrinth</h1>
+        <p class="title-sub-text">〜 迷宮の冒険者 〜</p>
+
+        <!-- Menu Buttons -->
+        <div class="title-menu-group">
+          <button id="btn-title-continue" class="title-menu-btn title-btn-continue disabled" disabled>
+            <span class="btn-icon">⚔️</span>
+            <span class="btn-text">冒険を再開する</span>
+          </button>
+          <button id="btn-title-new" class="title-menu-btn title-btn-new">
+            <span class="btn-icon">✨</span>
+            <span class="btn-text">新しく冒険を始める</span>
+          </button>
+          <button id="btn-title-scores" class="title-menu-btn title-btn-scores">
+            <span class="btn-icon">🏆</span>
+            <span class="btn-text">冒険の記録（スコア履歴）</span>
+          </button>
+          <button id="btn-title-help" class="title-menu-btn title-btn-help">
+            <span class="btn-icon">📜</span>
+            <span class="btn-text">遊び方・操作説明</span>
+          </button>
+        </div>
+
+        <div class="title-footer-info">
+          <span>Ver 0.2.0</span> • <span>完全オフラインPWA対応</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.ts"></script>
+</body>
+</html>
