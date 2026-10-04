@@ -21,6 +21,8 @@ export interface CombatResult {
   didLevelUp?: boolean;
   /** 獲得した経験値量 */
   expGained?: number;
+  /** 背後からの不意打ちクリティカルヒットかどうか */
+  isBackstab?: boolean;
 }
 
 /**
@@ -53,13 +55,22 @@ export class CombatSystem {
    *
    * @param player - 攻撃側のプレイヤー
    * @param monster - 攻撃対象のモンスター
+   * @param isBackstab - 背後からの不意打ちかどうか（ダメージ1.5倍）
    * @returns 戦闘結果オブジェクト
    */
-  public static playerAttack(player: PlayerState, monster: Monster): CombatResult {
+  public static playerAttack(
+    player: PlayerState,
+    monster: Monster,
+    isBackstab = false
+  ): CombatResult {
     // ダメージ計算: ATK * (0.85 〜 1.15) - DEF
     const variance = 0.85 + Math.random() * 0.3;
-    const rawDamage = player.atk * variance - monster.def;
-    const damage = Math.max(1, Math.round(rawDamage));
+    const baseDamage = player.atk * variance - monster.def;
+    let damage = Math.max(1, Math.round(baseDamage));
+
+    if (isBackstab) {
+      damage = Math.max(2, Math.round(damage * 1.6));
+    }
 
     monster.hp = Math.max(0, monster.hp - damage);
     const isDefeated = monster.hp <= 0;
@@ -81,6 +92,7 @@ export class CombatSystem {
       isDefeated,
       didLevelUp,
       expGained,
+      isBackstab,
     };
   }
 

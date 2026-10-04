@@ -173,6 +173,7 @@ export class DungeonGenerator {
     const isWalkableTile = (t: TileType) =>
       t === TileType.Floor ||
       t === TileType.Bridge ||
+      t === TileType.BrokenBridge ||
       t === TileType.Ice ||
       t === TileType.Mud ||
       t === TileType.Poison;
@@ -444,13 +445,17 @@ export class DungeonGenerator {
         );
       };
 
+      // ヘルパー: 約20%の確率で壊れかけの木橋にする
+      const pickBridge = () =>
+        Math.random() < 0.2 ? TileType.BrokenBridge : TileType.Bridge;
+
       for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
           if (tiles[y][x] === TileType.Wall) {
             tiles[y][x] = TileType.Water;
           } else if (tiles[y][x] === TileType.Floor && !isRoomTile(x, y)) {
             // 通路部分は海上に架けられた木橋
-            tiles[y][x] = TileType.Bridge;
+            tiles[y][x] = pickBridge();
           }
         }
       }
@@ -466,6 +471,9 @@ export class DungeonGenerator {
       return;
     }
 
+    const pickBridge = () =>
+      Math.random() < 0.22 ? TileType.BrokenBridge : TileType.Bridge;
+
     if (biome === 'RIVER') {
       // 川バイオーム: 部屋を横断または縦断する連続した水流を流し、その上に木橋（Bridge）を架ける
       for (const room of rooms) {
@@ -479,10 +487,10 @@ export class DungeonGenerator {
               }
             }
             const bridgeX1 = room.x + Math.floor(room.w / 2);
-            tiles[riverY][bridgeX1] = TileType.Bridge;
+            tiles[riverY][bridgeX1] = pickBridge();
             if (room.w >= 8) {
               const bridgeX2 = room.x + 2;
-              tiles[riverY][bridgeX2] = TileType.Bridge;
+              tiles[riverY][bridgeX2] = pickBridge();
             }
           } else {
             const riverX = room.x + Math.floor(room.w / 2);
@@ -492,10 +500,10 @@ export class DungeonGenerator {
               }
             }
             const bridgeY1 = room.y + Math.floor(room.h / 2);
-            tiles[bridgeY1][riverX] = TileType.Bridge;
+            tiles[bridgeY1][riverX] = pickBridge();
             if (room.h >= 8) {
               const bridgeY2 = room.y + 2;
-              tiles[bridgeY2][riverX] = TileType.Bridge;
+              tiles[bridgeY2][riverX] = pickBridge();
             }
           }
         }
@@ -514,7 +522,7 @@ export class DungeonGenerator {
           const bridgeY = room.y + Math.floor(room.h / 2);
           for (let rx = room.x + 2; rx < room.x + 2 + innerW; rx++) {
             if (Math.random() < 0.6) {
-              tiles[bridgeY][rx] = TileType.Bridge;
+              tiles[bridgeY][rx] = pickBridge();
             }
           }
         }

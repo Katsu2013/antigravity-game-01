@@ -18,6 +18,8 @@ export enum TileType {
   Water = 'Water',
   /** 水路上に架けられた通行可能な木の橋タイル */
   Bridge = 'Bridge',
+  /** 通行可能だが老朽化して軋む壊れかけの木の橋タイル */
+  BrokenBridge = 'BrokenBridge',
   /** 進入すると同一方向へスーッと滑走する氷床タイル */
   Ice = 'Ice',
   /** 進入・脱出にターンを費やす足枷の泥沼タイル */
@@ -141,7 +143,7 @@ export type ObstacleType =
   | 'DIRT_BLOCK'    // 土の塊 (攻撃2回で破壊)
   | 'TREE_STUMP'    // 倒木・木塊 (攻撃3回で破壊)
   | 'SNOW_MOUND'    // 雪の塊 (攻撃1回で破壊)
-  | 'PUSH_ROCK'     // 押せる石 (破壊不能・押して1マス移動)
+  | 'PUSH_ROCK'     // 押せる石 (破壊不能・押して1〜5マス移動)
   | 'ICE_BLOCK';    // 滑る氷塊 (押すと直進滑走・衝突で破砕＆敵に20ダメージ)
 
 /**
@@ -168,6 +170,8 @@ export interface Obstacle {
   isPushable: boolean;
   /** 押すと滑走するかどうか */
   isSliding: boolean;
+  /** 大石などのプッシュ試行回数（1回目肩当て、2回目で奥へ移動） */
+  pushAttempts?: number;
   /** マップ・ミニマップ描画用シンボル文字 */
   symbol: string;
   /** マップ・ミニマップ描画用カラーコード */
@@ -198,8 +202,18 @@ export interface Monster {
   def: number;
   /** 撃破時にプレイヤーが得られる経験値量 */
   expValue: number;
-  /** 現在向いている主方位（'down' | 'up' | 'left' | 'right'） */
+  /** 現在向いている主方位（'down' | 'up' | 'left' | 'right' 等） */
   direction?: CardinalDirection;
+  /** 擬態・睡眠中かどうか（人食い箱ミミック等: 近接刺激するまで動かない） */
+  isDormant?: boolean;
+  /** 鈍重モンスターかどうか（ゴーレム、ゾンビ、ミイラ等: 2ターンに1回移動） */
+  isSlow?: boolean;
+  /** 中距離遠隔攻撃を行うかどうか（メイジ、インプ等） */
+  hasRangedAttack?: boolean;
+  /** 遠隔攻撃の種別（'magic' | 'fire'） */
+  rangedAttackType?: 'magic' | 'fire';
+  /** 索敵視野が正面向き限定のアホな敵かどうか（背後から近づけば気付かない） */
+  hasBackBlindSpot?: boolean;
   /** 画面描画用シンボル文字（例: 's', 'g', 'k'） */
   symbol: string;
   /** 画面描画用カラーコード */

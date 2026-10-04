@@ -494,9 +494,19 @@ export class CanvasRenderer {
       return;
     }
 
-    // 3.5. 木の橋タイルの描画
-    if (tile === TileType.Bridge) {
-      this.drawBridgeTile(ctx, x, y, s, isVisible, biome, gridX, gridY);
+    // 3.5. 木の橋タイルの描画（オートタイリング & 壊れかけ木橋対応）
+    if (tile === TileType.Bridge || tile === TileType.BrokenBridge) {
+      this.drawBridgeTile(
+        ctx,
+        x,
+        y,
+        s,
+        isVisible,
+        biome,
+        gridX,
+        gridY,
+        tile === TileType.BrokenBridge
+      );
       return;
     }
 
@@ -825,7 +835,7 @@ export class CanvasRenderer {
   }
 
   /**
-   * 木の橋タイルの描画
+   * 木の橋タイルのオートタイリング描画（縦連結・横連結・交差点・壊れかけ木橋）
    */
   private drawBridgeTile(
     ctx: CanvasRenderingContext2D,
@@ -835,7 +845,8 @@ export class CanvasRenderer {
     isVisible: boolean,
     biome: BiomeType,
     gridX: number,
-    gridY: number
+    gridY: number,
+    isBroken = false
   ): void {
     const map = this.engine.map;
     // 水流を下敷きとして描画
@@ -859,8 +870,39 @@ export class CanvasRenderer {
     ctx.fillStyle = wc.base;
     ctx.fillRect(x, y, s, s);
 
+    // 上下左右の隣接マスが通行可能（Bridge, BrokenBridge, Floor, StairsDown）か判定
+    const isBridgeOrFloor = (gx: number, gy: number): boolean => {
+      if (gx < 0 || gx >= map.width || gy < 0 || gy >= map.height) return false;
+      const t = map.tiles[gy][gx];
+      return (
+        t === TileType.Bridge ||
+        t === TileType.BrokenBridge ||
+        t === TileType.Floor ||
+        t === TileType.StairsDown
+      );
+    };
+
+    const hasUp = isBridgeOrFloor(gridX, gridY - 1);
+    const hasDown = isBridgeOrFloor(gridX, gridY + 1);
+    const hasLeft = isBridgeOrFloor(gridX - 1, gridY);
+    const hasRight = isBridgeOrFloor(gridX + 1, gridY);
+
+    const isVertical = hasUp || hasDown;
+    const isHorizontal = hasLeft || hasRight;
+    const connectCount =
+      (hasUp ? 1 : 0) +
+      (hasDown ? 1 : 0) +
+      (hasLeft ? 1 : 0) +
+      (hasRight ? 1 : 0);
+    const isCross = connectCount >= 3 || (isVertical && isHorizontal);
+
     // 木の橋スプライトの描画
-    const bridgeSprite = TileSprites.getBridgeSprite(gridX, gridY);
+    const bridgeSprite = TileSprites.getBridgeSprite(
+      isVertical,
+      isHorizontal,
+      isCross,
+      isBroken
+    );
     if (bridgeSprite) {
       ctx.drawImage(bridgeSprite, x, y, s, s);
     } else {

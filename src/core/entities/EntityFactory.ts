@@ -73,6 +73,7 @@ export class EntityFactory {
           atk: Math.round(5 * floorScale),
           def: 2,
           expValue: Math.round(8 * floorScale),
+          hasBackBlindSpot: true, // 背後から近づけば気付かないアホな敵
           symbol: 'g',
           color: '#f59e0b',
         };
@@ -105,6 +106,7 @@ export class EntityFactory {
           atk: Math.round(7 * floorScale),
           def: 4,
           expValue: Math.round(18 * floorScale),
+          isSlow: true, // 2ターンに1回しか動かない鈍重モンスター
           symbol: 'G',
           color: '#a8a29e',
         };
@@ -185,6 +187,8 @@ export class EntityFactory {
           atk: Math.round(9 * floorScale),
           def: 2,
           expValue: Math.round(22 * floorScale),
+          hasRangedAttack: true, // 中距離遠隔攻撃（闇の魔弾）
+          rangedAttackType: 'magic',
           symbol: 'M',
           color: '#a855f7',
         };
@@ -201,6 +205,8 @@ export class EntityFactory {
           atk: Math.round(13 * floorScale),
           def: 5,
           expValue: Math.round(45 * floorScale),
+          hasRangedAttack: true, // 灼熱の竜ブレス
+          rangedAttackType: 'fire',
           symbol: 'D',
           color: '#ef4444',
         };
@@ -217,6 +223,7 @@ export class EntityFactory {
           atk: Math.round(8 * floorScale),
           def: 3,
           expValue: Math.round(20 * floorScale),
+          isDormant: true, // 宝箱に擬態・刺激するまで動かない
           symbol: 'T',
           color: '#d97706',
         };
@@ -233,6 +240,7 @@ export class EntityFactory {
           atk: Math.round(5 * floorScale),
           def: 2,
           expValue: Math.round(11 * floorScale),
+          isSlow: true, // 2ターンに1回しか動かない鈍重モンスター
           symbol: 'z',
           color: '#65a30d',
         };
@@ -249,6 +257,9 @@ export class EntityFactory {
           atk: Math.round(7 * floorScale),
           def: 2,
           expValue: Math.round(14 * floorScale),
+          hasRangedAttack: true, // 中距離火の玉攻撃
+          rangedAttackType: 'fire',
+          hasBackBlindSpot: true, // 背後から近づけば気付かない
           symbol: 'i',
           color: '#ec4899',
         };
@@ -265,6 +276,7 @@ export class EntityFactory {
           atk: Math.round(9 * floorScale),
           def: 4,
           expValue: Math.round(25 * floorScale),
+          isSlow: true, // 2ターンに1回しか動かない鈍重モンスター
           symbol: 'M',
           color: '#d4d4d8',
         };

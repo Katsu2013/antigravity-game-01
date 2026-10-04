@@ -13,6 +13,7 @@ import { ItemSystem } from './systems/ItemSystem';
 import { StorageManager } from '../storage/StorageManager';
 import {
   ActionType,
+  CardinalDirection,
   Direction8,
   DungeonMap,
   GameLogEntry,
@@ -260,31 +261,7 @@ export class GameEngine {
         );
 
         if (targetMonster) {
-          this.onAttack?.('player', action.dx, action.dy, targetMonster.id);
-          this.onDamage?.(targetMonster.id);
-          const result = CombatSystem.playerAttack(this.player, targetMonster);
-          this.addLog(
-            `${targetMonster.name} に ${result.damage} のダメージを与えた！`,
-            'damage'
-          );
-
-          if (result.isDefeated) {
-            this.addLog(
-              `${targetMonster.name} を倒した！ (${result.expGained} EXP獲得)`,
-              'info'
-            );
-            this.map.monsters = this.map.monsters.filter(
-              (m) => m.id !== targetMonster.id
-            );
-
-            if (result.didLevelUp) {
-              this.addLog(
-                `レベルが上がった！ (Lv.${this.player.level} / 最大HP+5 / 攻撃+2 / 防御+1 / HP+5回復)`,
-                'turn-header'
-              );
-            }
-          }
-
+          this.executePlayerAttack(targetMonster, action.dx, action.dy);
           turnPassed = true;
           break;
         }
@@ -420,28 +397,7 @@ export class GameEngine {
         );
 
         if (facingMonster) {
-          this.onAttack?.('player', fdx, fdy, facingMonster.id);
-          this.onDamage?.(facingMonster.id);
-          const result = CombatSystem.playerAttack(this.player, facingMonster);
-          this.addLog(
-            `${facingMonster.name} に ${result.damage} のダメージを与えた！`,
-            'damage'
-          );
-          if (result.isDefeated) {
-            this.addLog(
-              `${facingMonster.name} を倒した！ (${result.expGained} EXP獲得)`,
-              'info'
-            );
-            this.map.monsters = this.map.monsters.filter(
-              (m) => m.id !== facingMonster.id
-            );
-            if (result.didLevelUp) {
-              this.addLog(
-                `レベルが上がった！ (Lv.${this.player.level} / 最大HP+5 / 攻撃+2 / 防御+1 / HP+5回復)`,
-                'turn-header'
-              );
-            }
-          }
+          this.executePlayerAttack(facingMonster, fdx, fdy);
           turnPassed = true;
           break;
         }
@@ -757,37 +713,118 @@ export class GameEngine {
 
     // 2. 押せる大石 (PUSH_ROCK)
     if (obstacle.isPushable) {
-      const nextX = obstacle.x + dx;
-      const nextY = obstacle.y + dy;
-
-      // 1マス奥の通行判定
-      if (
-        nextX < 0 ||
-        nextX >= this.map.width ||
-        nextY < 0 ||
-        nextY >= this.map.height
-      ) {
-        this.addLog(`${obstacle.name} は壁に引っかかって押せない！`, 'warning');
-        return false;
-      }
-
-      const tile = this.map.tiles[nextY][nextX];
-      const isBlocked =
-        tile === TileType.Wall ||
-        tile === TileType.Water ||
-        this.map.monsters.some((m) => m.x === nextX && m.y === nextY) ||
-        this.map.obstacles.some((o) => o.x === nextX && o.y === nextY);
-
-      if (isBlocked) {
-        this.addLog(`奥が塞がっていて ${obstacle.name} を押せない！`, 'warning');
-        return false;
-      }
-
-      obstacle.x = nextX;
-      obstacle.y = nextY;
+      obstacle.pushAttempts = (obstacle.pushAttempts || 0) + 1;
       this.onAttack?.('player', dx, dy, obstacle.id);
+
+      // 1回目の試行: 肩を当てて力を込める
+      if (obstacle.pushAttempts === 1) {
+        this.onDamage?.(obstacle.id);
+        this.addLog(
+          `${obstacle.name} に全力で肩を当てて押した！……重くてビクともしないが、もう少し力を込めれば動きそうだ！`,
+          'normal'
+        );
+        return true;
+      }
+
+      // 2回目（規定回数）: 奥へ1〜5マス（障害物・壁・水路・敵等にぶつかるまで）一気に移動！
+      let curX = obstacle.x;
+      let curY = obstacle.y;
+      let movedDist = 0;
+      let hitMonster: Monster | undefined;
+
+      while (movedDist < 5) {
+        const nextX = curX + dx;
+        const nextY = curY + dy;
+
+        // マップ外・壁・水路判定
+        if (
+          nextX < 0 ||
+          nextX >= this.map.width ||
+          nextY < 0 ||
+          nextY >= this.map.height
+        ) {
+          break;
+        }
+
+        const tile = this.map.tiles[nextY][nextX];
+        if (tile === TileType.Wall || tile === TileType.Water) {
+          break;
+        }
+
+        // モンスター衝突判定
+        hitMonster = this.map.monsters.find(
+          (m) => m.x === nextX && m.y === nextY
+        );
+        if (hitMonster) {
+          curX = nextX;
+          curY = nextY;
+          movedDist += 1;
+          break;
+        }
+
+        // 他の障害物判定
+        const hitOtherObstacle = (this.map.obstacles || []).find(
+          (o) => o.id !== obstacle.id && o.x === nextX && o.y === nextY
+        );
+        if (hitOtherObstacle) {
+          break;
+        }
+
+        curX = nextX;
+        curY = nextY;
+        movedDist += 1;
+      }
+
+      if (movedDist === 0) {
+        this.addLog(`奥が塞がっていて ${obstacle.name} を押せない！`, 'warning');
+        obstacle.pushAttempts = 0;
+        return false;
+      }
+
+      obstacle.x = curX;
+      obstacle.y = curY;
+      obstacle.pushAttempts = 0;
       this.onObstaclePush?.(obstacle, dx, dy);
-      this.addLog(`${obstacle.name} をズズズ…と奥へ押して移動させた！`, 'normal');
+
+      if (hitMonster) {
+        this.onDamage?.(hitMonster.id);
+        hitMonster.hp -= 10;
+        if (hitMonster.isDormant) {
+          hitMonster.isDormant = false;
+        }
+        this.addLog(
+          `ゴゴゴゴッ！ ${obstacle.name} が重い地響きを立てて動き出し、${hitMonster.name} に激突して 10 のダメージを与えた！（${movedDist}マス移動）`,
+          'damage'
+        );
+        if (hitMonster.hp <= 0) {
+          this.addLog(
+            `${hitMonster.name} を圧殺撃破した！ (${hitMonster.expValue} EXP獲得)`,
+            'info'
+          );
+          this.player.exp += hitMonster.expValue;
+          this.map.monsters = this.map.monsters.filter(
+            (m) => m.id !== hitMonster!.id
+          );
+          const expNeeded = this.player.level * 15;
+          if (this.player.exp >= expNeeded) {
+            this.player.level += 1;
+            this.player.exp -= expNeeded;
+            this.player.maxHp += 5;
+            this.player.hp = Math.min(this.player.maxHp, this.player.hp + 5);
+            this.player.baseAtk += 2;
+            this.player.baseDef += 1;
+            this.addLog(
+              `レベルが上がった！ (Lv.${this.player.level} / 最大HP+5 / 攻撃+2 / 防御+1 / HP+5回復)`,
+              'turn-header'
+            );
+          }
+        }
+      } else {
+        this.addLog(
+          `うおおおっ！ ゴゴゴゴッ……！ ${obstacle.name} が重い地響きを立てて奥へ ${movedDist} マス動いた！`,
+          'normal'
+        );
+      }
       return true;
     }
 
@@ -821,7 +858,7 @@ export class GameEngine {
   }
 
   /**
-   * プレイヤーが移動した先の床ギミック効果（氷の滑走、泥濘の足枷、毒沼の毒気）を適用します。
+   * プレイヤーが移動した先の床ギミック効果（氷の滑走、泥濘の足枷、毒沼の毒気、壊れかけの橋）を適用します。
    *
    * @param currentTile - 進入したタイル種別
    * @param dx - 進入X方向
@@ -891,36 +928,158 @@ export class GameEngine {
       );
     }
 
+    // 4. 壊れかけの木橋（TileType.BrokenBridge）: 軋む音
+    if (currentTile === TileType.BrokenBridge) {
+      this.addLog('ギシギシ…！ 壊れかけの木橋が音を立てて軋んだ！', 'warning');
+    }
+
     return extraTurn;
   }
 
   /**
-   * マップ上の生存モンスター全員の自律AI（索敵・追跡・攻撃）を実行します。
+   * プレイヤーから指定モンスターへの攻撃を実行します。
+   * ミミックの擬態解除、背後不意打ち判定、ダメージ付与、撃破・レベルアップ処理を行います。
+   */
+  private executePlayerAttack(monster: Monster, dx: number, dy: number): void {
+    if (monster.isDormant) {
+      monster.isDormant = false;
+      this.addLog(`${monster.name} が正体を現して目を覚ました！`, 'warning');
+    }
+
+    const isBack = this.isBackstabAttack(dx, dy, monster.direction);
+    this.onAttack?.('player', dx, dy, monster.id);
+    this.onDamage?.(monster.id);
+
+    const result = CombatSystem.playerAttack(this.player, monster, isBack);
+
+    if (result.isBackstab) {
+      this.addLog(
+        `背後から不意打ち！ 会心の一撃！ ${monster.name} に ${result.damage} の大ダメージ！`,
+        'turn-header'
+      );
+    } else {
+      this.addLog(
+        `${monster.name} に ${result.damage} のダメージを与えた！`,
+        'damage'
+      );
+    }
+
+    if (result.isDefeated) {
+      this.addLog(
+        `${monster.name} を倒した！ (${result.expGained} EXP獲得)`,
+        'info'
+      );
+      this.map.monsters = this.map.monsters.filter((m) => m.id !== monster.id);
+
+      if (result.didLevelUp) {
+        this.addLog(
+          `レベルが上がった！ (Lv.${this.player.level} / 最大HP+5 / 攻撃+2 / 防御+1 / HP+5回復)`,
+          'turn-header'
+        );
+      }
+    }
+  }
+
+  /**
+   * 攻撃方向とモンスターの向きから、背後からの不意打ち攻撃かどうかを判定します。
+   */
+  private isBackstabAttack(
+    atkDx: number,
+    atkDy: number,
+    monsterDir?: CardinalDirection
+  ): boolean {
+    if (!monsterDir) return false;
+    const mVec = this.getDirectionVector(monsterDir);
+    // 内積 > 0: 攻撃者の進行方向とモンスターの向いている方向が同方向（＝敵の背中側から切りかかった）
+    return atkDx * mVec.x + atkDy * mVec.y > 0;
+  }
+
+  /**
+   * 方向文字列から単位ベクトルを取得します。
+   */
+  private getDirectionVector(dir?: CardinalDirection): { x: number; y: number } {
+    switch (dir) {
+      case 'up': return { x: 0, y: -1 };
+      case 'down': return { x: 0, y: 1 };
+      case 'left': return { x: -1, y: 0 };
+      case 'right': return { x: 1, y: 0 };
+      case 'up_left': return { x: -1, y: -1 };
+      case 'up_right': return { x: 1, y: -1 };
+      case 'down_left': return { x: -1, y: 1 };
+      case 'down_right': return { x: 1, y: 1 };
+      default: return { x: 0, y: 1 };
+    }
+  }
+
+  /**
+   * 移動ベクトルから8方向の方位文字列を計算します。
+   */
+  private calcDirection(dx: number, dy: number): CardinalDirection {
+    if (dx > 0 && dy > 0) return 'down_right';
+    if (dx < 0 && dy > 0) return 'down_left';
+    if (dx > 0 && dy < 0) return 'up_right';
+    if (dx < 0 && dy < 0) return 'up_left';
+    if (dx > 0) return 'right';
+    if (dx < 0) return 'left';
+    if (dy > 0) return 'down';
+    return 'up';
+  }
+
+  /**
+   * 2点間に壁や障害物のない射線が通っているか検査します。
+   */
+  private hasClearLineOfSight(
+    x0: number,
+    y0: number,
+    x1: number,
+    y1: number
+  ): boolean {
+    const stepX = Math.sign(x1 - x0);
+    const stepY = Math.sign(y1 - y0);
+    let cx = x0 + stepX;
+    let cy = y0 + stepY;
+
+    while (cx !== x1 || cy !== y1) {
+      if (cx < 0 || cx >= this.map.width || cy < 0 || cy >= this.map.height) {
+        return false;
+      }
+      const tile = this.map.tiles[cy][cx];
+      if (tile === TileType.Wall) return false;
+      if (this.map.obstacles?.some((o) => o.x === cx && o.y === cy)) return false;
+      cx += stepX;
+      cy += stepY;
+    }
+    return true;
+  }
+
+  /**
+   * マップ上の生存モンスター全員の自律AI（索敵・追跡・近接＆中距離攻撃）を実行します。
    */
   private updateMonsters(): void {
     const playerPos = { x: this.player.x, y: this.player.y };
 
     for (const monster of this.map.monsters) {
+      // 1. 擬態・休眠中のミミック（MIMIC）は刺激されるまで動かない
+      if (monster.isDormant) {
+        continue;
+      }
+
+      // 2. 鈍重モンスター（isSlow）は2ターンに1回しか行動しない
+      if (monster.isSlow && this.player.turn % 2 !== 0) {
+        continue;
+      }
+
       const isPlayerVisible = this.map.visible[monster.y][monster.x];
       const distToPlayer = Math.max(
         Math.abs(monster.x - playerPos.x),
         Math.abs(monster.y - playerPos.y)
       );
 
-      // 隣接（距離1）している場合は近接攻撃
+      // 3. 隣接（距離1）している場合は近接攻撃
       if (distToPlayer <= 1) {
         const dx = playerPos.x - monster.x;
         const dy = playerPos.y - monster.y;
-        if (dx !== 0 && dy !== 0) {
-          if (dx > 0 && dy > 0) monster.direction = 'down_right';
-          else if (dx < 0 && dy > 0) monster.direction = 'down_left';
-          else if (dx > 0 && dy < 0) monster.direction = 'up_right';
-          else if (dx < 0 && dy < 0) monster.direction = 'up_left';
-        } else if (dx !== 0) {
-          monster.direction = dx > 0 ? 'right' : 'left';
-        } else if (dy !== 0) {
-          monster.direction = dy > 0 ? 'down' : 'up';
-        }
+        monster.direction = this.calcDirection(dx, dy);
 
         this.onAttack?.(monster.id, dx, dy, 'player');
         this.onDamage?.('player');
@@ -936,8 +1095,67 @@ export class GameEngine {
         continue;
       }
 
-      // 視界内にプレイヤーがいる場合は接近（他のモンスターおよび障害物を回避）
+      // 4. 中距離遠隔攻撃（メイジ、インプ等）: 距離2〜3マスで射線が通る場合
+      if (
+        monster.hasRangedAttack &&
+        distToPlayer >= 2 &&
+        distToPlayer <= 3 &&
+        isPlayerVisible
+      ) {
+        const dx = playerPos.x - monster.x;
+        const dy = playerPos.y - monster.y;
+        const isLine = dx === 0 || dy === 0 || Math.abs(dx) === Math.abs(dy);
+        if (
+          isLine &&
+          this.hasClearLineOfSight(monster.x, monster.y, playerPos.x, playerPos.y)
+        ) {
+          monster.direction = this.calcDirection(dx, dy);
+          const stepX = Math.sign(dx);
+          const stepY = Math.sign(dy);
+          this.onAttack?.(monster.id, stepX, stepY, 'player');
+          this.onDamage?.('player');
+
+          const rangedDamage = Math.max(
+            2,
+            Math.round(monster.atk * 0.85 + Math.random() * 3)
+          );
+          this.player.hp = Math.max(0, this.player.hp - rangedDamage);
+
+          if (monster.rangedAttackType === 'fire') {
+            this.addLog(
+              `${monster.name} が火の玉を放った！ あなたは ${rangedDamage} の炎ダメージを受けた！`,
+              'damage'
+            );
+          } else {
+            this.addLog(
+              `${monster.name} が魔力を詠唱し魔弾を放った！ あなたは ${rangedDamage} の魔法ダメージを受けた！`,
+              'damage'
+            );
+          }
+
+          if (this.player.hp <= 0) {
+            this.player.isAlive = false;
+            this.lastDefeatCause = `${monster.name} の遠隔攻撃により力尽きた`;
+            break;
+          }
+          continue;
+        }
+      }
+
+      // 5. 索敵・接近（視界内）
       if (isPlayerVisible) {
+        // 背後死角を持つアホな敵（GOBLIN等）：プレイヤーが真後ろにいる場合は気付かない
+        if (monster.hasBackBlindSpot && monster.direction) {
+          const dxToPlayer = playerPos.x - monster.x;
+          const dyToPlayer = playerPos.y - monster.y;
+          const facingVec = this.getDirectionVector(monster.direction);
+          const dot = dxToPlayer * facingVec.x + dyToPlayer * facingVec.y;
+          if (dot < 0) {
+            // 背後にいるためプレイヤーを発見できない
+            continue;
+          }
+        }
+
         const blockers = [
           ...this.map.monsters
             .filter((m) => m.id !== monster.id)
@@ -955,17 +1173,7 @@ export class GameEngine {
         if (nextStep) {
           const dx = nextStep.x - monster.x;
           const dy = nextStep.y - monster.y;
-          if (dx !== 0 && dy !== 0) {
-            if (dx > 0 && dy > 0) monster.direction = 'down_right';
-            else if (dx < 0 && dy > 0) monster.direction = 'down_left';
-            else if (dx > 0 && dy < 0) monster.direction = 'up_right';
-            else if (dx < 0 && dy < 0) monster.direction = 'up_left';
-          } else if (dx !== 0) {
-            monster.direction = dx > 0 ? 'right' : 'left';
-          } else if (dy !== 0) {
-            monster.direction = dy > 0 ? 'down' : 'up';
-          }
-
+          monster.direction = this.calcDirection(dx, dy);
           monster.x = nextStep.x;
           monster.y = nextStep.y;
         }

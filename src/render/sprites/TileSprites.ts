@@ -88,7 +88,11 @@ export type TileSpriteId =
   | 'tile_island_floor_4'
   | 'tile_island_wall_1'
   | 'tile_island_wall_2'
-  // 木の橋 (BRIDGE)
+  // 木の橋 (BRIDGE: 縦連結・横連結・交差点・壊れかけ)
+  | 'tile_bridge_vertical'
+  | 'tile_bridge_horizontal'
+  | 'tile_bridge_cross'
+  | 'tile_bridge_broken'
   | 'tile_bridge_1'
   | 'tile_bridge_2'
   // 特殊環境ギミック床 (GIMMICKS)
@@ -735,68 +739,152 @@ export class TileSprites {
 
   // ==========================================
   // 木の橋 (BRIDGE) SVG 定義
-  // 水流の上に架けられた厚板の桟橋
+  // 水流の上に架けられた厚板の桟橋（縦連結・横連結・交差点・壊れかけ）
   // ==========================================
 
-  /** 木の橋・厚板桟橋1 */
-  public static readonly BRIDGE_1_SVG = `
+  /** 木の橋・縦連結（南北に架かる橋: 横板4枚、左右に太い丸太支持梁とロープ） */
+  public static readonly BRIDGE_VERTICAL_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <!-- 左右の頑丈な支持梁・ロープ -->
-  <rect x="2" y="0" width="6" height="64" fill="#451a03" stroke="#260e02" stroke-width="1"/>
-  <rect x="56" y="0" width="6" height="64" fill="#451a03" stroke="#260e02" stroke-width="1"/>
+  <!-- 左右の頑丈な縦支持丸太梁・ロープ -->
+  <rect x="2" y="0" width="6" height="64" fill="#451a03" stroke="#260e02" stroke-width="1.2"/>
+  <rect x="56" y="0" width="6" height="64" fill="#451a03" stroke="#260e02" stroke-width="1.2"/>
+  <line x1="5" y1="0" x2="5" y2="64" stroke="#78350f" stroke-width="1.5"/>
+  <line x1="59" y1="0" x2="59" y2="64" stroke="#78350f" stroke-width="1.5"/>
   <!-- 横木板 4枚 -->
   <!-- 板1 -->
-  <rect x="4" y="3" width="56" height="12" rx="1.5" fill="#92400e" stroke="#451a03" stroke-width="1.5"/>
+  <rect x="4" y="3" width="56" height="12" rx="2" fill="#92400e" stroke="#451a03" stroke-width="1.5"/>
   <line x1="8" y1="6" x2="52" y2="6" stroke="#b45309" stroke-width="1.2"/>
-  <circle cx="8" cy="9" r="1.5" fill="#1e293b"/>
-  <circle cx="56" cy="9" r="1.5" fill="#1e293b"/>
+  <path d="M14 9 Q28 8 46 9" stroke="#78350f" stroke-width="0.8" fill="none"/>
+  <circle cx="8" cy="9" r="1.6" fill="#1e293b"/>
+  <circle cx="56" cy="9" r="1.6" fill="#1e293b"/>
   <!-- 板2 -->
-  <rect x="4" y="18" width="56" height="12" rx="1.5" fill="#b45309" stroke="#451a03" stroke-width="1.5"/>
+  <rect x="4" y="18" width="56" height="12" rx="2" fill="#b45309" stroke="#451a03" stroke-width="1.5"/>
   <line x1="8" y1="21" x2="52" y2="21" stroke="#d97706" stroke-width="1.2"/>
-  <circle cx="8" cy="24" r="1.5" fill="#1e293b"/>
-  <circle cx="56" cy="24" r="1.5" fill="#1e293b"/>
+  <circle cx="8" cy="24" r="1.6" fill="#1e293b"/>
+  <circle cx="56" cy="24" r="1.6" fill="#1e293b"/>
   <!-- 板3 -->
-  <rect x="4" y="33" width="56" height="12" rx="1.5" fill="#92400e" stroke="#451a03" stroke-width="1.5"/>
+  <rect x="4" y="33" width="56" height="12" rx="2" fill="#92400e" stroke="#451a03" stroke-width="1.5"/>
   <line x1="8" y1="36" x2="52" y2="36" stroke="#b45309" stroke-width="1.2"/>
-  <circle cx="8" cy="39" r="1.5" fill="#1e293b"/>
-  <circle cx="56" cy="39" r="1.5" fill="#1e293b"/>
+  <circle cx="8" cy="39" r="1.6" fill="#1e293b"/>
+  <circle cx="56" cy="39" r="1.6" fill="#1e293b"/>
   <!-- 板4 -->
-  <rect x="4" y="48" width="56" height="12" rx="1.5" fill="#78350f" stroke="#451a03" stroke-width="1.5"/>
+  <rect x="4" y="48" width="56" height="12" rx="2" fill="#78350f" stroke="#451a03" stroke-width="1.5"/>
   <line x1="8" y1="51" x2="52" y2="51" stroke="#92400e" stroke-width="1.2"/>
-  <circle cx="8" cy="54" r="1.5" fill="#1e293b"/>
-  <circle cx="56" cy="54" r="1.5" fill="#1e293b"/>
+  <circle cx="8" cy="54" r="1.6" fill="#1e293b"/>
+  <circle cx="56" cy="54" r="1.6" fill="#1e293b"/>
   <!-- 両端の固定ロープ巻き -->
-  <line x1="5" y1="15" x2="5" y2="18" stroke="#d97706" stroke-width="2"/>
-  <line x1="5" y1="30" x2="5" y2="33" stroke="#d97706" stroke-width="2"/>
-  <line x1="59" y1="15" x2="59" y2="18" stroke="#d97706" stroke-width="2"/>
-  <line x1="59" y1="30" x2="59" y2="33" stroke="#d97706" stroke-width="2"/>
+  <line x1="4" y1="15" x2="8" y2="15" stroke="#d97706" stroke-width="2.5"/>
+  <line x1="4" y1="30" x2="8" y2="30" stroke="#d97706" stroke-width="2.5"/>
+  <line x1="4" y1="45" x2="8" y2="45" stroke="#d97706" stroke-width="2.5"/>
+  <line x1="56" y1="15" x2="60" y2="15" stroke="#d97706" stroke-width="2.5"/>
+  <line x1="56" y1="30" x2="60" y2="30" stroke="#d97706" stroke-width="2.5"/>
+  <line x1="56" y1="45" x2="60" y2="45" stroke="#d97706" stroke-width="2.5"/>
 </svg>
 `.trim();
 
-  /** 木の橋・年季の入った古桟橋2 */
-  public static readonly BRIDGE_2_SVG = `
+  /** 木の橋・横連結（東西に架かる橋: 縦板4枚、上下に太い丸太支持梁とロープ） */
+  public static readonly BRIDGE_HORIZONTAL_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <rect x="2" y="0" width="6" height="64" fill="#451a03" stroke="#260e02" stroke-width="1"/>
-  <rect x="56" y="0" width="6" height="64" fill="#451a03" stroke="#260e02" stroke-width="1"/>
+  <!-- 上下の頑丈な横支持丸太梁・ロープ -->
+  <rect x="0" y="2" width="64" height="6" fill="#451a03" stroke="#260e02" stroke-width="1.2"/>
+  <rect x="0" y="56" width="64" height="6" fill="#451a03" stroke="#260e02" stroke-width="1.2"/>
+  <line x1="0" y1="5" x2="64" y2="5" stroke="#78350f" stroke-width="1.5"/>
+  <line x1="0" y1="59" x2="64" y2="59" stroke="#78350f" stroke-width="1.5"/>
+  <!-- 縦木板 4枚 -->
   <!-- 板1 -->
-  <rect x="4" y="3" width="56" height="12" rx="1.5" fill="#78350f" stroke="#451a03" stroke-width="1.5"/>
-  <circle cx="8" cy="9" r="1.5" fill="#1e293b"/>
-  <circle cx="56" cy="9" r="1.5" fill="#1e293b"/>
+  <rect x="3" y="4" width="12" height="56" rx="2" fill="#92400e" stroke="#451a03" stroke-width="1.5"/>
+  <line x1="6" y1="8" x2="6" y2="52" stroke="#b45309" stroke-width="1.2"/>
+  <circle cx="9" cy="8" r="1.6" fill="#1e293b"/>
+  <circle cx="9" cy="56" r="1.6" fill="#1e293b"/>
   <!-- 板2 -->
-  <rect x="4" y="18" width="56" height="12" rx="1.5" fill="#92400e" stroke="#451a03" stroke-width="1.5"/>
-  <circle cx="8" cy="24" r="1.5" fill="#1e293b"/>
-  <circle cx="56" cy="24" r="1.5" fill="#1e293b"/>
-  <path d="M22 22 Q26 24 24 28" stroke="#047857" stroke-width="1.5" fill="none"/>
+  <rect x="18" y="4" width="12" height="56" rx="2" fill="#b45309" stroke="#451a03" stroke-width="1.5"/>
+  <line x1="21" y1="8" x2="21" y2="52" stroke="#d97706" stroke-width="1.2"/>
+  <circle cx="24" cy="8" r="1.6" fill="#1e293b"/>
+  <circle cx="24" cy="56" r="1.6" fill="#1e293b"/>
   <!-- 板3 -->
-  <rect x="4" y="33" width="56" height="12" rx="1.5" fill="#b45309" stroke="#451a03" stroke-width="1.5"/>
-  <circle cx="8" cy="39" r="1.5" fill="#1e293b"/>
-  <circle cx="56" cy="39" r="1.5" fill="#1e293b"/>
+  <rect x="33" y="4" width="12" height="56" rx="2" fill="#92400e" stroke="#451a03" stroke-width="1.5"/>
+  <line x1="36" y1="8" x2="36" y2="52" stroke="#b45309" stroke-width="1.2"/>
+  <circle cx="39" cy="8" r="1.6" fill="#1e293b"/>
+  <circle cx="39" cy="56" r="1.6" fill="#1e293b"/>
   <!-- 板4 -->
-  <rect x="4" y="48" width="56" height="12" rx="1.5" fill="#78350f" stroke="#451a03" stroke-width="1.5"/>
-  <circle cx="8" cy="54" r="1.5" fill="#1e293b"/>
-  <circle cx="56" cy="54" r="1.5" fill="#1e293b"/>
+  <rect x="48" y="4" width="12" height="56" rx="2" fill="#78350f" stroke="#451a03" stroke-width="1.5"/>
+  <line x1="51" y1="8" x2="51" y2="52" stroke="#92400e" stroke-width="1.2"/>
+  <circle cx="54" cy="8" r="1.6" fill="#1e293b"/>
+  <circle cx="54" cy="56" r="1.6" fill="#1e293b"/>
+  <!-- 上下の固定ロープ巻き -->
+  <line x1="15" y1="4" x2="15" y2="8" stroke="#d97706" stroke-width="2.5"/>
+  <line x1="30" y1="4" x2="30" y2="8" stroke="#d97706" stroke-width="2.5"/>
+  <line x1="45" y1="4" x2="45" y2="8" stroke="#d97706" stroke-width="2.5"/>
+  <line x1="15" y1="56" x2="15" y2="60" stroke="#d97706" stroke-width="2.5"/>
+  <line x1="30" y1="56" x2="30" y2="60" stroke="#d97706" stroke-width="2.5"/>
+  <line x1="45" y1="56" x2="45" y2="60" stroke="#d97706" stroke-width="2.5"/>
 </svg>
 `.trim();
+
+  /** 木の橋・交差点（十字・T字分岐: 中央組木構造、四隅補強柱、真鍮留め座金） */
+  public static readonly BRIDGE_CROSS_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- 四隅の頑丈な親杭・角丸太 -->
+  <rect x="1" y="1" width="10" height="10" rx="3" fill="#381a07" stroke="#1f0d04" stroke-width="1.5"/>
+  <circle cx="6" cy="6" r="2" fill="#a16207"/>
+  <rect x="53" y="1" width="10" height="10" rx="3" fill="#381a07" stroke="#1f0d04" stroke-width="1.5"/>
+  <circle cx="58" cy="6" r="2" fill="#a16207"/>
+  <rect x="1" y="53" width="10" height="10" rx="3" fill="#381a07" stroke="#1f0d04" stroke-width="1.5"/>
+  <circle cx="6" cy="58" r="2" fill="#a16207"/>
+  <rect x="53" y="53" width="10" height="10" rx="3" fill="#381a07" stroke="#1f0d04" stroke-width="1.5"/>
+  <circle cx="58" cy="58" r="2" fill="#a16207"/>
+  <!-- 外周の板敷き -->
+  <rect x="12" y="2" width="40" height="14" rx="2" fill="#92400e" stroke="#451a03" stroke-width="1.5"/>
+  <rect x="12" y="48" width="40" height="14" rx="2" fill="#92400e" stroke="#451a03" stroke-width="1.5"/>
+  <rect x="2" y="12" width="14" height="40" rx="2" fill="#b45309" stroke="#451a03" stroke-width="1.5"/>
+  <rect x="48" y="12" width="14" height="40" rx="2" fill="#b45309" stroke="#451a03" stroke-width="1.5"/>
+  <!-- 中央の交差大板 -->
+  <rect x="14" y="14" width="36" height="36" rx="4" fill="#a16207" stroke="#451a03" stroke-width="2"/>
+  <rect x="20" y="20" width="24" height="24" rx="3" fill="#b45309" stroke="#78350f" stroke-width="1.5"/>
+  <!-- 中央補強座金・十字金具 -->
+  <circle cx="32" cy="32" r="6" fill="#475569" stroke="#0f172a" stroke-width="1.5"/>
+  <circle cx="32" cy="32" r="2" fill="#facc15"/>
+  <line x1="22" y1="22" x2="42" y2="42" stroke="#d97706" stroke-width="1.5"/>
+  <line x1="22" y1="42" x2="42" y2="22" stroke="#d97706" stroke-width="1.5"/>
+</svg>
+`.trim();
+
+  /** 木の橋・壊れかけの老朽木橋（板が一部欠落して下の水面が見え、ヒビ割れ・傾き） */
+  public static readonly BRIDGE_BROKEN_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- 露出した下の水面（川の深層水と水流波紋） -->
+  <rect x="0" y="0" width="64" height="64" fill="#0369a1"/>
+  <path d="M12 28 Q32 24 52 29" stroke="#38bdf8" stroke-width="2" fill="none" opacity="0.8"/>
+  <path d="M16 38 Q36 42 48 37" stroke="#7dd3fc" stroke-width="1.5" fill="none" opacity="0.7"/>
+  <!-- 左右のほつれかけた支持梁 -->
+  <rect x="2" y="0" width="6" height="64" fill="#381a07" stroke="#1f0d04" stroke-width="1.2"/>
+  <rect x="56" y="0" width="6" height="40" fill="#381a07" stroke="#1f0d04" stroke-width="1.2"/>
+  <!-- ほつれたロープ -->
+  <path d="M59 40 Q62 48 57 54" stroke="#d97706" stroke-width="2.5" fill="none"/>
+  <!-- 残った老朽板1 (上部) -->
+  <rect x="4" y="3" width="56" height="11" rx="1.5" fill="#78350f" stroke="#451a03" stroke-width="1.5"/>
+  <path d="M18 5 L24 12 L20 14" stroke="#1f0d04" stroke-width="1.5" fill="none"/>
+  <!-- 傾いた老朽板2 (中央上) -->
+  <polygon points="4,18 58,16 56,27 4,30" fill="#92400e" stroke="#451a03" stroke-width="1.5"/>
+  <line x1="8" y1="23" x2="48" y2="22" stroke="#b45309" stroke-width="1.2"/>
+  <circle cx="8" cy="24" r="1.5" fill="#0f172a"/>
+  <!-- ★中央部 (y=30〜46): 板が崩落して大きな穴が開いて水面が見えている！ -->
+  <!-- 折れた板の残骸片 -->
+  <polygon points="4,34 18,33 12,42 4,41" fill="#78350f" stroke="#381a07" stroke-width="1.5"/>
+  <polygon points="48,36 58,35 56,43 44,42" fill="#78350f" stroke="#381a07" stroke-width="1.5"/>
+  <!-- 残った老朽板4 (下部) -->
+  <rect x="4" y="48" width="56" height="12" rx="1.5" fill="#5c2605" stroke="#381a07" stroke-width="1.5"/>
+  <path d="M34 50 L42 58 L38 60" stroke="#1f0d04" stroke-width="1.5" fill="none"/>
+  <circle cx="8" cy="54" r="1.5" fill="#0f172a"/>
+  <circle cx="56" cy="54" r="1.5" fill="#0f172a"/>
+</svg>
+`.trim();
+
+  /** 木の橋・厚板桟橋1 (後方互換用) */
+  public static readonly BRIDGE_1_SVG = TileSprites.BRIDGE_VERTICAL_SVG;
+
+  /** 木の橋・年季の入った古桟橋2 (後方互換用) */
+  public static readonly BRIDGE_2_SVG = TileSprites.BRIDGE_HORIZONTAL_SVG;
 
   // ==========================================
   // 8. 泥濘の湿地帯 (SWAMP) SVG 定義
@@ -987,7 +1075,11 @@ export class TileSprites {
       tile_ice_wall_1: this.ICE_WALL_1_SVG,
       tile_ice_wall_2: this.ICE_WALL_2_SVG,
 
-      // BRIDGE
+      // BRIDGE (縦連結・横連結・交差点・壊れかけ)
+      tile_bridge_vertical: this.BRIDGE_VERTICAL_SVG,
+      tile_bridge_horizontal: this.BRIDGE_HORIZONTAL_SVG,
+      tile_bridge_cross: this.BRIDGE_CROSS_SVG,
+      tile_bridge_broken: this.BRIDGE_BROKEN_SVG,
       tile_bridge_1: this.BRIDGE_1_SVG,
       tile_bridge_2: this.BRIDGE_2_SVG,
       // SWAMP
@@ -1101,18 +1193,42 @@ export class TileSprites {
   }
 
   /**
-   * グリッド座標ハッシュから、木製の橋タイルスプライトを取得します。
+   * 連結方向および老朽フラグに基づいて、適切な木の橋タイルスプライトを取得します。
    *
-   * @param x - グリッドX座標
-   * @param y - グリッドY座標
+   * @param isVertical - 縦方向（上下）に繋がっているか
+   * @param isHorizontal - 横方向（左右）に繋がっているか
+   * @param isCross - 3方向以上または十字に交差しているか
+   * @param isBroken - 壊れかけの老朽木橋かどうか
    * @returns 適合する橋タイルのHTMLImageElement
    */
   public static getBridgeSprite(
-    x: number,
-    y: number
+    isVertical: boolean,
+    isHorizontal: boolean,
+    isCross: boolean,
+    isBroken = false
   ): HTMLImageElement | undefined {
-    const hash = (x + y) % 2 === 0 ? 'tile_bridge_1' : 'tile_bridge_2';
-    return this.imageCache.get(hash);
+    if (isBroken) {
+      return (
+        this.imageCache.get('tile_bridge_broken') ??
+        this.imageCache.get('tile_bridge_vertical')
+      );
+    }
+    if (isCross) {
+      return (
+        this.imageCache.get('tile_bridge_cross') ??
+        this.imageCache.get('tile_bridge_vertical')
+      );
+    }
+    if (isHorizontal && !isVertical) {
+      return (
+        this.imageCache.get('tile_bridge_horizontal') ??
+        this.imageCache.get('tile_bridge_vertical')
+      );
+    }
+    return (
+      this.imageCache.get('tile_bridge_vertical') ??
+      this.imageCache.get('tile_bridge_1')
+    );
   }
 
   /**

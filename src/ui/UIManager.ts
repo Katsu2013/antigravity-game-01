@@ -90,6 +90,12 @@ export class UIManager {
   /** ゲームオーバー表示ディレイ用タイマーID（倒れ込み演出待機用） */
   private gameOverTimerId: number | null = null;
 
+  /** モバイルティッカー自動消去用タイマーID（約3秒でフェードアウト） */
+  private tickerTimerId: number | null = null;
+
+  /** 直前に処理した最新ログID */
+  private lastHandledLogId: string | null = null;
+
   /** モーダルが開かれたタイムスタンプ（スマホタッチ直後の合成クリックによる即時クローズ防止用） */
   private modalOpenTimestamps: Map<string, number> = new Map();
 
@@ -335,11 +341,23 @@ export class UIManager {
       this.logListEl.appendChild(entryEl);
     }
 
-    // 5. 画面上部ティッカーの更新（最新ログと種別カラーを反映）
+    // 5. 画面上部ティッカーの更新（最新ログと種別カラーを反映、約3.2秒後に自動フェードアウト）
     if (this.engine.logs.length > 0) {
       const latestLog = this.engine.logs[0];
-      this.mobileTickerEl.textContent = latestLog.text;
-      this.mobileTickerEl.className = `mobile-ticker log-type-${latestLog.type || 'normal'}`;
+      if (latestLog.id !== this.lastHandledLogId) {
+        this.lastHandledLogId = latestLog.id;
+        this.mobileTickerEl.textContent = latestLog.text;
+        this.mobileTickerEl.className = `mobile-ticker log-type-${latestLog.type || 'normal'}`;
+
+        if (this.tickerTimerId !== null) {
+          window.clearTimeout(this.tickerTimerId);
+        }
+
+        this.tickerTimerId = window.setTimeout(() => {
+          this.mobileTickerEl.classList.add('ticker-hidden');
+          this.tickerTimerId = null;
+        }, 3200);
+      }
     }
 
     // 6. 新フロア到達時のトーストポップアップ演出

@@ -619,60 +619,137 @@ export class MonsterAndItemSprites {
   // 障害物5種（土の塊、倒木、雪の塊、押せる大石、滑る氷塊）
   // =========================================================================
 
-  /** 土の塊 (DIRT_BLOCK) */
+  /** 土の塊 (DIRT_BLOCK: 赤土と泥、埋まった小石、自然な地層の凹凸塊) */
   public static readonly OBSTACLE_DIRT_BLOCK_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="56" rx="18" ry="5" fill="rgba(0,0,0,0.35)"/>
-  <polygon points="12,48 18,22 36,16 52,26 54,48 38,54" fill="#92400e" stroke="#78350f" stroke-width="2"/>
-  <polygon points="20,24 34,20 48,28 36,44" fill="#b45309"/>
-  <line x1="26" y1="30" x2="32" y2="42" stroke="#78350f" stroke-width="2"/>
-  <line x1="34" y1="28" x2="42" y2="36" stroke="#78350f" stroke-width="1.5"/>
+  <!-- 接地ドロップシャドウ -->
+  <ellipse cx="32" cy="56" rx="22" ry="6" fill="rgba(0,0,0,0.45)"/>
+  <!-- ベースのゴツゴツした土塊多角形 -->
+  <polygon points="10,48 14,28 26,16 44,14 54,26 56,48 44,55 18,54" fill="#78350f" stroke="#451a03" stroke-width="2"/>
+  <!-- 上面ハイライト面（赤土の乾いた面） -->
+  <polygon points="26,16 44,14 50,26 34,28 18,24" fill="#b45309"/>
+  <!-- 中間陰影面 -->
+  <polygon points="18,24 34,28 42,42 22,46 12,38" fill="#92400e"/>
+  <!-- 側面シャドウ面 -->
+  <polygon points="34,28 50,26 56,48 42,42" fill="#5c2605"/>
+  <polygon points="22,46 42,42 44,55 18,54" fill="#451a03"/>
+  <!-- 埋まった小石のアクセント -->
+  <ellipse cx="28" cy="36" rx="3.5" ry="2.5" fill="#a8a29e" stroke="#57534e" stroke-width="1"/>
+  <ellipse cx="44" cy="46" rx="2.5" ry="2" fill="#78716c" stroke="#44403c" stroke-width="1"/>
+  <circle cx="18" cy="44" r="2" fill="#d6d3d1"/>
+  <!-- 地層クラックと土の筋 -->
+  <path d="M22 22 L32 26 L28 34" stroke="#451a03" stroke-width="1.6" fill="none"/>
+  <path d="M38 28 L46 36 L40 44" stroke="#451a03" stroke-width="1.6" fill="none"/>
+  <circle cx="36" cy="18" r="1.5" fill="#fde68a" opacity="0.6"/>
 </svg>`.trim();
 
-  /** 倒木 (TREE_STUMP) */
+  /** 倒木 (TREE_STUMP: リアルな年輪・苔むした樹皮・力強い根の張り出し) */
   public static readonly OBSTACLE_TREE_STUMP_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="56" rx="20" ry="5.5" fill="rgba(0,0,0,0.35)"/>
-  <path d="M14 50 L18 28 L46 28 L50 50 Z" fill="#78350f" stroke="#451a03" stroke-width="2"/>
-  <ellipse cx="32" cy="28" rx="14" ry="7" fill="#b45309" stroke="#451a03" stroke-width="2"/>
-  <ellipse cx="32" cy="28" rx="8" ry="4" fill="#92400e"/>
-  <ellipse cx="32" cy="28" rx="3" ry="1.5" fill="#451a03"/>
-  <!-- 苔のアクセント -->
-  <circle cx="20" cy="42" r="3.5" fill="#15803d"/>
-  <circle cx="44" cy="46" r="3" fill="#15803d"/>
+  <!-- 接地ドロップシャドウ -->
+  <ellipse cx="32" cy="56" rx="24" ry="6.5" fill="rgba(0,0,0,0.45)"/>
+  <!-- 根の張り出し（左右および手前） -->
+  <path d="M8 54 Q18 50 20 40 L44 40 Q46 50 56 54 Q48 58 32 58 Q16 58 8 54 Z" fill="#381a07" stroke="#1f0d04" stroke-width="1.8"/>
+  <path d="M4 52 Q14 46 18 36" stroke="#451a03" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M60 52 Q50 46 46 36" stroke="#451a03" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- 幹の側面円柱 -->
+  <path d="M16 26 L18 48 Q32 52 46 48 L48 26 Z" fill="#5c2605" stroke="#2e1002" stroke-width="2"/>
+  <!-- 樹皮の縦溝テクスチャ -->
+  <line x1="24" y1="28" x2="25" y2="48" stroke="#381a07" stroke-width="2"/>
+  <line x1="32" y1="29" x2="33" y2="50" stroke="#381a07" stroke-width="2.2"/>
+  <line x1="40" y1="28" x2="39" y2="48" stroke="#381a07" stroke-width="2"/>
+  <!-- 上部切り株断面（楕円ベース） -->
+  <ellipse cx="32" cy="26" rx="16" ry="8.5" fill="#a16207" stroke="#2e1002" stroke-width="2"/>
+  <!-- リアルな年輪（同心楕円） -->
+  <ellipse cx="32" cy="26" rx="12" ry="6" fill="none" stroke="#78350f" stroke-width="1.5"/>
+  <ellipse cx="32" cy="26" rx="8" ry="4" fill="none" stroke="#78350f" stroke-width="1.4"/>
+  <ellipse cx="32" cy="26" rx="4" ry="2" fill="none" stroke="#78350f" stroke-width="1.2"/>
+  <!-- 芯部 -->
+  <circle cx="32" cy="26" r="1.5" fill="#451a03"/>
+  <!-- 年輪の放射状乾燥クラック -->
+  <line x1="32" y1="26" x2="22" y2="23" stroke="#451a03" stroke-width="1.4"/>
+  <line x1="32" y1="26" x2="38" y2="32" stroke="#451a03" stroke-width="1.2"/>
+  <!-- 根本と側面の苔（自然なモスグリーン） -->
+  <circle cx="18" cy="44" r="4.5" fill="#15803d"/>
+  <circle cx="21" cy="42" r="3" fill="#4ade80" opacity="0.8"/>
+  <circle cx="44" cy="46" r="4" fill="#15803d"/>
+  <circle cx="46" cy="44" r="2.5" fill="#4ade80" opacity="0.8"/>
+  <ellipse cx="32" cy="48" rx="5" ry="2" fill="#166534"/>
 </svg>`.trim();
 
-  /** 雪の塊 (SNOW_MOUND) */
+  /** 雪の塊 (SNOW_MOUND: 柔らかな積雪の立体起伏・氷晶ハイライト・吹き溜まり) */
   public static readonly OBSTACLE_SNOW_MOUND_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="56" rx="20" ry="5.5" fill="rgba(0,0,0,0.25)"/>
-  <path d="M12 52 Q22 20 32 20 Q44 20 52 52 Z" fill="#f0f9ff" stroke="#bae6fd" stroke-width="2"/>
-  <path d="M22 50 Q30 26 34 26 Q40 26 44 50 Z" fill="#ffffff"/>
-  <circle cx="26" cy="38" r="2.5" fill="#e0f2fe"/>
-  <circle cx="38" cy="42" r="2" fill="#e0f2fe"/>
+  <!-- 接地淡青シャドウ -->
+  <ellipse cx="32" cy="56" rx="22" ry="6" fill="rgba(15, 23, 42, 0.35)"/>
+  <!-- 奥の雪塊ベース -->
+  <path d="M10 52 Q18 24 32 20 Q48 24 54 52 Q44 56 32 56 Q18 56 10 52 Z" fill="#93c5fd" stroke="#60a5fa" stroke-width="1.8"/>
+  <!-- メイン積雪起伏（滑らかな純白ドーム） -->
+  <path d="M12 50 Q20 22 34 18 Q46 22 52 50 Q42 54 32 54 Q20 54 12 50 Z" fill="#e0f2fe"/>
+  <!-- 手前右側のふっくらとした雪の吹き溜まり -->
+  <path d="M22 52 Q32 30 46 28 Q52 38 48 52 Z" fill="#f0f9ff"/>
+  <!-- 頂部純白ハイライト（太陽光反射） -->
+  <path d="M26 22 Q34 16 40 22 Q34 26 26 22 Z" fill="#ffffff"/>
+  <!-- 陰影クレバスライン -->
+  <path d="M20 42 Q30 38 40 44" stroke="#60a5fa" stroke-width="1.5" fill="none" opacity="0.7"/>
+  <!-- きらめく氷結晶ハイライト -->
+  <polygon points="34,14 36,18 34,22 32,18" fill="#ffffff"/>
+  <circle cx="26" cy="30" r="2" fill="#ffffff"/>
+  <circle cx="44" cy="34" r="1.8" fill="#ffffff"/>
+  <circle cx="36" cy="46" r="1.5" fill="#ffffff"/>
 </svg>`.trim();
 
-  /** 押せる大石 (PUSH_ROCK) */
+  /** 押せる大石 (PUSH_ROCK: 重厚な多面体巨石・岩肌の立体陰影・クラック) */
   public static readonly OBSTACLE_PUSH_ROCK_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="56" rx="20" ry="5.5" fill="rgba(0,0,0,0.4)"/>
-  <circle cx="32" cy="34" r="18" fill="#64748b" stroke="#334155" stroke-width="2.5"/>
-  <circle cx="28" cy="28" r="12" fill="#94a3b8" opacity="0.6"/>
-  <!-- ひび割れと陰影 -->
-  <path d="M26 24 L32 34 L38 32 L42 42" stroke="#1e293b" stroke-width="1.8" fill="none"/>
-  <!-- 押し出し矢印マーク -->
-  <polygon points="32,44 28,48 36,48" fill="#cbd5e1" opacity="0.7"/>
+  <!-- 重厚な接地ドロップシャドウ -->
+  <ellipse cx="32" cy="56" rx="23" ry="6.5" fill="rgba(0,0,0,0.5)"/>
+  <!-- 巨石ベース多面体外郭 -->
+  <polygon points="10,46 14,24 28,12 46,14 54,26 56,46 44,55 18,54" fill="#334155" stroke="#0f172a" stroke-width="2.2"/>
+  <!-- 左上ハイライト天板面（光を受ける明るい岩肌） -->
+  <polygon points="28,12 46,14 42,26 26,24 14,24" fill="#94a3b8"/>
+  <polygon points="28,12 42,26 32,38 18,34 14,24" fill="#64748b"/>
+  <!-- 右上中間面 -->
+  <polygon points="46,14 54,26 48,38 42,26" fill="#475569"/>
+  <!-- 正面中央の角面 -->
+  <polygon points="18,34 32,38 34,52 14,48" fill="#475569"/>
+  <!-- 右下ダークシャドウ面 -->
+  <polygon points="42,26 48,38 56,46 44,55 34,52 32,38" fill="#1e293b"/>
+  <!-- 鋭いクラック（ひび割れ） -->
+  <path d="M26 18 L32 26 L28 32 L34 36" stroke="#0f172a" stroke-width="1.8" fill="none"/>
+  <path d="M42 28 L46 34 L42 42" stroke="#0f172a" stroke-width="1.6" fill="none"/>
+  <!-- 岩肌のハイライト稜線 -->
+  <line x1="28" y1="12" x2="42" y2="26" stroke="#cbd5e1" stroke-width="1.5"/>
+  <line x1="14" y1="24" x2="26" y2="24" stroke="#cbd5e1" stroke-width="1.2"/>
+  <!-- 砂粒・小石のアクセント -->
+  <circle cx="16" cy="52" r="2" fill="#64748b" stroke="#1e293b" stroke-width="1"/>
+  <circle cx="48" cy="52" r="2.5" fill="#475569" stroke="#1e293b" stroke-width="1"/>
 </svg>`.trim();
 
-  /** 滑る氷塊 (ICE_BLOCK) */
+  /** 滑る氷塊 (ICE_BLOCK: 透明感あふれる蒼氷の多面キューブ・氷晶クラック・冷気フロスト) */
   public static readonly OBSTACLE_ICE_BLOCK_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="56" rx="18" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <rect x="14" y="16" width="36" height="36" rx="4" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
-  <polygon points="16,18 46,18 36,28 16,28" fill="#bae6fd" opacity="0.8"/>
-  <polygon points="46,18 48,46 38,46 36,28" fill="#0ea5e9" opacity="0.7"/>
-  <line x1="20" y1="22" x2="44" y2="46" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.9"/>
-  <!-- 滑走スピード線 -->
-  <line x1="24" y1="36" x2="38" y2="50" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/>
+  <!-- 接地蒼影 -->
+  <ellipse cx="32" cy="56" rx="20" ry="6" fill="rgba(3, 105, 161, 0.45)"/>
+  <!-- 周囲に漂う冷気オーラ -->
+  <path d="M12 48 Q8 32 14 20 Q24 12 36 12 Q52 16 54 36 Q56 48 48 54" stroke="#7dd3fc" stroke-width="1.5" fill="none" opacity="0.45" stroke-dasharray="4,3"/>
+  <!-- 立体氷塊・底面・側面ベース -->
+  <polygon points="14,24 32,14 50,22 52,48 34,56 12,46" fill="#0284c7" stroke="#0369a1" stroke-width="2"/>
+  <!-- 上面（滑らかな氷の天板） -->
+  <polygon points="14,24 32,14 50,22 34,32" fill="#bae6fd"/>
+  <!-- 左側面（屈折面） -->
+  <polygon points="14,24 34,32 34,56 12,46" fill="#38bdf8"/>
+  <!-- 右側面（深層シャドウ面） -->
+  <polygon points="50,22 34,32 34,56 52,48" fill="#0ea5e9"/>
+  <!-- 内部の屈折氷晶クラック -->
+  <path d="M22 28 L30 36 L24 44 L32 48" stroke="#ffffff" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M38 28 L42 36 L36 42" stroke="#e0f2fe" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+  <!-- 鋭いガラス質白ハイライト稜線 -->
+  <line x1="14" y1="24" x2="34" y2="32" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="34" y1="32" x2="34" y2="56" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="34" y1="32" x2="50" y2="22" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+  <!-- 氷晶きらめき -->
+  <circle cx="24" cy="20" r="2.5" fill="#ffffff"/>
+  <circle cx="44" cy="40" r="2" fill="#ffffff" opacity="0.8"/>
 </svg>`.trim();
 }
