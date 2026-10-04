@@ -118,14 +118,45 @@ export class InputManager {
         (helpModal && !helpModal.classList.contains('hidden')) ||
         (gameoverModal && !gameoverModal.classList.contains('hidden'))
       ) {
+        const keyLower = e.key.toLowerCase();
         if (e.key === 'Escape') {
           this.ui.closeInventoryModal();
           this.ui.hideScoresModal();
           this.ui.hideHelpModal();
-        } else if (inventoryModal && !inventoryModal.classList.contains('hidden')) {
-          if (['o', 's'].includes(e.key.toLowerCase())) {
+          return;
+        }
+
+        // 所持品モーダル表示中のキーボード操作（カーソル移動・使用・整理・閉じる）
+        if (inventoryModal && !inventoryModal.classList.contains('hidden')) {
+          if (['arrowup', 'w', '8'].includes(keyLower)) {
             e.preventDefault();
-            this.engine.sortInventory();
+            this.ui.moveInventorySelection(-1);
+            return;
+          }
+          if (['arrowdown', 's', '2'].includes(keyLower)) {
+            e.preventDefault();
+            this.ui.moveInventorySelection(1);
+            return;
+          }
+          if (['enter', 'z', 'j'].includes(keyLower)) {
+            e.preventDefault();
+            this.ui.useSelectedInventoryItem();
+            return;
+          }
+          if (['x', 'k', 'c', 'i', 'tab'].includes(keyLower)) {
+            e.preventDefault();
+            this.ui.closeInventoryModal();
+            return;
+          }
+          if (['o', 'y'].includes(keyLower)) {
+            e.preventDefault();
+            this.ui.sortInventoryFromUI();
+            return;
+          }
+          if (keyLower === 'd') {
+            e.preventDefault();
+            this.ui.dropSelectedInventoryItem();
+            return;
           }
         }
         return;
@@ -445,6 +476,27 @@ export class InputManager {
 
       btn.addEventListener('pointerdown', (e: PointerEvent) => {
         e.preventDefault();
+
+        // 所持品モーダル表示中の十字キー操作（上下でアイテム選択カーソル移動）
+        if (this.ui.isInventoryOpen()) {
+          const dir = btn.dataset.dir;
+          let delta = 0;
+          if (dir === 'N' || dir === 'NW' || dir === 'NE') delta = -1;
+          else if (dir === 'S' || dir === 'SW' || dir === 'SE') delta = 1;
+
+          if (delta !== 0) {
+            this.stopButtonRepeat();
+            this.ui.moveInventorySelection(delta);
+
+            this.repeatDelayTimer = window.setTimeout(() => {
+              this.repeatIntervalTimer = window.setInterval(() => {
+                this.ui.moveInventorySelection(delta);
+              }, 150);
+            }, 240);
+          }
+          return;
+        }
+
         const action = getAction();
         if (!action) return;
 
@@ -468,17 +520,25 @@ export class InputManager {
       btn.addEventListener('pointerleave', () => this.stopButtonRepeat());
     });
 
-    // [Aボタン] 決定 / 拾う / 階段
+    // [Aボタン] 決定 / 拾う / 階段（所持品モーダル中はアイテム使用/装備）
     document.getElementById('btn-pad-a')?.addEventListener('pointerdown', (e) => {
       e.preventDefault();
+      if (this.ui.isInventoryOpen()) {
+        this.ui.useSelectedInventoryItem();
+        return;
+      }
       this.dispatchAction({ type: 'INTERACT' });
     });
 
-    // [Bボタン] 足踏み（長押しで連続足踏み回復対応）
+    // [Bボタン] 足踏み（所持品モーダル中はモーダルを閉じる）
     const btnB = document.getElementById('btn-pad-b');
     if (btnB) {
       btnB.addEventListener('pointerdown', (e) => {
         e.preventDefault();
+        if (this.ui.isInventoryOpen()) {
+          this.ui.closeInventoryModal();
+          return;
+        }
         this.stopButtonRepeat();
         this.dispatchAction({ type: 'WAIT' });
 
@@ -507,9 +567,13 @@ export class InputManager {
       });
     }
 
-    // [Yボタン] ミニマップ切替
+    // [Yボタン] ミニマップ切替（所持品モーダル中は持ち物整理整頓）
     document.getElementById('btn-pad-y')?.addEventListener('pointerdown', (e) => {
       e.preventDefault();
+      if (this.ui.isInventoryOpen()) {
+        this.ui.sortInventoryFromUI();
+        return;
+      }
       this.toggleMinimap();
     });
 

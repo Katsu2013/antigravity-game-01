@@ -69,6 +69,9 @@ export class UIManager {
   /** インベントリ所持容量バッジ要素 */
   private inventoryCapacityEl: HTMLElement;
 
+  /** インベントリモーダルで現在選択されているアイテムのインデックス（コントローラー・キーボード操作用） */
+  public selectedInventoryIndex = 0;
+
   /** タイトル画面オーバーレイ要素 */
   private titleScreenEl: HTMLElement;
 
@@ -257,11 +260,27 @@ export class UIManager {
   }
 
   /**
+   * インベントリモーダルが開いているかどうかを判定します。
+   */
+  public isInventoryOpen(): boolean {
+    return !this.inventoryModalEl.classList.contains('hidden');
+  }
+
+  /**
    * インベントリモーダルを開きます。
+   * 下部コントローラーをインベントリ操作モード（使う/閉じる/整理）へ切り替えます。
    */
   public openInventoryModal(): void {
     this.modalOpenTimestamps.set('inventory-modal', Date.now());
     this.inventoryModalEl.classList.remove('hidden');
+
+    const invLen = this.engine.player.inventory.length;
+    if (this.selectedInventoryIndex >= invLen) {
+      this.selectedInventoryIndex = Math.max(0, invLen - 1);
+    }
+
+    this.updateGamepadLabels(true);
+    this.highlightSelectedInventoryItem();
   }
 
   /**
@@ -276,10 +295,109 @@ export class UIManager {
   }
 
   /**
-   * インベントリモーダルを閉じます。
+   * インベントリモーダルを閉じ、コントローラーをダンジョン操作モードへ復帰します。
    */
   public closeInventoryModal(): void {
     this.inventoryModalEl.classList.add('hidden');
+    this.updateGamepadLabels(false);
+  }
+
+  /**
+   * 画面下部コントローラーのボタンサブラベルを、所持品操作モードか通常モードかに応じて切り替えます。
+   */
+  public updateGamepadLabels(isInventoryMode: boolean): void {
+    const controlsEl = document.getElementById('mobile-controls');
+    if (controlsEl) {
+      if (isInventoryMode) {
+        controlsEl.classList.add('inventory-mode');
+      } else {
+        controlsEl.classList.remove('inventory-mode');
+      }
+    }
+
+    const subA = document.querySelector('#btn-pad-a .btn-sub');
+    const subB = document.querySelector('#btn-pad-b .btn-sub');
+    const subX = document.querySelector('#btn-pad-x .btn-sub');
+    const subY = document.querySelector('#btn-pad-y .btn-sub');
+
+    if (subA) subA.textContent = isInventoryMode ? '使う' : '決定';
+    if (subB) subB.textContent = isInventoryMode ? '閉じる' : '足踏';
+    if (subX) subX.textContent = isInventoryMode ? '閉じる' : '持物';
+    if (subY) subY.textContent = isInventoryMode ? '整理' : 'MAP';
+  }
+
+  /**
+   * コントローラーの十字キー操作等でインベントリのカーソルを上下移動します。
+   *
+   * @param delta - 移動方向（-1: 上、1: 下）
+   */
+  public moveInventorySelection(delta: number): void {
+    const items = this.engine.player.inventory;
+    if (items.length === 0) return;
+    this.selectedInventoryIndex =
+      (this.selectedInventoryIndex + delta + items.length) % items.length;
+    this.highlightSelectedInventoryItem();
+  }
+
+  /**
+   * 選択中のアイテムカードにハイライトを付与し、自動スクロール追従します。
+   */
+  public highlightSelectedInventoryItem(): void {
+    const cards = this.modalInventoryListEl.querySelectorAll<HTMLElement>(
+      '.inventory-item-card'
+    );
+    cards.forEach((card, idx) => {
+      if (idx === this.selectedInventoryIndex) {
+        card.classList.add('selected');
+        card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      } else {
+        card.classList.remove('selected');
+      }
+    });
+  }
+
+  /**
+   * 現在選択中のアイテムを使用（消費・装備・外す）します。
+   */
+  public useSelectedInventoryItem(): void {
+    const items = this.engine.player.inventory;
+    if (items.length === 0) return;
+    const item = items[this.selectedInventoryIndex];
+    if (!item) return;
+
+    this.engine.executeAction({ type: 'USE_ITEM', itemId: item.id });
+
+    const nextLen = this.engine.player.inventory.length;
+    if (this.selectedInventoryIndex >= nextLen) {
+      this.selectedInventoryIndex = Math.max(0, nextLen - 1);
+    }
+    this.highlightSelectedInventoryItem();
+  }
+
+  /**
+   * 現在選択中のアイテムを足元に置きます。
+   */
+  public dropSelectedInventoryItem(): void {
+    const items = this.engine.player.inventory;
+    if (items.length === 0) return;
+    const item = items[this.selectedInventoryIndex];
+    if (!item) return;
+
+    this.engine.executeAction({ type: 'DROP_ITEM', itemId: item.id });
+
+    const nextLen = this.engine.player.inventory.length;
+    if (this.selectedInventoryIndex >= nextLen) {
+      this.selectedInventoryIndex = Math.max(0, nextLen - 1);
+    }
+    this.highlightSelectedInventoryItem();
+  }
+
+  /**
+   * コントローラーのYボタン等から所持品の整理整頓を実行します。
+   */
+  public sortInventoryFromUI(): void {
+    this.engine.sortInventory();
+    this.highlightSelectedInventoryItem();
   }
 
   /**
@@ -503,7 +621,21 @@ export class UIManager {
       card.appendChild(topRow);
       card.appendChild(desc);
 
+      if (container === this.modalInventoryListEl) {
+        card.addEventListener('pointerdown', () => {
+          const idx = player.inventory.indexOf(item);
+          if (idx !== -1) {
+            this.selectedInventoryIndex = idx;
+            this.highlightSelectedInventoryItem();
+          }
+        });
+      }
+
       container.appendChild(card);
+    }
+
+    if (container === this.modalInventoryListEl && this.isInventoryOpen()) {
+      this.highlightSelectedInventoryItem();
     }
   }
 
