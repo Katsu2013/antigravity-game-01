@@ -100,6 +100,8 @@ export class CanvasRenderer {
 
     this.engine.onObstaclePush = (obstacle, _dx, _dy) => {
       this.anim.triggerDustParticles(obstacle.x, obstacle.y);
+      this.anim.triggerHeavyDustParticles(obstacle.x, obstacle.y);
+      this.anim.triggerScreenShake(0.35, 3.5); // 地響きスクリーンシェイク
     };
 
     this.engine.onObstacleBreak = (obstacle) => {
@@ -111,11 +113,30 @@ export class CanvasRenderer {
           : obstacle.type === 'TREE_STUMP'
           ? '#78350f'
           : '#b45309';
-      this.anim.triggerBreakParticles(obstacle.x, obstacle.y, color, 16);
+      this.anim.triggerBreakParticles(obstacle.x, obstacle.y, color, 18);
+      this.anim.triggerScreenShake(0.25, 3.0);
     };
 
     this.engine.onSwampStuck = (x, y) => {
       this.anim.triggerMudParticles(x, y);
+      this.anim.triggerDamage('player'); // もがきジタバタシェイク
+    };
+
+    this.engine.onSwampEscape = (fromX, fromY, toX, toY) => {
+      this.anim.triggerMudEscapeParticles(fromX, fromY, toX, toY);
+      this.anim.triggerSwampEscapeMotion();
+    };
+
+    this.engine.onIceSlide = (fromX, fromY, toX, toY, hitWall) => {
+      const dx = Math.sign(toX - fromX);
+      const dy = Math.sign(toY - fromY);
+      const dist = Math.hypot(toX - fromX, toY - fromY);
+      this.anim.triggerFrostParticles(toX, toY, dx, dy);
+      this.anim.triggerIceSlideMotion(Math.max(0.8, dist * 0.45));
+      if (hitWall) {
+        this.anim.triggerScreenShake(0.3, 4.0);
+        this.anim.triggerBreakParticles(toX, toY, '#bae6fd', 12);
+      }
     };
   }
 
@@ -162,6 +183,7 @@ export class CanvasRenderer {
     const player = this.engine.player;
     const curTile = this.engine.map.tiles[player.y]?.[player.x];
     const isSwamp = curTile === TileType.Mud || curTile === TileType.Poison;
+    this.anim.playerSinkOffsetY = isSwamp ? 4.5 : 0;
     const playerSpeedMult = isSwamp ? 0.35 : 1.0;
 
     this.anim.syncPosition('player', player.x, player.y, false, playerSpeedMult);
@@ -242,13 +264,15 @@ export class CanvasRenderer {
     const animPlayer = this.anim.getState('player', player.x, player.y);
     const effectiveTileSize = this.tileSize * this.zoom;
 
-    // カメラオフセット（プレイヤーの滑らかなアニメーション座標を中心に配置）
+    // カメラオフセット（プレイヤーの滑らかなアニメーション座標を中心に配置 ＋ 画面全体の地響き振動）
     const cameraX =
       width / 2 -
-      (animPlayer.renderX + animPlayer.attackOffsetX + 0.5) * effectiveTileSize;
+      (animPlayer.renderX + animPlayer.attackOffsetX + 0.5) * effectiveTileSize +
+      this.anim.screenShakeX;
     const cameraY =
       height / 2 -
-      (animPlayer.renderY + animPlayer.attackOffsetY + 0.5) * effectiveTileSize;
+      (animPlayer.renderY + animPlayer.attackOffsetY + 0.5) * effectiveTileSize +
+      this.anim.screenShakeY;
 
     // タイルカリング計算
     const minTileX = Math.max(0, Math.floor(-cameraX / effectiveTileSize));
@@ -2240,9 +2264,13 @@ export class CanvasRenderer {
       }
 
       // 3. プレイヤー本体の描画（進行方向に合わせた水平反転 scale(scaleX, 1.0) を適用）
+      // 泥濘沈み込み(sinkOffsetY)・脱出跳躍(escapeJumpY)・氷上スリップ傾き(slipTilt)を合成
+      const totalYOffset =
+        bobY + this.anim.playerSinkOffsetY + this.anim.playerEscapeJumpY;
+      const totalRotation = rotation + this.anim.playerSlipTilt;
       ctx.save();
-      ctx.translate(cx, cy + bobY);
-      ctx.rotate(rotation);
+      ctx.translate(cx, cy + totalYOffset);
+      ctx.rotate(totalRotation);
       ctx.scale(scaleX, 1.0);
 
       // 被弾赤フラッシュ演出

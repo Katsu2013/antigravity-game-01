@@ -77,6 +77,7 @@ export class InputManager {
    * @param action - 実行するアクション
    */
   private dispatchAction(action: ActionType): void {
+    if (this.engine.isActionLocked()) return;
     this.engine.executeAction(action);
   }
 

@@ -89,6 +89,59 @@ export class AnimationEngine {
   /** プレイヤー死亡演出の経過時間（秒、生存中は -1） */
   private playerDeathTime = -1;
 
+  /** スクリーンシェイク（画面全体の地響き振動）Xオフセット（ピクセル） */
+  public screenShakeX = 0;
+
+  /** スクリーンシェイク（画面全体の地響き振動）Yオフセット（ピクセル） */
+  public screenShakeY = 0;
+
+  /** スクリーンシェイク残り時間（秒） */
+  private screenShakeTime = 0;
+
+  /** スクリーンシェイク最大時間（秒） */
+  private screenShakeDuration = 0;
+
+  /** スクリーンシェイク振幅強度（ピクセル） */
+  private screenShakeIntensity = 0;
+
+  /** プレイヤーの泥濘沈み込みオフセットY（ピクセル、泥に埋まっている間プラス値） */
+  public playerSinkOffsetY = 0;
+
+  /** プレイヤーの泥濘脱出ジャンプオフセットY（ピクセル、跳ね上がり中マイナス値） */
+  public playerEscapeJumpY = 0;
+
+  /** プレイヤーの氷上スリップ傾き角度（ラジアン） */
+  public playerSlipTilt = 0;
+
+  /** 泥脱出ジャンプ経過時間（秒、未発生時は -1） */
+  private escapeJumpTime = -1;
+
+  /** 氷スリップ経過時間（秒、未発生時は -1） */
+  private iceSlideTime = -1;
+
+  /**
+   * 画面全体の地響きスクリーンシェイクをトリガーします。
+   */
+  public triggerScreenShake(durationSec: number, intensityPx: number): void {
+    this.screenShakeTime = durationSec;
+    this.screenShakeDuration = durationSec;
+    this.screenShakeIntensity = intensityPx;
+  }
+
+  /**
+   * 泥濘からの脱出ジャンピング復帰アニメーションを開始します。
+   */
+  public triggerSwampEscapeMotion(): void {
+    this.escapeJumpTime = 0;
+  }
+
+  /**
+   * 氷上スリップ（傾き・バランス喪失）アニメーションを開始します。
+   */
+  public triggerIceSlideMotion(durationSec: number): void {
+    this.iceSlideTime = durationSec;
+  }
+
   /**
    * プレイヤー死亡時のドラマチックな倒れ込みアニメーション（ダウンモーション）を開始します。
    */
@@ -320,20 +373,98 @@ export class AnimationEngine {
    */
   public triggerMudParticles(x: number, y: number): void {
     const mudColors = ['#5b3a29', '#78350f', '#3e2723', '#8d6e63', '#4a2c11'];
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < 12; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const speed = 0.6 + Math.random() * 1.8;
+      const speed = 0.8 + Math.random() * 2.2;
       this.particles.push({
         x: x + 0.5 + (Math.random() - 0.5) * 0.4,
         y: y + 0.75 + (Math.random() - 0.5) * 0.2,
         vx: Math.cos(angle) * speed,
-        vy: -Math.abs(Math.sin(angle) * speed) - 0.6,
+        vy: -Math.abs(Math.sin(angle) * speed) - 1.0,
         color: mudColors[Math.floor(Math.random() * mudColors.length)],
-        size: 3 + Math.random() * 4,
+        size: 3 + Math.random() * 5,
         life: 0,
-        maxLife: 0.35 + Math.random() * 0.2,
-        gravity: 4.0, // 泥の重力落下
-        alpha: 0.9,
+        maxLife: 0.45 + Math.random() * 0.25,
+        gravity: 5.5, // 泥の重力落下
+        alpha: 0.95,
+      });
+    }
+  }
+
+  /**
+   * 氷上滑走時のフロストスプレーパーティクル（スケートのエッジのように吹き飛ぶ氷晶粉塵）を発生させます。
+   */
+  public triggerFrostParticles(x: number, y: number, dx: number, dy: number): void {
+    const frostColors = ['#ffffff', '#f0f9ff', '#e0f2fe', '#bae6fd', '#7dd3fc'];
+    const baseAngle = Math.atan2(dy, dx) + Math.PI; // 進行逆方向
+    for (let i = 0; i < 14; i++) {
+      const spreadAngle = baseAngle + (Math.random() - 0.5) * 1.8;
+      const speed = 1.0 + Math.random() * 3.0;
+      this.particles.push({
+        x: x + 0.5 + (Math.random() - 0.5) * 0.3,
+        y: y + 0.75 + (Math.random() - 0.5) * 0.2,
+        vx: Math.cos(spreadAngle) * speed,
+        vy: Math.sin(spreadAngle) * speed - 0.6,
+        color: frostColors[Math.floor(Math.random() * frostColors.length)],
+        size: 2.5 + Math.random() * 3.5,
+        life: 0,
+        maxLife: 0.4 + Math.random() * 0.25,
+        gravity: 2.5,
+        alpha: 0.95,
+      });
+    }
+  }
+
+  /**
+   * 泥濘から足を引き抜いた瞬間の大きな泥塊跳ね上がりパーティクルを発生させます。
+   */
+  public triggerMudEscapeParticles(
+    x: number,
+    y: number,
+    targetX: number,
+    targetY: number
+  ): void {
+    const mudColors = ['#451a03', '#78350f', '#92400e', '#5b3a29', '#291002'];
+    const dirX = Math.sign(targetX - x);
+    const dirY = Math.sign(targetY - y);
+
+    for (let i = 0; i < 16; i++) {
+      const angle = Math.atan2(dirY, dirX) + (Math.random() - 0.5) * 1.4;
+      const speed = 1.2 + Math.random() * 3.2;
+      this.particles.push({
+        x: x + 0.5 + (Math.random() - 0.5) * 0.3,
+        y: y + 0.7 + (Math.random() - 0.5) * 0.2,
+        vx: Math.cos(angle) * speed,
+        vy: -Math.abs(Math.sin(angle) * speed) - 2.0, // 上空へ大きく跳ね上がる
+        color: mudColors[Math.floor(Math.random() * mudColors.length)],
+        size: 4.5 + Math.random() * 5.0, // 大きな泥塊
+        life: 0,
+        maxLife: 0.5 + Math.random() * 0.3,
+        gravity: 7.5,
+        alpha: 1.0,
+      });
+    }
+  }
+
+  /**
+   * 大石移動時の重厚な連続土煙・小石破片パーティクルを発生させます。
+   */
+  public triggerHeavyDustParticles(x: number, y: number): void {
+    const dustColors = ['#78716c', '#a8a29e', '#d6d3d1', '#57534e', '#e7e5e4'];
+    for (let i = 0; i < 7; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 0.6 + Math.random() * 1.8;
+      this.particles.push({
+        x: x + 0.5 + (Math.random() - 0.5) * 0.5,
+        y: y + 0.75 + (Math.random() - 0.5) * 0.3,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed * 0.4 - 0.5,
+        color: dustColors[Math.floor(Math.random() * dustColors.length)],
+        size: 5 + Math.random() * 6,
+        life: 0,
+        maxLife: 0.45 + Math.random() * 0.3,
+        gravity: -0.2, // ふわっと漂う
+        alpha: 0.7,
       });
     }
   }
@@ -352,6 +483,39 @@ export class AnimationEngine {
       this.playerDeathTime += dt;
     }
 
+    // スクリーンシェイクの更新
+    if (this.screenShakeTime > 0) {
+      this.screenShakeTime -= dt;
+      const ratio = Math.max(0, this.screenShakeTime / this.screenShakeDuration);
+      this.screenShakeX = (Math.random() - 0.5) * 2 * this.screenShakeIntensity * ratio;
+      this.screenShakeY = (Math.random() - 0.5) * 2 * this.screenShakeIntensity * ratio;
+    } else {
+      this.screenShakeX = 0;
+      this.screenShakeY = 0;
+    }
+
+    // 泥脱出ジャンプ放物線の更新
+    if (this.escapeJumpTime >= 0) {
+      this.escapeJumpTime += dt;
+      const t = this.escapeJumpTime / 0.55; // 0.55秒でポンと跳ねて着地
+      if (t <= 1.0) {
+        this.playerEscapeJumpY = -Math.sin(t * Math.PI) * 16; // 最大16px上空へジャンプ
+      } else {
+        this.playerEscapeJumpY = 0;
+        this.escapeJumpTime = -1;
+      }
+    } else {
+      this.playerEscapeJumpY = 0;
+    }
+
+    // 氷スリップ傾きの更新
+    if (this.iceSlideTime > 0) {
+      this.iceSlideTime -= dt;
+      this.playerSlipTilt = Math.sin(this.globalTime * 16) * 0.22; // 約12度左右に傾く
+    } else {
+      this.playerSlipTilt = 0;
+    }
+
     // 1. 各エンティティの状態補間
     for (const state of this.states.values()) {
       const dx = state.targetX - state.renderX;
@@ -360,8 +524,8 @@ export class AnimationEngine {
 
       if (state.isPushable) {
         // 重い大石の移動演出:
-        // 通常の指数Lerpではなく、等速で極めてゆっくり（1秒あたり約1.2マス）地面を擦るように「ズズズズ……」と移動
-        const rockSpeed = 1.2; // マス / 秒（2マス移動に約1.67秒かけてじっくり重厚に移動）
+        // 等速で重厚に（1秒あたり約1.35マス）地面を擦るように「ゴゴゴゴ……！」と移動
+        const rockSpeed = 1.35;
         const maxStep = rockSpeed * dt;
 
         if (dist > 0.01) {
@@ -370,10 +534,9 @@ export class AnimationEngine {
           state.renderX += dx * ratio;
           state.renderY += dy * ratio;
 
-          // 大石の移動中は継続して土煙・砂埃パーティクルを舞い上げる
-          if (Math.random() < dt * 12) {
-            this.triggerDustParticles(state.renderX, state.renderY);
-          }
+          // 大石の移動中は継続して土煙・重厚スクリーンシェイク
+          this.triggerHeavyDustParticles(state.renderX, state.renderY);
+          this.triggerScreenShake(0.1, 2.5);
         } else {
           state.renderX = state.targetX;
           state.renderY = state.targetY;

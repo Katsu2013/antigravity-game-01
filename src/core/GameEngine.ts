@@ -65,6 +65,22 @@ export class GameEngine {
   /** 泥濘や沼に足を取られて身動きが取れなくなった際のコールバック */
   public onSwampStuck?: (x: number, y: number) => void;
 
+  /** 泥濘や沼から力いっぱい足を引き抜いて脱出した際のコールバック */
+  public onSwampEscape?: (fromX: number, fromY: number, toX: number, toY: number) => void;
+
+  /** 氷の床で滑走した際のコールバック */
+  public onIceSlide?: (fromX: number, fromY: number, toX: number, toY: number, hitWall: boolean) => void;
+
+  /** 演出アニメーション中（岩押し・氷滑走・沼脱出など）に次の操作を遮断するミリ秒タイムスタンプ */
+  public actionLockUntil = 0;
+
+  /**
+   * 現在演出アニメーション等のためプレイヤー入力がロック中かどうかを判定します。
+   */
+  public isActionLocked(): boolean {
+    return Date.now() < this.actionLockUntil;
+  }
+
   /**
    * GameEngine のインスタンスを生成し、デフォルトステータスと初期マップを準備します。
    * 中断セーブデータの有無を破壊せず保持します。
@@ -259,6 +275,11 @@ export class GameEngine {
    * @returns ターンが実際に経過した場合は true、無効な移動などターンが経過しなかった場合は false
    */
   public executeAction(action: ActionType): boolean {
+    // 演出アニメーション中（岩押し・氷滑走・沼脱出等）は次の操作を受け付けない（岩のすり抜け等を物理防止）
+    if (this.isActionLocked()) {
+      return false;
+    }
+
     // 死亡している場合はリスタートアクション以外を受け付けない
     if (!this.player.isAlive) {
       if (action.type === 'RESTART') {
@@ -339,11 +360,13 @@ export class GameEngine {
             this.addLog('ズブズブ……！ 泥濘に足を取られて抜け出せない！', 'warning');
             this.onDamage?.('player'); // もがき振動演出
             this.onSwampStuck?.(this.player.x, this.player.y);
+            this.actionLockUntil = Date.now() + 1150; // 約1.15秒もがきロック
             turnPassed = true;
             break;
           } else {
             this.addLog('ぬかるみから力いっぱい足を引き抜いて進んだ！', 'normal');
-            this.onSwampStuck?.(this.player.x, this.player.y);
+            this.onSwampEscape?.(this.player.x, this.player.y, targetX, targetY);
+            this.actionLockUntil = Date.now() + 1000; // 約1.0秒脱出ジャンプ演出ロック
           }
         }
 
@@ -774,6 +797,7 @@ export class GameEngine {
       // 1回目の試行: 肩を当てて力を込める
       if (obstacle.pushAttempts === 1) {
         this.onDamage?.(obstacle.id);
+        this.actionLockUntil = Date.now() + 450; // 0.45秒ロック
         this.addLog(
           `${obstacle.name} に全力で肩を当てて押した！……重くてビクともしないが、もう少し力を込めれば動きそうだ！`,
           'normal'
@@ -851,6 +875,8 @@ export class GameEngine {
       obstacle.x = curX;
       obstacle.y = curY;
       obstacle.pushAttempts = 0;
+      // 岩が画面上で目的マスに到着するまで入力を完全ロック（1マスあたり約750ms、2マスで約1500ms）
+      this.actionLockUntil = Date.now() + Math.max(1450, movedDist * 750);
       this.onObstaclePush?.(obstacle, dx, dy);
 
       if (hitMonster) {
@@ -944,6 +970,7 @@ export class GameEngine {
       let curX = this.player.x;
       let curY = this.player.y;
       let slid = false;
+      let hitWall = false;
 
       while (true) {
         const nextX = curX + dx;
@@ -954,13 +981,23 @@ export class GameEngine {
           nextY < 0 ||
           nextY >= this.map.height
         ) {
+          hitWall = true;
           break;
         }
 
         const nTile = this.map.tiles[nextY][nextX];
-        if (nTile === TileType.Wall || nTile === TileType.Water) break;
-        if (this.map.monsters.some((m) => m.x === nextX && m.y === nextY)) break;
-        if (this.map.obstacles.some((o) => o.x === nextX && o.y === nextY)) break;
+        if (nTile === TileType.Wall || nTile === TileType.Water) {
+          hitWall = true;
+          break;
+        }
+        if (this.map.monsters.some((m) => m.x === nextX && m.y === nextY)) {
+          hitWall = true;
+          break;
+        }
+        if (this.map.obstacles.some((o) => o.x === nextX && o.y === nextY)) {
+          hitWall = true;
+          break;
+        }
 
         curX = nextX;
         curY = nextY;
@@ -973,9 +1010,13 @@ export class GameEngine {
       }
 
       if (slid) {
+        const slideSteps = Math.hypot(curX - this.player.x, curY - this.player.y);
+        // 滑走にかかる時間（約0.9秒〜1.4秒）をロックして、ツーーーッと滑る演出を見せる
+        this.actionLockUntil = Date.now() + Math.max(900, slideSteps * 450);
+        this.onIceSlide?.(this.player.x, this.player.y, curX, curY, hitWall);
         this.player.x = curX;
         this.player.y = curY;
-        this.addLog('氷の床で足が滑り、スーッと滑走した！', 'normal');
+        this.addLog('氷の床で足を取られ、ツーーーーッと滑走した！', 'normal');
       }
     }
 
@@ -983,6 +1024,7 @@ export class GameEngine {
     if (currentTile === TileType.Mud) {
       this.addLog('ズブズブ…！ 泥濘に足が深く沈み込み、余分な時間がかかってしまった！', 'warning');
       this.onSwampStuck?.(this.player.x, this.player.y);
+      this.actionLockUntil = Math.max(this.actionLockUntil, Date.now() + 900); // 泥への沈み込みロック
       extraTurn = true;
     }
 
