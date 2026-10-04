@@ -55,6 +55,12 @@ export class GameEngine {
   /** 被ダメージアニメーション発生時コールバック */
   public onDamage?: (targetId: string) => void;
 
+  /** 障害物を押して移動した際のコールバック */
+  public onObstaclePush?: (obstacle: Obstacle, dx: number, dy: number) => void;
+
+  /** 障害物が破壊・粉砕された際のコールバック */
+  public onObstacleBreak?: (obstacle: Obstacle) => void;
+
   /**
    * GameEngine のインスタンスを生成し、初期フロアを生成してゲームを開始します。
    */
@@ -720,12 +726,14 @@ export class GameEngine {
             );
           }
         }
+        this.onObstacleBreak?.(obstacle);
         return true;
       } else if (hitObstacle) {
         this.addLog(
           `${obstacle.name} が ${hitObstacle.name} に激突し、木っ端微塵に粉砕した！`,
           'normal'
         );
+        this.onObstacleBreak?.(obstacle);
         this.map.obstacles = this.map.obstacles.filter(
           (o) => o.id !== obstacle.id
         );
@@ -735,6 +743,7 @@ export class GameEngine {
           `${obstacle.name} が壁に激突し、ガラガラと粉砕した！`,
           'normal'
         );
+        this.onObstacleBreak?.(obstacle);
         this.map.obstacles = this.map.obstacles.filter(
           (o) => o.id !== obstacle.id
         );
@@ -776,6 +785,8 @@ export class GameEngine {
 
       obstacle.x = nextX;
       obstacle.y = nextY;
+      this.onAttack?.('player', dx, dy, obstacle.id);
+      this.onObstaclePush?.(obstacle, dx, dy);
       this.addLog(`${obstacle.name} をズズズ…と奥へ押して移動させた！`, 'normal');
       return true;
     }
@@ -793,6 +804,7 @@ export class GameEngine {
         );
       } else {
         this.addLog(`${obstacle.name} を粉砕して道を切り開いた！`, 'info');
+        this.onObstacleBreak?.(obstacle);
         this.map.obstacles = this.map.obstacles.filter(
           (o) => o.id !== obstacle.id
         );

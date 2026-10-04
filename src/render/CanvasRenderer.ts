@@ -97,6 +97,22 @@ export class CanvasRenderer {
     this.engine.onDamage = (targetId) => {
       this.anim.triggerDamage(targetId);
     };
+
+    this.engine.onObstaclePush = (obstacle, _dx, _dy) => {
+      this.anim.triggerDustParticles(obstacle.x, obstacle.y);
+    };
+
+    this.engine.onObstacleBreak = (obstacle) => {
+      const color =
+        obstacle.type === 'ICE_BLOCK'
+          ? '#7dd3fc'
+          : obstacle.type === 'SNOW_MOUND'
+          ? '#f0f9ff'
+          : obstacle.type === 'TREE_STUMP'
+          ? '#78350f'
+          : '#b45309';
+      this.anim.triggerBreakParticles(obstacle.x, obstacle.y, color, 16);
+    };
   }
 
   /**
@@ -151,6 +167,21 @@ export class CanvasRenderer {
         this.anim.setDirection(monster.id, monster.direction);
       }
     }
+
+    if (this.engine.map.obstacles) {
+      for (const obstacle of this.engine.map.obstacles) {
+        validIds.add(obstacle.id);
+        const speedMult = obstacle.isSliding ? 2.5 : obstacle.isPushable ? 0.8 : 1.0;
+        this.anim.syncPosition(
+          obstacle.id,
+          obstacle.x,
+          obstacle.y,
+          obstacle.isSliding,
+          speedMult
+        );
+      }
+    }
+
     this.anim.pruneInactive(validIds);
   }
 
@@ -261,11 +292,28 @@ export class CanvasRenderer {
 
     // 3.5. インタラクティブ障害物の描画（土塊、倒木、雪塊、押せる大石、滑る氷塊）
     for (const obstacle of (map.obstacles || [])) {
-      if (map.explored[obstacle.y][obstacle.x]) {
-        const isVisible = map.visible[obstacle.y][obstacle.x];
-        const screenX = Math.floor(cameraX + obstacle.x * effectiveTileSize);
-        const screenY = Math.floor(cameraY + obstacle.y * effectiveTileSize);
-        this.drawObstacle(ctx, obstacle, screenX, screenY, effectiveTileSize, isVisible);
+      if (map.explored[obstacle.y]?.[obstacle.x]) {
+        const isVisible = map.visible[obstacle.y]?.[obstacle.x];
+        const animState = this.anim.getState(
+          obstacle.id,
+          obstacle.x,
+          obstacle.y
+        );
+        const screenX = Math.floor(
+          cameraX + animState.renderX * effectiveTileSize + animState.shakeX
+        );
+        const screenY = Math.floor(
+          cameraY + animState.renderY * effectiveTileSize + animState.shakeY
+        );
+        this.drawObstacle(
+          ctx,
+          obstacle,
+          screenX,
+          screenY,
+          effectiveTileSize,
+          isVisible,
+          animState
+        );
       }
     }
 
@@ -285,6 +333,9 @@ export class CanvasRenderer {
       effectiveTileSize,
       player.isAlive
     );
+
+    // 5.5. 演出パーティクルの描画（破砕片・土煙・きらめき等）
+    this.drawParticles(ctx, cameraX, cameraY, effectiveTileSize);
 
     // 6. 死亡時ゲームオーバー暗幕・ドラマチックヴィネットエフェクト
     if (!player.isAlive) {
@@ -317,18 +368,100 @@ export class CanvasRenderer {
   }
 
   /**
-   * 1つのタイルをバイオームに応じた高品質ベクターSVGスプライト、
+   * バイオーム別の壁・天板テーマカラー定義
+   */
+  private static readonly BIOME_WALL_THEMES: Record<
+    BiomeType,
+    {
+      roofBase: string;
+      roofHighlight: string;
+      roofDetail: string;
+      frontBase: string;
+      frontHighlight: string;
+    }
+  > = {
+    STONE: {
+      roofBase: '#334155',
+      roofHighlight: '#64748b',
+      roofDetail: '#243247',
+      frontBase: '#090d16',
+      frontHighlight: '#1e293b',
+    },
+    EARTH: {
+      roofBase: '#451a03',
+      roofHighlight: '#78350f',
+      roofDetail: '#2c1002',
+      frontBase: '#120704',
+      frontHighlight: '#260e07',
+    },
+    FOREST: {
+      roofBase: '#14532d',
+      roofHighlight: '#16a34a',
+      roofDetail: '#072b14',
+      frontBase: '#061a0c',
+      frontHighlight: '#11381c',
+    },
+    RIVER: {
+      roofBase: '#1e3a8a',
+      roofHighlight: '#3b82f6',
+      roofDetail: '#172554',
+      frontBase: '#030b1e',
+      frontHighlight: '#0e254e',
+    },
+    LAKE: {
+      roofBase: '#0e7490',
+      roofHighlight: '#06b6d4',
+      roofDetail: '#164e63',
+      frontBase: '#04151f',
+      frontHighlight: '#0d3247',
+    },
+    SNOW: {
+      roofBase: '#f8fafc',
+      roofHighlight: '#ffffff',
+      roofDetail: '#cbd5e1',
+      frontBase: '#080e1a',
+      frontHighlight: '#192b47',
+    },
+    ICE: {
+      roofBase: '#0369a1',
+      roofHighlight: '#7dd3fc',
+      roofDetail: '#0284c7',
+      frontBase: '#021324',
+      frontHighlight: '#0c3559',
+    },
+    SWAMP: {
+      roofBase: '#1b2e1c',
+      roofHighlight: '#22c55e',
+      roofDetail: '#121f13',
+      frontBase: '#0b140c',
+      frontHighlight: '#1a331c',
+    },
+    TOXIC: {
+      roofBase: '#3b0764',
+      roofHighlight: '#a855f7',
+      roofDetail: '#24043d',
+      frontBase: '#100713',
+      frontHighlight: '#280d30',
+    },
+    MECHA: {
+      roofBase: '#4d3721',
+      roofHighlight: '#d97706',
+      roofDetail: '#2b1c0e',
+      frontBase: '#1a1109',
+      frontHighlight: '#3b2513',
+    },
+    ISLAND: {
+      roofBase: '#1e293b',
+      roofHighlight: '#475569',
+      roofDetail: '#0f172a',
+      frontBase: '#0f172a',
+      frontHighlight: '#1e293b',
+    },
+  };
+
+  /**
+   * 1つのタイルをバイオームに応じた高品質オートタイリング、
    * アニメーション波紋、および記憶表現付きで描画します。
-   *
-   * @param ctx - Canvas描画コンテキスト
-   * @param tile - タイル種別
-   * @param x - スクリーン上X座標
-   * @param y - スクリーン上Y座標
-   * @param size - 描画サイズ（ピクセル）
-   * @param isVisible - 現在視界内に入っているかどうか
-   * @param biome - 現在フロアのバイオーム種別
-   * @param gridX - マップ上のグリッドX座標
-   * @param gridY - マップ上のグリッドY座標
    */
   private drawTile(
     ctx: CanvasRenderingContext2D,
@@ -342,291 +475,534 @@ export class CanvasRenderer {
     gridY: number
   ): void {
     const s = Math.ceil(size);
-    const map = this.engine.map;
 
-    // 1. 壁タイルの描画
+    // 1. 壁タイルのオートタイリング描画
     if (tile === TileType.Wall) {
-      const wallSprite = TileSprites.getWallSprite(biome, gridX, gridY);
-      if (wallSprite) {
-        ctx.drawImage(wallSprite, x, y, s, s);
-      } else {
-        // ロード前のフォールバック
-        ctx.fillStyle = '#090d16';
-        ctx.fillRect(x, y, s, s);
-      }
-
-      // 壁の立体天板ハイライト（上端に微細な明るいライン）
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
-      ctx.fillRect(x, y, s, Math.max(1, s * 0.04));
-
-      // 壁の接地面ベースライン（下端に漆黒の境界線を引き、床との境界をクッキリ分離）
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
-      ctx.fillRect(x, y + s - Math.max(2, s * 0.06), s, Math.max(2, s * 0.06));
-
-      // 未視界（探索済みの記憶）の場合は暗色半透明マスクを被せる
-      if (!isVisible) {
-        ctx.fillStyle = 'rgba(3, 7, 18, 0.65)';
-        ctx.fillRect(x, y, s, s);
-      }
+      this.drawWallAutoTile(ctx, x, y, s, isVisible, biome, gridX, gridY);
       return;
     }
 
-    // 2. 床タイルの描画
+    // 2. 床タイルの描画（立体ドロップシャドウ付き）
     if (tile === TileType.Floor) {
-      const floorSprite = TileSprites.getFloorSprite(biome, gridX, gridY);
-      if (floorSprite) {
-        ctx.drawImage(floorSprite, x, y, s, s);
-      } else {
-        ctx.fillStyle = '#253346';
-        ctx.fillRect(x, y, s, s);
-      }
-
-      // 壁の下のマスに対する立体ドロップシャドウ（上が壁タイルなら上端に影を落とす）
-      if (gridY > 0 && map.tiles[gridY - 1]?.[gridX] === TileType.Wall) {
-        const shadowGrad = ctx.createLinearGradient(x, y, x, y + s * 0.45);
-        shadowGrad.addColorStop(0, 'rgba(0, 0, 0, 0.7)');
-        shadowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-        ctx.fillStyle = shadowGrad;
-        ctx.fillRect(x, y, s, s * 0.45);
-      }
-
-      // 未視界の暗がりマスク
-      if (!isVisible) {
-        ctx.fillStyle = 'rgba(3, 7, 18, 0.65)';
-        ctx.fillRect(x, y, s, s);
-      }
+      this.drawFloorAutoTile(ctx, x, y, s, isVisible, biome, gridX, gridY);
       return;
     }
 
-    // 3. 水路・湖タイルの描画
+    // 3. 水路・湖タイルのオートタイリング描画
     if (tile === TileType.Water) {
-      // 水面ベース（床スプライトをうっすら下敷きにして水深感を演出）
-      const floorSprite = TileSprites.getFloorSprite(biome, gridX, gridY);
-      if (floorSprite) {
-        ctx.drawImage(floorSprite, x, y, s, s);
-      }
-
-      // バイオーム別の水面トーン
-      const waterColors: Record<
-        BiomeType,
-        { base: string; wave: string; deep: string }
-      > = {
-        STONE: { base: 'rgba(2, 132, 199, 0.72)', wave: '#7dd3fc', deep: '#0369a1' },
-        EARTH: { base: 'rgba(13, 148, 136, 0.75)', wave: '#5eead4', deep: '#0f766e' },
-        FOREST: { base: 'rgba(5, 150, 105, 0.75)', wave: '#6ee7b7', deep: '#047857' },
-        RIVER: { base: 'rgba(37, 99, 235, 0.72)', wave: '#93c5fd', deep: '#1d4ed8' },
-        LAKE: { base: 'rgba(8, 145, 178, 0.78)', wave: '#67e8f9', deep: '#0e7490' },
-        SNOW: { base: 'rgba(56, 189, 248, 0.65)', wave: '#e0f2fe', deep: '#0284c7' },
-        ICE: { base: 'rgba(14, 165, 233, 0.75)', wave: '#bae6fd', deep: '#0369a1' },
-        SWAMP: { base: 'rgba(21, 128, 61, 0.78)', wave: '#86efac', deep: '#14532d' },
-        TOXIC: { base: 'rgba(126, 34, 206, 0.82)', wave: '#d8b4fe', deep: '#581c87' },
-        MECHA: { base: 'rgba(180, 83, 9, 0.75)', wave: '#fde68a', deep: '#78350f' },
-        ISLAND: { base: 'rgba(14, 116, 144, 0.85)', wave: '#67e8f9', deep: '#164e63' },
-      };
-      const wc = waterColors[biome] || waterColors.STONE;
-
-      // 水面カラー塗り
-      ctx.fillStyle = wc.base;
-      ctx.fillRect(x, y, s, s);
-
-      // 上が壁なら水面にも影
-      if (gridY > 0 && map.tiles[gridY - 1]?.[gridX] === TileType.Wall) {
-        const shadowGrad = ctx.createLinearGradient(x, y, x, y + s * 0.4);
-        shadowGrad.addColorStop(0, 'rgba(0, 0, 0, 0.6)');
-        shadowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-        ctx.fillStyle = shadowGrad;
-        ctx.fillRect(x, y, s, s * 0.4);
-      }
-
-      if (isVisible) {
-        // 水面の緩やかなアニメーション波紋（時間経過で揺らぐ二重波線）
-        const time = this.anim.globalTime;
-        const waveOffset1 =
-          Math.sin(time * 2.6 + gridX * 0.8 + gridY * 0.5) * (s * 0.12);
-        const waveOffset2 =
-          Math.cos(time * 2.2 + gridX * 0.5 + gridY * 0.9) * (s * 0.1);
-
-        ctx.strokeStyle = wc.wave;
-        ctx.lineWidth = Math.max(1, s * 0.04);
-        ctx.lineCap = 'round';
-
-        ctx.beginPath();
-        ctx.moveTo(x + s * 0.18, y + s * 0.45 + waveOffset1);
-        ctx.quadraticCurveTo(
-          x + s * 0.5,
-          y + s * 0.45 + waveOffset1 - 2,
-          x + s * 0.82,
-          y + s * 0.45 + waveOffset1
-        );
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.moveTo(x + s * 0.28, y + s * 0.72 + waveOffset2);
-        ctx.quadraticCurveTo(
-          x + s * 0.55,
-          y + s * 0.72 + waveOffset2 + 2,
-          x + s * 0.72,
-          y + s * 0.72 + waveOffset2
-        );
-        ctx.stroke();
-
-        // きらめきハイライト
-        const sparkle = Math.sin(time * 4.0 + gridX * 1.7 + gridY * 2.3);
-        if (sparkle > 0.6) {
-          ctx.fillStyle = '#ffffff';
-          ctx.beginPath();
-          ctx.arc(x + s * 0.6, y + s * 0.3, Math.max(1, s * 0.03), 0, Math.PI * 2);
-          ctx.fill();
-        }
-      } else {
-        // 視界外マスク
-        ctx.fillStyle = 'rgba(3, 7, 18, 0.62)';
-        ctx.fillRect(x, y, s, s);
-      }
+      this.drawWaterAutoTile(ctx, x, y, s, isVisible, biome, gridX, gridY);
       return;
     }
 
-    // 3.5. 木の橋タイルの描画 (TileType.Bridge)
+    // 3.5. 木の橋タイルの描画
     if (tile === TileType.Bridge) {
-      // 水流を下敷きとして描画
-      const waterColors: Record<
-        BiomeType,
-        { base: string }
-      > = {
-        STONE: { base: 'rgba(2, 132, 199, 0.72)' },
-        EARTH: { base: 'rgba(13, 148, 136, 0.75)' },
-        FOREST: { base: 'rgba(5, 150, 105, 0.75)' },
-        RIVER: { base: 'rgba(37, 99, 235, 0.72)' },
-        LAKE: { base: 'rgba(8, 145, 178, 0.78)' },
-        SNOW: { base: 'rgba(56, 189, 248, 0.65)' },
-        ICE: { base: 'rgba(14, 165, 233, 0.75)' },
-        SWAMP: { base: 'rgba(21, 128, 61, 0.78)' },
-        TOXIC: { base: 'rgba(126, 34, 206, 0.82)' },
-        MECHA: { base: 'rgba(180, 83, 9, 0.75)' },
-        ISLAND: { base: 'rgba(14, 116, 144, 0.85)' },
-      };
-      const wc = waterColors[biome] || waterColors.RIVER;
-      ctx.fillStyle = wc.base;
-      ctx.fillRect(x, y, s, s);
-
-      // 木の橋スプライトの描画
-      const bridgeSprite = TileSprites.getBridgeSprite(gridX, gridY);
-      if (bridgeSprite) {
-        ctx.drawImage(bridgeSprite, x, y, s, s);
-      } else {
-        ctx.fillStyle = '#b45309';
-        ctx.fillRect(x, y + s * 0.15, s, s * 0.7);
-      }
-
-      // 上が壁なら橋にも影
-      if (gridY > 0 && map.tiles[gridY - 1]?.[gridX] === TileType.Wall) {
-        const shadowGrad = ctx.createLinearGradient(x, y, x, y + s * 0.4);
-        shadowGrad.addColorStop(0, 'rgba(0, 0, 0, 0.6)');
-        shadowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-        ctx.fillStyle = shadowGrad;
-        ctx.fillRect(x, y, s, s * 0.4);
-      }
-
-      // 視界外マスク
-      if (!isVisible) {
-        ctx.fillStyle = 'rgba(3, 7, 18, 0.62)';
-        ctx.fillRect(x, y, s, s);
-      }
+      this.drawBridgeTile(ctx, x, y, s, isVisible, biome, gridX, gridY);
       return;
     }
 
     // 3.8. 特殊環境ギミック床 (Ice, Mud, Poison)
     if (tile === TileType.Ice || tile === TileType.Mud || tile === TileType.Poison) {
-      const gimmickSprite = TileSprites.getGimmickSprite(tile);
-      if (gimmickSprite) {
-        ctx.drawImage(gimmickSprite, x, y, s, s);
-      } else {
-        ctx.fillStyle = tile === TileType.Ice ? '#38bdf8' : tile === TileType.Mud ? '#78350f' : '#7e22ce';
-        ctx.fillRect(x, y, s, s);
-      }
-
-      // 上が壁なら影
-      if (gridY > 0 && map.tiles[gridY - 1]?.[gridX] === TileType.Wall) {
-        const shadowGrad = ctx.createLinearGradient(x, y, x, y + s * 0.4);
-        shadowGrad.addColorStop(0, 'rgba(0, 0, 0, 0.6)');
-        shadowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-        ctx.fillStyle = shadowGrad;
-        ctx.fillRect(x, y, s, s * 0.4);
-      }
-
-      if (!isVisible) {
-        ctx.fillStyle = 'rgba(3, 7, 18, 0.62)';
-        ctx.fillRect(x, y, s, s);
-      }
+      this.drawGimmickTile(ctx, x, y, s, isVisible, tile, gridX, gridY);
       return;
     }
 
     // 4. 階段タイル (TileType.StairsDown)
     if (tile === TileType.StairsDown) {
-      // 下敷きとなる床
-      const floorSprite = TileSprites.getFloorSprite(biome, gridX, gridY);
-      if (floorSprite) {
-        ctx.drawImage(floorSprite, x, y, s, s);
+      this.drawStairsTile(ctx, x, y, s, isVisible, biome, gridX, gridY);
+      return;
+    }
+  }
+
+  /**
+   * 上下左右の隣接壁判定（オートタイリング）に基づいて、
+   * J-RPG風見下ろし型の自然な立体壁（天板面・前面垂直壁・側壁シャドウ）を描画します。
+   */
+  private drawWallAutoTile(
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    s: number,
+    isVisible: boolean,
+    biome: BiomeType,
+    gridX: number,
+    gridY: number
+  ): void {
+    const map = this.engine.map;
+    const isWall = (gx: number, gy: number): boolean => {
+      if (gx < 0 || gx >= map.width || gy < 0 || gy >= map.height) return true;
+      return map.tiles[gy][gx] === TileType.Wall;
+    };
+
+    const hasDown = isWall(gridX, gridY + 1);
+    const hasUp = isWall(gridX, gridY - 1);
+    const hasLeft = isWall(gridX - 1, gridY);
+    const hasRight = isWall(gridX + 1, gridY);
+
+    const theme =
+      CanvasRenderer.BIOME_WALL_THEMES[biome] ||
+      CanvasRenderer.BIOME_WALL_THEMES.STONE;
+    const wallSprite = TileSprites.getWallSprite(biome, gridX, gridY);
+
+    if (hasDown) {
+      // ==========================================
+      // 【天板マス / Roof Surface】
+      // 下も壁であるため、垂直な手前壁面は描画せず、
+      // タイル全面を厚みのある「上面（天板・ルーフ）」として描く。
+      // これにより、縦に並んだ壁の途中に天板ラインが何度も挟まる違和感が完全に消滅する！
+      // ==========================================
+      ctx.fillStyle = theme.roofBase;
+      ctx.fillRect(x, y, s, s);
+
+      // 天板の質感・ブロック目地・テクスチャ
+      ctx.fillStyle = theme.roofDetail;
+      const hash = Math.abs((gridX * 7919 ^ gridY * 6271) % 4);
+      if (hash === 0) {
+        ctx.fillRect(x + 2, y + 2, s * 0.44, s * 0.42);
+        ctx.fillRect(x + s * 0.52, y + 2, s * 0.44, s * 0.42);
+        ctx.fillRect(x + 2, y + s * 0.48, s * 0.94, s * 0.48);
+      } else if (hash === 1) {
+        ctx.fillRect(x + 2, y + 2, s * 0.94, s * 0.44);
+        ctx.fillRect(x + 2, y + s * 0.52, s * 0.44, s * 0.44);
+        ctx.fillRect(x + s * 0.52, y + s * 0.52, s * 0.44, s * 0.44);
       } else {
-        ctx.fillStyle = '#1e293b';
-        ctx.fillRect(x, y, s, s);
+        ctx.fillRect(x + 2, y + 2, s * 0.44, s * 0.92);
+        ctx.fillRect(x + s * 0.52, y + 2, s * 0.44, s * 0.92);
       }
 
-      // 上が壁なら影
-      if (gridY > 0 && map.tiles[gridY - 1]?.[gridX] === TileType.Wall) {
-        const shadowGrad = ctx.createLinearGradient(x, y, x, y + s * 0.35);
-        shadowGrad.addColorStop(0, 'rgba(0, 0, 0, 0.55)');
-        shadowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-        ctx.fillStyle = shadowGrad;
-        ctx.fillRect(x, y, s, s * 0.35);
+      // 上が壁でない（最上段）場合：上面ハイライトライン
+      if (!hasUp) {
+        ctx.fillStyle = theme.roofHighlight;
+        ctx.fillRect(x, y, s, Math.max(1.5, s * 0.08));
       }
 
-      const stairsImg = SVGSprites.get('tile_stairs_down');
+      // 左が壁でない場合：左側面の稜線・シャドウ
+      if (!hasLeft) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+        ctx.fillRect(x, y, Math.max(2, s * 0.08), s);
+      }
 
-      if (isVisible) {
-        // 下層フロアへの神秘的な黄金グロー光彩（呼吸するように緩やかに脈動）
-        const glowPulse = 0.35 + Math.sin(this.anim.globalTime * 3.0) * 0.15;
-        const cx = x + s / 2;
-        const cy = y + s / 2;
-        const glowGrad = ctx.createRadialGradient(
-          cx,
-          cy,
-          s * 0.1,
-          cx,
-          cy,
-          s * 0.55
-        );
-        glowGrad.addColorStop(0, `rgba(251, 191, 36, ${glowPulse})`);
-        glowGrad.addColorStop(1, 'rgba(251, 191, 36, 0)');
-        ctx.fillStyle = glowGrad;
-        ctx.fillRect(x, y, s, s);
-
-        if (stairsImg) {
-          ctx.drawImage(stairsImg, x, y, s, s);
-        } else {
-          ctx.fillStyle = '#fbbf24';
-          ctx.font = `bold ${Math.floor(s * 0.7)}px monospace`;
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText('▼', cx, cy);
-        }
+      // 右が壁でない場合：右側面の稜線・シャドウ
+      if (!hasRight) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+        ctx.fillRect(x + s - Math.max(2, s * 0.08), y, Math.max(2, s * 0.08), s);
+      }
+    } else {
+      // ==========================================
+      // 【前面垂直壁マス / Front Wall Face】
+      // 下が床または水であるため、プレイヤーの手前にそびえ立つ「垂直壁面」を描く。
+      // ==========================================
+      if (wallSprite) {
+        ctx.drawImage(wallSprite, x, y, s, s);
       } else {
-        // 未視界（探索済み暗がり）: 薄暗いトーンで配置記憶を表示
-        if (stairsImg) {
-          ctx.save();
-          ctx.globalAlpha = 0.45;
-          ctx.drawImage(stairsImg, x, y, s, s);
-          ctx.restore();
-        } else {
-          ctx.fillStyle = '#785514';
-          ctx.font = `bold ${Math.floor(s * 0.7)}px monospace`;
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText('▼', x + s / 2, y + s / 2);
-        }
-        ctx.fillStyle = 'rgba(3, 7, 18, 0.4)';
+        ctx.fillStyle = theme.frontBase;
         ctx.fillRect(x, y, s, s);
+        ctx.fillStyle = theme.roofBase;
+        ctx.fillRect(x, y, s, s * 0.28);
       }
+
+      // 上端：上が壁なら天板との接続シャドウ、上でなければ天板ハイライト
+      if (!hasUp) {
+        ctx.fillStyle = theme.roofHighlight;
+        ctx.fillRect(x, y, s, Math.max(1.5, s * 0.06));
+      } else {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+        ctx.fillRect(x, y, s, Math.max(1, s * 0.04));
+      }
+
+      // 左が壁でない場合：左側面の立体影
+      if (!hasLeft) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillRect(x, y, Math.max(2.5, s * 0.08), s);
+      }
+
+      // 右が壁でない場合：右側面の立体影
+      if (!hasRight) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillRect(x + s - Math.max(2.5, s * 0.08), y, Math.max(2.5, s * 0.08), s);
+      }
+
+      // 下端：床への接地ベースライン（漆黒の強固な境界）
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+      ctx.fillRect(x, y + s - Math.max(2, s * 0.06), s, Math.max(2, s * 0.06));
+    }
+
+    // 未視界（探索済みの記憶）の場合は暗色半透明マスクを被せる
+    if (!isVisible) {
+      ctx.fillStyle = 'rgba(3, 7, 18, 0.65)';
+      ctx.fillRect(x, y, s, s);
+    }
+  }
+
+  /**
+   * 床タイルの描画および周囲の壁からの自然な立体ドロップシャドウ
+   */
+  private drawFloorAutoTile(
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    s: number,
+    isVisible: boolean,
+    biome: BiomeType,
+    gridX: number,
+    gridY: number
+  ): void {
+    const map = this.engine.map;
+    const floorSprite = TileSprites.getFloorSprite(biome, gridX, gridY);
+    if (floorSprite) {
+      ctx.drawImage(floorSprite, x, y, s, s);
+    } else {
+      ctx.fillStyle = '#253346';
+      ctx.fillRect(x, y, s, s);
+    }
+
+    const isWall = (gx: number, gy: number): boolean => {
+      if (gx < 0 || gx >= map.width || gy < 0 || gy >= map.height) return true;
+      return map.tiles[gy][gx] === TileType.Wall;
+    };
+
+    // 1. 上が壁マスなら上端からリアルなドロップシャドウを落とす
+    if (isWall(gridX, gridY - 1)) {
+      const shadowGrad = ctx.createLinearGradient(x, y, x, y + s * 0.45);
+      shadowGrad.addColorStop(0, 'rgba(0, 0, 0, 0.75)');
+      shadowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = shadowGrad;
+      ctx.fillRect(x, y, s, s * 0.45);
+    }
+
+    // 2. 左が壁マスなら左端からソフトな側壁シャドウ
+    if (isWall(gridX - 1, gridY)) {
+      const shadowLeft = ctx.createLinearGradient(x, y, x + s * 0.25, y);
+      shadowLeft.addColorStop(0, 'rgba(0, 0, 0, 0.45)');
+      shadowLeft.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = shadowLeft;
+      ctx.fillRect(x, y, s * 0.25, s);
+    }
+
+    // 3. 右が壁マスなら右端からソフトな側壁シャドウ
+    if (isWall(gridX + 1, gridY)) {
+      const shadowRight = ctx.createLinearGradient(x + s, y, x + s - s * 0.25, y);
+      shadowRight.addColorStop(0, 'rgba(0, 0, 0, 0.45)');
+      shadowRight.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = shadowRight;
+      ctx.fillRect(x + s - s * 0.25, y, s * 0.25, s);
+    }
+
+    // 未視界の暗がりマスク
+    if (!isVisible) {
+      ctx.fillStyle = 'rgba(3, 7, 18, 0.65)';
+      ctx.fillRect(x, y, s, s);
+    }
+  }
+
+  /**
+   * 水路タイルのオートタイリング描画（岸壁・波打ち際・深層波紋）
+   */
+  private drawWaterAutoTile(
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    s: number,
+    isVisible: boolean,
+    biome: BiomeType,
+    gridX: number,
+    gridY: number
+  ): void {
+    const map = this.engine.map;
+    // 水面ベース（床スプライトをうっすら下敷きにして水深感を演出）
+    const floorSprite = TileSprites.getFloorSprite(biome, gridX, gridY);
+    if (floorSprite) {
+      ctx.drawImage(floorSprite, x, y, s, s);
+    }
+
+    // バイオーム別の水面トーン
+    const waterColors: Record<
+      BiomeType,
+      { base: string; wave: string; bank: string; deep: string }
+    > = {
+      STONE: { base: 'rgba(2, 132, 199, 0.72)', wave: '#7dd3fc', bank: '#1e293b', deep: '#0369a1' },
+      EARTH: { base: 'rgba(13, 148, 136, 0.75)', wave: '#5eead4', bank: '#2e1002', deep: '#0f766e' },
+      FOREST: { base: 'rgba(5, 150, 105, 0.75)', wave: '#6ee7b7', bank: '#052e16', deep: '#047857' },
+      RIVER: { base: 'rgba(37, 99, 235, 0.72)', wave: '#93c5fd', bank: '#0f172a', deep: '#1d4ed8' },
+      LAKE: { base: 'rgba(8, 145, 178, 0.78)', wave: '#67e8f9', bank: '#0f172a', deep: '#0e7490' },
+      SNOW: { base: 'rgba(56, 189, 248, 0.65)', wave: '#e0f2fe', bank: '#334155', deep: '#0284c7' },
+      ICE: { base: 'rgba(14, 165, 233, 0.75)', wave: '#bae6fd', bank: '#021324', deep: '#0369a1' },
+      SWAMP: { base: 'rgba(21, 128, 61, 0.78)', wave: '#86efac', bank: '#142316', deep: '#14532d' },
+      TOXIC: { base: 'rgba(126, 34, 206, 0.82)', wave: '#d8b4fe', bank: '#24043d', deep: '#581c87' },
+      MECHA: { base: 'rgba(180, 83, 9, 0.75)', wave: '#fde68a', bank: '#1a1109', deep: '#78350f' },
+      ISLAND: { base: 'rgba(14, 116, 144, 0.85)', wave: '#67e8f9', bank: '#0f172a', deep: '#164e63' },
+    };
+    const wc = waterColors[biome] || waterColors.STONE;
+
+    ctx.fillStyle = wc.base;
+    ctx.fillRect(x, y, s, s);
+
+    const isWater = (gx: number, gy: number): boolean => {
+      if (gx < 0 || gx >= map.width || gy < 0 || gy >= map.height) return false;
+      return map.tiles[gy][gx] === TileType.Water;
+    };
+
+    const upWater = isWater(gridX, gridY - 1);
+    const downWater = isWater(gridX, gridY + 1);
+    const leftWater = isWater(gridX - 1, gridY);
+    const rightWater = isWater(gridX + 1, gridY);
+
+    // 岸辺（バンクエッジ）のオートタイリング
+    // 1. 上が陸地なら：上端に岸壁段差と深層シャドウ
+    if (!upWater) {
+      ctx.fillStyle = wc.bank;
+      ctx.fillRect(x, y, s, Math.max(2, s * 0.08));
+      const bankGrad = ctx.createLinearGradient(x, y, x, y + s * 0.35);
+      bankGrad.addColorStop(0, 'rgba(0, 0, 0, 0.65)');
+      bankGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = bankGrad;
+      ctx.fillRect(x, y, s, s * 0.35);
+    }
+
+    // 2. 下が陸地なら：下端に波打ち際リップルライン
+    if (!downWater) {
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+      ctx.fillRect(x, y + s - Math.max(1.5, s * 0.05), s, Math.max(1.5, s * 0.05));
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+      ctx.fillRect(x, y + s - Math.max(3, s * 0.09), s, Math.max(1.5, s * 0.04));
+    }
+
+    // 3. 左が陸地なら：左端に岸壁ライン
+    if (!leftWater) {
+      ctx.fillStyle = wc.bank;
+      ctx.fillRect(x, y, Math.max(2, s * 0.06), s);
+    }
+
+    // 4. 右が陸地なら：右端に岸壁ライン
+    if (!rightWater) {
+      ctx.fillStyle = wc.bank;
+      ctx.fillRect(x + s - Math.max(2, s * 0.06), y, Math.max(2, s * 0.06), s);
+    }
+
+    // 水面アニメーション波紋（視界内のみ）
+    if (isVisible) {
+      const time = this.anim.globalTime;
+      const waveOffset1 =
+        Math.sin(time * 2.6 + gridX * 0.8 + gridY * 0.5) * (s * 0.12);
+      const waveOffset2 =
+        Math.cos(time * 2.2 + gridX * 0.5 + gridY * 0.9) * (s * 0.1);
+
+      ctx.strokeStyle = wc.wave;
+      ctx.lineWidth = Math.max(1, s * 0.04);
+      ctx.lineCap = 'round';
+
+      ctx.beginPath();
+      ctx.moveTo(x + s * 0.18, y + s * 0.45 + waveOffset1);
+      ctx.quadraticCurveTo(
+        x + s * 0.5,
+        y + s * 0.45 + waveOffset1 - 2,
+        x + s * 0.82,
+        y + s * 0.45 + waveOffset1
+      );
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(x + s * 0.28, y + s * 0.72 + waveOffset2);
+      ctx.quadraticCurveTo(
+        x + s * 0.55,
+        y + s * 0.72 + waveOffset2 + 2,
+        x + s * 0.72,
+        y + s * 0.72 + waveOffset2
+      );
+      ctx.stroke();
+
+      // きらめきハイライト
+      const sparkle = Math.sin(time * 4.0 + gridX * 1.7 + gridY * 2.3);
+      if (sparkle > 0.6) {
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(x + s * 0.6, y + s * 0.3, Math.max(1, s * 0.03), 0, Math.PI * 2);
+        ctx.fill();
+      }
+    } else {
+      ctx.fillStyle = 'rgba(3, 7, 18, 0.62)';
+      ctx.fillRect(x, y, s, s);
+    }
+  }
+
+  /**
+   * 木の橋タイルの描画
+   */
+  private drawBridgeTile(
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    s: number,
+    isVisible: boolean,
+    biome: BiomeType,
+    gridX: number,
+    gridY: number
+  ): void {
+    const map = this.engine.map;
+    // 水流を下敷きとして描画
+    const waterColors: Record<
+      BiomeType,
+      { base: string }
+    > = {
+      STONE: { base: 'rgba(2, 132, 199, 0.72)' },
+      EARTH: { base: 'rgba(13, 148, 136, 0.75)' },
+      FOREST: { base: 'rgba(5, 150, 105, 0.75)' },
+      RIVER: { base: 'rgba(37, 99, 235, 0.72)' },
+      LAKE: { base: 'rgba(8, 145, 178, 0.78)' },
+      SNOW: { base: 'rgba(56, 189, 248, 0.65)' },
+      ICE: { base: 'rgba(14, 165, 233, 0.75)' },
+      SWAMP: { base: 'rgba(21, 128, 61, 0.78)' },
+      TOXIC: { base: 'rgba(126, 34, 206, 0.82)' },
+      MECHA: { base: 'rgba(180, 83, 9, 0.75)' },
+      ISLAND: { base: 'rgba(14, 116, 144, 0.85)' },
+    };
+    const wc = waterColors[biome] || waterColors.RIVER;
+    ctx.fillStyle = wc.base;
+    ctx.fillRect(x, y, s, s);
+
+    // 木の橋スプライトの描画
+    const bridgeSprite = TileSprites.getBridgeSprite(gridX, gridY);
+    if (bridgeSprite) {
+      ctx.drawImage(bridgeSprite, x, y, s, s);
+    } else {
+      ctx.fillStyle = '#b45309';
+      ctx.fillRect(x, y + s * 0.15, s, s * 0.7);
+    }
+
+    // 上が壁なら橋にも影
+    if (gridY > 0 && map.tiles[gridY - 1]?.[gridX] === TileType.Wall) {
+      const shadowGrad = ctx.createLinearGradient(x, y, x, y + s * 0.4);
+      shadowGrad.addColorStop(0, 'rgba(0, 0, 0, 0.6)');
+      shadowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = shadowGrad;
+      ctx.fillRect(x, y, s, s * 0.4);
+    }
+
+    // 視界外マスク
+    if (!isVisible) {
+      ctx.fillStyle = 'rgba(3, 7, 18, 0.62)';
+      ctx.fillRect(x, y, s, s);
+    }
+  }
+
+  /**
+   * 特殊環境ギミック床 (Ice, Mud, Poison) の描画
+   */
+  private drawGimmickTile(
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    s: number,
+    isVisible: boolean,
+    tile: TileType,
+    gridX: number,
+    gridY: number
+  ): void {
+    const map = this.engine.map;
+    const gimmickSprite = TileSprites.getGimmickSprite(tile);
+    if (gimmickSprite) {
+      ctx.drawImage(gimmickSprite, x, y, s, s);
+    } else {
+      ctx.fillStyle =
+        tile === TileType.Ice
+          ? '#38bdf8'
+          : tile === TileType.Mud
+          ? '#78350f'
+          : '#7e22ce';
+      ctx.fillRect(x, y, s, s);
+    }
+
+    // 上が壁なら影
+    if (gridY > 0 && map.tiles[gridY - 1]?.[gridX] === TileType.Wall) {
+      const shadowGrad = ctx.createLinearGradient(x, y, x, y + s * 0.4);
+      shadowGrad.addColorStop(0, 'rgba(0, 0, 0, 0.6)');
+      shadowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = shadowGrad;
+      ctx.fillRect(x, y, s, s * 0.4);
+    }
+
+    if (!isVisible) {
+      ctx.fillStyle = 'rgba(3, 7, 18, 0.62)';
+      ctx.fillRect(x, y, s, s);
+    }
+  }
+
+  /**
+   * 階段タイルの描画
+   */
+  private drawStairsTile(
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    s: number,
+    isVisible: boolean,
+    biome: BiomeType,
+    gridX: number,
+    gridY: number
+  ): void {
+    const map = this.engine.map;
+    // 下敷きとなる床
+    const floorSprite = TileSprites.getFloorSprite(biome, gridX, gridY);
+    if (floorSprite) {
+      ctx.drawImage(floorSprite, x, y, s, s);
+    } else {
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(x, y, s, s);
+    }
+
+    // 上が壁なら影
+    if (gridY > 0 && map.tiles[gridY - 1]?.[gridX] === TileType.Wall) {
+      const shadowGrad = ctx.createLinearGradient(x, y, x, y + s * 0.35);
+      shadowGrad.addColorStop(0, 'rgba(0, 0, 0, 0.55)');
+      shadowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = shadowGrad;
+      ctx.fillRect(x, y, s, s * 0.35);
+    }
+
+    const stairsImg = SVGSprites.get('tile_stairs_down');
+
+    if (isVisible) {
+      // 下層フロアへの神秘的な黄金グロー光彩（呼吸するように緩やかに脈動）
+      const glowPulse = 0.35 + Math.sin(this.anim.globalTime * 3.0) * 0.15;
+      const cx = x + s / 2;
+      const cy = y + s / 2;
+      const glowGrad = ctx.createRadialGradient(
+        cx,
+        cy,
+        s * 0.1,
+        cx,
+        cy,
+        s * 0.55
+      );
+      glowGrad.addColorStop(0, `rgba(251, 191, 36, ${glowPulse})`);
+      glowGrad.addColorStop(1, 'rgba(251, 191, 36, 0)');
+      ctx.fillStyle = glowGrad;
+      ctx.fillRect(x, y, s, s);
+
+      if (stairsImg) {
+        ctx.drawImage(stairsImg, x, y, s, s);
+      } else {
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = `bold ${Math.floor(s * 0.7)}px monospace`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('▼', cx, cy);
+      }
+    } else {
+      // 未視界（探索済み暗がり）: 薄暗いトーンで配置記憶を表示
+      if (stairsImg) {
+        ctx.save();
+        ctx.globalAlpha = 0.45;
+        ctx.drawImage(stairsImg, x, y, s, s);
+        ctx.restore();
+      } else {
+        ctx.fillStyle = '#785514';
+        ctx.font = `bold ${Math.floor(s * 0.7)}px monospace`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('▼', x + s / 2, y + s / 2);
+      }
+      ctx.fillStyle = 'rgba(3, 7, 18, 0.4)';
+      ctx.fillRect(x, y, s, s);
     }
   }
 
@@ -639,6 +1015,7 @@ export class CanvasRenderer {
    * @param y - スクリーン上Y座標
    * @param size - タイルサイズ（ピクセル）
    * @param isVisible - 視界内かどうか
+   * @param animState - 障害物のアニメーション状態
    */
   private drawObstacle(
     ctx: CanvasRenderingContext2D,
@@ -646,7 +1023,8 @@ export class CanvasRenderer {
     x: number,
     y: number,
     size: number,
-    isVisible: boolean
+    isVisible: boolean,
+    animState?: ReturnType<AnimationEngine['getState']>
   ): void {
     const cx = x + size / 2;
     const cy = y + size / 2;
@@ -657,12 +1035,32 @@ export class CanvasRenderer {
 
     if (isVisible) {
       // 接地影
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
       ctx.beginPath();
       ctx.ellipse(cx, cy + s * 0.32, s * 0.32, s * 0.12, 0, 0, Math.PI * 2);
       ctx.fill();
 
+      // スライド移動中・滑走中の氷の擦過線や土煙演出
+      if (animState?.isSliding || animState?.isWalking) {
+        ctx.strokeStyle =
+          obstacle.type === 'ICE_BLOCK'
+            ? 'rgba(224, 242, 254, 0.6)'
+            : 'rgba(168, 162, 158, 0.5)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(cx - s * 0.2, cy + s * 0.32);
+        ctx.lineTo(cx + s * 0.2, cy + s * 0.32);
+        ctx.stroke();
+      }
+
       const obSize = s * 0.95;
+      ctx.save();
+      if (animState && animState.damageFlash > 0) {
+        ctx.filter = `brightness(${1 + animState.damageFlash * 1.5}) saturate(${
+          1 + animState.damageFlash * 2
+        })`;
+      }
+
       if (spriteImg) {
         ctx.drawImage(
           spriteImg,
@@ -673,11 +1071,21 @@ export class CanvasRenderer {
         );
       } else {
         ctx.fillStyle = obstacle.color;
-        ctx.fillRect(cx - obSize * 0.4, cy - obSize * 0.4, obSize * 0.8, obSize * 0.8);
+        ctx.fillRect(
+          cx - obSize * 0.4,
+          cy - obSize * 0.4,
+          obSize * 0.8,
+          obSize * 0.8
+        );
       }
+      ctx.restore();
 
       // 耐久度（HP）ゲージ表示（最大HPが2以上の破壊可能オブジェクトでダメージを受けている場合）
-      if (obstacle.isDestructible && obstacle.maxHp > 1 && obstacle.hp < obstacle.maxHp) {
+      if (
+        obstacle.isDestructible &&
+        obstacle.maxHp > 1 &&
+        obstacle.hp < obstacle.maxHp
+      ) {
         const barW = s * 0.7;
         const barH = Math.max(3, s * 0.08);
         const barX = cx - barW / 2;
@@ -705,14 +1113,19 @@ export class CanvasRenderer {
         );
       } else {
         ctx.fillStyle = '#64748b';
-        ctx.fillRect(cx - obSize * 0.4, cy - obSize * 0.4, obSize * 0.8, obSize * 0.8);
+        ctx.fillRect(
+          cx - obSize * 0.4,
+          cy - obSize * 0.4,
+          obSize * 0.8,
+          obSize * 0.8
+        );
       }
       ctx.restore();
     }
   }
 
   /**
-   * 床落ちアイテムを描画します。
+   * 床落ちアイテムを描画します（上下浮遊を廃止し床に自然接地、たまにキラリと光る演出）。
    *
    * @param ctx - Canvas描画コンテキスト
    * @param item - アイテムデータ
@@ -733,38 +1146,25 @@ export class CanvasRenderer {
     const cy = y + size / 2;
     const s = Math.ceil(size);
 
-    // 床落ちアイテムの浮遊ボビングアニメーション（わずかに上下にゆらゆら浮く）
-    const floatBobY =
-      Math.sin(this.anim.globalTime * 3.5 + (item.x * 3 + item.y * 7)) * 2.5;
-
     // 個別アイテム名に対応したスプライトIDの取得
     const spriteId = SVGSprites.getItemSpriteId(item.category, item.name);
     const spriteImg = SVGSprites.get(spriteId);
 
     if (isVisible) {
-      // アイテム落下の影（浮遊の高さに合わせて伸縮）
-      const shadowScale = Math.max(0.6, 1.0 - floatBobY / 8.0);
+      // 1. 床への自然な固定接地影（ふわふわ浮遊は廃止）
       ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
       ctx.beginPath();
-      ctx.ellipse(
-        cx,
-        cy + s * 0.28,
-        s * 0.28 * shadowScale,
-        s * 0.12 * shadowScale,
-        0,
-        0,
-        Math.PI * 2
-      );
+      ctx.ellipse(cx, cy + s * 0.28, s * 0.28, s * 0.11, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // アイテムSVGスプライトの描画
+      // 2. アイテムSVGスプライトの描画（床にしっかり腰を据えて配置）
       const itemSize = s * 0.85;
 
       if (spriteImg) {
         ctx.drawImage(
           spriteImg,
           cx - itemSize / 2,
-          cy - itemSize / 2 + floatBobY,
+          cy - itemSize / 2,
           itemSize,
           itemSize
         );
@@ -774,7 +1174,78 @@ export class CanvasRenderer {
         ctx.font = `bold ${Math.floor(s * 0.65)}px monospace`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(item.symbol, cx, cy + floatBobY);
+        ctx.fillText(item.symbol, cx, cy);
+      }
+
+      // 3. たまにキラリと光る（Glitter / Twinkle）演出
+      // アイテムごとに位相をずらした周期（約3.0秒〜3.8秒）
+      const hash = Math.abs((item.x * 47 ^ item.y * 83) % 1000);
+      const cyclePeriod = 3.0 + (hash % 9) * 0.1;
+      const t = (this.anim.globalTime + hash * 0.02) % cyclePeriod;
+
+      // 0.35秒間だけキラーンと輝く
+      if (t < 0.35) {
+        const glintAlpha =
+          t < 0.12 ? t / 0.12 : Math.max(0, 1.0 - (t - 0.12) / 0.23);
+
+        const glintX = cx + itemSize * 0.2;
+        const glintY = cy - itemSize * 0.2;
+
+        ctx.save();
+        ctx.globalAlpha = glintAlpha;
+
+        // 十字光条（縦横に伸びる鋭いスパークルスター）
+        const rayLen = s * 0.35 * glintAlpha;
+        const rayWidth = Math.max(1.5, s * 0.04);
+
+        // 外側の淡いグロー
+        const grad = ctx.createRadialGradient(
+          glintX,
+          glintY,
+          0,
+          glintX,
+          glintY,
+          rayLen * 1.2
+        );
+        grad.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+        grad.addColorStop(0.3, 'rgba(254, 240, 138, 0.6)');
+        grad.addColorStop(1, 'rgba(254, 240, 138, 0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(glintX, glintY, rayLen * 1.2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 鋭い水平光条
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.moveTo(glintX - rayLen, glintY);
+        ctx.lineTo(glintX, glintY - rayWidth);
+        ctx.lineTo(glintX + rayLen, glintY);
+        ctx.lineTo(glintX, glintY + rayWidth);
+        ctx.closePath();
+        ctx.fill();
+
+        // 鋭い垂直光条
+        ctx.beginPath();
+        ctx.moveTo(glintX, glintY - rayLen);
+        ctx.lineTo(glintX - rayWidth, glintY);
+        ctx.lineTo(glintX, glintY + rayLen);
+        ctx.lineTo(glintX + rayWidth, glintY);
+        ctx.closePath();
+        ctx.fill();
+
+        // 斜めの小光条
+        const subRay = rayLen * 0.45;
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(glintX - subRay, glintY - subRay);
+        ctx.lineTo(glintX + subRay, glintY + subRay);
+        ctx.moveTo(glintX - subRay, glintY + subRay);
+        ctx.lineTo(glintX + subRay, glintY - subRay);
+        ctx.stroke();
+
+        ctx.restore();
       }
     } else {
       // 記憶タイル内（未視界）の薄暗いシルエット
@@ -799,6 +1270,31 @@ export class CanvasRenderer {
       }
       ctx.restore();
     }
+  }
+
+  /**
+   * 演出用パーティクル（破片、土煙等）を描画します。
+   */
+  private drawParticles(
+    ctx: CanvasRenderingContext2D,
+    cameraX: number,
+    cameraY: number,
+    effectiveTileSize: number
+  ): void {
+    if (this.anim.particles.length === 0) return;
+
+    ctx.save();
+    for (const p of this.anim.particles) {
+      const px = Math.floor(cameraX + p.x * effectiveTileSize);
+      const py = Math.floor(cameraY + p.y * effectiveTileSize);
+
+      ctx.globalAlpha = p.alpha;
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(px, py, p.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
   }
 
   /**

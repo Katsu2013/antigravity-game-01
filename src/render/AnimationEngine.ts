@@ -5,7 +5,33 @@
  * 待機時アイドルボビングを統括管理するアニメーションエンジン。
  */
 
-import { CardinalDirection } from '../core/types';
+import { CardinalDirection, Direction8 } from '../core/types';
+
+/**
+ * 画面演出用パーティクルのインターフェース。
+ */
+export interface VisualParticle {
+  /** 描画X座標（グリッド単位） */
+  x: number;
+  /** 描画Y座標（グリッド単位） */
+  y: number;
+  /** 移動速度X（グリッド/秒） */
+  vx: number;
+  /** 移動速度Y（グリッド/秒） */
+  vy: number;
+  /** パーティクル色コード */
+  color: string;
+  /** 描画サイズ（ピクセル） */
+  size: number;
+  /** 現在生存時間（秒） */
+  life: number;
+  /** 最大生存時間（秒） */
+  maxLife: number;
+  /** 重力加速度（グリッド/秒^2） */
+  gravity: number;
+  /** 不透明度（1.0〜0.0） */
+  alpha: number;
+}
 
 /**
  * 個々のエンティティの動的アニメーション状態を表すインターフェース。
@@ -25,6 +51,10 @@ export interface EntityAnimState {
   facingDir: number;
   /** 現在マス間を移動中（歩行中）かどうかの真偽値 */
   isWalking: boolean;
+  /** 滑走・高速スライド中かどうかの真偽値 */
+  isSliding: boolean;
+  /** スライド移動速度倍率 */
+  moveSpeedMultiplier: number;
   /** 歩行ステップサイクルの積算時間（手足のステップ・バウンス計算用） */
   walkTime: number;
   /** 攻撃踏み込み変位量X（グリッド単位） */
@@ -47,6 +77,9 @@ export interface EntityAnimState {
 export class AnimationEngine {
   /** エンティティIDごとのアニメーション状態マップ */
   private states: Map<string, EntityAnimState> = new Map();
+
+  /** 演出用パーティクルリスト */
+  public particles: VisualParticle[] = [];
 
   /** グローバルアニメーション進行時間（秒） */
   public globalTime = 0;
@@ -112,6 +145,8 @@ export class AnimationEngine {
         direction: 'down', // 初期向き: 正面（下向き）
         facingDir: 1, // 初期向き: 右向き
         isWalking: false,
+        isSliding: false,
+        moveSpeedMultiplier: 1.0,
         walkTime: 0,
         attackOffsetX: 0,
         attackOffsetY: 0,
@@ -131,12 +166,23 @@ export class AnimationEngine {
    * @param id - エンティティID
    * @param gridX - 現在の論理グリッドX座標
    * @param gridY - 現在の論理グリッドY座標
+   * @param isSliding - 滑走・スライド移動中かどうか（氷塊や石押し等）
+   * @param speedMultiplier - 移動補間速度倍率（氷塊は2.0倍、石押しは0.8倍等）
    */
-  public syncPosition(id: string, gridX: number, gridY: number): void {
+  public syncPosition(
+    id: string,
+    gridX: number,
+    gridY: number,
+    isSliding = false,
+    speedMultiplier = 1.0
+  ): void {
     const state = this.getState(id, gridX, gridY);
 
     const dx = gridX - state.targetX;
     const dy = gridY - state.targetY;
+
+    state.isSliding = isSliding;
+    state.moveSpeedMultiplier = speedMultiplier;
 
     // 移動が生じた場合、進行方向へ方位（8方向: 上・下・左・右・斜め4方向）を自動更新
     if (dx !== 0 && dy !== 0) {
@@ -152,9 +198,9 @@ export class AnimationEngine {
       state.direction = dy > 0 ? 'down' : 'up';
     }
 
-    // 階層移動やワープ等で2マス以上の急激なジャンプがあった場合は即時テレポート
+    // 階層移動やワープ等で急激なジャンプがあった場合は即時テレポート（※滑走移動中はテレポートせずスライド）
     const dist = Math.hypot(state.targetX - gridX, state.targetY - gridY);
-    if (dist > 2.5) {
+    if (!isSliding && dist > 3.5) {
       state.renderX = gridX;
       state.renderY = gridY;
     }
@@ -164,70 +210,100 @@ export class AnimationEngine {
   }
 
   /**
-   * エンティティの向き（方位）を明示的に設定します。
+   * エンティティの向き（8方向）を直接設定します。
    *
    * @param id - エンティティID
-   * @param direction - 設定する方位（8方向）
+   * @param dir - 向き
    */
-  public setDirection(id: string, direction: CardinalDirection): void {
-    const state = this.states.get(id);
-    if (state) {
-      state.direction = direction;
-      if (
-        direction === 'left' ||
-        direction === 'down_left' ||
-        direction === 'up_left'
-      ) {
-        state.facingDir = -1;
-      } else if (
-        direction === 'right' ||
-        direction === 'down_right' ||
-        direction === 'up_right'
-      ) {
-        state.facingDir = 1;
-      }
+  public setDirection(id: string, dir: Direction8): void {
+    const state = this.getState(id, 0, 0);
+    state.direction = dir;
+    if (dir.includes('left')) {
+      state.facingDir = -1;
+    } else if (dir.includes('right')) {
+      state.facingDir = 1;
     }
   }
 
   /**
-   * 指定方向への攻撃踏み込み（スラッシュ）モーションを発動し、攻撃対象の方向へ向きも更新します。
+   * 攻撃アクション（ステップイン突進）をトリガーします。
    *
-   * @param id - 攻撃を行うエンティティID
-   * @param dx - 攻撃方向X (-1, 0, 1)
-   * @param dy - 攻撃方向Y (-1, 0, 1)
+   * @param id - 攻撃者エンティティID
+   * @param dx - X方向突進ベクトル
+   * @param dy - Y方向突進ベクトル
    */
   public triggerAttack(id: string, dx: number, dy: number): void {
-    const state = this.states.get(id);
-    if (state) {
-      if (dx !== 0 && dy !== 0) {
-        if (dx > 0 && dy > 0) state.direction = 'down_right';
-        else if (dx < 0 && dy > 0) state.direction = 'down_left';
-        else if (dx > 0 && dy < 0) state.direction = 'up_right';
-        else if (dx < 0 && dy < 0) state.direction = 'up_left';
-        state.facingDir = dx > 0 ? 1 : -1;
-      } else if (dx !== 0) {
-        state.direction = dx > 0 ? 'right' : 'left';
-        state.facingDir = dx > 0 ? 1 : -1;
-      } else if (dy !== 0) {
-        state.direction = dy > 0 ? 'down' : 'up';
-      }
+    const state = this.getState(id, 0, 0);
+    state.attackOffsetX = dx * 0.35;
+    state.attackOffsetY = dy * 0.35;
+  }
 
-      state.attackOffsetX = dx * 0.35; // 0.35マス分素早く踏み込む
-      state.attackOffsetY = dy * 0.35;
+  /**
+   * 被弾フラッシュおよび画面/エンティティ振動をトリガーします。
+   *
+   * @param id - 被弾エンティティID
+   */
+  public triggerDamage(id: string): void {
+    const state = this.getState(id, 0, 0);
+    state.damageFlash = 1.0;
+    state.shakeX = (Math.random() - 0.5) * 5.0;
+    state.shakeY = (Math.random() - 0.5) * 5.0;
+  }
+
+  /**
+   * 破砕パーティクル（氷の結晶、雪片、土塊の破片など）を発生させます。
+   *
+   * @param x - 発生グリッドX
+   * @param y - 発生グリッドY
+   * @param color - パーティクル色コード
+   * @param count - 生成数
+   */
+  public triggerBreakParticles(
+    x: number,
+    y: number,
+    color = '#38bdf8',
+    count = 14
+  ): void {
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 1.2 + Math.random() * 3.5;
+      this.particles.push({
+        x: x + 0.5 + (Math.random() - 0.5) * 0.3,
+        y: y + 0.5 + (Math.random() - 0.5) * 0.3,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 1.0,
+        color,
+        size: 3 + Math.random() * 4,
+        life: 0,
+        maxLife: 0.35 + Math.random() * 0.3,
+        gravity: 4.5,
+        alpha: 1.0,
+      });
     }
   }
 
   /**
-   * 被ダメージ時の赤点滅およびノックバック振動を発動します。
+   * 物体移動時（大石押し出し等）の土煙パーティクルを発生させます。
    *
-   * @param id - 被弾したエンティティID
+   * @param x - 発生グリッドX
+   * @param y - 発生グリッドY
    */
-  public triggerDamage(id: string): void {
-    const state = this.states.get(id);
-    if (state) {
-      state.damageFlash = 1.0;
-      state.shakeX = (Math.random() - 0.5) * 8;
-      state.shakeY = (Math.random() - 0.5) * 8;
+  public triggerDustParticles(x: number, y: number): void {
+    for (let i = 0; i < 8; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 0.5 + Math.random() * 1.5;
+      this.particles.push({
+        x: x + 0.5 + (Math.random() - 0.5) * 0.4,
+        y: y + 0.7 + (Math.random() - 0.5) * 0.2,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed * 0.5 - 0.4,
+        color: '#a8a29e',
+        size: 4 + Math.random() * 5,
+        life: 0,
+        maxLife: 0.4 + Math.random() * 0.25,
+        gravity: -0.5,
+        alpha: 0.6,
+      });
     }
   }
 
@@ -245,42 +321,56 @@ export class AnimationEngine {
       this.playerDeathTime += dt;
     }
 
-    // 移動補間スピード
-    const moveLerpSpeed = 16.0;
-
+    // 1. 各エンティティの状態補間
     for (const state of this.states.values()) {
-      // 1. 移動のスムーズ補間（LERP）
+      const moveLerpSpeed =
+        16.0 * (state.moveSpeedMultiplier || 1.0) * (state.isSliding ? 1.5 : 1.0);
+
       const dx = state.targetX - state.renderX;
       const dy = state.targetY - state.renderY;
       const dist = Math.hypot(dx, dy);
 
       if (dist > 0.01) {
         state.isWalking = true;
-        // 歩行ステップサイクルを進行
         state.walkTime += dt * 16.0;
 
-        state.renderX += dx * Math.min(1.0, moveLerpSpeed * dt);
-        state.renderY += dy * Math.min(1.0, moveLerpSpeed * dt);
+        const step = Math.min(1.0, moveLerpSpeed * dt);
+        state.renderX += dx * step;
+        state.renderY += dy * step;
       } else {
         state.renderX = state.targetX;
         state.renderY = state.targetY;
         state.isWalking = false;
-        // 停止時は歩行サイクルをスムーズにニュートラル（0）へ戻す
+        state.isSliding = false;
         state.walkTime *= Math.max(0, 1.0 - 15.0 * dt);
       }
 
-      // 2. 攻撃オフセットの減衰復帰（スプリングバック）
+      // 攻撃オフセットの減衰復帰
       state.attackOffsetX *= Math.max(0, 1.0 - 14.0 * dt);
       state.attackOffsetY *= Math.max(0, 1.0 - 14.0 * dt);
 
-      // 3. 被弾フラッシュの減衰
+      // 被弾フラッシュの減衰
       if (state.damageFlash > 0) {
         state.damageFlash = Math.max(0, state.damageFlash - 3.5 * dt);
       }
 
-      // 4. 被弾振動の減衰
+      // 被弾振動の減衰
       state.shakeX *= Math.max(0, 1.0 - 20.0 * dt);
       state.shakeY *= Math.max(0, 1.0 - 20.0 * dt);
+    }
+
+    // 2. 演出パーティクルの進行と寿命更新
+    for (let i = this.particles.length - 1; i >= 0; i--) {
+      const p = this.particles[i];
+      p.life += dt;
+      if (p.life >= p.maxLife) {
+        this.particles.splice(i, 1);
+        continue;
+      }
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      p.vy += p.gravity * dt;
+      p.alpha = Math.max(0, 1.0 - p.life / p.maxLife);
     }
   }
 
