@@ -620,7 +620,7 @@ kbd {
   }
 }
 
-/* Modals */
+/* Modals (タイトル画面 z-index: 200 より前面の 300 に配置) */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -629,7 +629,7 @@ kbd {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 50;
+  z-index: 300;
   padding: 16px;
   transition: opacity 0.2s;
 }
@@ -669,9 +669,22 @@ kbd {
   background: none;
   border: none;
   color: var(--text-muted);
-  font-size: 24px;
+  font-size: 26px;
   cursor: pointer;
   line-height: 1;
+  padding: 4px 8px;
+  min-width: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  transition: color 0.15s;
+}
+
+.modal-close-btn:hover,
+.modal-close-btn:active {
+  color: #ffffff;
 }
 
 .inventory-scroll-body {

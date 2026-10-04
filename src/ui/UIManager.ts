@@ -184,12 +184,14 @@ export class UIManager {
     });
 
     // タイトル画面: 冒険の記録（スコア履歴）
-    document.getElementById('btn-title-scores')?.addEventListener('click', () => {
+    document.getElementById('btn-title-scores')?.addEventListener('click', (e) => {
+      e.stopPropagation();
       this.showScoresModal();
     });
 
     // タイトル画面: 遊び方・操作説明
-    document.getElementById('btn-title-help')?.addEventListener('click', () => {
+    document.getElementById('btn-title-help')?.addEventListener('click', (e) => {
+      e.stopPropagation();
       this.showHelpModal();
     });
 
