@@ -90,6 +90,9 @@ export class UIManager {
   /** ゲームオーバー表示ディレイ用タイマーID（倒れ込み演出待機用） */
   private gameOverTimerId: number | null = null;
 
+  /** モーダルが開かれたタイムスタンプ（スマホタッチ直後の合成クリックによる即時クローズ防止用） */
+  private modalOpenTimestamps: Map<string, number> = new Map();
+
   /**
    * UIManager のインスタンスを生成し、DOM要素を取得して初回描画を行います。
    *
@@ -134,10 +137,12 @@ export class UIManager {
    */
   private bindModalEvents(): void {
     // 持ち物ボタン（上部HUD & モバイル操作パネル）
-    document.getElementById('btn-inventory-top')?.addEventListener('click', () => {
+    document.getElementById('btn-inventory-top')?.addEventListener('click', (e) => {
+      e.stopPropagation();
       this.toggleInventoryModal();
     });
-    document.getElementById('btn-inventory')?.addEventListener('click', () => {
+    document.getElementById('btn-inventory')?.addEventListener('click', (e) => {
+      e.stopPropagation();
       this.toggleInventoryModal();
     });
 
@@ -146,8 +151,10 @@ export class UIManager {
       this.closeInventoryModal();
     });
 
-    // モーダル背景クリックで閉じる
+    // モーダル背景クリックで閉じる（タッチ直後の合成クリックによる誤クローズをガード）
     this.inventoryModalEl.addEventListener('click', (e) => {
+      const openedAt = this.modalOpenTimestamps.get('inventory-modal') || 0;
+      if (Date.now() - openedAt < 350) return;
       if (e.target === this.inventoryModalEl) {
         this.closeInventoryModal();
       }
@@ -209,6 +216,8 @@ export class UIManager {
       this.hideScoresModal();
     });
     this.scoresModalEl.addEventListener('click', (e) => {
+      const openedAt = this.modalOpenTimestamps.get('scores-modal') || 0;
+      if (Date.now() - openedAt < 350) return;
       if (e.target === this.scoresModalEl) {
         this.hideScoresModal();
       }
@@ -219,6 +228,8 @@ export class UIManager {
       this.hideHelpModal();
     });
     this.helpModalEl.addEventListener('click', (e) => {
+      const openedAt = this.modalOpenTimestamps.get('help-modal') || 0;
+      if (Date.now() - openedAt < 350) return;
       if (e.target === this.helpModalEl) {
         this.hideHelpModal();
       }
@@ -226,13 +237,21 @@ export class UIManager {
   }
 
   /**
+   * インベントリモーダルを開きます。
+   */
+  public openInventoryModal(): void {
+    this.modalOpenTimestamps.set('inventory-modal', Date.now());
+    this.inventoryModalEl.classList.remove('hidden');
+  }
+
+  /**
    * インベントリモーダルを開閉トグルします。
    */
   public toggleInventoryModal(): void {
     if (this.inventoryModalEl.classList.contains('hidden')) {
-      this.inventoryModalEl.classList.remove('hidden');
+      this.openInventoryModal();
     } else {
-      this.inventoryModalEl.classList.add('hidden');
+      this.closeInventoryModal();
     }
   }
 
@@ -306,9 +325,11 @@ export class UIManager {
       this.logListEl.appendChild(entryEl);
     }
 
-    // 5. モバイル用1行ティッカーの更新
+    // 5. 画面上部ティッカーの更新（最新ログと種別カラーを反映）
     if (this.engine.logs.length > 0) {
-      this.mobileTickerEl.textContent = this.engine.logs[0].text;
+      const latestLog = this.engine.logs[0];
+      this.mobileTickerEl.textContent = latestLog.text;
+      this.mobileTickerEl.className = `mobile-ticker log-type-${latestLog.type || 'normal'}`;
     }
 
     // 6. 新フロア到達時のトーストポップアップ演出
@@ -509,6 +530,7 @@ export class UIManager {
    * スコア履歴モーダルを表示し、IndexedDBから過去の戦歴を取得してレンダリングします。
    */
   public async showScoresModal(): Promise<void> {
+    this.modalOpenTimestamps.set('scores-modal', Date.now());
     const scores = await StorageManager.loadHighscores();
     this.renderHighscoresList(scores);
     this.scoresModalEl.classList.remove('hidden');
@@ -525,6 +547,7 @@ export class UIManager {
    * 遊び方・操作説明モーダルを表示します。
    */
   public showHelpModal(): void {
+    this.modalOpenTimestamps.set('help-modal', Date.now());
     this.helpModalEl.classList.remove('hidden');
   }
 

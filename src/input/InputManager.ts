@@ -429,10 +429,18 @@ export class InputManager {
     });
 
     // [Xボタン] 持ち物開閉
-    document.getElementById('btn-pad-x')?.addEventListener('pointerdown', (e) => {
-      e.preventDefault();
-      this.ui.toggleInventoryModal();
-    });
+    const btnX = document.getElementById('btn-pad-x');
+    if (btnX) {
+      btnX.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.ui.toggleInventoryModal();
+      });
+      btnX.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+    }
 
     // [Yボタン] ミニマップ切替
     document.getElementById('btn-pad-y')?.addEventListener('pointerdown', (e) => {

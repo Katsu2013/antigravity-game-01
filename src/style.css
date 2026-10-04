@@ -203,6 +203,64 @@ html, body {
   transform: translate(-50%, -10px);
 }
 
+/* 画面上部プレイ領域オーバーレイ最新ログティッカー */
+.mobile-ticker {
+  position: absolute;
+  top: 10px;
+  left: 14px;
+  right: 14px;
+  z-index: 25;
+  background-color: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--accent-gold);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+/* メッセージ種別ごとのカラーハイライト */
+.mobile-ticker.log-type-damage {
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.7);
+  background-color: rgba(69, 10, 10, 0.9);
+}
+
+.mobile-ticker.log-type-heal {
+  color: #6ee7b7;
+  border-color: rgba(16, 185, 129, 0.7);
+  background-color: rgba(6, 78, 59, 0.9);
+}
+
+.mobile-ticker.log-type-info {
+  color: #7dd3fc;
+  border-color: rgba(14, 165, 233, 0.6);
+  background-color: rgba(12, 74, 110, 0.9);
+}
+
+.mobile-ticker.log-type-warning {
+  color: #fde047;
+  border-color: rgba(245, 158, 11, 0.7);
+  background-color: rgba(69, 26, 3, 0.9);
+}
+
+/* デスクトップ大画面時は右側に全ログが出るためティッカーは非表示 */
+@media (min-width: 769px) {
+  .mobile-ticker {
+    display: none;
+  }
+}
+
 /* 3. Desktop Side Panel */
 .side-panel {
   width: 320px;
@@ -431,90 +489,68 @@ kbd {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 8px;
-    padding-bottom: max(8px, env(safe-area-inset-bottom));
+    gap: 16px;
+    padding: 10px 16px;
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
   }
 
-  /* Left: D-Pad */
+  /* Left: D-Pad (十字キー拡大) */
   .pad-left {
     flex-shrink: 0;
   }
 
   .dpad-grid {
     display: grid;
-    grid-template-columns: repeat(3, 46px);
-    grid-template-rows: repeat(3, 42px);
-    gap: 4px;
+    grid-template-columns: repeat(3, 52px);
+    grid-template-rows: repeat(3, 46px);
+    gap: 5px;
   }
 
   .dpad-btn {
     background-color: #1f2937;
-    border: 1px solid #374151;
+    border: 1.5px solid #374151;
     color: #e5e7eb;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 8px;
+    font-size: 20px;
+    font-weight: 800;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     user-select: none;
     touch-action: manipulation;
-    transition: background-color 0.1s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+    transition: background-color 0.08s, transform 0.08s;
   }
 
   .dpad-btn.diag {
-    font-size: 14px;
+    font-size: 16px;
     color: #9ca3af;
     background-color: #111827;
   }
 
   .dpad-btn.center-btn {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--accent-gold);
     background-color: #182234;
   }
 
   .dpad-btn:active {
-    background-color: #4b5563;
+    background-color: #374151;
     color: #ffffff;
     transform: scale(0.92);
   }
 
-  /* Center: Ticker */
-  .pad-center {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 0 4px;
-  }
-
-  .mobile-ticker {
-    background-color: #030712;
-    border: 1px solid var(--border-color);
-    padding: 6px 8px;
-    border-radius: 6px;
-    font-size: 11px;
-    font-family: monospace;
-    color: var(--accent-gold);
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  /* Right: 4-Button Cluster (Diamond: X top, Y left, A right, B bottom) */
+  /* Right: 4-Button Cluster (Diamond: X top, Y left, A right, B bottom - ボタン拡大) */
   .pad-right {
     flex-shrink: 0;
   }
 
   .btn-cluster {
     display: grid;
-    grid-template-columns: repeat(3, 44px);
-    grid-template-rows: repeat(3, 42px);
-    gap: 4px;
+    grid-template-columns: repeat(3, 50px);
+    grid-template-rows: repeat(3, 46px);
+    gap: 5px;
   }
 
   .pad-btn {
@@ -527,7 +563,7 @@ kbd {
     cursor: pointer;
     user-select: none;
     touch-action: manipulation;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.45);
     transition: transform 0.08s, filter 0.08s;
   }
 
@@ -537,17 +573,17 @@ kbd {
   }
 
   .btn-letter {
-    font-size: 14px;
+    font-size: 17px;
     font-weight: 900;
     line-height: 1;
   }
 
   .btn-sub {
-    font-size: 8px;
-    font-weight: bold;
-    opacity: 0.9;
+    font-size: 9.5px;
+    font-weight: 800;
+    opacity: 0.95;
     line-height: 1;
-    margin-top: 1px;
+    margin-top: 2px;
   }
 
   /* Diamond Placements */
@@ -639,11 +675,78 @@ kbd {
 }
 
 .inventory-scroll-body {
-  padding: 12px;
+  padding: 14px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  gap: 10px;
+}
+
+/* モーダル内アイテムカードのタッチ最適化 */
+.inventory-scroll-body .inventory-item-card {
+  padding: 10px 14px;
+  gap: 12px;
+  border-radius: 10px;
+  background-color: #1a2234;
+  border: 1.5px solid #334155;
+  min-height: 58px;
+  align-items: center;
+}
+
+.inventory-scroll-body .inventory-item-card.equipped {
+  border-color: #f59e0b;
+  background-color: #242c42;
+}
+
+.inventory-scroll-body .item-name {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.inventory-scroll-body .item-desc {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.inventory-scroll-body .item-actions {
+  display: flex;
   gap: 8px;
+  align-items: center;
+}
+
+/* スマホで押しやすい大サイズ操作ボタン（装備・外す・使う・置く） */
+.inventory-scroll-body .item-btn {
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 16px;
+  min-height: 40px;
+  min-width: 60px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  transition: transform 0.08s, filter 0.08s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.inventory-scroll-body .item-btn:active {
+  transform: scale(0.93);
+  filter: brightness(1.25);
+}
+
+.inventory-scroll-body .item-btn.use-btn {
+  background-color: #047857;
+  border-color: #10b981;
+  color: #ecfdf5;
+  box-shadow: 0 2px 5px rgba(4, 120, 87, 0.45);
+}
+
+.inventory-scroll-body .item-btn.use-btn:active {
+  background-color: #059669;
 }
 
 @keyframes gameoverFadeIn {

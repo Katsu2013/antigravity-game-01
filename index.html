@@ -48,6 +48,10 @@
       <!-- Game Canvas Container -->
       <div id="canvas-container" class="canvas-container">
         <canvas id="game-canvas"></canvas>
+        <!-- 画面上部プレイ領域オーバーレイメッセージティッカー -->
+        <div id="mobile-ticker" class="mobile-ticker">
+          ダンジョン探索中
+        </div>
         <div id="floor-toast" class="floor-toast hidden">B1F に到達</div>
       </div>
 
@@ -95,13 +99,6 @@
           <button class="dpad-btn diag" data-dir="SW">↙</button>
           <button class="dpad-btn" data-dir="S">↓</button>
           <button class="dpad-btn diag" data-dir="SE">↘</button>
-        </div>
-      </div>
-
-      <!-- Center: Mini Log Ticker -->
-      <div class="pad-center">
-        <div id="mobile-ticker" class="mobile-ticker">
-          ダンジョン探索中
         </div>
       </div>
 
