@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="16" ry="5" fill="rgba(0,0,0,0.35)"/>
+  <!-- 全身包帯巻きのシルエット -->
+  <rect x="22" y="10" width="20" height="20" rx="3" fill="#d4d4d8" stroke="#a1a1aa" stroke-width="1.5"/>
+  <!-- 包帯の筋ライン -->
+  <line x1="22" y1="14" x2="42" y2="17" stroke="#71717a" stroke-width="1.5"/>
+  <line x1="22" y1="22" x2="42" y2="21" stroke="#71717a" stroke-width="1.5"/>
+  <line x1="22" y1="28" x2="42" y2="26" stroke="#71717a" stroke-width="1.5"/>
+  <!-- 包帯の隙間から光る黄金の眼 -->
+  <rect x="25" y="18" width="14" height="4" fill="#18181b"/>
+  <circle cx="28" cy="20" r="1.5" fill="#facc15"/>
+  <circle cx="36" cy="20" r="1.5" fill="#facc15"/>
+  <!-- 胴体と包帯 -->
+  <rect x="18" y="30" width="28" height="22" rx="2" fill="#e4e4e7" stroke="#a1a1aa" stroke-width="1.5"/>
+  <line x1="18" y1="36" x2="46" y2="39" stroke="#71717a" stroke-width="1.8"/>
+  <line x1="18" y1="44" x2="46" y2="42" stroke="#71717a" stroke-width="1.8"/>
+  <!-- たれる包帯の端 -->
+  <path d="M42 44 Q48 52 44 60" stroke="#d4d4d8" stroke-width="3" fill="none"/>
+  <!-- 足 -->
+  <rect x="23" y="52" width="7" height="8" fill="#a1a1aa"/>
+  <rect x="34" y="52" width="7" height="8" fill="#a1a1aa"/>
+</svg>

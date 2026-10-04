@@ -115,6 +115,11 @@ export class InputManager {
           this.ui.closeInventoryModal();
           this.ui.hideScoresModal();
           this.ui.hideHelpModal();
+        } else if (inventoryModal && !inventoryModal.classList.contains('hidden')) {
+          if (['o', 's'].includes(e.key.toLowerCase())) {
+            e.preventDefault();
+            this.engine.sortInventory();
+          }
         }
         return;
       }
@@ -137,6 +142,11 @@ export class InputManager {
       if (['c', 'i', 'tab'].includes(keyLower)) {
         e.preventDefault();
         this.ui.toggleInventoryModal();
+        return;
+      }
+      if (['o'].includes(keyLower)) {
+        e.preventDefault();
+        this.engine.sortInventory();
         return;
       }
       if (['v', 'm'].includes(keyLower)) {

@@ -6,7 +6,7 @@
  */
 
 import { GameEngine } from '../core/GameEngine';
-import { BiomeType, Item, Monster, TileType } from '../core/types';
+import { BiomeType, Item, Monster, Obstacle, TileType } from '../core/types';
 import { AnimationEngine } from './AnimationEngine';
 import { SVGSprites, SpriteId } from './sprites/SVGSprites';
 import { TileSprites } from './sprites/TileSprites';
@@ -259,6 +259,16 @@ export class CanvasRenderer {
       }
     }
 
+    // 3.5. インタラクティブ障害物の描画（土塊、倒木、雪塊、押せる大石、滑る氷塊）
+    for (const obstacle of (map.obstacles || [])) {
+      if (map.explored[obstacle.y][obstacle.x]) {
+        const isVisible = map.visible[obstacle.y][obstacle.x];
+        const screenX = Math.floor(cameraX + obstacle.x * effectiveTileSize);
+        const screenY = Math.floor(cameraY + obstacle.y * effectiveTileSize);
+        this.drawObstacle(ctx, obstacle, screenX, screenY, effectiveTileSize, isVisible);
+      }
+    }
+
     // 4. 敵モンスターの描画（視界内のみ、SVGスプライト＆アニメーション）
     for (const monster of map.monsters) {
       if (map.visible[monster.y][monster.x]) {
@@ -408,6 +418,10 @@ export class CanvasRenderer {
         LAKE: { base: 'rgba(8, 145, 178, 0.78)', wave: '#67e8f9', deep: '#0e7490' },
         SNOW: { base: 'rgba(56, 189, 248, 0.65)', wave: '#e0f2fe', deep: '#0284c7' },
         ICE: { base: 'rgba(14, 165, 233, 0.75)', wave: '#bae6fd', deep: '#0369a1' },
+        SWAMP: { base: 'rgba(21, 128, 61, 0.78)', wave: '#86efac', deep: '#14532d' },
+        TOXIC: { base: 'rgba(126, 34, 206, 0.82)', wave: '#d8b4fe', deep: '#581c87' },
+        MECHA: { base: 'rgba(180, 83, 9, 0.75)', wave: '#fde68a', deep: '#78350f' },
+        ISLAND: { base: 'rgba(14, 116, 144, 0.85)', wave: '#67e8f9', deep: '#164e63' },
       };
       const wc = waterColors[biome] || waterColors.STONE;
 
@@ -486,6 +500,10 @@ export class CanvasRenderer {
         LAKE: { base: 'rgba(8, 145, 178, 0.78)' },
         SNOW: { base: 'rgba(56, 189, 248, 0.65)' },
         ICE: { base: 'rgba(14, 165, 233, 0.75)' },
+        SWAMP: { base: 'rgba(21, 128, 61, 0.78)' },
+        TOXIC: { base: 'rgba(126, 34, 206, 0.82)' },
+        MECHA: { base: 'rgba(180, 83, 9, 0.75)' },
+        ISLAND: { base: 'rgba(14, 116, 144, 0.85)' },
       };
       const wc = waterColors[biome] || waterColors.RIVER;
       ctx.fillStyle = wc.base;
@@ -510,6 +528,32 @@ export class CanvasRenderer {
       }
 
       // 視界外マスク
+      if (!isVisible) {
+        ctx.fillStyle = 'rgba(3, 7, 18, 0.62)';
+        ctx.fillRect(x, y, s, s);
+      }
+      return;
+    }
+
+    // 3.8. 特殊環境ギミック床 (Ice, Mud, Poison)
+    if (tile === TileType.Ice || tile === TileType.Mud || tile === TileType.Poison) {
+      const gimmickSprite = TileSprites.getGimmickSprite(tile);
+      if (gimmickSprite) {
+        ctx.drawImage(gimmickSprite, x, y, s, s);
+      } else {
+        ctx.fillStyle = tile === TileType.Ice ? '#38bdf8' : tile === TileType.Mud ? '#78350f' : '#7e22ce';
+        ctx.fillRect(x, y, s, s);
+      }
+
+      // 上が壁なら影
+      if (gridY > 0 && map.tiles[gridY - 1]?.[gridX] === TileType.Wall) {
+        const shadowGrad = ctx.createLinearGradient(x, y, x, y + s * 0.4);
+        shadowGrad.addColorStop(0, 'rgba(0, 0, 0, 0.6)');
+        shadowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = shadowGrad;
+        ctx.fillRect(x, y, s, s * 0.4);
+      }
+
       if (!isVisible) {
         ctx.fillStyle = 'rgba(3, 7, 18, 0.62)';
         ctx.fillRect(x, y, s, s);
@@ -583,6 +627,87 @@ export class CanvasRenderer {
         ctx.fillStyle = 'rgba(3, 7, 18, 0.4)';
         ctx.fillRect(x, y, s, s);
       }
+    }
+  }
+
+  /**
+   * インタラクティブ障害物（土の塊、倒木、雪の塊、押せる大石、滑る氷塊）を描画します。
+   *
+   * @param ctx - Canvas描画コンテキスト
+   * @param obstacle - 障害物データ
+   * @param x - スクリーン上X座標
+   * @param y - スクリーン上Y座標
+   * @param size - タイルサイズ（ピクセル）
+   * @param isVisible - 視界内かどうか
+   */
+  private drawObstacle(
+    ctx: CanvasRenderingContext2D,
+    obstacle: Obstacle,
+    x: number,
+    y: number,
+    size: number,
+    isVisible: boolean
+  ): void {
+    const cx = x + size / 2;
+    const cy = y + size / 2;
+    const s = Math.ceil(size);
+
+    const spriteId = SVGSprites.getObstacleSpriteId(obstacle.type);
+    const spriteImg = SVGSprites.get(spriteId);
+
+    if (isVisible) {
+      // 接地影
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+      ctx.beginPath();
+      ctx.ellipse(cx, cy + s * 0.32, s * 0.32, s * 0.12, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      const obSize = s * 0.95;
+      if (spriteImg) {
+        ctx.drawImage(
+          spriteImg,
+          cx - obSize / 2,
+          cy - obSize / 2,
+          obSize,
+          obSize
+        );
+      } else {
+        ctx.fillStyle = obstacle.color;
+        ctx.fillRect(cx - obSize * 0.4, cy - obSize * 0.4, obSize * 0.8, obSize * 0.8);
+      }
+
+      // 耐久度（HP）ゲージ表示（最大HPが2以上の破壊可能オブジェクトでダメージを受けている場合）
+      if (obstacle.isDestructible && obstacle.maxHp > 1 && obstacle.hp < obstacle.maxHp) {
+        const barW = s * 0.7;
+        const barH = Math.max(3, s * 0.08);
+        const barX = cx - barW / 2;
+        const barY = y + 2;
+
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+        ctx.fillRect(barX, barY, barW, barH);
+
+        const hpRatio = Math.max(0, obstacle.hp / obstacle.maxHp);
+        ctx.fillStyle = '#eab308';
+        ctx.fillRect(barX, barY, barW * hpRatio, barH);
+      }
+    } else {
+      // 記憶タイル内（未視界）の薄暗いシルエット
+      const obSize = s * 0.9;
+      ctx.save();
+      ctx.filter = 'brightness(35%) grayscale(100%)';
+      if (spriteImg) {
+        ctx.drawImage(
+          spriteImg,
+          cx - obSize / 2,
+          cy - obSize / 2,
+          obSize,
+          obSize
+        );
+      } else {
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(cx - obSize * 0.4, cy - obSize * 0.4, obSize * 0.8, obSize * 0.8);
+      }
+      ctx.restore();
     }
   }
 
@@ -1276,6 +1401,10 @@ export class CanvasRenderer {
       LAKE: { wall: '#0e7490', floorVis: '#083344', floorDim: '#041c26', waterVis: '#67e8f9', waterDim: '#0e7490' },
       SNOW: { wall: '#334155', floorVis: '#cbd5e1', floorDim: '#64748b', waterVis: '#93c5fd', waterDim: '#1e3a8a' },
       ICE: { wall: '#0369a1', floorVis: '#0284c7', floorDim: '#082f49', waterVis: '#38bdf8', waterDim: '#0369a1' },
+      SWAMP: { wall: '#14532d', floorVis: '#166534', floorDim: '#052e16', waterVis: '#86efac', waterDim: '#15803d' },
+      TOXIC: { wall: '#581c87', floorVis: '#3b0764', floorDim: '#1e0538', waterVis: '#d8b4fe', waterDim: '#7e22ce' },
+      MECHA: { wall: '#78350f', floorVis: '#451a03', floorDim: '#270e02', waterVis: '#fde68a', waterDim: '#b45309' },
+      ISLAND: { wall: '#1e293b', floorVis: '#64748b', floorDim: '#334155', waterVis: '#67e8f9', waterDim: '#0891b2' },
     };
     const mp = minimapPalettes[biome] || minimapPalettes.STONE;
 
@@ -1300,10 +1429,29 @@ export class CanvasRenderer {
         } else if (tile === TileType.Bridge) {
           ctx.fillStyle = map.visible[y][x] ? '#d97706' : '#78350f';
           ctx.fillRect(cx, cy, cellW, cellH);
+        } else if (tile === TileType.Ice) {
+          ctx.fillStyle = map.visible[y][x] ? '#38bdf8' : '#0284c7';
+          ctx.fillRect(cx, cy, cellW, cellH);
+        } else if (tile === TileType.Mud) {
+          ctx.fillStyle = map.visible[y][x] ? '#92400e' : '#451a03';
+          ctx.fillRect(cx, cy, cellW, cellH);
+        } else if (tile === TileType.Poison) {
+          ctx.fillStyle = map.visible[y][x] ? '#a855f7' : '#581c87';
+          ctx.fillRect(cx, cy, cellW, cellH);
         } else if (tile === TileType.StairsDown) {
           ctx.fillStyle = '#fbbf24';
           ctx.fillRect(cx, cy, cellW, cellH);
         }
+      }
+    }
+
+    // 障害物のミニマップ表示（探索済みマスの障害物はオレンジ褐色のドット）
+    for (const ob of (map.obstacles || [])) {
+      if (map.explored[ob.y][ob.x]) {
+        const ox = startX + ob.x * cellW;
+        const oy = startY + ob.y * cellH;
+        ctx.fillStyle = map.visible[ob.y][ob.x] ? '#f59e0b' : '#92400e';
+        ctx.fillRect(ox, oy, cellW, cellH);
       }
     }
 

@@ -16,6 +16,8 @@ import {
   Direction8,
   DungeonMap,
   GameLogEntry,
+  Monster,
+  Obstacle,
   PlayerState,
   TileType,
 } from './types';
@@ -82,6 +84,9 @@ export class GameEngine {
     if (saved && saved.player && saved.player.isAlive && saved.map) {
       this.player = saved.player;
       this.map = saved.map;
+      if (!this.map.obstacles) {
+        this.map.obstacles = [];
+      }
       this.logs = saved.logs || [];
       this.lastDefeatCause = '';
       this.addLog('前回の冒険の続きを再開した。', 'turn-header');
@@ -89,6 +94,15 @@ export class GameEngine {
       return true;
     }
     return false;
+  }
+
+  /**
+   * プレイヤーの所持品インベントリを論理順（装備中優先、武器→盾→薬草→食料→巻物）に整理整頓します。
+   */
+  public sortInventory(): void {
+    ItemSystem.sortInventory(this.player);
+    this.addLog('持ち物を種類順に整理整頓した。', 'info');
+    this.notify();
   }
 
   /**
@@ -234,7 +248,7 @@ export class GameEngine {
           return false;
         }
 
-        // 進行方向にモンスターがいるか判定（近接攻撃）
+        // 1. 進行方向にモンスターがいるか判定（近接攻撃）
         const targetMonster = this.map.monsters.find(
           (m) => m.x === targetX && m.y === targetY
         );
@@ -269,17 +283,38 @@ export class GameEngine {
           break;
         }
 
-        // 壁・水路チェック（壁や水路に向かって方向キーを押した場合は向きのみ変更しターン消費なし）
+        // 2. 進行方向に障害物があるか判定（破壊・押し出し・滑走）
+        const targetObstacle = (this.map.obstacles || []).find(
+          (o) => o.x === targetX && o.y === targetY
+        );
+
+        if (targetObstacle) {
+          turnPassed = this.interactWithObstacle(
+            targetObstacle,
+            action.dx,
+            action.dy
+          );
+          break;
+        }
+
+        // 3. 壁・水路チェック（進入不可タイルの場合は向き変更のみでターン消費なし）
         const targetTile = this.map.tiles[targetY][targetX];
         if (targetTile === TileType.Wall || targetTile === TileType.Water) {
           this.notify();
           return false;
         }
 
-        // 移動実行
+        // 4. 移動実行
         this.player.x = targetX;
         this.player.y = targetY;
         turnPassed = true;
+
+        // 5. タイル環境ギミック処理（氷の滑走、泥濘の足枷、毒沼の毒気）
+        const extraTurn = this.handleTileGimmick(
+          targetTile,
+          action.dx,
+          action.dy
+        );
 
         // 足元のアイテム検知
         const groundItem = this.map.items.find(
@@ -290,7 +325,12 @@ export class GameEngine {
         }
 
         if (targetTile === TileType.StairsDown) {
-          this.addLog('下り階段を見つけた。(Enterまたは階段ボタンで次へ)', 'info');
+          this.addLog('下り階段を見つけた。(決定ボタンまたは階段ボタンで次へ)', 'info');
+        }
+
+        if (extraTurn) {
+          // 泥濘などで追加のターンが進行
+          this.updateMonsters();
         }
         break;
       }
@@ -391,12 +431,21 @@ export class GameEngine {
             );
             if (result.didLevelUp) {
               this.addLog(
-                `レベルが上がった！ (Lv.${this.player.level} / 最大HP: ${this.player.maxHp})`,
+                `レベルが上がった！ (Lv.${this.player.level} / 最大HP+5 / 攻撃+2 / 防御+1 / HP+5回復)`,
                 'turn-header'
               );
             }
           }
           turnPassed = true;
+          break;
+        }
+
+        // 正面マスに障害物がある場合は攻撃または押し出し実行！
+        const facingObstacle = (this.map.obstacles || []).find(
+          (o) => o.x === targetX && o.y === targetY
+        );
+        if (facingObstacle) {
+          turnPassed = this.interactWithObstacle(facingObstacle, fdx, fdy);
           break;
         }
 
@@ -425,7 +474,7 @@ export class GameEngine {
           break;
         }
 
-        // 4. 正面に敵がおらず足元にも階段・アイテムがない場合、正面に向かって素振り（空振り攻撃）を実行！
+        // 4. 正面に敵・障害物がなく足元にも階段・アイテムがない場合、正面に向かって素振り（空振り攻撃）を実行！
         this.onAttack?.('player', fdx, fdy, '');
         this.addLog('正面へ剣を素振りした。手応えはない。', 'normal');
         turnPassed = true;
@@ -569,6 +618,271 @@ export class GameEngine {
   }
 
   /**
+   * 障害物とのインタラクション（攻撃による破壊、大石の押し出し、氷塊の滑走と敵直撃粉砕）を実行します。
+   *
+   * @param obstacle - 対象の障害物
+   * @param dx - アクションX方向
+   * @param dy - アクションY方向
+   * @returns ターンが経過した場合は true
+   */
+  private interactWithObstacle(
+    obstacle: Obstacle,
+    dx: number,
+    dy: number
+  ): boolean {
+    // 1. 滑る氷塊 (ICE_BLOCK)
+    if (obstacle.isSliding) {
+      this.addLog(`${obstacle.name} を力いっぱい蹴り出した！`, 'normal');
+      this.onAttack?.('player', dx, dy, obstacle.id);
+
+      let curX = obstacle.x;
+      let curY = obstacle.y;
+      let hitMonster: Monster | undefined;
+      let hitObstacle: Obstacle | undefined;
+      let hitWall = false;
+
+      // 一直線に滑走
+      while (true) {
+        const nextX = curX + dx;
+        const nextY = curY + dy;
+
+        // マップ外・壁・水路判定
+        if (
+          nextX < 0 ||
+          nextX >= this.map.width ||
+          nextY < 0 ||
+          nextY >= this.map.height
+        ) {
+          hitWall = true;
+          break;
+        }
+
+        const tile = this.map.tiles[nextY][nextX];
+        if (tile === TileType.Wall || tile === TileType.Water) {
+          hitWall = true;
+          break;
+        }
+
+        // モンスター衝突判定
+        hitMonster = this.map.monsters.find(
+          (m) => m.x === nextX && m.y === nextY
+        );
+        if (hitMonster) {
+          break;
+        }
+
+        // 他の障害物衝突判定
+        hitObstacle = (this.map.obstacles || []).find(
+          (o) => o.id !== obstacle.id && o.x === nextX && o.y === nextY
+        );
+        if (hitObstacle) {
+          break;
+        }
+
+        curX = nextX;
+        curY = nextY;
+      }
+
+      if (hitMonster) {
+        // モンスターに直撃！20大ダメージ
+        this.onDamage?.(hitMonster.id);
+        hitMonster.hp -= 20;
+        this.addLog(
+          `${obstacle.name} が ${hitMonster.name} に激突！ 20 の大ダメージを与えて粉砕した！`,
+          'damage'
+        );
+        // 氷塊は粉砕・消滅
+        this.map.obstacles = this.map.obstacles.filter(
+          (o) => o.id !== obstacle.id
+        );
+
+        if (hitMonster.hp <= 0) {
+          this.addLog(
+            `${hitMonster.name} を粉砕撃破した！ (${hitMonster.expValue} EXP獲得)`,
+            'info'
+          );
+          this.player.exp += hitMonster.expValue;
+          this.map.monsters = this.map.monsters.filter(
+            (m) => m.id !== hitMonster.id
+          );
+          // レベルアップチェック
+          const expNeeded = this.player.level * 15;
+          if (this.player.exp >= expNeeded) {
+            this.player.level += 1;
+            this.player.exp -= expNeeded;
+            this.player.maxHp += 5;
+            this.player.hp = Math.min(this.player.maxHp, this.player.hp + 5);
+            this.player.baseAtk += 2;
+            this.player.baseDef += 1;
+            this.addLog(
+              `レベルが上がった！ (Lv.${this.player.level} / 最大HP+5 / 攻撃+2 / 防御+1 / HP+5回復)`,
+              'turn-header'
+            );
+          }
+        }
+        return true;
+      } else if (hitObstacle) {
+        this.addLog(
+          `${obstacle.name} が ${hitObstacle.name} に激突し、木っ端微塵に粉砕した！`,
+          'normal'
+        );
+        this.map.obstacles = this.map.obstacles.filter(
+          (o) => o.id !== obstacle.id
+        );
+        return true;
+      } else if (hitWall) {
+        this.addLog(
+          `${obstacle.name} が壁に激突し、ガラガラと粉砕した！`,
+          'normal'
+        );
+        this.map.obstacles = this.map.obstacles.filter(
+          (o) => o.id !== obstacle.id
+        );
+        return true;
+      } else {
+        obstacle.x = curX;
+        obstacle.y = curY;
+        return true;
+      }
+    }
+
+    // 2. 押せる大石 (PUSH_ROCK)
+    if (obstacle.isPushable) {
+      const nextX = obstacle.x + dx;
+      const nextY = obstacle.y + dy;
+
+      // 1マス奥の通行判定
+      if (
+        nextX < 0 ||
+        nextX >= this.map.width ||
+        nextY < 0 ||
+        nextY >= this.map.height
+      ) {
+        this.addLog(`${obstacle.name} は壁に引っかかって押せない！`, 'warning');
+        return false;
+      }
+
+      const tile = this.map.tiles[nextY][nextX];
+      const isBlocked =
+        tile === TileType.Wall ||
+        tile === TileType.Water ||
+        this.map.monsters.some((m) => m.x === nextX && m.y === nextY) ||
+        this.map.obstacles.some((o) => o.x === nextX && o.y === nextY);
+
+      if (isBlocked) {
+        this.addLog(`奥が塞がっていて ${obstacle.name} を押せない！`, 'warning');
+        return false;
+      }
+
+      obstacle.x = nextX;
+      obstacle.y = nextY;
+      this.addLog(`${obstacle.name} をズズズ…と奥へ押して移動させた！`, 'normal');
+      return true;
+    }
+
+    // 3. 攻撃で壊せる障害物 (DIRT_BLOCK, TREE_STUMP, SNOW_MOUND)
+    if (obstacle.isDestructible) {
+      obstacle.hp -= 1;
+      this.onAttack?.('player', dx, dy, obstacle.id);
+      this.onDamage?.(obstacle.id);
+
+      if (obstacle.hp > 0) {
+        this.addLog(
+          `${obstacle.name} に一撃を加えた！（耐久度: ${obstacle.hp}/${obstacle.maxHp}）`,
+          'damage'
+        );
+      } else {
+        this.addLog(`${obstacle.name} を粉砕して道を切り開いた！`, 'info');
+        this.map.obstacles = this.map.obstacles.filter(
+          (o) => o.id !== obstacle.id
+        );
+        // 20%の確率でアイテムドロップ
+        if (Math.random() < 0.2) {
+          this.map.items.push(EntityFactory.createRandomItem(obstacle.x, obstacle.y));
+          this.addLog('崩れた破片の中からアイテムが現れた！', 'info');
+        }
+      }
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * プレイヤーが移動した先の床ギミック効果（氷の滑走、泥濘の足枷、毒沼の毒気）を適用します。
+   *
+   * @param currentTile - 進入したタイル種別
+   * @param dx - 進入X方向
+   * @param dy - 進入Y方向
+   * @returns 追加ターン消費（泥濘）が発生した場合は true
+   */
+  private handleTileGimmick(
+    currentTile: TileType,
+    dx: number,
+    dy: number
+  ): boolean {
+    let extraTurn = false;
+
+    // 1. 氷床（TileType.Ice）: 進行方向へスーッと滑走！
+    if (currentTile === TileType.Ice && (dx !== 0 || dy !== 0)) {
+      let curX = this.player.x;
+      let curY = this.player.y;
+      let slid = false;
+
+      while (true) {
+        const nextX = curX + dx;
+        const nextY = curY + dy;
+        if (
+          nextX < 0 ||
+          nextX >= this.map.width ||
+          nextY < 0 ||
+          nextY >= this.map.height
+        ) {
+          break;
+        }
+
+        const nTile = this.map.tiles[nextY][nextX];
+        if (nTile === TileType.Wall || nTile === TileType.Water) break;
+        if (this.map.monsters.some((m) => m.x === nextX && m.y === nextY)) break;
+        if (this.map.obstacles.some((o) => o.x === nextX && o.y === nextY)) break;
+
+        curX = nextX;
+        curY = nextY;
+        slid = true;
+
+        // 次のマスが氷以外ならそこでストップ
+        if (nTile !== TileType.Ice) {
+          break;
+        }
+      }
+
+      if (slid) {
+        this.player.x = curX;
+        this.player.y = curY;
+        this.addLog('氷の床で足が滑り、スーッと滑走した！', 'normal');
+      }
+    }
+
+    // 2. 泥濘床（TileType.Mud）: 足を取られターン消費増
+    if (currentTile === TileType.Mud) {
+      this.addLog('泥濘に足を取られ、身動きに余分な時間がかかってしまった！', 'warning');
+      extraTurn = true;
+    }
+
+    // 3. 毒沼床（TileType.Poison）: 2の毒沼ダメージ
+    if (currentTile === TileType.Poison) {
+      const poisonDmg = 2;
+      this.player.hp = Math.max(1, this.player.hp - poisonDmg);
+      this.addLog(
+        `毒沼の有毒ガスと腐蝕液で ${poisonDmg} のダメージを受けた！`,
+        'damage'
+      );
+    }
+
+    return extraTurn;
+  }
+
+  /**
    * マップ上の生存モンスター全員の自律AI（索敵・追跡・攻撃）を実行します。
    */
   private updateMonsters(): void {
@@ -610,17 +924,20 @@ export class GameEngine {
         continue;
       }
 
-      // 視界内にプレイヤーがいる場合は接近
+      // 視界内にプレイヤーがいる場合は接近（他のモンスターおよび障害物を回避）
       if (isPlayerVisible) {
-        const otherMonsters = this.map.monsters
-          .filter((m) => m.id !== monster.id)
-          .map((m) => ({ x: m.x, y: m.y }));
+        const blockers = [
+          ...this.map.monsters
+            .filter((m) => m.id !== monster.id)
+            .map((m) => ({ x: m.x, y: m.y })),
+          ...(this.map.obstacles || []).map((o) => ({ x: o.x, y: o.y })),
+        ];
 
         const nextStep = Pathfinding.getNextStep(
           this.map,
           { x: monster.x, y: monster.y },
           playerPos,
-          otherMonsters
+          blockers
         );
 
         if (nextStep) {

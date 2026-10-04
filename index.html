@@ -60,7 +60,10 @@
         <div class="panel-section">
           <div class="panel-header-row">
             <h2 class="panel-title">持ち物</h2>
-            <span id="inventory-capacity" class="capacity-badge">0/12</span>
+            <div class="panel-header-actions">
+              <button id="btn-desktop-sort" class="sort-mini-btn" title="持ち物を整理整頓">整 整理</button>
+              <span id="inventory-capacity" class="capacity-badge">0/12</span>
+            </div>
           </div>
           <div id="desktop-inventory-list" class="desktop-inventory-list"></div>
         </div>
@@ -130,7 +133,10 @@
       <div class="modal-dialog">
         <div class="modal-header">
           <h3 class="modal-title">所持品一覧</h3>
-          <button id="btn-close-inventory" class="modal-close-btn">&times;</button>
+          <div class="modal-header-actions">
+            <button id="btn-sort-inventory" class="sort-inventory-btn" title="持ち物を整理整頓">整 整理</button>
+            <button id="btn-close-inventory" class="modal-close-btn">&times;</button>
+          </div>
         </div>
         <div id="modal-inventory-list" class="modal-body inventory-scroll-body"></div>
       </div>

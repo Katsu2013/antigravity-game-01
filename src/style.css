@@ -687,6 +687,66 @@ kbd {
   color: #ffffff;
 }
 
+.panel-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sort-mini-btn {
+  background-color: #1e293b;
+  border: 1px solid #475569;
+  color: #38bdf8;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sort-mini-btn:hover {
+  background-color: #334155;
+  border-color: #38bdf8;
+  color: #ffffff;
+}
+
+.sort-mini-btn:active {
+  transform: scale(0.94);
+}
+
+.modal-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sort-inventory-btn {
+  background-color: #0369a1;
+  border: 1px solid #38bdf8;
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.sort-inventory-btn:hover {
+  background-color: #0284c7;
+}
+
+.sort-inventory-btn:active {
+  transform: scale(0.94);
+  filter: brightness(1.2);
+}
+
 .inventory-scroll-body {
   padding: 14px;
   overflow-y: auto;

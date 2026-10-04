@@ -130,6 +130,12 @@ saveSvg(path.join(DOCS_ASSETS_DIR, 'monsters', 'monster_ghost.svg'), monsterItem
 saveSvg(path.join(DOCS_ASSETS_DIR, 'monsters', 'monster_mage.svg'), monsterItemSprites.MAGE_DOWN_SVG);
 saveSvg(path.join(DOCS_ASSETS_DIR, 'monsters', 'monster_dragon.svg'), monsterItemSprites.DRAGON_DOWN_SVG);
 
+// 新モンスター4種
+saveSvg(path.join(DOCS_ASSETS_DIR, 'monsters', 'monster_mimic.svg'), monsterItemSprites.MIMIC_DOWN_SVG);
+saveSvg(path.join(DOCS_ASSETS_DIR, 'monsters', 'monster_zombie.svg'), monsterItemSprites.ZOMBIE_DOWN_SVG);
+saveSvg(path.join(DOCS_ASSETS_DIR, 'monsters', 'monster_imp.svg'), monsterItemSprites.IMP_DOWN_SVG);
+saveSvg(path.join(DOCS_ASSETS_DIR, 'monsters', 'monster_mummy.svg'), monsterItemSprites.MUMMY_DOWN_SVG);
+
 // -------------------------------------------------------------
 // 5. 武器・盾アイテム単体
 // -------------------------------------------------------------
@@ -164,6 +170,9 @@ saveSvg(
 );
 saveSvg(path.join(DOCS_ASSETS_DIR, 'weapons', 'weapon_flame_sword.svg'), monsterItemSprites.ITEM_WEAPON_FLAME_SVG);
 saveSvg(path.join(DOCS_ASSETS_DIR, 'weapons', 'weapon_rune_sword.svg'), monsterItemSprites.ITEM_WEAPON_RUNE_SVG);
+saveSvg(path.join(DOCS_ASSETS_DIR, 'weapons', 'weapon_muramasa.svg'), monsterItemSprites.ITEM_WEAPON_MURAMASA_SVG);
+saveSvg(path.join(DOCS_ASSETS_DIR, 'weapons', 'weapon_hammer.svg'), monsterItemSprites.ITEM_WEAPON_WARHAMMER_SVG);
+saveSvg(path.join(DOCS_ASSETS_DIR, 'weapons', 'weapon_lance.svg'), monsterItemSprites.ITEM_WEAPON_HOLY_LANCE_SVG);
 
 saveSvg(path.join(DOCS_ASSETS_DIR, 'shields', 'shield_wood.svg'), monsterItemSprites.ITEM_SHIELD_WOOD_SVG);
 saveSvg(path.join(DOCS_ASSETS_DIR, 'shields', 'shield_bronze.svg'), monsterItemSprites.ITEM_SHIELD_BRONZE_SVG);
@@ -186,6 +195,9 @@ saveSvg(
   <circle cx="32" cy="34" r="2.5" fill="#ffffff"/>
 </svg>`
 );
+saveSvg(path.join(DOCS_ASSETS_DIR, 'shields', 'shield_wind.svg'), monsterItemSprites.ITEM_SHIELD_WIND_SVG);
+saveSvg(path.join(DOCS_ASSETS_DIR, 'shields', 'shield_tower.svg'), monsterItemSprites.ITEM_SHIELD_TOWER_SVG);
+saveSvg(path.join(DOCS_ASSETS_DIR, 'shields', 'shield_aegis.svg'), monsterItemSprites.ITEM_SHIELD_AEGIS_SVG);
 
 // -------------------------------------------------------------
 // 6. アイテム（薬草・食料・巻物）
@@ -213,6 +225,7 @@ saveSvg(
 </svg>`
 );
 saveSvg(path.join(DOCS_ASSETS_DIR, 'items', 'item_potion_str.svg'), monsterItemSprites.ITEM_POTION_STR_SVG);
+saveSvg(path.join(DOCS_ASSETS_DIR, 'items', 'item_potion_antidote.svg'), monsterItemSprites.ITEM_POTION_ANTIDOTE_SVG);
 saveSvg(
   path.join(DOCS_ASSETS_DIR, 'items', 'item_seed.svg'),
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
@@ -222,6 +235,7 @@ saveSvg(
   <circle cx="32" cy="32" r="4" fill="#fed7aa"/>
 </svg>`
 );
+saveSvg(path.join(DOCS_ASSETS_DIR, 'items', 'item_seed_speed.svg'), monsterItemSprites.ITEM_POTION_AGI_SVG);
 saveSvg(
   path.join(DOCS_ASSETS_DIR, 'items', 'item_food.svg'),
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
@@ -233,6 +247,7 @@ saveSvg(
 </svg>`
 );
 saveSvg(path.join(DOCS_ASSETS_DIR, 'items', 'item_food_riceball.svg'), monsterItemSprites.ITEM_FOOD_RICEBALL_SVG);
+saveSvg(path.join(DOCS_ASSETS_DIR, 'items', 'item_food_big_riceball.svg'), monsterItemSprites.ITEM_FOOD_BIG_RICEBALL_SVG);
 saveSvg(
   path.join(DOCS_ASSETS_DIR, 'items', 'item_scroll_warp.svg'),
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
@@ -244,14 +259,29 @@ saveSvg(
 );
 saveSvg(path.join(DOCS_ASSETS_DIR, 'items', 'item_scroll_thunder.svg'), monsterItemSprites.ITEM_SCROLL_THUNDER_SVG);
 saveSvg(path.join(DOCS_ASSETS_DIR, 'items', 'item_scroll_light.svg'), monsterItemSprites.ITEM_SCROLL_LIGHT_SVG);
+saveSvg(path.join(DOCS_ASSETS_DIR, 'items', 'item_scroll_sleep.svg'), monsterItemSprites.ITEM_SCROLL_SLEEP_SVG);
+saveSvg(path.join(DOCS_ASSETS_DIR, 'items', 'item_scroll_confuse.svg'), monsterItemSprites.ITEM_SCROLL_CONFUSE_SVG);
 
 // -------------------------------------------------------------
-// 7. タイル・階段・橋・バイオーム壁床
+// 7. 障害物・ギミックオブジェクト
+// -------------------------------------------------------------
+const OBSTACLE_DIR = path.join(DOCS_ASSETS_DIR, 'obstacles');
+if (!fs.existsSync(OBSTACLE_DIR)) {
+  fs.mkdirSync(OBSTACLE_DIR, { recursive: true });
+}
+saveSvg(path.join(OBSTACLE_DIR, 'obstacle_dirt.svg'), monsterItemSprites.OBSTACLE_DIRT_BLOCK_SVG);
+saveSvg(path.join(OBSTACLE_DIR, 'obstacle_tree.svg'), monsterItemSprites.OBSTACLE_TREE_STUMP_SVG);
+saveSvg(path.join(OBSTACLE_DIR, 'obstacle_snow.svg'), monsterItemSprites.OBSTACLE_SNOW_MOUND_SVG);
+saveSvg(path.join(OBSTACLE_DIR, 'obstacle_push_rock.svg'), monsterItemSprites.OBSTACLE_PUSH_ROCK_SVG);
+saveSvg(path.join(OBSTACLE_DIR, 'obstacle_ice_block.svg'), monsterItemSprites.OBSTACLE_ICE_BLOCK_SVG);
+
+// -------------------------------------------------------------
+// 8. タイル・階段・橋・全11バイオーム壁床・ギミック床
 // -------------------------------------------------------------
 saveSvg(path.join(DOCS_ASSETS_DIR, 'tiles', 'stairs_down.svg'), svgSprites.STAIRS_DOWN_SVG);
 saveSvg(path.join(DOCS_ASSETS_DIR, 'tiles', 'tile_bridge.svg'), tileSprites.BRIDGE_1_SVG);
 
-// 7バイオーム代表タイル
+// 全11バイオーム代表タイル
 saveSvg(path.join(DOCS_ASSETS_DIR, 'tiles', 'stone_floor.svg'), tileSprites.STONE_FLOOR_1_SVG);
 saveSvg(path.join(DOCS_ASSETS_DIR, 'tiles', 'stone_wall.svg'), tileSprites.STONE_WALL_1_SVG);
 
@@ -272,5 +302,22 @@ saveSvg(path.join(DOCS_ASSETS_DIR, 'tiles', 'snow_wall.svg'), tileSprites.SNOW_W
 
 saveSvg(path.join(DOCS_ASSETS_DIR, 'tiles', 'ice_floor.svg'), tileSprites.ICE_FLOOR_1_SVG);
 saveSvg(path.join(DOCS_ASSETS_DIR, 'tiles', 'ice_wall.svg'), tileSprites.ICE_WALL_1_SVG);
+
+saveSvg(path.join(DOCS_ASSETS_DIR, 'tiles', 'swamp_floor.svg'), tileSprites.SWAMP_FLOOR_1_SVG);
+saveSvg(path.join(DOCS_ASSETS_DIR, 'tiles', 'swamp_wall.svg'), tileSprites.SWAMP_WALL_1_SVG);
+
+saveSvg(path.join(DOCS_ASSETS_DIR, 'tiles', 'toxic_floor.svg'), tileSprites.TOXIC_FLOOR_1_SVG);
+saveSvg(path.join(DOCS_ASSETS_DIR, 'tiles', 'toxic_wall.svg'), tileSprites.TOXIC_WALL_1_SVG);
+
+saveSvg(path.join(DOCS_ASSETS_DIR, 'tiles', 'mecha_floor.svg'), tileSprites.MECHA_FLOOR_1_SVG);
+saveSvg(path.join(DOCS_ASSETS_DIR, 'tiles', 'mecha_wall.svg'), tileSprites.MECHA_WALL_1_SVG);
+
+saveSvg(path.join(DOCS_ASSETS_DIR, 'tiles', 'island_floor.svg'), tileSprites.ISLAND_FLOOR_1_SVG);
+saveSvg(path.join(DOCS_ASSETS_DIR, 'tiles', 'island_wall.svg'), tileSprites.ISLAND_WALL_1_SVG);
+
+// 特殊環境ギミック床
+saveSvg(path.join(DOCS_ASSETS_DIR, 'tiles', 'gimmick_ice.svg'), tileSprites.GIMMICK_ICE_SVG);
+saveSvg(path.join(DOCS_ASSETS_DIR, 'tiles', 'gimmick_mud.svg'), tileSprites.GIMMICK_MUD_SVG);
+saveSvg(path.join(DOCS_ASSETS_DIR, 'tiles', 'gimmick_poison.svg'), tileSprites.GIMMICK_POISON_SVG);
 
 console.log('Successfully exported all SVG assets to docs/assets/ !');

@@ -349,4 +349,330 @@ export class MonsterAndItemSprites {
   <line x1="22" y1="33" x2="24" y2="33" stroke="#38bdf8" stroke-width="2"/>
   <line x1="40" y1="33" x2="42" y2="33" stroke="#38bdf8" stroke-width="2"/>
 </svg>`.trim();
+
+  // =========================================================================
+  // 新モンスター4種（MIMIC, ZOMBIE, IMP, MUMMY）
+  // =========================================================================
+
+  /** 人食い箱 (MIMIC) - 正面（開いた宝箱、鋭い牙、長い舌、怪しい目） */
+  public static readonly MIMIC_DOWN_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="20" ry="5" fill="rgba(0,0,0,0.35)"/>
+  <!-- 宝箱下部 -->
+  <rect x="12" y="30" width="40" height="26" rx="3" fill="#b45309" stroke="#78350f" stroke-width="2"/>
+  <rect x="10" y="30" width="44" height="6" fill="#d97706"/>
+  <!-- 口の中（真っ赤な闇） -->
+  <rect x="14" y="22" width="36" height="14" rx="2" fill="#881337"/>
+  <!-- 上蓋（大きく開口） -->
+  <path d="M10 22 Q32 8 54 22 L52 14 Q32 2 12 14 Z" fill="#b45309" stroke="#78350f" stroke-width="2"/>
+  <!-- 鋭い牙（上下） -->
+  <polygon points="16,22 19,27 22,22" fill="#ffffff"/>
+  <polygon points="24,22 27,27 30,22" fill="#ffffff"/>
+  <polygon points="34,22 37,27 40,22" fill="#ffffff"/>
+  <polygon points="42,22 45,27 48,22" fill="#ffffff"/>
+  <polygon points="18,34 21,30 24,34" fill="#ffffff"/>
+  <polygon points="26,34 29,30 32,34" fill="#ffffff"/>
+  <polygon points="36,34 39,30 42,34" fill="#ffffff"/>
+  <!-- 覗く怪しい赤目 -->
+  <circle cx="24" cy="20" r="3" fill="#ef4444"/>
+  <circle cx="40" cy="20" r="3" fill="#ef4444"/>
+  <circle cx="24" cy="20" r="1" fill="#fef08a"/>
+  <circle cx="40" cy="20" r="1" fill="#fef08a"/>
+  <!-- 垂れ下がる舌 -->
+  <path d="M30 28 Q34 40 28 44 Q24 40 28 32 Z" fill="#f43f5e"/>
+</svg>`.trim();
+
+  public static readonly MIMIC_UP_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="20" ry="5" fill="rgba(0,0,0,0.35)"/>
+  <rect x="12" y="30" width="40" height="26" rx="3" fill="#92400e" stroke="#78350f" stroke-width="2"/>
+  <path d="M12 30 Q32 16 52 30 Z" fill="#b45309" stroke="#78350f" stroke-width="2"/>
+  <rect x="28" y="34" width="8" height="10" rx="1" fill="#f59e0b" stroke="#b45309" stroke-width="1.5"/>
+</svg>`.trim();
+
+  /** 腐乱ゾンビ (ZOMBIE) - 正面（緑灰の肌、うつろな瞳、ちぎれた衣服） */
+  public static readonly ZOMBIE_DOWN_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="16" ry="4.5" fill="rgba(0,0,0,0.35)"/>
+  <!-- 腐敗した頭部 -->
+  <rect x="22" y="10" width="20" height="20" rx="4" fill="#65a30d" stroke="#3f6212" stroke-width="1.5"/>
+  <!-- うつろな目 -->
+  <circle cx="28" cy="18" r="3.5" fill="#fef08a"/>
+  <circle cx="28" cy="18" r="1.5" fill="#1e293b"/>
+  <circle cx="37" cy="19" r="2.5" fill="#1e293b"/>
+  <!-- 歪んだ口 -->
+  <path d="M26 25 Q32 28 38 24" stroke="#1e293b" stroke-width="2" fill="none"/>
+  <!-- ボロボロの胴体 -->
+  <rect x="18" y="30" width="28" height="20" rx="2" fill="#475569" stroke="#1e293b" stroke-width="1.5"/>
+  <polygon points="18,48 24,44 28,50 34,44 40,50 46,46" fill="#334155"/>
+  <!-- 前に突き出された両腕 -->
+  <rect x="10" y="32" width="10" height="6" rx="2" fill="#65a30d"/>
+  <rect x="44" y="32" width="10" height="6" rx="2" fill="#65a30d"/>
+  <!-- 両足 -->
+  <rect x="24" y="50" width="6" height="10" fill="#65a30d"/>
+  <rect x="34" y="50" width="6" height="10" fill="#4d7c0f"/>
+</svg>`.trim();
+
+  public static readonly ZOMBIE_UP_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="16" ry="4.5" fill="rgba(0,0,0,0.35)"/>
+  <rect x="22" y="10" width="20" height="20" rx="4" fill="#4d7c0f" stroke="#3f6212" stroke-width="1.5"/>
+  <rect x="18" y="30" width="28" height="20" rx="2" fill="#334155" stroke="#1e293b" stroke-width="1.5"/>
+  <rect x="24" y="50" width="6" height="10" fill="#4d7c0f"/>
+  <rect x="34" y="50" width="6" height="10" fill="#4d7c0f"/>
+</svg>`.trim();
+
+  /** 小悪魔インプ (IMP) - 正面（赤紫の体、小さな角、コウモリ翼、三叉槍） */
+  public static readonly IMP_DOWN_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="14" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <!-- 小悪魔の翼 -->
+  <path d="M26 28 Q10 18 4 30 Q14 36 24 34 Z" fill="#831843" stroke="#500724" stroke-width="1.2"/>
+  <path d="M38 28 Q54 18 60 30 Q50 36 40 34 Z" fill="#831843" stroke="#500724" stroke-width="1.2"/>
+  <!-- 頭部 -->
+  <circle cx="32" cy="24" r="12" fill="#ec4899" stroke="#be185d" stroke-width="1.5"/>
+  <!-- 角 -->
+  <polygon points="24,14 20,4 28,12" fill="#f43f5e"/>
+  <polygon points="40,14 44,4 36,12" fill="#f43f5e"/>
+  <!-- 黄色いいたずら目 -->
+  <polygon points="24,22 30,24 26,27" fill="#fef08a"/>
+  <polygon points="40,22 34,24 38,27" fill="#fef08a"/>
+  <circle cx="27" cy="24" r="1.2" fill="#000000"/>
+  <circle cx="37" cy="24" r="1.2" fill="#000000"/>
+  <!-- 胴体と手足 -->
+  <rect x="26" y="34" width="12" height="14" rx="3" fill="#db2777"/>
+  <!-- 三叉の小槍 -->
+  <line x1="44" y1="16" x2="48" y2="48" stroke="#71717a" stroke-width="2"/>
+  <polygon points="44,14 42,8 46,8" fill="#f43f5e"/>
+  <polygon points="40,16 38,11 42,12" fill="#f43f5e"/>
+  <polygon points="48,16 50,11 46,12" fill="#f43f5e"/>
+</svg>`.trim();
+
+  public static readonly IMP_UP_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="14" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <path d="M26 28 Q10 18 4 30 Q14 36 24 34 Z" fill="#500724" stroke="#500724" stroke-width="1.2"/>
+  <path d="M38 28 Q54 18 60 30 Q50 36 40 34 Z" fill="#500724" stroke="#500724" stroke-width="1.2"/>
+  <circle cx="32" cy="24" r="12" fill="#db2777" stroke="#be185d" stroke-width="1.5"/>
+  <polygon points="24,14 20,4 28,12" fill="#be185d"/>
+  <polygon points="40,14 44,4 36,12" fill="#be185d"/>
+  <rect x="26" y="34" width="12" height="14" rx="3" fill="#be185d"/>
+</svg>`.trim();
+
+  /** 古代のミイラ (MUMMY) - 正面（黄ばんだ包帯、隙間から光る古代瞳） */
+  public static readonly MUMMY_DOWN_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="16" ry="5" fill="rgba(0,0,0,0.35)"/>
+  <!-- 全身包帯巻きのシルエット -->
+  <rect x="22" y="10" width="20" height="20" rx="3" fill="#d4d4d8" stroke="#a1a1aa" stroke-width="1.5"/>
+  <!-- 包帯の筋ライン -->
+  <line x1="22" y1="14" x2="42" y2="17" stroke="#71717a" stroke-width="1.5"/>
+  <line x1="22" y1="22" x2="42" y2="21" stroke="#71717a" stroke-width="1.5"/>
+  <line x1="22" y1="28" x2="42" y2="26" stroke="#71717a" stroke-width="1.5"/>
+  <!-- 包帯の隙間から光る黄金の眼 -->
+  <rect x="25" y="18" width="14" height="4" fill="#18181b"/>
+  <circle cx="28" cy="20" r="1.5" fill="#facc15"/>
+  <circle cx="36" cy="20" r="1.5" fill="#facc15"/>
+  <!-- 胴体と包帯 -->
+  <rect x="18" y="30" width="28" height="22" rx="2" fill="#e4e4e7" stroke="#a1a1aa" stroke-width="1.5"/>
+  <line x1="18" y1="36" x2="46" y2="39" stroke="#71717a" stroke-width="1.8"/>
+  <line x1="18" y1="44" x2="46" y2="42" stroke="#71717a" stroke-width="1.8"/>
+  <!-- たれる包帯の端 -->
+  <path d="M42 44 Q48 52 44 60" stroke="#d4d4d8" stroke-width="3" fill="none"/>
+  <!-- 足 -->
+  <rect x="23" y="52" width="7" height="8" fill="#a1a1aa"/>
+  <rect x="34" y="52" width="7" height="8" fill="#a1a1aa"/>
+</svg>`.trim();
+
+  public static readonly MUMMY_UP_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="16" ry="5" fill="rgba(0,0,0,0.35)"/>
+  <rect x="22" y="10" width="20" height="20" rx="3" fill="#a1a1aa" stroke="#71717a" stroke-width="1.5"/>
+  <line x1="22" y1="16" x2="42" y2="18" stroke="#52525b" stroke-width="1.5"/>
+  <rect x="18" y="30" width="28" height="22" rx="2" fill="#a1a1aa" stroke="#71717a" stroke-width="1.5"/>
+  <rect x="23" y="52" width="7" height="8" fill="#71717a"/>
+  <rect x="34" y="52" width="7" height="8" fill="#71717a"/>
+</svg>`.trim();
+
+  // =========================================================================
+  // 新アイテムSVG（新武器・新盾・新消費アイテム）
+  // =========================================================================
+
+  /** 妖刀ムラマサ（怪しい紅光と黒漆塗りの鞘・刃） */
+  public static readonly ITEM_WEAPON_MURAMASA_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="16" ry="4" fill="rgba(0,0,0,0.35)"/>
+  <g transform="rotate(45 32 32)">
+    <path d="M32 2 Q36 16 34 42 L30 42 Q28 16 32 2 Z" fill="#991b1b" stroke="#ef4444" stroke-width="1.8"/>
+    <line x1="32" y1="4" x2="32" y2="40" stroke="#fca5a5" stroke-width="1.2"/>
+    <circle cx="32" cy="22" r="1.5" fill="#ffffff"/>
+    <rect x="24" y="42" width="16" height="4" rx="1.5" fill="#18181b" stroke="#ef4444" stroke-width="1"/>
+    <rect x="29.5" y="46" width="5" height="10" rx="1" fill="#450a0a"/>
+    <circle cx="32" cy="58" r="2.5" fill="#ef4444"/>
+  </g>
+</svg>`.trim();
+
+  /** ウォーハンマー（巨大な重厚鉄塊大槌） */
+  public static readonly ITEM_WEAPON_WARHAMMER_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="16" ry="4" fill="rgba(0,0,0,0.35)"/>
+  <g transform="rotate(45 32 32)">
+    <rect x="18" y="10" width="28" height="16" rx="3" fill="#eab308" stroke="#713f12" stroke-width="2"/>
+    <polygon points="18,12 12,18 18,24" fill="#ca8a04"/>
+    <rect x="30" y="26" width="4" height="30" rx="1.5" fill="#78350f" stroke="#451a03" stroke-width="1"/>
+    <circle cx="32" cy="58" r="3" fill="#ca8a04"/>
+  </g>
+</svg>`.trim();
+
+  /** ホーリーランス（黄金と純白の聖槍） */
+  public static readonly ITEM_WEAPON_HOLY_LANCE_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="16" ry="4" fill="rgba(0,0,0,0.35)"/>
+  <g transform="rotate(45 32 32)">
+    <polygon points="32,2 38,20 33,20 33,56 31,56 31,20 26,20" fill="#fef08a" stroke="#ca8a04" stroke-width="1.8"/>
+    <polygon points="32,4 35,16 29,16" fill="#ffffff"/>
+    <circle cx="32" cy="20" r="3" fill="#38bdf8"/>
+    <circle cx="32" cy="58" r="2.5" fill="#facc15"/>
+  </g>
+</svg>`.trim();
+
+  /** 風の盾（翠嵐の風を纏う軽装盾） */
+  public static readonly ITEM_SHIELD_WIND_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="16" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <circle cx="32" cy="34" r="18" fill="#10b981" stroke="#047857" stroke-width="2.5"/>
+  <path d="M22 34 Q32 20 42 34 Q32 48 22 34" fill="#a7f3d0" stroke="#059669" stroke-width="1.8"/>
+  <circle cx="32" cy="34" r="4" fill="#ffffff"/>
+</svg>`.trim();
+
+  /** タワーシールド（重厚な城壁大盾） */
+  public static readonly ITEM_SHIELD_TOWER_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="16" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <rect x="18" y="14" width="28" height="40" rx="4" fill="#64748b" stroke="#334155" stroke-width="2.5"/>
+  <line x1="18" y1="34" x2="46" y2="34" stroke="#94a3b8" stroke-width="2"/>
+  <line x1="32" y1="14" x2="32" y2="54" stroke="#94a3b8" stroke-width="2"/>
+  <circle cx="32" cy="34" r="5" fill="#cbd5e1" stroke="#475569" stroke-width="1.5"/>
+</svg>`.trim();
+
+  /** イージスの盾（神話の黄金神盾） */
+  public static readonly ITEM_SHIELD_AEGIS_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="18" ry="4.5" fill="rgba(0,0,0,0.35)"/>
+  <path d="M16 16 Q32 10 48 16 Q52 40 32 56 Q12 40 16 16 Z" fill="#f59e0b" stroke="#b45309" stroke-width="2.5"/>
+  <circle cx="32" cy="32" r="10" fill="#78350f" stroke="#fef3c7" stroke-width="1.8"/>
+  <polygon points="32,26 35,31 40,32 36,36 37,41 32,38 27,41 28,36 24,32 29,31" fill="#fef08a"/>
+</svg>`.trim();
+
+  /** どくけし草（翠の三つ葉薬草） */
+  public static readonly ITEM_POTION_ANTIDOTE_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="16" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <path d="M32 44 Q32 24 22 18 Q16 28 32 44" fill="#22c55e" stroke="#15803d" stroke-width="1.5"/>
+  <path d="M32 44 Q32 24 42 18 Q48 28 32 44" fill="#22c55e" stroke="#15803d" stroke-width="1.5"/>
+  <path d="M32 44 Q30 20 32 14 Q34 20 32 44" fill="#4ade80" stroke="#15803d" stroke-width="1.5"/>
+  <circle cx="32" cy="24" r="2.5" fill="#facc15"/>
+</svg>`.trim();
+
+  /** すばやさの種（蒼く輝く霊種） */
+  public static readonly ITEM_POTION_AGI_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="14" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <path d="M32 14 Q44 26 38 46 Q26 46 26 26 Z" fill="#06b6d4" stroke="#0891b2" stroke-width="2"/>
+  <circle cx="34" cy="26" r="3" fill="#e0f2fe"/>
+  <path d="M28 20 Q32 12 36 18" stroke="#67e8f9" stroke-width="2" fill="none"/>
+</svg>`.trim();
+
+  /** 巨大なおにぎり（特大おにぎり） */
+  public static readonly ITEM_FOOD_BIG_RICEBALL_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="20" ry="5" fill="rgba(0,0,0,0.35)"/>
+  <path d="M32 8 Q38 8 52 38 Q56 52 42 54 Q22 54 12 52 Q8 38 26 8 Q30 8 32 8 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="2.5"/>
+  <rect x="20" y="30" width="24" height="24" rx="3" fill="#0f172a" stroke="#020617" stroke-width="1.5"/>
+  <circle cx="32" cy="22" r="3.5" fill="#ef4444"/>
+</svg>`.trim();
+
+  /** 睡眠の巻物 */
+  public static readonly ITEM_SCROLL_SLEEP_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="18" ry="4.5" fill="rgba(0,0,0,0.35)"/>
+  <rect x="12" y="16" width="40" height="4" rx="2" fill="#312e81"/>
+  <rect x="12" y="46" width="40" height="4" rx="2" fill="#312e81"/>
+  <rect x="15" y="18" width="34" height="30" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.5"/>
+  <path d="M36 24 Q30 24 30 32 Q30 40 38 40 Q32 40 32 30 Q32 24 36 24 Z" fill="#4338ca"/>
+  <circle cx="26" cy="26" r="1.5" fill="#818cf8"/>
+  <circle cx="24" cy="36" r="1" fill="#818cf8"/>
+</svg>`.trim();
+
+  /** 混乱の巻物 */
+  public static readonly ITEM_SCROLL_CONFUSE_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="18" ry="4.5" fill="rgba(0,0,0,0.35)"/>
+  <rect x="12" y="16" width="40" height="4" rx="2" fill="#831843"/>
+  <rect x="12" y="46" width="40" height="4" rx="2" fill="#831843"/>
+  <rect x="15" y="18" width="34" height="30" fill="#fce7f3" stroke="#f43f5e" stroke-width="1.5"/>
+  <circle cx="32" cy="33" r="8" fill="none" stroke="#be185d" stroke-width="2" stroke-dasharray="6,4"/>
+  <circle cx="32" cy="33" r="3" fill="#be185d"/>
+</svg>`.trim();
+
+  // =========================================================================
+  // 障害物5種（土の塊、倒木、雪の塊、押せる大石、滑る氷塊）
+  // =========================================================================
+
+  /** 土の塊 (DIRT_BLOCK) */
+  public static readonly OBSTACLE_DIRT_BLOCK_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="56" rx="18" ry="5" fill="rgba(0,0,0,0.35)"/>
+  <polygon points="12,48 18,22 36,16 52,26 54,48 38,54" fill="#92400e" stroke="#78350f" stroke-width="2"/>
+  <polygon points="20,24 34,20 48,28 36,44" fill="#b45309"/>
+  <line x1="26" y1="30" x2="32" y2="42" stroke="#78350f" stroke-width="2"/>
+  <line x1="34" y1="28" x2="42" y2="36" stroke="#78350f" stroke-width="1.5"/>
+</svg>`.trim();
+
+  /** 倒木 (TREE_STUMP) */
+  public static readonly OBSTACLE_TREE_STUMP_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="56" rx="20" ry="5.5" fill="rgba(0,0,0,0.35)"/>
+  <path d="M14 50 L18 28 L46 28 L50 50 Z" fill="#78350f" stroke="#451a03" stroke-width="2"/>
+  <ellipse cx="32" cy="28" rx="14" ry="7" fill="#b45309" stroke="#451a03" stroke-width="2"/>
+  <ellipse cx="32" cy="28" rx="8" ry="4" fill="#92400e"/>
+  <ellipse cx="32" cy="28" rx="3" ry="1.5" fill="#451a03"/>
+  <!-- 苔のアクセント -->
+  <circle cx="20" cy="42" r="3.5" fill="#15803d"/>
+  <circle cx="44" cy="46" r="3" fill="#15803d"/>
+</svg>`.trim();
+
+  /** 雪の塊 (SNOW_MOUND) */
+  public static readonly OBSTACLE_SNOW_MOUND_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="56" rx="20" ry="5.5" fill="rgba(0,0,0,0.25)"/>
+  <path d="M12 52 Q22 20 32 20 Q44 20 52 52 Z" fill="#f0f9ff" stroke="#bae6fd" stroke-width="2"/>
+  <path d="M22 50 Q30 26 34 26 Q40 26 44 50 Z" fill="#ffffff"/>
+  <circle cx="26" cy="38" r="2.5" fill="#e0f2fe"/>
+  <circle cx="38" cy="42" r="2" fill="#e0f2fe"/>
+</svg>`.trim();
+
+  /** 押せる大石 (PUSH_ROCK) */
+  public static readonly OBSTACLE_PUSH_ROCK_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="56" rx="20" ry="5.5" fill="rgba(0,0,0,0.4)"/>
+  <circle cx="32" cy="34" r="18" fill="#64748b" stroke="#334155" stroke-width="2.5"/>
+  <circle cx="28" cy="28" r="12" fill="#94a3b8" opacity="0.6"/>
+  <!-- ひび割れと陰影 -->
+  <path d="M26 24 L32 34 L38 32 L42 42" stroke="#1e293b" stroke-width="1.8" fill="none"/>
+  <!-- 押し出し矢印マーク -->
+  <polygon points="32,44 28,48 36,48" fill="#cbd5e1" opacity="0.7"/>
+</svg>`.trim();
+
+  /** 滑る氷塊 (ICE_BLOCK) */
+  public static readonly OBSTACLE_ICE_BLOCK_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="56" rx="18" ry="5" fill="rgba(0,0,0,0.3)"/>
+  <rect x="14" y="16" width="36" height="36" rx="4" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
+  <polygon points="16,18 46,18 36,28 16,28" fill="#bae6fd" opacity="0.8"/>
+  <polygon points="46,18 48,46 38,46 36,28" fill="#0ea5e9" opacity="0.7"/>
+  <line x1="20" y1="22" x2="44" y2="46" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.9"/>
+  <!-- 滑走スピード線 -->
+  <line x1="24" y1="36" x2="38" y2="50" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/>
+</svg>`.trim();
 }

@@ -35,19 +35,24 @@ flowchart TD
 
 ---
 
-## 2. 7大ダンジョンバイオーム（Floor Biomes）
+## 2. 全11大ダンジョンバイオーム＆動的階層抽選（Dynamic Floor Biomes）
 
-ダンジョンは7階層（7F）周期でバイオームが切り替わり、フロアのカラーパレット、壁・床の質感、水路や湖・雪原・氷晶、出現モンスターの生態系が大きく変化します。
+固定階層周期を廃止し、**ダンジョン深度（浅層・中層・深層）に応じた動的バイオーム抽選システム**を採用しています。
+毎フロアごとに新鮮な環境が訪れ、壁・床の質感や環境ギミック、出現モンスターの生態系が大きく変化します。
 
-| バイオーム種別 | 階層サイクル | テーマ・雰囲気 | 壁・床グラフィック | 特徴・ギミック | 主な出現モンスター |
+| バイオーム種別 | 出現階層傾向 | テーマ・雰囲気 | 壁・床グラフィック | 特徴・環境ギミック | 主な出現モンスター |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **`STONE`（石造りの地下迷宮）** | B1F, B8F, B15F... | 堅牢な灰青色の古代石造迷宮 | 壁: 重厚暗黒石<br/>床: 灰青敷石 | 均整の取れた王道ダンジョン | スライム、ゴブリン、スケルトン |
-| **`EARTH`（岩と赤土の洞窟）** | B2F, B9F, B16F... | 赤土と露出した玄武岩盤 | 壁: 漆黒火山岩<br/>床: 赤土敷石 | 荒々しい地底空洞 | ゴブリン、岩石ゴーレム、バット |
-| **`FOREST`（草木が生い茂る旧遺跡）** | B3F, B10F, B17F... | 苔むした緑壁と古代樹の根 | 壁: 深緑巨石壁<br/>床: 青苔敷石 | 遺構と自然の侵食 | スライム、マンドラゴラ、彷徨う亡霊 |
-| **`RIVER`（地下水流と木橋の清流洞）** | B4F, B11F, B18F... | 湿潤な清流と渡り木橋 | 壁: 暗青削岩壁<br/>床: 蒼青石畳<br/>橋: 木製桟橋 | 部屋を貫く連続水流と木製の橋 | サハギン戦士、バット、亡霊 |
-| **`LAKE`（水没せし蒼玉の地下湖）** | B5F, B12F, B19F... | 神秘的な蒼碧の地下大湖 | 壁: 紺青神殿壁<br/>床: 蒼玉モザイク | 部屋中央に広がる雄大な地底湖 | サハギン戦士、亡霊、スライム |
-| **`SNOW`（白銀の雪原回廊）** | B6F, B13F, B20F... | 吹雪と積雪の白銀回廊 | 壁: 冠雪暗岩壁<br/>床: 純白積雪石 | ひらひらと舞い落ちる粉雪 | 彷徨う亡霊、スケルトン、ゴーレム |
-| **`ICE`（永久凍土と蒼氷窟）** | B7F, B14F, B21F... | 澄み渡る蒼氷とダイヤモンドダスト | 壁: 氷晶巨岩壁<br/>床: 透光蒼氷盤 | 煌めく氷晶ときらめく光粒子 | ダークメイジ、レッドドラゴン、ゴーレム |
+| **`STONE`（石造りの地下迷宮）** | 浅層〜中層 | 堅牢な灰青色の古代石造迷宮 | 壁: 重厚暗黒石<br/>床: 灰青敷石 | 均整の取れた王道ダンジョン | スライム、ゴブリン、スケルトン |
+| **`EARTH`（岩と赤土の洞窟）** | 浅層〜中層 | 赤土と露出した玄武岩盤 | 壁: 漆黒火山岩<br/>床: 赤土敷石 | 土塊・大石などの障害物が散在 | ゴブリン、岩石ゴーレム、バット |
+| **`FOREST`（草木が生い茂る旧遺跡）** | 浅層〜深層 | 苔むした緑壁と古代樹の根 | 壁: 深緑巨石壁<br/>床: 青苔敷石 | 倒木などの木製障害物が出現 | スライム、マンドラゴラ、彷徨う亡霊 |
+| **`RIVER`（地下水流と木橋の清流洞）** | 中層〜深層 | 湿潤な清流と渡り木橋 | 壁: 暗青削岩壁<br/>床: 蒼青石畳<br/>橋: 木製桟橋 | 部屋を貫く連続水流と木製の橋 | サハギン戦士、バット、亡霊 |
+| **`LAKE`（水没せし蒼玉の地下湖）** | 中層〜深層 | 神秘的な蒼碧の地下大湖 | 壁: 紺青神殿壁<br/>床: 蒼玉モザイク | 部屋中央に広がる雄大な地底湖 | サハギン戦士、亡霊、スライム |
+| **`SNOW`（白銀の雪原回廊）** | 中層〜深層 | 吹雪と積雪の白銀回廊 | 壁: 冠雪暗岩壁<br/>床: 純白積雪石 | 雪の塊が出現・粉雪パーティクル | 彷徨う亡霊、スケルトン、ゴーレム |
+| **`ICE`（永久凍土と蒼氷窟）** | 中層〜深層 | 澄み渡る蒼氷と氷晶 | 壁: 氷晶巨岩壁<br/>床: 透光蒼氷盤 | **滑る氷床・滑る氷塊**が出現 | ダークメイジ、レッドドラゴン、ゴーレム |
+| **`SWAMP`（泥濘の湿地帯）** | 中層〜深層 | 薄暗い水草と泥濘の沼地 | 壁: 暗緑湿岩壁<br/>床: 湿地腐泥床 | **泥濘床（足を取られターン遅延）** | 腐乱ゾンビ、サハギン、マンドラゴラ |
+| **`TOXIC`（腐蝕の毒沼窟）** | 中層〜最深層 | 有毒な紫泡と怪奇結晶 | 壁: 濃紫変異壁<br/>床: 腐蝕毒泥床 | **毒沼床（踏むと2ダメージ）** | 腐乱ゾンビ、ダークメイジ、インプ |
+| **`MECHA`（古代真鍮の機巧回廊）** | 中層〜最深層 | 歯車と真鍮のリベット装甲 | 壁: 歯車装甲壁<br/>床: 螺子留め鉄板床 | 堅牢な古代文明の仕掛け回廊 | スケルトン、ゴーレム、古代ミイラ |
+| **`ISLAND`（大海原の孤島迷宮）** | 中層〜最深層 | 外洋に浮かぶ孤島群 | 壁: なし（全周囲海）<br/>床: 孤島岩礁<br/>橋: 海峡桟橋 | **壁が一切なく全周海＋木橋で連結** | サハギン戦士、インプ、人食い箱 |
 
 ### バイオーム別タイルグラフィック一覧
 
@@ -120,6 +125,76 @@ flowchart TD
     </div>
     <div style="color: #38bdf8; font-weight: bold; font-size: 12px; margin-top: 6px;">7. 蒼氷窟</div>
     <div style="color: #64748b; font-size: 10px;">壁 / 床</div>
+  </div>
+
+  <!-- SWAMP -->
+  <div style="background-color: #0f172a; border: 1px solid #14532d; border-radius: 12px; padding: 12px; text-align: center; width: 130px;">
+    <div style="display: flex; justify-content: center; gap: 4px;">
+      <img src="assets/tiles/swamp_wall.svg" width="48" height="48" alt="湿地の壁" />
+      <img src="assets/tiles/swamp_floor.svg" width="48" height="48" alt="湿地の床" />
+    </div>
+    <div style="color: #4ade80; font-weight: bold; font-size: 12px; margin-top: 6px;">8. 泥濘湿地</div>
+    <div style="color: #64748b; font-size: 10px;">壁 / 床</div>
+  </div>
+
+  <!-- TOXIC -->
+  <div style="background-color: #0f172a; border: 1px solid #581c87; border-radius: 12px; padding: 12px; text-align: center; width: 130px;">
+    <div style="display: flex; justify-content: center; gap: 4px;">
+      <img src="assets/tiles/toxic_wall.svg" width="48" height="48" alt="毒沼の壁" />
+      <img src="assets/tiles/toxic_floor.svg" width="48" height="48" alt="毒沼の床" />
+    </div>
+    <div style="color: #c084fc; font-weight: bold; font-size: 12px; margin-top: 6px;">9. 腐蝕毒沼</div>
+    <div style="color: #64748b; font-size: 10px;">壁 / 床</div>
+  </div>
+
+  <!-- MECHA -->
+  <div style="background-color: #0f172a; border: 1px solid #b45309; border-radius: 12px; padding: 12px; text-align: center; width: 130px;">
+    <div style="display: flex; justify-content: center; gap: 4px;">
+      <img src="assets/tiles/mecha_wall.svg" width="48" height="48" alt="機巧の壁" />
+      <img src="assets/tiles/mecha_floor.svg" width="48" height="48" alt="機巧の床" />
+    </div>
+    <div style="color: #f59e0b; font-weight: bold; font-size: 12px; margin-top: 6px;">10. 機巧回廊</div>
+    <div style="color: #64748b; font-size: 10px;">壁 / 床</div>
+  </div>
+
+  <!-- ISLAND -->
+  <div style="background-color: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 12px; text-align: center; width: 130px;">
+    <div style="display: flex; justify-content: center; gap: 4px;">
+      <img src="assets/tiles/island_wall.svg" width="48" height="48" alt="外洋の波" />
+      <img src="assets/tiles/island_floor.svg" width="48" height="48" alt="孤島の岩" />
+    </div>
+    <div style="color: #94a3b8; font-weight: bold; font-size: 12px; margin-top: 6px;">11. 外洋孤島</div>
+    <div style="color: #64748b; font-size: 10px;">外洋 / 孤島</div>
+  </div>
+</div>
+
+### 特殊環境ギミック床（Gimmick Floors）
+
+フロア上には、キャラクターの移動や状態に直接影響を与える環境ギミック床が存在します。
+
+<div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px;">
+  <!-- 滑る氷床 -->
+  <div style="background-color: #0f172a; border: 1px solid #0284c7; border-radius: 12px; padding: 16px; text-align: center; width: 150px;">
+    <img src="assets/tiles/gimmick_ice.svg" width="64" height="64" alt="滑る氷床" style="display: inline-block;" />
+    <div style="color: #38bdf8; font-weight: bold; font-size: 13px; margin-top: 6px;">滑る氷床</div>
+    <div style="color: #94a3b8; font-size: 11px;">一直線に滑走</div>
+    <div style="color: #64748b; font-size: 10px; margin-top: 2px;">壁や障害物に当たるまで停止不能</div>
+  </div>
+
+  <!-- 泥濘床 -->
+  <div style="background-color: #0f172a; border: 1px solid #78350f; border-radius: 12px; padding: 16px; text-align: center; width: 150px;">
+    <img src="assets/tiles/gimmick_mud.svg" width="64" height="64" alt="泥濘床" style="display: inline-block;" />
+    <div style="color: #d97706; font-weight: bold; font-size: 13px; margin-top: 6px;">足枷泥濘床</div>
+    <div style="color: #94a3b8; font-size: 11px;">移動ターン遅延</div>
+    <div style="color: #64748b; font-size: 10px; margin-top: 2px;">足を取られて連続行動を消費</div>
+  </div>
+
+  <!-- 毒沼床 -->
+  <div style="background-color: #0f172a; border: 1px solid #581c87; border-radius: 12px; padding: 16px; text-align: center; width: 150px;">
+    <img src="assets/tiles/gimmick_poison.svg" width="64" height="64" alt="毒沼床" style="display: inline-block;" />
+    <div style="color: #c084fc; font-weight: bold; font-size: 13px; margin-top: 6px;">腐蝕毒沼床</div>
+    <div style="color: #94a3b8; font-size: 11px;">2ダメージ/歩</div>
+    <div style="color: #64748b; font-size: 10px; margin-top: 2px;">踏むたびに有毒スリップダメージ</div>
   </div>
 </div>
 

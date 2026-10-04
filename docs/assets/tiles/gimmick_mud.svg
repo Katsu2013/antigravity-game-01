@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" fill="#451a03"/>
+  <rect x="2" y="2" width="60" height="60" rx="3" fill="#78350f" stroke="#291002" stroke-width="1.5"/>
+  <!-- 足を取られる泥濘・気泡 -->
+  <circle cx="22" cy="24" r="8" fill="#92400e" stroke="#451a03" stroke-width="1.5"/>
+  <circle cx="44" cy="40" r="10" fill="#92400e" stroke="#451a03" stroke-width="1.5"/>
+  <circle cx="22" cy="22" r="2.5" fill="#fde68a" opacity="0.6"/>
+  <circle cx="44" cy="38" r="3.5" fill="#fde68a" opacity="0.6"/>
+  <ellipse cx="34" cy="48" rx="6" ry="3" fill="#451a03"/>
+</svg>

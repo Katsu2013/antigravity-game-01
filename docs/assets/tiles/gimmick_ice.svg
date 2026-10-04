@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" fill="#0284c7"/>
+  <rect x="2" y="2" width="60" height="60" rx="3" fill="#38bdf8" stroke="#0369a1" stroke-width="1.5"/>
+  <!-- 滑走を暗示する氷光ハイライト -->
+  <line x1="8" y1="8" x2="56" y2="56" stroke="#e0f2fe" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+  <line x1="20" y1="8" x2="56" y2="44" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" opacity="0.9"/>
+  <!-- 氷結晶 -->
+  <circle cx="24" cy="40" r="3" fill="#ffffff" opacity="0.8"/>
+  <circle cx="44" cy="20" r="2.5" fill="#ffffff" opacity="0.8"/>
+</svg>

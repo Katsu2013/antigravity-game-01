@@ -5,7 +5,7 @@
  * 壁と床の明度・色相コントラストを極限まで高め、歩行可能マスと遮蔽壁が一目で判別できるよう設計されています。
  */
 
-import { BiomeType } from '../../core/types';
+import { BiomeType, TileType } from '../../core/types';
 
 /**
  * ダンジョンタイルスプライトの識別子。
@@ -60,9 +60,41 @@ export type TileSpriteId =
   | 'tile_ice_floor_4'
   | 'tile_ice_wall_1'
   | 'tile_ice_wall_2'
+  // 8. 泥濘の湿地帯 (SWAMP)
+  | 'tile_swamp_floor_1'
+  | 'tile_swamp_floor_2'
+  | 'tile_swamp_floor_3'
+  | 'tile_swamp_floor_4'
+  | 'tile_swamp_wall_1'
+  | 'tile_swamp_wall_2'
+  // 9. 腐蝕の毒沼窟 (TOXIC)
+  | 'tile_toxic_floor_1'
+  | 'tile_toxic_floor_2'
+  | 'tile_toxic_floor_3'
+  | 'tile_toxic_floor_4'
+  | 'tile_toxic_wall_1'
+  | 'tile_toxic_wall_2'
+  // 10. 古代真鍮の機巧回廊 (MECHA)
+  | 'tile_mecha_floor_1'
+  | 'tile_mecha_floor_2'
+  | 'tile_mecha_floor_3'
+  | 'tile_mecha_floor_4'
+  | 'tile_mecha_wall_1'
+  | 'tile_mecha_wall_2'
+  // 11. 大海原の孤島迷宮 (ISLAND)
+  | 'tile_island_floor_1'
+  | 'tile_island_floor_2'
+  | 'tile_island_floor_3'
+  | 'tile_island_floor_4'
+  | 'tile_island_wall_1'
+  | 'tile_island_wall_2'
   // 木の橋 (BRIDGE)
   | 'tile_bridge_1'
-  | 'tile_bridge_2';
+  | 'tile_bridge_2'
+  // 特殊環境ギミック床 (GIMMICKS)
+  | 'tile_gimmick_ice'
+  | 'tile_gimmick_mud'
+  | 'tile_gimmick_poison';
 
 /**
  * ダンジョンの床・壁のベクターグラフィックスプライト管理クラス。
@@ -766,6 +798,134 @@ export class TileSprites {
 </svg>
 `.trim();
 
+  // ==========================================
+  // 8. 泥濘の湿地帯 (SWAMP) SVG 定義
+  // ==========================================
+  public static readonly SWAMP_FLOOR_1_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" fill="#1b281c"/>
+  <circle cx="20" cy="22" r="14" fill="#243825" stroke="#121d13" stroke-width="1.5"/>
+  <circle cx="46" cy="42" r="12" fill="#243825" stroke="#121d13" stroke-width="1.5"/>
+  <ellipse cx="36" cy="18" rx="8" ry="4" fill="#15803d" opacity="0.4"/>
+  <circle cx="48" cy="16" r="2.5" fill="#365314"/>
+  <circle cx="16" cy="46" r="3" fill="#365314"/>
+</svg>`.trim();
+
+  public static readonly SWAMP_WALL_1_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" fill="#0b140c"/>
+  <rect x="2" y="2" width="60" height="28" rx="2" fill="#142316" stroke="#060c07" stroke-width="2"/>
+  <rect x="2" y="34" width="60" height="28" rx="2" fill="#142316" stroke="#060c07" stroke-width="2"/>
+  <path d="M10 4 Q14 18 10 30 Q16 42 12 58" stroke="#15803d" stroke-width="2" fill="none"/>
+  <path d="M50 4 Q46 22 52 40 Q48 50 50 60" stroke="#15803d" stroke-width="1.8" fill="none"/>
+</svg>`.trim();
+
+  // ==========================================
+  // 9. 腐蝕の毒沼窟 (TOXIC) SVG 定義
+  // ==========================================
+  public static readonly TOXIC_FLOOR_1_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" fill="#24142a"/>
+  <polygon points="12,12 36,6 48,24 28,34" fill="#361a3f" stroke="#150a18" stroke-width="1.5"/>
+  <polygon points="26,38 52,32 58,54 34,58" fill="#361a3f" stroke="#150a18" stroke-width="1.5"/>
+  <path d="M14 28 Q24 26 34 36 Q42 30 52 38" stroke="#a855f7" stroke-width="1.2" fill="none" opacity="0.6"/>
+  <circle cx="20" cy="50" r="3" fill="#9333ea" opacity="0.5"/>
+</svg>`.trim();
+
+  public static readonly TOXIC_WALL_1_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" fill="#100713"/>
+  <rect x="2" y="2" width="60" height="28" rx="3" fill="#1e0c24" stroke="#08030a" stroke-width="2"/>
+  <rect x="2" y="34" width="60" height="28" rx="3" fill="#1e0c24" stroke="#08030a" stroke-width="2"/>
+  <path d="M18 10 L24 22 L20 28" stroke="#c084fc" stroke-width="1.5" fill="none"/>
+  <path d="M42 38 L46 48 L40 56" stroke="#c084fc" stroke-width="1.5" fill="none"/>
+</svg>`.trim();
+
+  // ==========================================
+  // 10. 古代真鍮の機巧回廊 (MECHA) SVG 定義
+  // ==========================================
+  public static readonly MECHA_FLOOR_1_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" fill="#382918"/>
+  <rect x="3" y="3" width="58" height="58" rx="2" fill="#4d3721" stroke="#22180d" stroke-width="2"/>
+  <circle cx="32" cy="32" r="14" fill="none" stroke="#d97706" stroke-width="2" stroke-dasharray="4,3"/>
+  <circle cx="32" cy="32" r="5" fill="#d97706"/>
+  <circle cx="8" cy="8" r="2.5" fill="#f59e0b"/>
+  <circle cx="56" cy="8" r="2.5" fill="#f59e0b"/>
+  <circle cx="8" cy="56" r="2.5" fill="#f59e0b"/>
+  <circle cx="56" cy="56" r="2.5" fill="#f59e0b"/>
+</svg>`.trim();
+
+  public static readonly MECHA_WALL_1_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" fill="#1a1109"/>
+  <rect x="2" y="2" width="60" height="60" rx="3" fill="#2b1c0e" stroke="#0e0804" stroke-width="2"/>
+  <circle cx="32" cy="32" r="18" fill="#451a03" stroke="#b45309" stroke-width="3"/>
+  <circle cx="32" cy="32" r="8" fill="#78350f" stroke="#f59e0b" stroke-width="2"/>
+  <line x1="32" y1="6" x2="32" y2="58" stroke="#d97706" stroke-width="2.5"/>
+  <line x1="6" y1="32" x2="58" y2="32" stroke="#d97706" stroke-width="2.5"/>
+</svg>`.trim();
+
+  // ==========================================
+  // 11. 大海原の孤島迷宮 (ISLAND) SVG 定義
+  // ==========================================
+  public static readonly ISLAND_FLOOR_1_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" fill="#475569"/>
+  <rect x="2" y="2" width="60" height="60" rx="4" fill="#64748b" stroke="#334155" stroke-width="1.8"/>
+  <path d="M8 20 Q24 14 40 22 Q52 18 58 24" stroke="#94a3b8" stroke-width="2" fill="none" opacity="0.6"/>
+  <circle cx="24" cy="44" r="3" fill="#f1f5f9" opacity="0.7"/>
+  <circle cx="48" cy="38" r="2" fill="#f1f5f9" opacity="0.7"/>
+</svg>`.trim();
+
+  public static readonly ISLAND_WALL_1_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" fill="#0f172a"/>
+  <rect x="2" y="2" width="60" height="28" rx="2" fill="#1e293b" stroke="#020617" stroke-width="2"/>
+  <rect x="2" y="34" width="60" height="28" rx="2" fill="#1e293b" stroke="#020617" stroke-width="2"/>
+  <line x1="4" y1="16" x2="60" y2="16" stroke="#475569" stroke-width="1.5"/>
+  <line x1="4" y1="48" x2="60" y2="48" stroke="#475569" stroke-width="1.5"/>
+</svg>`.trim();
+
+  // ==========================================
+  // 特殊環境ギミック床 (GIMMICKS) SVG 定義
+  // ==========================================
+  public static readonly GIMMICK_ICE_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" fill="#0284c7"/>
+  <rect x="2" y="2" width="60" height="60" rx="3" fill="#38bdf8" stroke="#0369a1" stroke-width="1.5"/>
+  <!-- 滑走を暗示する氷光ハイライト -->
+  <line x1="8" y1="8" x2="56" y2="56" stroke="#e0f2fe" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+  <line x1="20" y1="8" x2="56" y2="44" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" opacity="0.9"/>
+  <!-- 氷結晶 -->
+  <circle cx="24" cy="40" r="3" fill="#ffffff" opacity="0.8"/>
+  <circle cx="44" cy="20" r="2.5" fill="#ffffff" opacity="0.8"/>
+</svg>`.trim();
+
+  public static readonly GIMMICK_MUD_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" fill="#451a03"/>
+  <rect x="2" y="2" width="60" height="60" rx="3" fill="#78350f" stroke="#291002" stroke-width="1.5"/>
+  <!-- 足を取られる泥濘・気泡 -->
+  <circle cx="22" cy="24" r="8" fill="#92400e" stroke="#451a03" stroke-width="1.5"/>
+  <circle cx="44" cy="40" r="10" fill="#92400e" stroke="#451a03" stroke-width="1.5"/>
+  <circle cx="22" cy="22" r="2.5" fill="#fde68a" opacity="0.6"/>
+  <circle cx="44" cy="38" r="3.5" fill="#fde68a" opacity="0.6"/>
+  <ellipse cx="34" cy="48" rx="6" ry="3" fill="#451a03"/>
+</svg>`.trim();
+
+  public static readonly GIMMICK_POISON_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" fill="#3b0764"/>
+  <rect x="2" y="2" width="60" height="60" rx="3" fill="#581c87" stroke="#2e1065" stroke-width="1.5"/>
+  <!-- 有毒な泡と液面 -->
+  <circle cx="20" cy="26" r="9" fill="#16a34a" stroke="#14532d" stroke-width="1.5"/>
+  <circle cx="44" cy="36" r="11" fill="#16a34a" stroke="#14532d" stroke-width="1.5"/>
+  <circle cx="18" cy="24" r="3" fill="#bbf7d0" opacity="0.8"/>
+  <circle cx="42" cy="34" r="3.5" fill="#bbf7d0" opacity="0.8"/>
+  <polygon points="32,18 36,26 28,26" fill="#a855f7"/>
+</svg>`.trim();
+
   /**
    * 全タイルスプライトの事前ロードを開始します。
    *
@@ -826,9 +986,42 @@ export class TileSprites {
       tile_ice_floor_4: this.ICE_FLOOR_4_SVG,
       tile_ice_wall_1: this.ICE_WALL_1_SVG,
       tile_ice_wall_2: this.ICE_WALL_2_SVG,
+
       // BRIDGE
       tile_bridge_1: this.BRIDGE_1_SVG,
       tile_bridge_2: this.BRIDGE_2_SVG,
+      // SWAMP
+      tile_swamp_floor_1: this.SWAMP_FLOOR_1_SVG,
+      tile_swamp_floor_2: this.SWAMP_FLOOR_1_SVG,
+      tile_swamp_floor_3: this.SWAMP_FLOOR_1_SVG,
+      tile_swamp_floor_4: this.SWAMP_FLOOR_1_SVG,
+      tile_swamp_wall_1: this.SWAMP_WALL_1_SVG,
+      tile_swamp_wall_2: this.SWAMP_WALL_1_SVG,
+      // TOXIC
+      tile_toxic_floor_1: this.TOXIC_FLOOR_1_SVG,
+      tile_toxic_floor_2: this.TOXIC_FLOOR_1_SVG,
+      tile_toxic_floor_3: this.TOXIC_FLOOR_1_SVG,
+      tile_toxic_floor_4: this.TOXIC_FLOOR_1_SVG,
+      tile_toxic_wall_1: this.TOXIC_WALL_1_SVG,
+      tile_toxic_wall_2: this.TOXIC_WALL_1_SVG,
+      // MECHA
+      tile_mecha_floor_1: this.MECHA_FLOOR_1_SVG,
+      tile_mecha_floor_2: this.MECHA_FLOOR_1_SVG,
+      tile_mecha_floor_3: this.MECHA_FLOOR_1_SVG,
+      tile_mecha_floor_4: this.MECHA_FLOOR_1_SVG,
+      tile_mecha_wall_1: this.MECHA_WALL_1_SVG,
+      tile_mecha_wall_2: this.MECHA_WALL_1_SVG,
+      // ISLAND
+      tile_island_floor_1: this.ISLAND_FLOOR_1_SVG,
+      tile_island_floor_2: this.ISLAND_FLOOR_1_SVG,
+      tile_island_floor_3: this.ISLAND_FLOOR_1_SVG,
+      tile_island_floor_4: this.ISLAND_FLOOR_1_SVG,
+      tile_island_wall_1: this.ISLAND_WALL_1_SVG,
+      tile_island_wall_2: this.ISLAND_WALL_1_SVG,
+      // GIMMICKS
+      tile_gimmick_ice: this.GIMMICK_ICE_SVG,
+      tile_gimmick_mud: this.GIMMICK_MUD_SVG,
+      tile_gimmick_poison: this.GIMMICK_POISON_SVG,
     };
 
     const promises: Promise<void>[] = [];
@@ -920,5 +1113,24 @@ export class TileSprites {
   ): HTMLImageElement | undefined {
     const hash = (x + y) % 2 === 0 ? 'tile_bridge_1' : 'tile_bridge_2';
     return this.imageCache.get(hash);
+  }
+
+  /**
+   * 特殊環境ギミック床（滑る氷床、足枷泥濘床、毒沼床）のスプライト画像を取得します。
+   *
+   * @param tile - タイル種別
+   * @returns 適合するギミックタイルのHTMLImageElement
+   */
+  public static getGimmickSprite(tile: TileType): HTMLImageElement | undefined {
+    switch (tile) {
+      case TileType.Ice:
+        return this.imageCache.get('tile_gimmick_ice');
+      case TileType.Mud:
+        return this.imageCache.get('tile_gimmick_mud');
+      case TileType.Poison:
+        return this.imageCache.get('tile_gimmick_poison');
+      default:
+        return undefined;
+    }
   }
 }

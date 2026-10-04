@@ -548,11 +548,11 @@ export class EquipmentSprites {
     let weaponKey = 'iron_sword';
     if (weaponName.includes('短剣') || weaponName.includes('青銅')) {
       weaponKey = 'dagger';
-    } else if (weaponName.includes('ミスリル')) {
+    } else if (weaponName.includes('ミスリル') || weaponName.includes('ランス')) {
       weaponKey = 'mithril_sword';
-    } else if (weaponName.includes('炎')) {
+    } else if (weaponName.includes('炎') || weaponName.includes('ムラマサ') || weaponName.includes('妖刀')) {
       weaponKey = 'flame_sword';
-    } else if (weaponName.includes('ルーン')) {
+    } else if (weaponName.includes('ルーン') || weaponName.includes('ハンマー')) {
       weaponKey = 'rune_sword';
     }
 
@@ -575,13 +575,13 @@ export class EquipmentSprites {
     if (!shieldName) return undefined;
 
     let shieldKey = 'steel';
-    if (shieldName.includes('木')) {
+    if (shieldName.includes('木') || shieldName.includes('風')) {
       shieldKey = 'wood';
     } else if (shieldName.includes('青銅')) {
       shieldKey = 'bronze';
-    } else if (shieldName.includes('魔法')) {
+    } else if (shieldName.includes('魔法') || shieldName.includes('タワー')) {
       shieldKey = 'magic';
-    } else if (shieldName.includes('ドラゴン')) {
+    } else if (shieldName.includes('ドラゴン') || shieldName.includes('イージス')) {
       shieldKey = 'dragon';
     }
 

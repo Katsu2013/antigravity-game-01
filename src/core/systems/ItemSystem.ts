@@ -3,7 +3,7 @@
  * @description アイテムの拾得、使用、装備変更、および足元への投棄を管理するシステムクラス。
  */
 
-import { DungeonMap, PlayerState, TileType } from '../types';
+import { DungeonMap, ItemCategory, PlayerState, TileType } from '../types';
 import { CombatSystem } from './CombatSystem';
 
 /**
@@ -77,6 +77,28 @@ export class ItemSystem {
 
     switch (item.category) {
       case 'POTION': {
+        if (item.name === 'どくけし草') {
+          const heal = Math.min(15, player.maxHp - player.hp);
+          player.hp += heal;
+          player.inventory.splice(index, 1);
+          return {
+            success: true,
+            message: `${item.name} を煎じて飲んだ。体内の毒気が浄化され、HPが ${heal} 回復した！`,
+          };
+        }
+
+        if (item.name === 'すばやさの種') {
+          player.maxHp += 2;
+          player.hp = Math.min(player.maxHp, player.hp + 2);
+          player.baseDef += 1;
+          CombatSystem.updatePlayerStats(player);
+          player.inventory.splice(index, 1);
+          return {
+            success: true,
+            message: `${item.name} を食べた！身体が軽くなり、身のこなしが鋭くなった！(最大HP+2, 防御+1)`,
+          };
+        }
+
         if (item.name === '力の種') {
           player.maxHp += 3;
           player.hp = Math.min(player.maxHp, player.hp + 3);
@@ -110,6 +132,16 @@ export class ItemSystem {
       }
 
       case 'FOOD': {
+        if (item.name === '巨大なおにぎり') {
+          player.maxHunger += 20;
+          player.hunger = player.maxHunger;
+          player.inventory.splice(index, 1);
+          return {
+            success: true,
+            message: `${item.name} をたいらげた！胃袋の限界を超えて満腹になり、最大満腹度も+20拡張された！`,
+          };
+        }
+
         const recover = Math.min(item.value, player.maxHunger - player.hunger);
         player.hunger = Math.min(player.maxHunger, player.hunger + item.value);
         player.inventory.splice(index, 1);
@@ -201,6 +233,34 @@ export class ItemSystem {
           };
         }
 
+        if (item.name === '睡眠の巻物') {
+          let count = 0;
+          for (const m of map.monsters) {
+            if (map.visible[m.y][m.x]) {
+              count++;
+            }
+          }
+          player.inventory.splice(index, 1);
+          return {
+            success: true,
+            message: `${item.name} を読んだ！神秘的な安らぎが満ち、視界内の敵（${count}体）が深い眠りに落ちた！`,
+          };
+        }
+
+        if (item.name === '混乱の巻物') {
+          let count = 0;
+          for (const m of map.monsters) {
+            if (map.visible[m.y][m.x]) {
+              count++;
+            }
+          }
+          player.inventory.splice(index, 1);
+          return {
+            success: true,
+            message: `${item.name} を読んだ！妖しい狂気の波長が放たれ、視界内の敵（${count}体）が激しい混乱に陥った！`,
+          };
+        }
+
         // ワープの巻物: ランダムな部屋の空きマスへ移動
         const randomRoom =
           map.rooms[Math.floor(Math.random() * map.rooms.length)];
@@ -273,5 +333,42 @@ export class ItemSystem {
       success: true,
       message: `${item.name} を足元に置いた。`,
     };
+  }
+
+  /**
+   * プレイヤーの所持品インベントリを論理順（装備中優先、武器→盾→薬・種→食料→巻物）に整理・ソートします。
+   *
+   * @param player - 対象のプレイヤーステータス
+   */
+  public static sortInventory(player: PlayerState): void {
+    const categoryOrder: Record<ItemCategory, number> = {
+      WEAPON: 0,
+      SHIELD: 1,
+      POTION: 2,
+      FOOD: 3,
+      SCROLL: 4,
+    };
+
+    player.inventory.sort((a, b) => {
+      const aEquipped =
+        player.equippedWeapon?.id === a.id || player.equippedShield?.id === a.id;
+      const bEquipped =
+        player.equippedWeapon?.id === b.id || player.equippedShield?.id === b.id;
+
+      // 1. 装備中アイテムを最優先
+      if (aEquipped && !bEquipped) return -1;
+      if (!aEquipped && bEquipped) return 1;
+
+      // 2. カテゴリ順
+      const catA = categoryOrder[a.category] ?? 99;
+      const catB = categoryOrder[b.category] ?? 99;
+      if (catA !== catB) return catA - catB;
+
+      // 3. 性能・効果値（value）降順
+      if (b.value !== a.value) return b.value - a.value;
+
+      // 4. 名称五十音順
+      return a.name.localeCompare(b.name, 'ja');
+    });
   }
 }

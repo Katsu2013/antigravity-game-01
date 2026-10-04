@@ -10,6 +10,8 @@ import {
   DungeonMap,
   Item,
   Monster,
+  Obstacle,
+  ObstacleType,
   Point,
   Room,
   TileType,
@@ -156,31 +158,44 @@ export class DungeonGenerator {
 
     tiles[stairsDown.y][stairsDown.x] = TileType.StairsDown;
 
-    // 6. バイオーム情報の決定と水路・湖タイルの適用
+    // 6. バイオーム情報の決定
     const biomeInfo = this.getBiomeForFloor(floor);
-    this.applyBiomeWater(tiles, biomeInfo.biome, rooms, startPos, stairsDown);
 
-    // 7. モンスターとアイテムの配置
+    // 7. バイオーム特有の地形変形（水路・島・特殊床）の適用
+    this.applyBiomeWater(tiles, biomeInfo.biome, rooms, startPos, stairsDown);
+    this.applyBiomeSpecialTiles(tiles, biomeInfo.biome, rooms, startPos, stairsDown);
+
+    // 8. モンスター、アイテム、障害物の配置
     const monsters: Monster[] = [];
     const items: Item[] = [];
+    const obstacles: Obstacle[] = [];
 
-    // 部屋1以降（スタート部屋以外）に敵モンスターを配置
-    for (let i = 1; i < rooms.length; i++) {
+    const isWalkableTile = (t: TileType) =>
+      t === TileType.Floor ||
+      t === TileType.Bridge ||
+      t === TileType.Ice ||
+      t === TileType.Mud ||
+      t === TileType.Poison;
+
+    // 各部屋（スタート部屋含む/除く）に配置
+    for (let i = 0; i < rooms.length; i++) {
       const room = rooms[i];
-      // 部屋ごとに1〜2体のモンスターを配置
-      const monsterCount = Math.floor(Math.random() * 2) + 1;
-      for (let m = 0; m < monsterCount; m++) {
-        const mx = room.x + Math.floor(Math.random() * room.w);
-        const my = room.y + Math.floor(Math.random() * room.h);
 
-        // 階段マスや既にモンスターがいるマス、水路マスは避ける
-        const isStairs = mx === stairsDown.x && my === stairsDown.y;
-        const isOccupied = monsters.some((mon) => mon.x === mx && mon.y === my);
+      // 部屋1以降（スタート部屋以外）に敵モンスターを配置
+      if (i > 0) {
+        const monsterCount = Math.floor(Math.random() * 2) + 1;
+        for (let m = 0; m < monsterCount; m++) {
+          const mx = room.x + Math.floor(Math.random() * room.w);
+          const my = room.y + Math.floor(Math.random() * room.h);
 
-        if (!isStairs && !isOccupied && (tiles[my][mx] === TileType.Floor || tiles[my][mx] === TileType.Bridge)) {
-          monsters.push(
-            EntityFactory.createMonster(floor, mx, my, biomeInfo.biome)
-          );
+          const isStairs = mx === stairsDown.x && my === stairsDown.y;
+          const isOccupied = monsters.some((mon) => mon.x === mx && mon.y === my);
+
+          if (!isStairs && !isOccupied && isWalkableTile(tiles[my][mx])) {
+            monsters.push(
+              EntityFactory.createMonster(floor, mx, my, biomeInfo.biome)
+            );
+          }
         }
       }
 
@@ -189,10 +204,30 @@ export class DungeonGenerator {
         const ix = room.x + Math.floor(Math.random() * room.w);
         const iy = room.y + Math.floor(Math.random() * room.h);
         const isStairs = ix === stairsDown.x && iy === stairsDown.y;
+        const isStart = ix === startPos.x && iy === startPos.y;
         const isItemOccupied = items.some((it) => it.x === ix && it.y === iy);
 
-        if (!isStairs && !isItemOccupied && (tiles[iy][ix] === TileType.Floor || tiles[iy][ix] === TileType.Bridge)) {
+        if (!isStairs && !isStart && !isItemOccupied && isWalkableTile(tiles[iy][ix])) {
           items.push(EntityFactory.createRandomItem(ix, iy));
+        }
+      }
+
+      // 障害物の配置（各部屋に1〜2個）
+      const obstacleCount = Math.floor(Math.random() * 2) + 1;
+      for (let o = 0; o < obstacleCount; o++) {
+        const ox = room.x + Math.floor(Math.random() * room.w);
+        const oy = room.y + Math.floor(Math.random() * room.h);
+
+        const isStairs = ox === stairsDown.x && oy === stairsDown.y;
+        const isStart = ox === startPos.x && oy === startPos.y;
+        const isOccupied =
+          monsters.some((mon) => mon.x === ox && mon.y === oy) ||
+          items.some((it) => it.x === ox && it.y === oy) ||
+          obstacles.some((ob) => ob.x === ox && ob.y === oy);
+
+        if (!isStairs && !isStart && !isOccupied && isWalkableTile(tiles[oy][ox])) {
+          const obstacleType = this.chooseObstacleTypeForBiome(biomeInfo.biome);
+          obstacles.push(EntityFactory.createObstacle(obstacleType, ox, oy));
         }
       }
     }
@@ -208,6 +243,7 @@ export class DungeonGenerator {
       rooms,
       monsters,
       items,
+      obstacles,
       biome: biomeInfo.biome,
       biomeName: biomeInfo.name,
     };
@@ -256,8 +292,8 @@ export class DungeonGenerator {
   }
 
   /**
-   * 階層番号に基づいてフロアのバイオーム分類および和名を決定します。
-   * 7階層周期で変化し、ダンジョン探索の単調さを防ぎます。
+   * 階層番号に基づいてフロアのバイオーム分類および和名を動的に決定します。
+   * 階層の深さに応じて出現比率が変化し、毎回異なる多様なフロアが生成されます。
    *
    * @param floor - 階層番号
    * @returns バイオーム種別と和名のオブジェクト
@@ -266,31 +302,89 @@ export class DungeonGenerator {
     biome: BiomeType;
     name: string;
   } {
-    const cycle = (floor - 1) % 7;
-    switch (cycle) {
-      case 0:
-        return { biome: 'STONE', name: '石造りの地下迷宮' };
-      case 1:
-        return { biome: 'EARTH', name: '岩と赤土の洞窟' };
-      case 2:
-        return { biome: 'FOREST', name: '草木が生い茂る旧遺跡' };
-      case 3:
-        return { biome: 'RIVER', name: '地下水流と木橋の清流洞' };
-      case 4:
-        return { biome: 'LAKE', name: '水没せし蒼玉の地下湖' };
-      case 5:
-        return { biome: 'SNOW', name: '白銀の雪原回廊' };
-      case 6:
-        return { biome: 'ICE', name: '永久凍土と蒼氷窟' };
+    let pool: { biome: BiomeType; name: string; weight: number }[] = [];
+
+    if (floor === 1) {
+      pool = [
+        { biome: 'STONE', name: '石造りの地下迷宮', weight: 4 },
+        { biome: 'EARTH', name: '岩と赤土の洞窟', weight: 4 },
+        { biome: 'FOREST', name: '草木が生い茂る旧遺跡', weight: 2 },
+      ];
+    } else if (floor <= 3) {
+      pool = [
+        { biome: 'STONE', name: '石造りの地下迷宮', weight: 3 },
+        { biome: 'EARTH', name: '岩と赤土の洞窟', weight: 3 },
+        { biome: 'FOREST', name: '草木が生い茂る旧遺跡', weight: 3 },
+        { biome: 'RIVER', name: '地下水流と木橋の清流洞', weight: 2 },
+        { biome: 'SNOW', name: '白銀の雪原回廊', weight: 2 },
+        { biome: 'SWAMP', name: '泥濘に足を取られる湿地帯', weight: 2 },
+      ];
+    } else if (floor <= 6) {
+      pool = [
+        { biome: 'RIVER', name: '地下水流と木橋の清流洞', weight: 2 },
+        { biome: 'LAKE', name: '水没せし蒼玉の地下湖', weight: 2 },
+        { biome: 'SNOW', name: '白銀の雪原回廊', weight: 2 },
+        { biome: 'ICE', name: '永久凍土と滑る蒼氷窟', weight: 3 },
+        { biome: 'SWAMP', name: '泥濘に足を取られる湿地帯', weight: 3 },
+        { biome: 'TOXIC', name: '有毒ガス漂う腐蝕の毒沼窟', weight: 2 },
+        { biome: 'ISLAND', name: '果てなき大海原の孤島迷宮', weight: 2 },
+        { biome: 'MECHA', name: '古代真鍮の機巧回廊', weight: 2 },
+      ];
+    } else {
+      pool = [
+        { biome: 'ICE', name: '永久凍土と滑る蒼氷窟', weight: 3 },
+        { biome: 'TOXIC', name: '有毒ガス漂う腐蝕の毒沼窟', weight: 4 },
+        { biome: 'MECHA', name: '古代真鍮の機巧回廊', weight: 4 },
+        { biome: 'ISLAND', name: '果てなき大海原の孤島迷宮', weight: 3 },
+        { biome: 'SWAMP', name: '泥濘に足を取られる湿地帯', weight: 2 },
+        { biome: 'LAKE', name: '水没せし蒼玉の地下湖', weight: 2 },
+        { biome: 'STONE', name: '深淵の古代石宮', weight: 2 },
+      ];
+    }
+
+    const totalWeight = pool.reduce((acc, p) => acc + p.weight, 0);
+    let rand = Math.random() * totalWeight;
+    for (const p of pool) {
+      if (rand < p.weight) return { biome: p.biome, name: p.name };
+      rand -= p.weight;
+    }
+    return pool[0];
+  }
+
+  /**
+   * バイオームに応じて適切な障害物種別を抽選します。
+   *
+   * @param biome - フロアのバイオーム
+   * @returns 障害物種別
+   */
+  private static chooseObstacleTypeForBiome(biome: BiomeType): ObstacleType {
+    const roll = Math.random();
+    switch (biome) {
+      case 'ICE':
+        return roll < 0.6 ? 'ICE_BLOCK' : 'SNOW_MOUND';
+      case 'SNOW':
+        return roll < 0.6 ? 'SNOW_MOUND' : 'DIRT_BLOCK';
+      case 'FOREST':
+        return roll < 0.6 ? 'TREE_STUMP' : 'DIRT_BLOCK';
+      case 'SWAMP':
+        return roll < 0.5 ? 'TREE_STUMP' : roll < 0.8 ? 'DIRT_BLOCK' : 'PUSH_ROCK';
+      case 'EARTH':
+      case 'STONE':
+        return roll < 0.5 ? 'DIRT_BLOCK' : 'PUSH_ROCK';
+      case 'MECHA':
+        return roll < 0.65 ? 'PUSH_ROCK' : 'DIRT_BLOCK';
+      case 'TOXIC':
+        return roll < 0.5 ? 'DIRT_BLOCK' : 'PUSH_ROCK';
+      case 'ISLAND':
+        return roll < 0.5 ? 'TREE_STUMP' : 'PUSH_ROCK';
       default:
-        return { biome: 'STONE', name: '石造りの地下迷宮' };
+        return roll < 0.5 ? 'DIRT_BLOCK' : 'PUSH_ROCK';
     }
   }
 
   /**
-   * バイオームに応じて、安全な水路（川・湖）および木製の橋（Bridge）タイルを配置します。
-   * 川バイオームでは孤立した水たまりではなく、部屋を貫通する連続水流と渡り橋を生成し、
-   * プレイヤー開始位置、階段、および部屋の主要動線が必ず通行可能であることを保証します。
+   * バイオームに応じて、水路（川・湖・大海原）および木製の橋（Bridge）タイルを配置します。
+   * ISLANDバイオームでは壁を完全撤廃し全周海と架橋島を形成します。
    *
    * @param tiles - タイルグリッド配列
    * @param biome - バイオーム分類
@@ -305,6 +399,31 @@ export class DungeonGenerator {
     startPos: Point,
     stairsDown: Point
   ): void {
+    const height = tiles.length;
+    const width = tiles[0].length;
+
+    if (biome === 'ISLAND') {
+      // 外洋孤島バイオーム: 壁は一切なく、周囲は広大な大海原（Water）。
+      // 部屋以外の通路はすべて木橋（Bridge）となり、島と島を結ぶ！
+      const isRoomTile = (x: number, y: number) => {
+        return rooms.some(
+          (r) => x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h
+        );
+      };
+
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          if (tiles[y][x] === TileType.Wall) {
+            tiles[y][x] = TileType.Water;
+          } else if (tiles[y][x] === TileType.Floor && !isRoomTile(x, y)) {
+            // 通路部分は海上に架けられた木橋
+            tiles[y][x] = TileType.Bridge;
+          }
+        }
+      }
+      return;
+    }
+
     if (
       biome !== 'RIVER' &&
       biome !== 'LAKE' &&
@@ -320,35 +439,27 @@ export class DungeonGenerator {
         if (room.w >= 5 && room.h >= 5 && Math.random() < 0.75) {
           const isHoriz = Math.random() < 0.5;
           if (isHoriz) {
-            // 水平方向に部屋を貫通する川
             const riverY = room.y + Math.floor(room.h / 2);
             for (let rx = room.x; rx < room.x + room.w; rx++) {
               if (tiles[riverY][rx] === TileType.Floor) {
                 tiles[riverY][rx] = TileType.Water;
               }
             }
-            // 川の中央に木製の橋を架ける
             const bridgeX1 = room.x + Math.floor(room.w / 2);
             tiles[riverY][bridgeX1] = TileType.Bridge;
-
-            // 部屋の横幅が広い場合は2本目の橋を架けて往来しやすくする
             if (room.w >= 8) {
               const bridgeX2 = room.x + 2;
               tiles[riverY][bridgeX2] = TileType.Bridge;
             }
           } else {
-            // 垂直方向に部屋を貫通する川
             const riverX = room.x + Math.floor(room.w / 2);
             for (let ry = room.y; ry < room.y + room.h; ry++) {
               if (tiles[ry][riverX] === TileType.Floor) {
                 tiles[ry][riverX] = TileType.Water;
               }
             }
-            // 川の中央に木製の橋を架ける
             const bridgeY1 = room.y + Math.floor(room.h / 2);
             tiles[bridgeY1][riverX] = TileType.Bridge;
-
-            // 部屋の縦幅が広い場合は2本目の橋
             if (room.h >= 8) {
               const bridgeY2 = room.y + 2;
               tiles[bridgeY2][riverX] = TileType.Bridge;
@@ -367,7 +478,6 @@ export class DungeonGenerator {
               tiles[ry][rx] = TileType.Water;
             }
           }
-          // 湖を横断する木製桟橋（Bridge）
           const bridgeY = room.y + Math.floor(room.h / 2);
           for (let rx = room.x + 2; rx < room.x + 2 + innerW; rx++) {
             if (Math.random() < 0.6) {
@@ -414,6 +524,51 @@ export class DungeonGenerator {
   }
 
   /**
+   * バイオームに応じた環境ギミックタイル（滑る氷床、泥濘床、毒沼床）を部屋内に配置します。
+   *
+   * @param tiles - タイルグリッド配列
+   * @param biome - バイオーム分類
+   * @param rooms - 部屋リスト
+   * @param startPos - プレイヤー開始地点
+   * @param stairsDown - 階段位置
+   */
+  private static applyBiomeSpecialTiles(
+    tiles: TileType[][],
+    biome: BiomeType,
+    rooms: Room[],
+    startPos: Point,
+    stairsDown: Point
+  ): void {
+    if (biome !== 'ICE' && biome !== 'SWAMP' && biome !== 'TOXIC') {
+      return;
+    }
+
+    for (const room of rooms) {
+      for (let ry = room.y; ry < room.y + room.h; ry++) {
+        for (let rx = room.x; rx < room.x + room.w; rx++) {
+          if (tiles[ry][rx] !== TileType.Floor) continue;
+
+          // スタート地点・階段地点および周囲1マスは通常床のまま維持
+          if (
+            Math.abs(rx - startPos.x) <= 1 && Math.abs(ry - startPos.y) <= 1 ||
+            Math.abs(rx - stairsDown.x) <= 1 && Math.abs(ry - stairsDown.y) <= 1
+          ) {
+            continue;
+          }
+
+          if (biome === 'ICE' && Math.random() < 0.6) {
+            tiles[ry][rx] = TileType.Ice;
+          } else if (biome === 'SWAMP' && Math.random() < 0.45) {
+            tiles[ry][rx] = TileType.Mud;
+          } else if (biome === 'TOXIC' && Math.random() < 0.3) {
+            tiles[ry][rx] = TileType.Poison;
+          }
+        }
+      }
+    }
+  }
+
+  /**
    * スタート地点から下り階段への到達可能性をBFS（幅優先探索）で検証し、
    * 万一水路等で分断されていた場合は交差地点を木橋（Bridge）に置換して開通を保証します。
    *
@@ -436,7 +591,12 @@ export class DungeonGenerator {
     visited[startPos.y][startPos.x] = true;
 
     const isWalkable = (t: TileType) =>
-      t === TileType.Floor || t === TileType.Bridge || t === TileType.StairsDown;
+      t === TileType.Floor ||
+      t === TileType.Bridge ||
+      t === TileType.Ice ||
+      t === TileType.Mud ||
+      t === TileType.Poison ||
+      t === TileType.StairsDown;
 
     while (queue.length > 0) {
       const current = queue.shift()!;

@@ -4,7 +4,14 @@
  * 階層（Floor）に応じた強さのスケーリングや、各種アイテムのプロパティ定義を行います。
  */
 
-import { BiomeType, Item, Monster, MonsterType } from '../types';
+import {
+  BiomeType,
+  Item,
+  Monster,
+  MonsterType,
+  Obstacle,
+  ObstacleType,
+} from '../types';
 
 /**
  * モンスターおよびアイテムをインスタンス化する静的ファクトリクラス。
@@ -36,53 +43,91 @@ export class EntityFactory {
 
     if (biome === 'EARTH') {
       if (floor >= 8 && roll < 0.2) type = 'DRAGON';
-      else if (roll < 0.45) type = 'GOLEM';
-      else if (roll < 0.7) type = 'BAT';
-      else if (roll < 0.85) type = 'GOBLIN';
+      else if (roll < 0.4) type = 'GOLEM';
+      else if (roll < 0.6) type = 'BAT';
+      else if (roll < 0.75) type = 'MUMMY';
+      else if (roll < 0.88) type = 'GOBLIN';
       else type = 'SKELETON';
     } else if (biome === 'FOREST') {
       if (floor >= 8 && roll < 0.2) type = 'MAGE';
-      else if (roll < 0.45) type = 'MANDRAGORA';
-      else if (roll < 0.7) type = 'GHOST';
-      else if (roll < 0.85) type = 'SLIME';
+      else if (roll < 0.4) type = 'MANDRAGORA';
+      else if (roll < 0.6) type = 'GHOST';
+      else if (roll < 0.75) type = 'IMP';
+      else if (roll < 0.88) type = 'SLIME';
       else type = 'GOBLIN';
     } else if (biome === 'RIVER' || biome === 'LAKE') {
       if (floor >= 8 && roll < 0.2) type = 'DRAGON';
-      else if (roll < 0.45) type = 'SAHAGIN';
-      else if (roll < 0.7) type = 'BAT';
-      else if (roll < 0.85) type = 'GHOST';
+      else if (roll < 0.4) type = 'SAHAGIN';
+      else if (roll < 0.6) type = 'BAT';
+      else if (roll < 0.75) type = 'MIMIC';
+      else if (roll < 0.88) type = 'GHOST';
       else type = 'SLIME';
     } else if (biome === 'SNOW') {
       if (floor >= 8 && roll < 0.25) type = 'DRAGON';
       else if (roll < 0.35) type = 'GHOST';
-      else if (roll < 0.6) type = 'BAT';
-      else if (roll < 0.8) type = 'SKELETON';
+      else if (roll < 0.55) type = 'BAT';
+      else if (roll < 0.75) type = 'SKELETON';
+      else if (roll < 0.88) type = 'IMP';
       else type = 'GOLEM';
     } else if (biome === 'ICE') {
       if (floor >= 8 && roll < 0.3) type = 'DRAGON';
       else if (roll < 0.4) type = 'MAGE';
-      else if (roll < 0.65) type = 'GHOST';
-      else if (roll < 0.85) type = 'GOLEM';
+      else if (roll < 0.6) type = 'GHOST';
+      else if (roll < 0.75) type = 'GOLEM';
+      else if (roll < 0.88) type = 'MIMIC';
       else type = 'BAT';
+    } else if (biome === 'SWAMP') {
+      if (floor >= 8 && roll < 0.2) type = 'DRAGON';
+      else if (roll < 0.35) type = 'ZOMBIE';
+      else if (roll < 0.55) type = 'MANDRAGORA';
+      else if (roll < 0.75) type = 'SAHAGIN';
+      else if (roll < 0.88) type = 'SLIME';
+      else type = 'GHOST';
+    } else if (biome === 'TOXIC') {
+      if (floor >= 8 && roll < 0.25) type = 'MAGE';
+      else if (roll < 0.4) type = 'ZOMBIE';
+      else if (roll < 0.6) type = 'SLIME';
+      else if (roll < 0.75) type = 'BAT';
+      else if (roll < 0.88) type = 'IMP';
+      else type = 'MIMIC';
+    } else if (biome === 'MECHA') {
+      if (floor >= 8 && roll < 0.25) type = 'DRAGON';
+      else if (roll < 0.4) type = 'GOLEM';
+      else if (roll < 0.6) type = 'IMP';
+      else if (roll < 0.75) type = 'SKELETON';
+      else if (roll < 0.88) type = 'MAGE';
+      else type = 'MIMIC';
+    } else if (biome === 'ISLAND') {
+      if (floor >= 8 && roll < 0.2) type = 'DRAGON';
+      else if (roll < 0.45) type = 'SAHAGIN';
+      else if (roll < 0.65) type = 'BAT';
+      else if (roll < 0.8) type = 'SLIME';
+      else if (roll < 0.9) type = 'MIMIC';
+      else type = 'GOBLIN';
     } else {
       // STONE
       if (floor === 1) {
-        type = roll < 0.6 ? 'SLIME' : roll < 0.85 ? 'GOBLIN' : 'BAT';
+        type = roll < 0.5 ? 'SLIME' : roll < 0.8 ? 'GOBLIN' : 'BAT';
       } else if (floor <= 3) {
-        if (roll < 0.3) type = 'SLIME';
-        else if (roll < 0.6) type = 'GOBLIN';
-        else if (roll < 0.85) type = 'BAT';
-        else type = 'SKELETON';
-      } else if (floor <= 6) {
-        if (roll < 0.2) type = 'GOBLIN';
-        else if (roll < 0.45) type = 'SKELETON';
+        if (roll < 0.25) type = 'SLIME';
+        else if (roll < 0.5) type = 'GOBLIN';
         else if (roll < 0.7) type = 'BAT';
-        else if (roll < 0.88) type = 'GHOST';
+        else if (roll < 0.85) type = 'SKELETON';
+        else type = 'ZOMBIE';
+      } else if (floor <= 6) {
+        if (roll < 0.15) type = 'GOBLIN';
+        else if (roll < 0.35) type = 'SKELETON';
+        else if (roll < 0.55) type = 'BAT';
+        else if (roll < 0.7) type = 'GHOST';
+        else if (roll < 0.82) type = 'IMP';
+        else if (roll < 0.92) type = 'MIMIC';
         else type = 'MAGE';
       } else {
-        if (roll < 0.25) type = 'SKELETON';
-        else if (roll < 0.5) type = 'MAGE';
+        if (roll < 0.2) type = 'SKELETON';
+        else if (roll < 0.4) type = 'MAGE';
+        else if (roll < 0.6) type = 'MUMMY';
         else if (roll < 0.75) type = 'GHOST';
+        else if (roll < 0.88) type = 'MIMIC';
         else type = 'DRAGON';
       }
     }
@@ -250,6 +295,70 @@ export class EntityFactory {
           symbol: 'D',
           color: '#ef4444',
         };
+
+      case 'MIMIC':
+        return {
+          id,
+          name: '人食い箱',
+          type: 'MIMIC',
+          x,
+          y,
+          hp: Math.round(24 * floorScale),
+          maxHp: Math.round(24 * floorScale),
+          atk: Math.round(8 * floorScale),
+          def: 3,
+          expValue: Math.round(20 * floorScale),
+          symbol: 'T',
+          color: '#d97706',
+        };
+
+      case 'ZOMBIE':
+        return {
+          id,
+          name: '腐乱ゾンビ',
+          type: 'ZOMBIE',
+          x,
+          y,
+          hp: Math.round(20 * floorScale),
+          maxHp: Math.round(20 * floorScale),
+          atk: Math.round(5 * floorScale),
+          def: 2,
+          expValue: Math.round(11 * floorScale),
+          symbol: 'z',
+          color: '#65a30d',
+        };
+
+      case 'IMP':
+        return {
+          id,
+          name: '小悪魔インプ',
+          type: 'IMP',
+          x,
+          y,
+          hp: Math.round(15 * floorScale),
+          maxHp: Math.round(15 * floorScale),
+          atk: Math.round(7 * floorScale),
+          def: 2,
+          expValue: Math.round(14 * floorScale),
+          symbol: 'i',
+          color: '#ec4899',
+        };
+
+      case 'MUMMY':
+        return {
+          id,
+          name: '古代のミイラ',
+          type: 'MUMMY',
+          x,
+          y,
+          hp: Math.round(30 * floorScale),
+          maxHp: Math.round(30 * floorScale),
+          atk: Math.round(9 * floorScale),
+          def: 4,
+          expValue: Math.round(25 * floorScale),
+          symbol: 'M',
+          color: '#d4d4d8',
+        };
     }
   }
 
@@ -264,8 +373,8 @@ export class EntityFactory {
     const id = `item_${++this.idCounter}`;
     const roll = Math.random();
 
-    // 1. ポーション・回復・強化薬 (32%)
-    if (roll < 0.16) {
+    // 1. ポーション・回復・強化薬 (28%)
+    if (roll < 0.10) {
       // 薬草
       return {
         id,
@@ -278,7 +387,7 @@ export class EntityFactory {
         symbol: '!',
         color: '#10b981',
       };
-    } else if (roll < 0.24) {
+    } else if (roll < 0.16) {
       // 特薬草
       return {
         id,
@@ -291,7 +400,20 @@ export class EntityFactory {
         symbol: '!',
         color: '#34d399',
       };
-    } else if (roll < 0.28) {
+    } else if (roll < 0.20) {
+      // どくけし草
+      return {
+        id,
+        name: 'どくけし草',
+        category: 'POTION',
+        description: '体内の毒素を清め中和する薬草。HPを5回復し毒状態を解除する。',
+        value: 5,
+        x,
+        y,
+        symbol: '!',
+        color: '#22c55e',
+      };
+    } else if (roll < 0.24) {
       // 剛力の秘薬
       return {
         id,
@@ -304,7 +426,7 @@ export class EntityFactory {
         symbol: '!',
         color: '#f43f5e',
       };
-    } else if (roll < 0.32) {
+    } else if (roll < 0.26) {
       // 力の種
       return {
         id,
@@ -317,10 +439,23 @@ export class EntityFactory {
         symbol: 'o',
         color: '#f97316',
       };
+    } else if (roll < 0.28) {
+      // すばやさの種
+      return {
+        id,
+        name: 'すばやさの種',
+        category: 'POTION',
+        description: '飲むと体が軽くなり、永続的に攻撃力+1、防御力+1が上昇する霊種。',
+        value: 2,
+        x,
+        y,
+        symbol: 'o',
+        color: '#06b6d4',
+      };
     }
 
-    // 2. 食料（おにぎり・パン） (20%)
-    else if (roll < 0.42) {
+    // 2. 食料（おにぎり・パン） (18%)
+    else if (roll < 0.38) {
       // 特製おにぎり
       return {
         id,
@@ -333,7 +468,7 @@ export class EntityFactory {
         symbol: '%',
         color: '#f8fafc',
       };
-    } else if (roll < 0.52) {
+    } else if (roll < 0.44) {
       // 大きなパン
       return {
         id,
@@ -346,10 +481,23 @@ export class EntityFactory {
         symbol: '%',
         color: '#fbbf24',
       };
+    } else if (roll < 0.46) {
+      // 巨大なおにぎり
+      return {
+        id,
+        name: '巨大なおにぎり',
+        category: 'FOOD',
+        description: '米俵のような特大おにぎり。食べると満腹度が100%完全回復する。',
+        value: 100,
+        x,
+        y,
+        symbol: '%',
+        color: '#ffffff',
+      };
     }
 
-    // 3. 武器（5種） (20%)
-    else if (roll < 0.58) {
+    // 3. 武器（8種） (22%)
+    else if (roll < 0.51) {
       // 青銅の短剣
       return {
         id,
@@ -362,7 +510,7 @@ export class EntityFactory {
         symbol: '/',
         color: '#d97706',
       };
-    } else if (roll < 0.64) {
+    } else if (roll < 0.56) {
       // 鉄の剣
       return {
         id,
@@ -375,7 +523,7 @@ export class EntityFactory {
         symbol: '/',
         color: '#38bdf8',
       };
-    } else if (roll < 0.68) {
+    } else if (roll < 0.60) {
       // ミスリルの剣
       return {
         id,
@@ -388,7 +536,20 @@ export class EntityFactory {
         symbol: '/',
         color: '#818cf8',
       };
-    } else if (roll < 0.71) {
+    } else if (roll < 0.63) {
+      // ウォーハンマー
+      return {
+        id,
+        name: 'ウォーハンマー',
+        category: 'WEAPON',
+        description: '重厚な鉄塊で鍛えられた戦槌。装備すると攻撃力が8上昇する。',
+        value: 8,
+        x,
+        y,
+        symbol: '/',
+        color: '#eab308',
+      };
+    } else if (roll < 0.65) {
       // 炎の剣
       return {
         id,
@@ -401,7 +562,20 @@ export class EntityFactory {
         symbol: '/',
         color: '#ef4444',
       };
-    } else if (roll < 0.72) {
+    } else if (roll < 0.665) {
+      // ホーリーランス
+      return {
+        id,
+        name: 'ホーリーランス',
+        category: 'WEAPON',
+        description: '聖なる天光を宿した聖槍。装備すると攻撃力が11大幅上昇する。',
+        value: 11,
+        x,
+        y,
+        symbol: '/',
+        color: '#fef08a',
+      };
+    } else if (roll < 0.675) {
       // ルーンの剣
       return {
         id,
@@ -414,10 +588,23 @@ export class EntityFactory {
         symbol: '/',
         color: '#c084fc',
       };
+    } else if (roll < 0.68) {
+      // 妖刀ムラマサ
+      return {
+        id,
+        name: '妖刀ムラマサ',
+        category: 'WEAPON',
+        description: '血を求めて怪しい紅光を放つ伝説の妖刀。装備すると攻撃力が15究極上昇する。',
+        value: 15,
+        x,
+        y,
+        symbol: '/',
+        color: '#dc2626',
+      };
     }
 
-    // 4. 盾（5種） (16%)
-    else if (roll < 0.78) {
+    // 4. 盾（8種） (18%)
+    else if (roll < 0.73) {
       // 木の盾
       return {
         id,
@@ -430,7 +617,7 @@ export class EntityFactory {
         symbol: ')',
         color: '#b45309',
       };
-    } else if (roll < 0.83) {
+    } else if (roll < 0.77) {
       // 青銅の盾
       return {
         id,
@@ -443,7 +630,20 @@ export class EntityFactory {
         symbol: ')',
         color: '#d97706',
       };
-    } else if (roll < 0.86) {
+    } else if (roll < 0.80) {
+      // 風の盾
+      return {
+        id,
+        name: '風の盾',
+        category: 'SHIELD',
+        description: '翠嵐の風を纏った軽装盾。装備すると防御力が3上昇する。',
+        value: 3,
+        x,
+        y,
+        symbol: ')',
+        color: '#10b981',
+      };
+    } else if (roll < 0.825) {
       // 鋼の盾
       return {
         id,
@@ -456,7 +656,20 @@ export class EntityFactory {
         symbol: ')',
         color: '#a78bfa',
       };
-    } else if (roll < 0.875) {
+    } else if (roll < 0.845) {
+      // タワーシールド
+      return {
+        id,
+        name: 'タワーシールド',
+        category: 'SHIELD',
+        description: '全身を強固に防護する大盾。装備すると防御力が5上昇する。',
+        value: 5,
+        x,
+        y,
+        symbol: ')',
+        color: '#94a3b8',
+      };
+    } else if (roll < 0.855) {
       // 魔法の盾
       return {
         id,
@@ -469,7 +682,7 @@ export class EntityFactory {
         symbol: ')',
         color: '#38bdf8',
       };
-    } else if (roll < 0.88) {
+    } else if (roll < 0.86) {
       // ドラゴンの盾
       return {
         id,
@@ -482,10 +695,23 @@ export class EntityFactory {
         symbol: ')',
         color: '#f43f5e',
       };
+    } else if (roll < 0.865) {
+      // イージスの盾
+      return {
+        id,
+        name: 'イージスの盾',
+        category: 'SHIELD',
+        description: 'あらゆる厄災を退ける神話の神盾。装備すると防御力が10究極上昇する。',
+        value: 10,
+        x,
+        y,
+        symbol: ')',
+        color: '#f59e0b',
+      };
     }
 
-    // 5. 巻物（3種） (12%)
-    else if (roll < 0.93) {
+    // 5. 巻物（5種） (13.5%)
+    else if (roll < 0.90) {
       // ワープの巻物
       return {
         id,
@@ -498,7 +724,7 @@ export class EntityFactory {
         symbol: '?',
         color: '#f472b6',
       };
-    } else if (roll < 0.97) {
+    } else if (roll < 0.93) {
       // 雷の巻物
       return {
         id,
@@ -510,6 +736,32 @@ export class EntityFactory {
         y,
         symbol: '?',
         color: '#fbbf24',
+      };
+    } else if (roll < 0.955) {
+      // 睡眠の巻物
+      return {
+        id,
+        name: '睡眠の巻物',
+        category: 'SCROLL',
+        description: '読むとフロア内のすべての敵を深い眠りに誘い、数ターン無力化する。',
+        value: 5,
+        x,
+        y,
+        symbol: '?',
+        color: '#818cf8',
+      };
+    } else if (roll < 0.975) {
+      // 混乱の巻物
+      return {
+        id,
+        name: '混乱の巻物',
+        category: 'SCROLL',
+        description: '読むと周囲のモンスターが錯乱し、数ターンの間デタラメな行動を取る。',
+        value: 8,
+        x,
+        y,
+        symbol: '?',
+        color: '#f43f5e',
       };
     } else {
       // あかりの巻物
@@ -524,6 +776,96 @@ export class EntityFactory {
         symbol: '?',
         color: '#38bdf8',
       };
+    }
+  }
+
+  /**
+   * 指定した種類と座標のインタラクティブ障害物を生成します。
+   *
+   * @param type - 障害物の種別
+   * @param x - 初期配置X座標
+   * @param y - 初期配置Y座標
+   * @returns 生成された障害物オブジェクト
+   */
+  public static createObstacle(type: ObstacleType, x: number, y: number): Obstacle {
+    const id = `obstacle_${++this.idCounter}`;
+
+    switch (type) {
+      case 'DIRT_BLOCK':
+        return {
+          id,
+          type,
+          x,
+          y,
+          hp: 2,
+          maxHp: 2,
+          isDestructible: true,
+          isPushable: false,
+          isSliding: false,
+          symbol: '#',
+          color: '#92400e',
+          name: '土の塊',
+        };
+      case 'TREE_STUMP':
+        return {
+          id,
+          type,
+          x,
+          y,
+          hp: 3,
+          maxHp: 3,
+          isDestructible: true,
+          isPushable: false,
+          isSliding: false,
+          symbol: '%',
+          color: '#15803d',
+          name: '倒木',
+        };
+      case 'SNOW_MOUND':
+        return {
+          id,
+          type,
+          x,
+          y,
+          hp: 1,
+          maxHp: 1,
+          isDestructible: true,
+          isPushable: false,
+          isSliding: false,
+          symbol: '*',
+          color: '#e0f2fe',
+          name: '雪の塊',
+        };
+      case 'PUSH_ROCK':
+        return {
+          id,
+          type,
+          x,
+          y,
+          hp: 999,
+          maxHp: 999,
+          isDestructible: false,
+          isPushable: true,
+          isSliding: false,
+          symbol: 'O',
+          color: '#64748b',
+          name: '押せる大石',
+        };
+      case 'ICE_BLOCK':
+        return {
+          id,
+          type,
+          x,
+          y,
+          hp: 1,
+          maxHp: 1,
+          isDestructible: true,
+          isPushable: true,
+          isSliding: true,
+          symbol: '◇',
+          color: '#38bdf8',
+          name: '滑る氷塊',
+        };
     }
   }
 }

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="20" ry="5" fill="rgba(0,0,0,0.35)"/>
+  <!-- 宝箱下部 -->
+  <rect x="12" y="30" width="40" height="26" rx="3" fill="#b45309" stroke="#78350f" stroke-width="2"/>
+  <rect x="10" y="30" width="44" height="6" fill="#d97706"/>
+  <!-- 口の中（真っ赤な闇） -->
+  <rect x="14" y="22" width="36" height="14" rx="2" fill="#881337"/>
+  <!-- 上蓋（大きく開口） -->
+  <path d="M10 22 Q32 8 54 22 L52 14 Q32 2 12 14 Z" fill="#b45309" stroke="#78350f" stroke-width="2"/>
+  <!-- 鋭い牙（上下） -->
+  <polygon points="16,22 19,27 22,22" fill="#ffffff"/>
+  <polygon points="24,22 27,27 30,22" fill="#ffffff"/>
+  <polygon points="34,22 37,27 40,22" fill="#ffffff"/>
+  <polygon points="42,22 45,27 48,22" fill="#ffffff"/>
+  <polygon points="18,34 21,30 24,34" fill="#ffffff"/>
+  <polygon points="26,34 29,30 32,34" fill="#ffffff"/>
+  <polygon points="36,34 39,30 42,34" fill="#ffffff"/>
+  <!-- 覗く怪しい赤目 -->
+  <circle cx="24" cy="20" r="3" fill="#ef4444"/>
+  <circle cx="40" cy="20" r="3" fill="#ef4444"/>
+  <circle cx="24" cy="20" r="1" fill="#fef08a"/>
+  <circle cx="40" cy="20" r="1" fill="#fef08a"/>
+  <!-- 垂れ下がる舌 -->
+  <path d="M30 28 Q34 40 28 44 Q24 40 28 32 Z" fill="#f43f5e"/>
+</svg>

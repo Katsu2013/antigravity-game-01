@@ -18,19 +18,29 @@ export enum TileType {
   Water = 'Water',
   /** 水路上に架けられた通行可能な木の橋タイル */
   Bridge = 'Bridge',
+  /** 進入すると同一方向へスーッと滑走する氷床タイル */
+  Ice = 'Ice',
+  /** 進入・脱出にターンを費やす足枷の泥沼タイル */
+  Mud = 'Mud',
+  /** 進入すると毒ダメージ（-2HP）を受ける有毒沼タイル */
+  Poison = 'Poison',
 }
 
 /**
  * ダンジョンフロアの環境・テーマ（バイオーム）を表す型。
  */
 export type BiomeType =
-  | 'STONE'  // 石造りの迷宮 (Classic Stone)
-  | 'EARTH'  // 岩と赤土の洞窟 (Earthy Cavern)
-  | 'FOREST' // 草木と旧遺跡 (Overgrowth Ruins)
-  | 'RIVER'  // 地下水流と木橋の清流洞 (Subterranean River & Bridges)
-  | 'LAKE'   // 水没せし蒼玉の地下湖 (Sunken Lake)
-  | 'SNOW'   // 白銀の雪原回廊 (Silver Snow Realm)
-  | 'ICE';   // 永久凍土と蒼氷窟 (Glacial Ice Cavern)
+  | 'STONE'   // 石造りの迷宮 (Classic Stone)
+  | 'EARTH'   // 岩と赤土の洞窟 (Earthy Cavern)
+  | 'FOREST'  // 草木と旧遺跡 (Overgrowth Ruins)
+  | 'RIVER'   // 地下水流と木橋の清流洞 (Subterranean River & Bridges)
+  | 'LAKE'    // 水没せし蒼玉の地下湖 (Sunken Lake)
+  | 'SNOW'    // 白銀の雪原回廊 (Silver Snow Realm)
+  | 'ICE'     // 永久凍土と蒼氷窟 (Glacial Ice Cavern - 氷上滑走)
+  | 'SWAMP'   // 深緑の泥濘と沼地 (Murky Swamp - 泥沼足枷)
+  | 'TOXIC'   // 有毒瘴気と毒沼の魔境 (Toxic Mire - 毒沼ダメージ)
+  | 'MECHA'   // 歯車と真鍮の機巧回廊 (Clockwork Labyrinth - 古代機械)
+  | 'ISLAND'; // 外洋に浮かぶ孤島群 (Endless Ocean Islands - 壁なし外洋)
 
 /**
  * 2次元グリッド上の整数座標を表すインターフェース。
@@ -118,7 +128,51 @@ export type MonsterType =
   | 'BAT'         // 吸血コウモリ（洞窟・水流: 暗闇を飛翔）
   | 'GHOST'       // 彷徨う亡霊（旧遺跡・地下湖: 高防御アンデッド）
   | 'MAGE'        // ダークメイジ（深層魔術師: 高魔力・高威力）
-  | 'DRAGON';     // レッドドラゴン（深層の覇者: 圧倒的高HP・高火力）
+  | 'DRAGON'      // レッドドラゴン（深層の覇者: 圧倒的高HP・高火力）
+  | 'MIMIC'       // ミミック（宝箱に擬態する奇襲モンスター）
+  | 'ZOMBIE'      // ゾンビ（腐肉のアンデッド: 高HPタフ）
+  | 'IMP'         // インプ（狡猾な小悪魔: 高速・トリッキー）
+  | 'MUMMY';      // ミイラ男（古代の呪術を纏う高防御怪人）
+
+/**
+ * フロア上に配置される障害物・ギミックオブジェクトの分類型。
+ */
+export type ObstacleType =
+  | 'DIRT_BLOCK'    // 土の塊 (攻撃2回で破壊)
+  | 'TREE_STUMP'    // 倒木・木塊 (攻撃3回で破壊)
+  | 'SNOW_MOUND'    // 雪の塊 (攻撃1回で破壊)
+  | 'PUSH_ROCK'     // 押せる石 (破壊不能・押して1マス移動)
+  | 'ICE_BLOCK';    // 滑る氷塊 (押すと直進滑走・衝突で破砕＆敵に20ダメージ)
+
+/**
+ * フロア上の障害物・ギミックオブジェクトを表すインターフェース。
+ */
+export interface Obstacle {
+  /** 障害物の一意なインスタンス識別子 */
+  id: string;
+  /** 障害物の種別 */
+  type: ObstacleType;
+  /** 表示名（例: 「土の塊」「滑る氷の塊」） */
+  name: string;
+  /** X座標 */
+  x: number;
+  /** Y座標 */
+  y: number;
+  /** 現在の耐久値（HP） */
+  hp: number;
+  /** 最大耐久値 */
+  maxHp: number;
+  /** 攻撃して壊せるかどうか */
+  isDestructible: boolean;
+  /** 押して動かせるかどうか */
+  isPushable: boolean;
+  /** 押すと滑走するかどうか */
+  isSliding: boolean;
+  /** マップ・ミニマップ描画用シンボル文字 */
+  symbol: string;
+  /** マップ・ミニマップ描画用カラーコード */
+  color: string;
+}
 
 /**
  * ダンジョン内に生息する敵モンスターの完全な情報を表すインターフェース。
@@ -304,6 +358,8 @@ export interface DungeonMap {
   monsters: Monster[];
   /** フロアの床に配置されているアイテムのリスト */
   items: Item[];
+  /** フロア内に配置されている障害物・ギミックオブジェクトのリスト */
+  obstacles: Obstacle[];
   /** フロアの環境・バイオーム分類 */
   biome: BiomeType;
   /** 画面表示用のバイオーム和名（例: 「草木が生い茂る旧遺跡」） */

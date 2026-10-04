@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="16" ry="4.5" fill="rgba(0,0,0,0.35)"/>
+  <!-- 腐敗した頭部 -->
+  <rect x="22" y="10" width="20" height="20" rx="4" fill="#65a30d" stroke="#3f6212" stroke-width="1.5"/>
+  <!-- うつろな目 -->
+  <circle cx="28" cy="18" r="3.5" fill="#fef08a"/>
+  <circle cx="28" cy="18" r="1.5" fill="#1e293b"/>
+  <circle cx="37" cy="19" r="2.5" fill="#1e293b"/>
+  <!-- 歪んだ口 -->
+  <path d="M26 25 Q32 28 38 24" stroke="#1e293b" stroke-width="2" fill="none"/>
+  <!-- ボロボロの胴体 -->
+  <rect x="18" y="30" width="28" height="20" rx="2" fill="#475569" stroke="#1e293b" stroke-width="1.5"/>
+  <polygon points="18,48 24,44 28,50 34,44 40,50 46,46" fill="#334155"/>
+  <!-- 前に突き出された両腕 -->
+  <rect x="10" y="32" width="10" height="6" rx="2" fill="#65a30d"/>
+  <rect x="44" y="32" width="10" height="6" rx="2" fill="#65a30d"/>
+  <!-- 両足 -->
+  <rect x="24" y="50" width="6" height="10" fill="#65a30d"/>
+  <rect x="34" y="50" width="6" height="10" fill="#4d7c0f"/>
+</svg>

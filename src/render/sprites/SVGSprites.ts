@@ -6,7 +6,7 @@
  * 全10種のモンスター（各5方向/8方向）および全16種のアイテムに対応します。
  */
 
-import { ItemCategory } from '../../core/types';
+import { ItemCategory, ObstacleType } from '../../core/types';
 import { EquipmentSprites } from './EquipmentSprites';
 import { MonsterAndItemSprites } from './MonsterAndItemSprites';
 import { TileSprites } from './TileSprites';
@@ -112,26 +112,71 @@ export type SpriteId =
   | 'dragon_side'
   | 'dragon_diag_down'
   | 'dragon_diag_up'
+  // 人食い箱 (MIMIC)
+  | 'mimic'
+  | 'mimic_down'
+  | 'mimic_up'
+  | 'mimic_side'
+  | 'mimic_diag_down'
+  | 'mimic_diag_up'
+  // 腐乱ゾンビ (ZOMBIE)
+  | 'zombie'
+  | 'zombie_down'
+  | 'zombie_up'
+  | 'zombie_side'
+  | 'zombie_diag_down'
+  | 'zombie_diag_up'
+  // 小悪魔インプ (IMP)
+  | 'imp'
+  | 'imp_down'
+  | 'imp_up'
+  | 'imp_side'
+  | 'imp_diag_down'
+  | 'imp_diag_up'
+  // 古代のミイラ (MUMMY)
+  | 'mummy'
+  | 'mummy_down'
+  | 'mummy_up'
+  | 'mummy_side'
+  | 'mummy_diag_down'
+  | 'mummy_diag_up'
   // アイテムグラフィックスプライト
   | 'item_potion'
   | 'item_potion_high'
   | 'item_potion_str'
+  | 'item_potion_antidote'
+  | 'item_potion_agi'
   | 'item_seed'
   | 'item_food'
   | 'item_food_riceball'
+  | 'item_food_big_riceball'
   | 'item_weapon'
   | 'item_weapon_dagger'
   | 'item_weapon_mithril'
   | 'item_weapon_flame'
   | 'item_weapon_rune'
+  | 'item_weapon_muramasa'
+  | 'item_weapon_warhammer'
+  | 'item_weapon_holy_lance'
   | 'item_shield'
   | 'item_shield_wood'
   | 'item_shield_bronze'
   | 'item_shield_magic'
   | 'item_shield_dragon'
+  | 'item_shield_wind'
+  | 'item_shield_tower'
+  | 'item_shield_aegis'
   | 'item_scroll'
   | 'item_scroll_thunder'
-  | 'item_scroll_light';
+  | 'item_scroll_light'
+  | 'item_scroll_sleep'
+  | 'item_scroll_confuse'
+  // 障害物グラフィックスプライト
+  | 'obstacle_dirt_block'
+  | 'obstacle_tree_stump'
+  | 'obstacle_snow_mound'
+  | 'obstacle_push_rock'
+  | 'obstacle_ice_block';
 
 /**
  * SVGスプライトの定義・生成・キャッシュ管理クラス。
@@ -809,6 +854,51 @@ export class SVGSprites {
 </svg>`.trim(),
       item_scroll_thunder: MonsterAndItemSprites.ITEM_SCROLL_THUNDER_SVG,
       item_scroll_light: MonsterAndItemSprites.ITEM_SCROLL_LIGHT_SVG,
+      item_scroll_sleep: MonsterAndItemSprites.ITEM_SCROLL_SLEEP_SVG,
+      item_scroll_confuse: MonsterAndItemSprites.ITEM_SCROLL_CONFUSE_SVG,
+      // 新武器
+      item_weapon_muramasa: MonsterAndItemSprites.ITEM_WEAPON_MURAMASA_SVG,
+      item_weapon_warhammer: MonsterAndItemSprites.ITEM_WEAPON_WARHAMMER_SVG,
+      item_weapon_holy_lance: MonsterAndItemSprites.ITEM_WEAPON_HOLY_LANCE_SVG,
+      // 新盾
+      item_shield_wind: MonsterAndItemSprites.ITEM_SHIELD_WIND_SVG,
+      item_shield_tower: MonsterAndItemSprites.ITEM_SHIELD_TOWER_SVG,
+      item_shield_aegis: MonsterAndItemSprites.ITEM_SHIELD_AEGIS_SVG,
+      // 新消費アイテム
+      item_potion_antidote: MonsterAndItemSprites.ITEM_POTION_ANTIDOTE_SVG,
+      item_potion_agi: MonsterAndItemSprites.ITEM_POTION_AGI_SVG,
+      item_food_big_riceball: MonsterAndItemSprites.ITEM_FOOD_BIG_RICEBALL_SVG,
+      // 新モンスター (MIMIC, ZOMBIE, IMP, MUMMY)
+      mimic: MonsterAndItemSprites.MIMIC_DOWN_SVG,
+      mimic_down: MonsterAndItemSprites.MIMIC_DOWN_SVG,
+      mimic_up: MonsterAndItemSprites.MIMIC_UP_SVG,
+      mimic_side: MonsterAndItemSprites.MIMIC_DOWN_SVG,
+      mimic_diag_down: MonsterAndItemSprites.MIMIC_DOWN_SVG,
+      mimic_diag_up: MonsterAndItemSprites.MIMIC_UP_SVG,
+      zombie: MonsterAndItemSprites.ZOMBIE_DOWN_SVG,
+      zombie_down: MonsterAndItemSprites.ZOMBIE_DOWN_SVG,
+      zombie_up: MonsterAndItemSprites.ZOMBIE_UP_SVG,
+      zombie_side: MonsterAndItemSprites.ZOMBIE_DOWN_SVG,
+      zombie_diag_down: MonsterAndItemSprites.ZOMBIE_DOWN_SVG,
+      zombie_diag_up: MonsterAndItemSprites.ZOMBIE_UP_SVG,
+      imp: MonsterAndItemSprites.IMP_DOWN_SVG,
+      imp_down: MonsterAndItemSprites.IMP_DOWN_SVG,
+      imp_up: MonsterAndItemSprites.IMP_UP_SVG,
+      imp_side: MonsterAndItemSprites.IMP_DOWN_SVG,
+      imp_diag_down: MonsterAndItemSprites.IMP_DOWN_SVG,
+      imp_diag_up: MonsterAndItemSprites.IMP_UP_SVG,
+      mummy: MonsterAndItemSprites.MUMMY_DOWN_SVG,
+      mummy_down: MonsterAndItemSprites.MUMMY_DOWN_SVG,
+      mummy_up: MonsterAndItemSprites.MUMMY_UP_SVG,
+      mummy_side: MonsterAndItemSprites.MUMMY_DOWN_SVG,
+      mummy_diag_down: MonsterAndItemSprites.MUMMY_DOWN_SVG,
+      mummy_diag_up: MonsterAndItemSprites.MUMMY_UP_SVG,
+      // 障害物
+      obstacle_dirt_block: MonsterAndItemSprites.OBSTACLE_DIRT_BLOCK_SVG,
+      obstacle_tree_stump: MonsterAndItemSprites.OBSTACLE_TREE_STUMP_SVG,
+      obstacle_snow_mound: MonsterAndItemSprites.OBSTACLE_SNOW_MOUND_SVG,
+      obstacle_push_rock: MonsterAndItemSprites.OBSTACLE_PUSH_ROCK_SVG,
+      obstacle_ice_block: MonsterAndItemSprites.OBSTACLE_ICE_BLOCK_SVG,
     };
 
     const promises: Promise<void>[] = [];
@@ -856,20 +946,29 @@ export class SVGSprites {
     name?: string
   ): SpriteId {
     if (name) {
-      // ポーション
+      // ポーション・薬・種
       if (name.includes('特薬草')) return 'item_potion_high';
       if (name.includes('剛力')) return 'item_potion_str';
+      if (name.includes('どくけし') || name.includes('毒消し')) return 'item_potion_antidote';
+      if (name.includes('すばやさ')) return 'item_potion_agi';
       if (name.includes('力') && name.includes('種')) return 'item_seed';
       // 食料
+      if (name.includes('巨大なおにぎり')) return 'item_food_big_riceball';
       if (name.includes('おにぎり')) return 'item_food_riceball';
       if (name.includes('パン')) return 'item_food';
       // 武器
       if (name.includes('短剣') || name.includes('青銅の短剣')) return 'item_weapon_dagger';
+      if (name.includes('ムラマサ') || name.includes('妖刀')) return 'item_weapon_muramasa';
+      if (name.includes('ウォーハンマー') || name.includes('ハンマー')) return 'item_weapon_warhammer';
+      if (name.includes('ホーリーランス') || name.includes('ランス')) return 'item_weapon_holy_lance';
       if (name.includes('ミスリル')) return 'item_weapon_mithril';
       if (name.includes('炎')) return 'item_weapon_flame';
       if (name.includes('ルーン')) return 'item_weapon_rune';
       if (name.includes('剣')) return 'item_weapon';
       // 盾
+      if (name.includes('風')) return 'item_shield_wind';
+      if (name.includes('タワー')) return 'item_shield_tower';
+      if (name.includes('イージス')) return 'item_shield_aegis';
       if (name.includes('木')) return 'item_shield_wood';
       if (name.includes('青銅')) return 'item_shield_bronze';
       if (name.includes('魔法')) return 'item_shield_magic';
@@ -878,6 +977,8 @@ export class SVGSprites {
       // 巻物
       if (name.includes('雷')) return 'item_scroll_thunder';
       if (name.includes('あかり')) return 'item_scroll_light';
+      if (name.includes('睡眠')) return 'item_scroll_sleep';
+      if (name.includes('混乱')) return 'item_scroll_confuse';
       if (name.includes('ワープ') || name.includes('巻物')) return 'item_scroll';
     }
 
@@ -894,6 +995,26 @@ export class SVGSprites {
         return 'item_scroll';
       default:
         return 'item_potion';
+    }
+  }
+
+  /**
+   * 障害物種別に対応するスプライトIDを取得します。
+   */
+  public static getObstacleSpriteId(type: ObstacleType): SpriteId {
+    switch (type) {
+      case 'DIRT_BLOCK':
+        return 'obstacle_dirt_block';
+      case 'TREE_STUMP':
+        return 'obstacle_tree_stump';
+      case 'SNOW_MOUND':
+        return 'obstacle_snow_mound';
+      case 'PUSH_ROCK':
+        return 'obstacle_push_rock';
+      case 'ICE_BLOCK':
+        return 'obstacle_ice_block';
+      default:
+        return 'obstacle_dirt_block';
     }
   }
 }

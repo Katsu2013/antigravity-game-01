@@ -194,13 +194,45 @@
     <div style="color: #94a3b8; font-size: 11px;">HP: 55 / ATK: 18</div>
     <div style="color: #64748b; font-size: 10px; margin-top: 2px;">深層の最凶巨竜</div>
   </div>
+
+  <!-- ミミック -->
+  <div style="background-color: #0f172a; border: 1px solid #d97706; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/monsters/monster_mimic.svg" width="88" height="88" alt="ミミック" style="display: inline-block;" />
+    <div style="color: #fbbf24; font-weight: bold; font-size: 13px; margin-top: 6px;">人食い箱(ミミック)</div>
+    <div style="color: #94a3b8; font-size: 11px;">HP: 30 / ATK: 14</div>
+    <div style="color: #64748b; font-size: 10px; margin-top: 2px;">宝箱に擬態・高火力奇襲</div>
+  </div>
+
+  <!-- ゾンビ -->
+  <div style="background-color: #0f172a; border: 1px solid #15803d; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/monsters/monster_zombie.svg" width="88" height="88" alt="ゾンビ" style="display: inline-block;" />
+    <div style="color: #4ade80; font-weight: bold; font-size: 13px; margin-top: 6px;">腐乱ゾンビ</div>
+    <div style="color: #94a3b8; font-size: 11px;">HP: 38 / ATK: 8</div>
+    <div style="color: #64748b; font-size: 10px; margin-top: 2px;">湿地や毒沼の高HP不死者</div>
+  </div>
+
+  <!-- インプ -->
+  <div style="background-color: #0f172a; border: 1px solid #be185d; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/monsters/monster_imp.svg" width="88" height="88" alt="インプ" style="display: inline-block;" />
+    <div style="color: #f472b6; font-weight: bold; font-size: 13px; margin-top: 6px;">小悪魔インプ</div>
+    <div style="color: #94a3b8; font-size: 11px;">HP: 15 / ATK: 11</div>
+    <div style="color: #64748b; font-size: 10px; margin-top: 2px;">狡猾・素早い奇襲小悪魔</div>
+  </div>
+
+  <!-- 古代ミイラ -->
+  <div style="background-color: #0f172a; border: 1px solid #a1a1aa; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/monsters/monster_mummy.svg" width="88" height="88" alt="古代ミイラ" style="display: inline-block;" />
+    <div style="color: #e4e4e7; font-weight: bold; font-size: 13px; margin-top: 6px;">古代のミイラ</div>
+    <div style="color: #94a3b8; font-size: 11px;">HP: 32 / ATK: 10</div>
+    <div style="color: #64748b; font-size: 10px; margin-top: 2px;">呪術の包帯を纏う高防御怪人</div>
+  </div>
 </div>
 
 ---
 
 ## 3. 武具・装備品仕様（Weapons & Shields）
 
-### 武器一覧（Weapons - 全5種）
+### 武器一覧（Weapons - 全8種）
 <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px;">
   <!-- 青銅の短剣 -->
   <div style="background-color: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
@@ -236,9 +268,30 @@
     <div style="color: #34d399; font-weight: bold; font-size: 13px; margin-top: 6px;">ルーンの剣</div>
     <div style="color: #94a3b8; font-size: 11px;">ATK +10</div>
   </div>
+
+  <!-- 妖刀ムラマサ -->
+  <div style="background-color: #0f172a; border: 1px solid #991b1b; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/weapons/weapon_muramasa.svg" width="72" height="72" alt="妖刀ムラマサ" style="display: inline-block;" />
+    <div style="color: #f87171; font-weight: bold; font-size: 13px; margin-top: 6px;">妖刀ムラマサ</div>
+    <div style="color: #94a3b8; font-size: 11px;">ATK +14</div>
+  </div>
+
+  <!-- ウォーハンマー -->
+  <div style="background-color: #0f172a; border: 1px solid #eab308; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/weapons/weapon_hammer.svg" width="72" height="72" alt="ウォーハンマー" style="display: inline-block;" />
+    <div style="color: #fde047; font-weight: bold; font-size: 13px; margin-top: 6px;">ウォーハンマー</div>
+    <div style="color: #94a3b8; font-size: 11px;">ATK +9</div>
+  </div>
+
+  <!-- ホーリーランス -->
+  <div style="background-color: #0f172a; border: 1px solid #38bdf8; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/weapons/weapon_lance.svg" width="72" height="72" alt="ホーリーランス" style="display: inline-block;" />
+    <div style="color: #bae6fd; font-weight: bold; font-size: 13px; margin-top: 6px;">ホーリーランス</div>
+    <div style="color: #94a3b8; font-size: 11px;">ATK +12</div>
+  </div>
 </div>
 
-### 盾一覧（Shields - 全5種）
+### 盾一覧（Shields - 全8種）
 <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px;">
   <!-- 木の盾 -->
   <div style="background-color: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
@@ -274,6 +327,27 @@
     <div style="color: #ef4444; font-weight: bold; font-size: 13px; margin-top: 6px;">ドラゴンの盾</div>
     <div style="color: #94a3b8; font-size: 11px;">DEF +8</div>
   </div>
+
+  <!-- 風の盾 -->
+  <div style="background-color: #0f172a; border: 1px solid #10b981; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/shields/shield_wind.svg" width="72" height="72" alt="風の盾" style="display: inline-block;" />
+    <div style="color: #34d399; font-weight: bold; font-size: 13px; margin-top: 6px;">風の盾</div>
+    <div style="color: #94a3b8; font-size: 11px;">DEF +3</div>
+  </div>
+
+  <!-- タワーシールド -->
+  <div style="background-color: #0f172a; border: 1px solid #64748b; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/shields/shield_tower.svg" width="72" height="72" alt="タワーシールド" style="display: inline-block;" />
+    <div style="color: #94a3b8; font-weight: bold; font-size: 13px; margin-top: 6px;">タワーシールド</div>
+    <div style="color: #94a3b8; font-size: 11px;">DEF +7</div>
+  </div>
+
+  <!-- イージスの盾 -->
+  <div style="background-color: #0f172a; border: 1px solid #f59e0b; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/shields/shield_aegis.svg" width="72" height="72" alt="イージスの盾" style="display: inline-block;" />
+    <div style="color: #fbbf24; font-weight: bold; font-size: 13px; margin-top: 6px;">イージスの盾</div>
+    <div style="color: #94a3b8; font-size: 11px;">DEF +11</div>
+  </div>
 </div>
 
 ---
@@ -295,11 +369,25 @@
     <div style="color: #94a3b8; font-size: 11px;">HP 35 回復</div>
   </div>
 
+  <!-- どくけし草 -->
+  <div style="background-color: #0f172a; border: 1px solid #16a34a; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/items/item_potion_antidote.svg" width="72" height="72" alt="どくけし草" style="display: inline-block;" />
+    <div style="color: #4ade80; font-weight: bold; font-size: 13px; margin-top: 6px;">どくけし草</div>
+    <div style="color: #94a3b8; font-size: 11px;">HP 10 回復＆解毒</div>
+  </div>
+
   <!-- ちからの種 -->
   <div style="background-color: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
     <img src="assets/items/item_seed.svg" width="72" height="72" alt="ちからの種" style="display: inline-block;" />
     <div style="color: #fb923c; font-weight: bold; font-size: 13px; margin-top: 6px;">ちからの種</div>
     <div style="color: #94a3b8; font-size: 11px;">ATK +1 永続</div>
+  </div>
+
+  <!-- すばやさの種 -->
+  <div style="background-color: #0f172a; border: 1px solid #0891b2; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/items/item_seed_speed.svg" width="72" height="72" alt="すばやさの種" style="display: inline-block;" />
+    <div style="color: #38bdf8; font-weight: bold; font-size: 13px; margin-top: 6px;">すばやさの種</div>
+    <div style="color: #94a3b8; font-size: 11px;">DEF +1 永続</div>
   </div>
 
   <!-- 剛力の秘薬 -->
@@ -323,6 +411,13 @@
     <div style="color: #94a3b8; font-size: 11px;">全快 ＆ 上限+10</div>
   </div>
 
+  <!-- 巨大なおにぎり -->
+  <div style="background-color: #0f172a; border: 1px solid #facc15; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/items/item_food_big_riceball.svg" width="72" height="72" alt="巨大なおにぎり" style="display: inline-block;" />
+    <div style="color: #fef08a; font-weight: bold; font-size: 13px; margin-top: 6px;">巨大なおにぎり</div>
+    <div style="color: #94a3b8; font-size: 11px;">全快 ＆ 上限+20</div>
+  </div>
+
   <!-- ワープの巻物 -->
   <div style="background-color: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
     <img src="assets/items/item_scroll_warp.svg" width="72" height="72" alt="ワープの巻物" style="display: inline-block;" />
@@ -343,11 +438,82 @@
     <div style="color: #38bdf8; font-weight: bold; font-size: 13px; margin-top: 6px;">あかりの巻物</div>
     <div style="color: #94a3b8; font-size: 11px;">フロア全域マップ開示</div>
   </div>
+
+  <!-- 睡眠の巻物 -->
+  <div style="background-color: #0f172a; border: 1px solid #6366f1; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/items/item_scroll_sleep.svg" width="72" height="72" alt="睡眠の巻物" style="display: inline-block;" />
+    <div style="color: #a5b4fc; font-weight: bold; font-size: 13px; margin-top: 6px;">睡眠の巻物</div>
+    <div style="color: #94a3b8; font-size: 11px;">部屋全体の敵を行動不能</div>
+  </div>
+
+  <!-- 混乱の巻物 -->
+  <div style="background-color: #0f172a; border: 1px solid #ec4899; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/items/item_scroll_confuse.svg" width="72" height="72" alt="混乱の巻物" style="display: inline-block;" />
+    <div style="color: #f472b6; font-weight: bold; font-size: 13px; margin-top: 6px;">混乱の巻物</div>
+    <div style="color: #94a3b8; font-size: 11px;">部屋全体の敵を同士討ち</div>
+  </div>
+</div>
+
+### 持ち物整理機能（インベントリソート）
+- **操作方法**:
+  - デスクトップ版: インベントリパネルの「整 整理」ボタンをクリック、またはキーボード「O」キー。
+  - スマホ/タブレット版: 持ち物ダイアログヘッダー内の「整 整理」ボタンをタップ。
+- **並び順ルール**:
+  1. 装備中のアイテム（武器・盾）を最優先で先頭に配置
+  2. アイテム種別順（武器 → 盾 → 薬草・種 → 食料 → 巻物）
+  3. 同種別内では効果値・レアリティ順
+
+---
+
+## 5. インタラクティブ障害物・ギミックオブジェクト（Obstacles）
+
+ダンジョン内には単なる壁や川だけでなく、プレイヤーの攻撃や体当たりによってインタラクトできるオブジェクトが配置されます。
+
+<div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px;">
+  <!-- 土の塊 -->
+  <div style="background-color: #0f172a; border: 1px solid #78350f; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/obstacles/obstacle_dirt.svg" width="72" height="72" alt="土の塊" style="display: inline-block;" />
+    <div style="color: #d97706; font-weight: bold; font-size: 13px; margin-top: 6px;">土の塊</div>
+    <div style="color: #94a3b8; font-size: 11px;">耐久: 2 / 破壊可能</div>
+    <div style="color: #64748b; font-size: 10px; margin-top: 2px;">粉砕時にアイテム出現</div>
+  </div>
+
+  <!-- 倒木 -->
+  <div style="background-color: #0f172a; border: 1px solid #451a03; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/obstacles/obstacle_tree.svg" width="72" height="72" alt="倒木" style="display: inline-block;" />
+    <div style="color: #b45309; font-weight: bold; font-size: 13px; margin-top: 6px;">倒木・木塊</div>
+    <div style="color: #94a3b8; font-size: 11px;">耐久: 3 / 破壊可能</div>
+    <div style="color: #64748b; font-size: 10px; margin-top: 2px;">攻撃3回で粉砕</div>
+  </div>
+
+  <!-- 雪の塊 -->
+  <div style="background-color: #0f172a; border: 1px solid #bae6fd; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/obstacles/obstacle_snow.svg" width="72" height="72" alt="雪の塊" style="display: inline-block;" />
+    <div style="color: #e0f2fe; font-weight: bold; font-size: 13px; margin-top: 6px;">雪の塊</div>
+    <div style="color: #94a3b8; font-size: 11px;">耐久: 1 / 破壊可能</div>
+    <div style="color: #64748b; font-size: 10px; margin-top: 2px;">一撃で砕け散る</div>
+  </div>
+
+  <!-- 押せる石 -->
+  <div style="background-color: #0f172a; border: 1px solid #64748b; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/obstacles/obstacle_push_rock.svg" width="72" height="72" alt="押せる石" style="display: inline-block;" />
+    <div style="color: #cbd5e1; font-weight: bold; font-size: 13px; margin-top: 6px;">押せる大石</div>
+    <div style="color: #94a3b8; font-size: 11px;">破壊不能 / 押し移動</div>
+    <div style="color: #64748b; font-size: 10px; margin-top: 2px;">体当たりで1マス動く</div>
+  </div>
+
+  <!-- 滑る氷塊 -->
+  <div style="background-color: #0f172a; border: 1px solid #0284c7; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/obstacles/obstacle_ice_block.svg" width="72" height="72" alt="滑る氷塊" style="display: inline-block;" />
+    <div style="color: #38bdf8; font-weight: bold; font-size: 13px; margin-top: 6px;">滑る氷塊</div>
+    <div style="color: #94a3b8; font-size: 11px;">直進滑走 / 衝突粉砕</div>
+    <div style="color: #64748b; font-size: 10px; margin-top: 2px;">敵直撃で20ダメージ</div>
+  </div>
 </div>
 
 ---
 
-## 5. 階段・特殊タイル
+## 6. 階段・特殊タイル
 
 <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px;">
   <!-- 下り階段 -->

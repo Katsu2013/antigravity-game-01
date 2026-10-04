@@ -151,6 +151,14 @@ export class UIManager {
       this.closeInventoryModal();
     });
 
+    // 持ち物整理ボタン（モーダル内 ＆ デスクトップサイドバー）
+    document.getElementById('btn-sort-inventory')?.addEventListener('click', () => {
+      this.engine.sortInventory();
+    });
+    document.getElementById('btn-desktop-sort')?.addEventListener('click', () => {
+      this.engine.sortInventory();
+    });
+
     // モーダル背景クリックで閉じる（タッチ直後の合成クリックによる誤クローズをガード）
     this.inventoryModalEl.addEventListener('click', (e) => {
       const openedAt = this.modalOpenTimestamps.get('inventory-modal') || 0;
