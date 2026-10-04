@@ -125,44 +125,53 @@ export class MonsterAndItemSprites {
   // 3. ダークメイジ (MAGE) - 5方向
   // =========================================================================
 
-  /** ダークメイジ正面（下向き: 深紫の尖がりフード、魔力杖、暗黒ローブ） */
+  /** ダークメイジ正面（深紫の星飾フード、魔導杖、金糸装飾ローブ、怪光眼） */
   public static readonly MAGE_DOWN_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="18" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <!-- ローブ裾 -->
-  <path d="M22 28 L14 54 L50 54 L42 28 Z" fill="#3b0764" stroke="#1e1b4b" stroke-width="2"/>
-  <path d="M28 28 L24 54 L40 54 L36 28 Z" fill="#581c87"/>
-  <!-- 尖がりフード頭部 -->
-  <path d="M20 28 Q32 2 44 28 Q32 24 20 28 Z" fill="#581c87" stroke="#1e1b4b" stroke-width="2"/>
-  <!-- フードの陰影と輝く目 -->
-  <path d="M22 26 Q32 22 42 26 Q32 30 22 26 Z" fill="#0f172a"/>
-  <circle cx="28" cy="26" r="2" fill="#e879f9"/>
-  <circle cx="36" cy="26" r="2" fill="#e879f9"/>
-  <!-- 魔力の杖（右手） -->
-  <line x1="48" y1="12" x2="48" y2="52" stroke="#78350f" stroke-width="2.5"/>
-  <circle cx="48" cy="12" r="5" fill="#a855f7" stroke="#c084fc" stroke-width="1.5"/>
-  <circle cx="48" cy="12" r="2" fill="#ffffff"/>
+  <ellipse cx="32" cy="58" rx="18" ry="5" fill="rgba(0,0,0,0.35)"/>
+  <!-- ローブ裾（布の重なりと金糸トリム） -->
+  <path d="M22 28 L14 54 L50 54 L42 28 Z" fill="#2e1065" stroke="#1e1b4b" stroke-width="1.8"/>
+  <path d="M26 28 L20 54 L44 54 L38 28 Z" fill="#3b0764"/>
+  <line x1="16" y1="52" x2="48" y2="52" stroke="#fbbf24" stroke-width="1.5"/>
+  <path d="M32 28 L32 52" stroke="#d97706" stroke-width="1" stroke-dasharray="2,2"/>
+  <!-- 尖がりフード頭部（深い陰影） -->
+  <path d="M20 28 Q32 2 44 28 Q32 24 20 28 Z" fill="#3b0764" stroke="#1e1b4b" stroke-width="1.8"/>
+  <path d="M24 24 Q32 8 40 24" stroke="#581c87" stroke-width="2" fill="none"/>
+  <!-- フード内の深淵の闇と怪しく光る紫眼 -->
+  <path d="M22 25 Q32 21 42 25 Q32 29 22 25 Z" fill="#020617"/>
+  <ellipse cx="27" cy="25" rx="2.5" ry="1.5" fill="#f0abfc"/>
+  <circle cx="27" cy="25" r="0.8" fill="#ffffff"/>
+  <ellipse cx="37" cy="25" rx="2.5" ry="1.5" fill="#f0abfc"/>
+  <circle cx="37" cy="25" r="0.8" fill="#ffffff"/>
+  <!-- 魔導杖（木目シャフト、金台座、浮遊する魔力オーブ） -->
+  <line x1="48" y1="12" x2="48" y2="52" stroke="#451a03" stroke-width="3"/>
+  <polygon points="45,14 51,14 48,18" fill="#fbbf24"/>
+  <circle cx="48" cy="11" r="5.5" fill="#a855f7" stroke="#e879f9" stroke-width="1.5"/>
+  <circle cx="46.5" cy="9.5" r="1.8" fill="#ffffff"/>
 </svg>`.trim();
 
   /** ダークメイジ背面（上向き） */
   public static readonly MAGE_UP_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="18" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <path d="M22 28 L14 54 L50 54 L42 28 Z" fill="#3b0764" stroke="#1e1b4b" stroke-width="2"/>
-  <path d="M20 28 Q32 2 44 28 Q32 24 20 28 Z" fill="#581c87" stroke="#1e1b4b" stroke-width="2"/>
-  <line x1="48" y1="12" x2="48" y2="52" stroke="#78350f" stroke-width="2.5"/>
-  <circle cx="48" cy="12" r="4" fill="#a855f7"/>
+  <ellipse cx="32" cy="58" rx="18" ry="5" fill="rgba(0,0,0,0.35)"/>
+  <path d="M22 28 L14 54 L50 54 L42 28 Z" fill="#2e1065" stroke="#1e1b4b" stroke-width="1.8"/>
+  <path d="M20 28 Q32 2 44 28 Q32 24 20 28 Z" fill="#3b0764" stroke="#1e1b4b" stroke-width="1.8"/>
+  <line x1="16" y1="52" x2="48" y2="52" stroke="#fbbf24" stroke-width="1.5"/>
+  <line x1="48" y1="12" x2="48" y2="52" stroke="#451a03" stroke-width="3"/>
+  <circle cx="48" cy="11" r="5" fill="#a855f7"/>
 </svg>`.trim();
 
   /** ダークメイジ真横 */
   public static readonly MAGE_SIDE_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="18" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <path d="M24 28 L16 54 L44 54 L38 28 Z" fill="#3b0764" stroke="#1e1b4b" stroke-width="2"/>
-  <path d="M20 28 Q30 2 42 28 Z" fill="#581c87" stroke="#1e1b4b" stroke-width="2"/>
-  <circle cx="36" cy="26" r="2" fill="#e879f9"/>
-  <line x1="44" y1="14" x2="44" y2="52" stroke="#78350f" stroke-width="2.5"/>
-  <circle cx="44" cy="14" r="4.5" fill="#a855f7"/>
+  <ellipse cx="32" cy="58" rx="18" ry="5" fill="rgba(0,0,0,0.35)"/>
+  <path d="M24 28 L16 54 L44 54 L38 28 Z" fill="#2e1065" stroke="#1e1b4b" stroke-width="1.8"/>
+  <path d="M20 28 Q30 2 42 28 Z" fill="#3b0764" stroke="#1e1b4b" stroke-width="1.8"/>
+  <line x1="18" y1="52" x2="42" y2="52" stroke="#fbbf24" stroke-width="1.5"/>
+  <circle cx="36" cy="25" r="1.8" fill="#f0abfc"/>
+  <line x1="44" y1="14" x2="44" y2="52" stroke="#451a03" stroke-width="3"/>
+  <circle cx="44" cy="13" r="5" fill="#a855f7" stroke="#e879f9" stroke-width="1.5"/>
+  <circle cx="42.5" cy="11.5" r="1.5" fill="#ffffff"/>
 </svg>`.trim();
 
   /** ダークメイジ斜め前 */
@@ -174,35 +183,37 @@ export class MonsterAndItemSprites {
   // 4. レッドドラゴン (DRAGON) - 5方向
   // =========================================================================
 
-  /** レッドドラゴン正面（下向き: 巨大な角、深紅の竜翼、力強い首、黄金の瞳） */
+  /** レッドドラゴン正面（巨大な龍角、翼の皮膜骨格、赤熱した蛇腹甲、黄金の縦瞳孔） */
   public static readonly DRAGON_DOWN_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="22" ry="6" fill="rgba(0,0,0,0.4)"/>
-  <!-- 左翼 -->
-  <path d="M24 28 Q8 10 2 20 Q12 34 24 38 Z" fill="#991b1b" stroke="#7f1d1d" stroke-width="2"/>
-  <path d="M24 28 Q10 14 6 22 Q14 30 24 34 Z" fill="#dc2626"/>
-  <!-- 右翼 -->
-  <path d="M40 28 Q56 10 62 20 Q52 34 40 38 Z" fill="#991b1b" stroke="#7f1d1d" stroke-width="2"/>
-  <path d="M40 28 Q54 14 58 22 Q50 30 40 34 Z" fill="#dc2626"/>
-  <!-- 胴体 -->
-  <rect x="22" y="32" width="20" height="24" rx="6" fill="#b91c1c" stroke="#7f1d1d" stroke-width="2"/>
-  <!-- 腹部の蛇腹 -->
-  <rect x="26" y="36" width="12" height="4" rx="2" fill="#f59e0b"/>
-  <rect x="26" y="42" width="12" height="4" rx="2" fill="#f59e0b"/>
-  <rect x="27" y="48" width="10" height="4" rx="2" fill="#f59e0b"/>
-  <!-- 竜の頭部 -->
-  <circle cx="32" cy="24" r="13" fill="#dc2626" stroke="#7f1d1d" stroke-width="2"/>
-  <!-- 左右の角 -->
-  <polygon points="24,18 16,6 26,14" fill="#fbbf24" stroke="#d97706" stroke-width="1.5"/>
-  <polygon points="40,18 48,6 38,14" fill="#fbbf24" stroke="#d97706" stroke-width="1.5"/>
-  <!-- 黄金の瞳 -->
-  <ellipse cx="27" cy="24" rx="3" ry="4" fill="#fbbf24"/>
-  <line x1="27" y1="21" x2="27" y2="27" stroke="#000000" stroke-width="1.5"/>
-  <ellipse cx="37" cy="24" rx="3" ry="4" fill="#fbbf24"/>
-  <line x1="37" y1="21" x2="37" y2="27" stroke="#000000" stroke-width="1.5"/>
-  <!-- 鼻孔と牙 -->
-  <polygon points="30,30 31,34 32,30" fill="#ffffff"/>
-  <polygon points="32,30 33,34 34,30" fill="#ffffff"/>
+  <ellipse cx="32" cy="58" rx="22" ry="6" fill="rgba(0,0,0,0.45)"/>
+  <!-- 巨大な竜翼（左・右、骨格と皮膜） -->
+  <path d="M24 28 Q6 8 2 18 Q10 34 24 38 Z" fill="#7f1d1d" stroke="#450a0a" stroke-width="1.8"/>
+  <path d="M24 28 Q8 12 5 20 Q12 30 24 34 Z" fill="#b91c1c"/>
+  <line x1="24" y1="28" x2="4" y2="19" stroke="#991b1b" stroke-width="2"/>
+  <path d="M40 28 Q58 8 62 18 Q54 34 40 38 Z" fill="#7f1d1d" stroke="#450a0a" stroke-width="1.8"/>
+  <path d="M40 28 Q56 12 59 20 Q52 30 40 34 Z" fill="#b91c1c"/>
+  <line x1="40" y1="28" x2="60" y2="19" stroke="#991b1b" stroke-width="2"/>
+  <!-- 竜の胴体と赤熱蛇腹甲 -->
+  <rect x="22" y="32" width="20" height="24" rx="6" fill="#991b1b" stroke="#450a0a" stroke-width="2"/>
+  <rect x="25" y="35" width="14" height="4.5" rx="2" fill="#f59e0b" stroke="#b45309" stroke-width="1"/>
+  <rect x="25" y="41" width="14" height="4.5" rx="2" fill="#f59e0b" stroke="#b45309" stroke-width="1"/>
+  <rect x="26" y="47" width="12" height="4.5" rx="2" fill="#f59e0b" stroke="#b45309" stroke-width="1"/>
+  <!-- 獰猛な竜頭 -->
+  <circle cx="32" cy="23" r="13" fill="#dc2626" stroke="#7f1d1d" stroke-width="2"/>
+  <!-- 巨大な角（外側へ鋭く湾曲） -->
+  <path d="M24 17 Q14 4 12 2 Q22 6 26 14 Z" fill="#fbbf24" stroke="#b45309" stroke-width="1.2"/>
+  <path d="M40 17 Q50 4 52 2 Q42 6 38 14 Z" fill="#fbbf24" stroke="#b45309" stroke-width="1.2"/>
+  <!-- 黄金の爬虫類瞳（縦スリット瞳孔） -->
+  <ellipse cx="27" cy="23" rx="3.2" ry="4" fill="#fef08a" stroke="#ca8a04" stroke-width="1"/>
+  <line x1="27" y1="20" x2="27" y2="26" stroke="#000000" stroke-width="1.8"/>
+  <ellipse cx="37" cy="23" rx="3.2" ry="4" fill="#fef08a" stroke="#ca8a04" stroke-width="1"/>
+  <line x1="37" y1="20" x2="37" y2="26" stroke="#000000" stroke-width="1.8"/>
+  <!-- 鼻腔の赤熱ブレス光と鋭い牙 -->
+  <circle cx="30" cy="29" r="1.2" fill="#ef4444"/>
+  <circle cx="34" cy="29" r="1.2" fill="#ef4444"/>
+  <polygon points="29,31 30.5,35 32,31" fill="#ffffff"/>
+  <polygon points="32,31 33.5,35 35,31" fill="#ffffff"/>
 </svg>`.trim();
 
   /** レッドドラゴン背面（上向き） */
@@ -354,32 +365,45 @@ export class MonsterAndItemSprites {
   // 新モンスター4種（MIMIC, ZOMBIE, IMP, MUMMY）
   // =========================================================================
 
-  /** 人食い箱 (MIMIC) - 正面（開いた宝箱、鋭い牙、長い舌、怪しい目） */
+  /** 人食い箱 (MIMIC) - 正面（開いた宝箱、鉄帯と金鋲、リアルな牙、長い舌、怪しい目） */
   public static readonly MIMIC_DOWN_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="20" ry="5" fill="rgba(0,0,0,0.35)"/>
-  <!-- 宝箱下部 -->
-  <rect x="12" y="30" width="40" height="26" rx="3" fill="#b45309" stroke="#78350f" stroke-width="2"/>
-  <rect x="10" y="30" width="44" height="6" fill="#d97706"/>
-  <!-- 口の中（真っ赤な闇） -->
-  <rect x="14" y="22" width="36" height="14" rx="2" fill="#881337"/>
+  <ellipse cx="32" cy="58" rx="20" ry="5.5" fill="rgba(0,0,0,0.4)"/>
+  <!-- 宝箱下部（オーク木目と鉄の鋲） -->
+  <rect x="12" y="30" width="40" height="26" rx="3" fill="#78350f" stroke="#451a03" stroke-width="2"/>
+  <rect x="10" y="30" width="44" height="5.5" fill="#92400e"/>
+  <!-- 鉄の補強帯とリベット鋲 -->
+  <rect x="15" y="30" width="4" height="26" fill="#334155"/>
+  <circle cx="17" cy="33" r="1" fill="#cbd5e1"/>
+  <circle cx="17" cy="43" r="1" fill="#cbd5e1"/>
+  <circle cx="17" cy="52" r="1" fill="#cbd5e1"/>
+  <rect x="45" y="30" width="4" height="26" fill="#334155"/>
+  <circle cx="47" cy="33" r="1" fill="#cbd5e1"/>
+  <circle cx="47" cy="43" r="1" fill="#cbd5e1"/>
+  <circle cx="47" cy="52" r="1" fill="#cbd5e1"/>
+  <!-- 口の中（深紅の闇） -->
+  <rect x="14" y="21" width="36" height="15" rx="2" fill="#4c0519"/>
   <!-- 上蓋（大きく開口） -->
-  <path d="M10 22 Q32 8 54 22 L52 14 Q32 2 12 14 Z" fill="#b45309" stroke="#78350f" stroke-width="2"/>
-  <!-- 鋭い牙（上下） -->
-  <polygon points="16,22 19,27 22,22" fill="#ffffff"/>
-  <polygon points="24,22 27,27 30,22" fill="#ffffff"/>
-  <polygon points="34,22 37,27 40,22" fill="#ffffff"/>
-  <polygon points="42,22 45,27 48,22" fill="#ffffff"/>
-  <polygon points="18,34 21,30 24,34" fill="#ffffff"/>
-  <polygon points="26,34 29,30 32,34" fill="#ffffff"/>
-  <polygon points="36,34 39,30 42,34" fill="#ffffff"/>
-  <!-- 覗く怪しい赤目 -->
-  <circle cx="24" cy="20" r="3" fill="#ef4444"/>
-  <circle cx="40" cy="20" r="3" fill="#ef4444"/>
-  <circle cx="24" cy="20" r="1" fill="#fef08a"/>
-  <circle cx="40" cy="20" r="1" fill="#fef08a"/>
-  <!-- 垂れ下がる舌 -->
-  <path d="M30 28 Q34 40 28 44 Q24 40 28 32 Z" fill="#f43f5e"/>
+  <path d="M10 21 Q32 6 54 21 L52 13 Q32 2 12 13 Z" fill="#92400e" stroke="#451a03" stroke-width="2"/>
+  <path d="M12 14 Q32 4 52 14" stroke="#d97706" stroke-width="1.2" fill="none"/>
+  <!-- 鋭い牙（上下のギザギザ歯列） -->
+  <polygon points="15,21 17,27 19,21" fill="#f8fafc"/>
+  <polygon points="21,21 23,28 25,21" fill="#f8fafc"/>
+  <polygon points="27,21 29,27 31,21" fill="#f8fafc"/>
+  <polygon points="33,21 35,27 37,21" fill="#f8fafc"/>
+  <polygon points="39,21 41,28 43,21" fill="#f8fafc"/>
+  <polygon points="45,21 47,27 49,21" fill="#f8fafc"/>
+  <polygon points="17,35 19,30 21,35" fill="#f8fafc"/>
+  <polygon points="23,35 25,29 27,35" fill="#f8fafc"/>
+  <polygon points="37,35 39,29 41,35" fill="#f8fafc"/>
+  <polygon points="43,35 45,30 47,35" fill="#f8fafc"/>
+  <!-- 覗く血走った眼球 -->
+  <circle cx="23" cy="19" r="3.2" fill="#dc2626"/>
+  <circle cx="23" cy="19" r="1.3" fill="#fef08a"/>
+  <circle cx="41" cy="19" r="3.2" fill="#dc2626"/>
+  <circle cx="41" cy="19" r="1.3" fill="#fef08a"/>
+  <!-- 垂れ下がる生々しい舌 -->
+  <path d="M29 28 Q34 42 27 46 Q22 41 27 32 Z" fill="#e11d48" stroke="#9f1239" stroke-width="1"/>
 </svg>`.trim();
 
   public static readonly MIMIC_UP_SVG = `

@@ -113,6 +113,10 @@ export class CanvasRenderer {
           : '#b45309';
       this.anim.triggerBreakParticles(obstacle.x, obstacle.y, color, 16);
     };
+
+    this.engine.onSwampStuck = (x, y) => {
+      this.anim.triggerMudParticles(x, y);
+    };
   }
 
   /**
@@ -156,7 +160,11 @@ export class CanvasRenderer {
    */
   private syncEntities(): void {
     const player = this.engine.player;
-    this.anim.syncPosition('player', player.x, player.y);
+    const curTile = this.engine.map.tiles[player.y]?.[player.x];
+    const isSwamp = curTile === TileType.Mud || curTile === TileType.Poison;
+    const playerSpeedMult = isSwamp ? 0.35 : 1.0;
+
+    this.anim.syncPosition('player', player.x, player.y, false, playerSpeedMult);
     this.anim.setDirection('player', player.direction || 'down');
 
     const validIds = new Set<string>(['player']);

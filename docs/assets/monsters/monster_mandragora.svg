@@ -1,7 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="32" cy="56" rx="16" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <path d="M20 28 Q32 20 44 28 Q44 48 32 54 Q20 48 20 28 Z" fill="#65a30d" stroke="#365314" stroke-width="2"/>
-  <circle cx="28" cy="34" r="3" fill="#000000"/>
-  <circle cx="36" cy="34" r="3" fill="#000000"/>
-  <ellipse cx="32" cy="14" rx="6" ry="12" fill="#22c55e"/>
+  <!-- 根の脚 -->
+  <path d="M24 46 Q20 52 18 56 Q23 54 26 48 Z" fill="#65a30d" stroke="#365314" stroke-width="1"/>
+  <path d="M40 46 Q44 52 46 56 Q41 54 38 48 Z" fill="#65a30d" stroke="#365314" stroke-width="1"/>
+  <!-- 根茎の肉体（深いシワ） -->
+  <path d="M19 28 Q32 18 45 28 Q46 46 32 52 Q18 46 19 28 Z" fill="#65a30d" stroke="#365314" stroke-width="1.8"/>
+  <path d="M22 34 Q32 30 42 34" stroke="#365314" stroke-width="1" fill="none"/>
+  <path d="M23 42 Q32 40 41 42" stroke="#365314" stroke-width="1" fill="none"/>
+  <!-- 狂気の叫ぶ顔 -->
+  <ellipse cx="27" cy="30" rx="3.5" ry="4.5" fill="#14532d"/>
+  <circle cx="27" cy="29" r="1.5" fill="#ffffff"/>
+  <ellipse cx="37" cy="30" rx="3.5" ry="4.5" fill="#14532d"/>
+  <circle cx="37" cy="29" r="1.5" fill="#ffffff"/>
+  <!-- 叫ぶ口 -->
+  <ellipse cx="32" cy="39" rx="4" ry="5.5" fill="#14532d"/>
+  <path d="M30 42 Q32 44 34 42" stroke="#f87171" stroke-width="1.2" fill="none"/>
+  <!-- 頭頂の繁茂する鮮やかな毒草の葉 -->
+  <path d="M32 20 Q20 10 16 2 Q28 6 32 18 Z" fill="#22c55e" stroke="#15803d" stroke-width="1.2"/>
+  <path d="M32 20 Q44 10 48 2 Q36 6 32 18 Z" fill="#22c55e" stroke="#15803d" stroke-width="1.2"/>
+  <path d="M32 20 Q32 6 32 0 Q36 8 32 18 Z" fill="#4ade80" stroke="#15803d" stroke-width="1.2"/>
 </svg>

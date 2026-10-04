@@ -313,6 +313,32 @@ export class AnimationEngine {
   }
 
   /**
+   * 泥沼・泥濘足枷時の泥飛沫スプラッシュパーティクルを発生させます。
+   *
+   * @param x - 発生グリッドX
+   * @param y - 発生グリッドY
+   */
+  public triggerMudParticles(x: number, y: number): void {
+    const mudColors = ['#5b3a29', '#78350f', '#3e2723', '#8d6e63', '#4a2c11'];
+    for (let i = 0; i < 9; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 0.6 + Math.random() * 1.8;
+      this.particles.push({
+        x: x + 0.5 + (Math.random() - 0.5) * 0.4,
+        y: y + 0.75 + (Math.random() - 0.5) * 0.2,
+        vx: Math.cos(angle) * speed,
+        vy: -Math.abs(Math.sin(angle) * speed) - 0.6,
+        color: mudColors[Math.floor(Math.random() * mudColors.length)],
+        size: 3 + Math.random() * 4,
+        life: 0,
+        maxLife: 0.35 + Math.random() * 0.2,
+        gravity: 4.0, // 泥の重力落下
+        alpha: 0.9,
+      });
+    }
+  }
+
+  /**
    * 毎フレームのアニメーション補間を更新します。
    * 移動中の歩行サイクル、イージング補間、攻撃復帰、被弾フラッシュの減衰を計算します。
    *

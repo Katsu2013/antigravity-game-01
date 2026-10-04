@@ -62,6 +62,9 @@ export class GameEngine {
   /** 障害物が破壊・粉砕された際のコールバック */
   public onObstacleBreak?: (obstacle: Obstacle) => void;
 
+  /** 泥濘や沼に足を取られて身動きが取れなくなった際のコールバック */
+  public onSwampStuck?: (x: number, y: number) => void;
+
   /**
    * GameEngine のインスタンスを生成し、デフォルトステータスと初期マップを準備します。
    * 中断セーブデータの有無を破壊せず保持します。
@@ -323,6 +326,21 @@ export class GameEngine {
         if (targetTile === TileType.Wall || targetTile === TileType.Water) {
           this.notify();
           return false;
+        }
+
+        // 3.5 泥沼足枷判定: 現在立っている足元が泥濘の場合、脱出時にもがく（40%で足止め失敗）
+        const currentTile = this.map.tiles[this.player.y][this.player.x];
+        if (currentTile === TileType.Mud) {
+          if (Math.random() < 0.40) {
+            this.addLog('ズブズブ……！ 泥濘に足を取られて抜け出せない！', 'warning');
+            this.onDamage?.('player'); // もがき振動演出
+            this.onSwampStuck?.(this.player.x, this.player.y);
+            turnPassed = true;
+            break;
+          } else {
+            this.addLog('ぬかるみから力いっぱい足を引き抜いて進んだ！', 'normal');
+            this.onSwampStuck?.(this.player.x, this.player.y);
+          }
         }
 
         // 4. 移動実行
@@ -959,7 +977,8 @@ export class GameEngine {
 
     // 2. 泥濘床（TileType.Mud）: 足を取られターン消費増
     if (currentTile === TileType.Mud) {
-      this.addLog('泥濘に足を取られ、身動きに余分な時間がかかってしまった！', 'warning');
+      this.addLog('ズブズブ…！ 泥濘に足が深く沈み込み、余分な時間がかかってしまった！', 'warning');
+      this.onSwampStuck?.(this.player.x, this.player.y);
       extraTurn = true;
     }
 

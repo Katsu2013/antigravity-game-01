@@ -1,24 +1,42 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="20" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <!-- マント -->
-  <path d="M20 28 L14 54 L32 50 L50 54 L44 28 Z" fill="#047857"/>
-  <!-- 両足 -->
-  <rect x="23" y="44" width="7" height="12" rx="2" fill="#334155" stroke="#1e293b" stroke-width="1.5"/>
-  <rect x="22" y="52" width="9" height="5" rx="2" fill="#1e293b"/>
-  <rect x="34" y="44" width="7" height="12" rx="2" fill="#334155" stroke="#1e293b" stroke-width="1.5"/>
-  <rect x="33" y="52" width="9" height="5" rx="2" fill="#1e293b"/>
-  <!-- アーマー胴体 -->
-  <rect x="22" y="24" width="20" height="24" rx="4" fill="#334155" stroke="#1e293b" stroke-width="2"/>
-  <rect x="26" y="28" width="12" height="16" rx="2" fill="#475569"/>
-  <rect x="22" y="42" width="20" height="4" fill="#d97706"/>
-  <rect x="29" y="41" width="6" height="6" fill="#fbbf24"/>
-  <!-- 兜・頭部 -->
-  <circle cx="32" cy="18" r="12" fill="#64748b" stroke="#334155" stroke-width="2"/>
-  <path d="M30 6 Q32 2 34 6 L33 12 L31 12 Z" fill="#ef4444"/>
-  <rect x="25" y="16" width="14" height="4" rx="2" fill="#0f172a"/>
-  <rect x="28" y="17" width="2" height="2" fill="#38bdf8"/>
-  <rect x="34" y="17" width="2" height="2" fill="#38bdf8"/>
-  <!-- 素手の手袋拳（左手・右手） -->
-  <circle cx="18" cy="36" r="3.5" fill="#fbcfe8" stroke="#334155" stroke-width="1.2"/>
-  <circle cx="46" cy="36" r="3.5" fill="#fbcfe8" stroke="#334155" stroke-width="1.2"/>
+  <ellipse cx="32" cy="58" rx="20" ry="5.5" fill="rgba(0,0,0,0.35)"/>
+  <!-- マント（背面の深い布ドレープ） -->
+  <path d="M18 24 L11 53 Q21 51 32 53 Q43 51 53 53 L46 24 Z" fill="#047857" stroke="#022c22" stroke-width="1.2"/>
+  <path d="M22 28 L15 51 Q23 49 32 51 Q41 49 49 51 L42 28 Z" fill="#059669" opacity="0.35"/>
+  <!-- 両足（プレートグリーブ・膝甲・鉄靴） -->
+  <rect x="22" y="43" width="8" height="12" rx="2.5" fill="#475569" stroke="#0f172a" stroke-width="1.2"/>
+  <ellipse cx="26" cy="45" rx="3.5" ry="2" fill="#94a3b8" opacity="0.8"/>
+  <path d="M21 52 L31 52 L31 56 Q26 57.5 20 56 Z" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
+  <rect x="34" y="43" width="8" height="12" rx="2.5" fill="#475569" stroke="#0f172a" stroke-width="1.2"/>
+  <ellipse cx="38" cy="45" rx="3.5" ry="2" fill="#94a3b8" opacity="0.8"/>
+  <path d="M33 52 L43 52 L44 56 Q38 57.5 33 56 Z" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
+  <!-- 胴体胸甲（ブレストプレート・チェスト稜線） -->
+  <path d="M21 23 L43 23 L41 43 L23 43 Z" fill="#475569" stroke="#0f172a" stroke-width="1.5"/>
+  <path d="M32 24 L32 42" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M24 26 Q32 29 40 26" stroke="#334155" stroke-width="1" fill="none"/>
+  <!-- 金装飾エンブレム -->
+  <polygon points="32,27 34,31 32,35 30,31" fill="#fbbf24"/>
+  <!-- ベルト & タセット -->
+  <rect x="21" y="40" width="22" height="4.5" rx="1" fill="#78350f" stroke="#451a03" stroke-width="1"/>
+  <rect x="30" y="39.5" width="4" height="5.5" rx="1" fill="#fbbf24"/>
+  <!-- 左右ショルダーガード（ポールトロン） -->
+  <path d="M16 23 Q21 21 24 25 L21 31 Q16 30 14 26 Z" fill="#475569" stroke="#0f172a" stroke-width="1.2"/>
+  <ellipse cx="19" cy="24" rx="2.5" ry="1.2" fill="#94a3b8" opacity="0.75"/>
+  <path d="M48 23 Q43 21 40 25 L43 31 Q48 30 50 26 Z" fill="#475569" stroke="#0f172a" stroke-width="1.2"/>
+  <ellipse cx="45" cy="24" rx="2.5" ry="1.2" fill="#94a3b8" opacity="0.75"/>
+  <!-- 鋼鉄ガントレット手甲（素手拳） -->
+  <ellipse cx="17" cy="35" rx="3.5" ry="3.5" fill="#475569" stroke="#0f172a" stroke-width="1.2"/>
+  <circle cx="16.5" cy="34" r="1.5" fill="#94a3b8"/>
+  <ellipse cx="47" cy="35" rx="3.5" ry="3.5" fill="#475569" stroke="#0f172a" stroke-width="1.2"/>
+  <circle cx="47.5" cy="34" r="1.5" fill="#94a3b8"/>
+  <!-- 兜（サレット / ナイトヘルメット） -->
+  <path d="M22 17 C22 10 42 10 42 17 C42 24 38 27 32 27 C26 27 22 24 22 17 Z" fill="#475569" stroke="#0f172a" stroke-width="1.6"/>
+  <path d="M25 14 Q32 11 39 14" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <!-- スリットバイザー -->
+  <path d="M24 18 L40 18 L38 22 L26 22 Z" fill="#090d16" stroke="#1e293b" stroke-width="1"/>
+  <rect x="27" y="19" width="3" height="1.8" rx="0.5" fill="#38bdf8"/>
+  <rect x="34" y="19" width="3" height="1.8" rx="0.5" fill="#38bdf8"/>
+  <!-- 兜頂部のクレスト羽飾り -->
+  <path d="M30 11 Q32 3 36 2 Q35 7 34 12 Z" fill="#dc2626"/>
+  <path d="M29 11 Q31 5 34 4 Q33 8 32 12 Z" fill="#ef4444"/>
 </svg>

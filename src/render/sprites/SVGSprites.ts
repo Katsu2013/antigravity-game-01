@@ -196,82 +196,120 @@ export class SVGSprites {
   /** 冒険者プレイヤー素体（正面待機: 両足直立、バイザー光彩、素手拳） */
   public static readonly PLAYER_DOWN_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="20" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <!-- マント -->
-  <path d="M20 28 L14 54 L32 50 L50 54 L44 28 Z" fill="#047857"/>
-  <!-- 両足 -->
-  <rect x="23" y="44" width="7" height="12" rx="2" fill="#334155" stroke="#1e293b" stroke-width="1.5"/>
-  <rect x="22" y="52" width="9" height="5" rx="2" fill="#1e293b"/>
-  <rect x="34" y="44" width="7" height="12" rx="2" fill="#334155" stroke="#1e293b" stroke-width="1.5"/>
-  <rect x="33" y="52" width="9" height="5" rx="2" fill="#1e293b"/>
-  <!-- アーマー胴体 -->
-  <rect x="22" y="24" width="20" height="24" rx="4" fill="#334155" stroke="#1e293b" stroke-width="2"/>
-  <rect x="26" y="28" width="12" height="16" rx="2" fill="#475569"/>
-  <rect x="22" y="42" width="20" height="4" fill="#d97706"/>
-  <rect x="29" y="41" width="6" height="6" fill="#fbbf24"/>
-  <!-- 兜・頭部 -->
-  <circle cx="32" cy="18" r="12" fill="#64748b" stroke="#334155" stroke-width="2"/>
-  <path d="M30 6 Q32 2 34 6 L33 12 L31 12 Z" fill="#ef4444"/>
-  <rect x="25" y="16" width="14" height="4" rx="2" fill="#0f172a"/>
-  <rect x="28" y="17" width="2" height="2" fill="#38bdf8"/>
-  <rect x="34" y="17" width="2" height="2" fill="#38bdf8"/>
-  <!-- 素手の手袋拳（左手・右手） -->
-  <circle cx="18" cy="36" r="3.5" fill="#fbcfe8" stroke="#334155" stroke-width="1.2"/>
-  <circle cx="46" cy="36" r="3.5" fill="#fbcfe8" stroke="#334155" stroke-width="1.2"/>
+  <ellipse cx="32" cy="58" rx="20" ry="5.5" fill="rgba(0,0,0,0.35)"/>
+  <!-- マント（背面の深い布ドレープ） -->
+  <path d="M18 24 L11 53 Q21 51 32 53 Q43 51 53 53 L46 24 Z" fill="#047857" stroke="#022c22" stroke-width="1.2"/>
+  <path d="M22 28 L15 51 Q23 49 32 51 Q41 49 49 51 L42 28 Z" fill="#059669" opacity="0.35"/>
+  <!-- 両足（プレートグリーブ・膝甲・鉄靴） -->
+  <rect x="22" y="43" width="8" height="12" rx="2.5" fill="#475569" stroke="#0f172a" stroke-width="1.2"/>
+  <ellipse cx="26" cy="45" rx="3.5" ry="2" fill="#94a3b8" opacity="0.8"/>
+  <path d="M21 52 L31 52 L31 56 Q26 57.5 20 56 Z" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
+  <rect x="34" y="43" width="8" height="12" rx="2.5" fill="#475569" stroke="#0f172a" stroke-width="1.2"/>
+  <ellipse cx="38" cy="45" rx="3.5" ry="2" fill="#94a3b8" opacity="0.8"/>
+  <path d="M33 52 L43 52 L44 56 Q38 57.5 33 56 Z" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
+  <!-- 胴体胸甲（ブレストプレート・チェスト稜線） -->
+  <path d="M21 23 L43 23 L41 43 L23 43 Z" fill="#475569" stroke="#0f172a" stroke-width="1.5"/>
+  <path d="M32 24 L32 42" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M24 26 Q32 29 40 26" stroke="#334155" stroke-width="1" fill="none"/>
+  <!-- 金装飾エンブレム -->
+  <polygon points="32,27 34,31 32,35 30,31" fill="#fbbf24"/>
+  <!-- ベルト & タセット -->
+  <rect x="21" y="40" width="22" height="4.5" rx="1" fill="#78350f" stroke="#451a03" stroke-width="1"/>
+  <rect x="30" y="39.5" width="4" height="5.5" rx="1" fill="#fbbf24"/>
+  <!-- 左右ショルダーガード（ポールトロン） -->
+  <path d="M16 23 Q21 21 24 25 L21 31 Q16 30 14 26 Z" fill="#475569" stroke="#0f172a" stroke-width="1.2"/>
+  <ellipse cx="19" cy="24" rx="2.5" ry="1.2" fill="#94a3b8" opacity="0.75"/>
+  <path d="M48 23 Q43 21 40 25 L43 31 Q48 30 50 26 Z" fill="#475569" stroke="#0f172a" stroke-width="1.2"/>
+  <ellipse cx="45" cy="24" rx="2.5" ry="1.2" fill="#94a3b8" opacity="0.75"/>
+  <!-- 鋼鉄ガントレット手甲（素手拳） -->
+  <ellipse cx="17" cy="35" rx="3.5" ry="3.5" fill="#475569" stroke="#0f172a" stroke-width="1.2"/>
+  <circle cx="16.5" cy="34" r="1.5" fill="#94a3b8"/>
+  <ellipse cx="47" cy="35" rx="3.5" ry="3.5" fill="#475569" stroke="#0f172a" stroke-width="1.2"/>
+  <circle cx="47.5" cy="34" r="1.5" fill="#94a3b8"/>
+  <!-- 兜（サレット / ナイトヘルメット） -->
+  <path d="M22 17 C22 10 42 10 42 17 C42 24 38 27 32 27 C26 27 22 24 22 17 Z" fill="#475569" stroke="#0f172a" stroke-width="1.6"/>
+  <path d="M25 14 Q32 11 39 14" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <!-- スリットバイザー -->
+  <path d="M24 18 L40 18 L38 22 L26 22 Z" fill="#090d16" stroke="#1e293b" stroke-width="1"/>
+  <rect x="27" y="19" width="3" height="1.8" rx="0.5" fill="#38bdf8"/>
+  <rect x="34" y="19" width="3" height="1.8" rx="0.5" fill="#38bdf8"/>
+  <!-- 兜頂部のクレスト羽飾り -->
+  <path d="M30 11 Q32 3 36 2 Q35 7 34 12 Z" fill="#dc2626"/>
+  <path d="M29 11 Q31 5 34 4 Q33 8 32 12 Z" fill="#ef4444"/>
 </svg>
 `.trim();
 
   /** 冒険者プレイヤー素体（正面歩行1） */
   public static readonly PLAYER_DOWN_WALK1_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="21" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <path d="M20 28 L10 52 L30 50 L46 54 L44 28 Z" fill="#047857"/>
-  <g transform="translate(3, 0)">
-    <rect x="35" y="43" width="7" height="11" rx="2" fill="#1e293b" stroke="#0f172a" stroke-width="1.5"/>
-    <rect x="36" y="50" width="8" height="5" rx="2" fill="#0f172a"/>
-  </g>
+  <ellipse cx="32" cy="58" rx="21" ry="5.5" fill="rgba(0,0,0,0.35)"/>
+  <path d="M18 24 L9 51 Q20 50 31 52 Q42 50 51 53 L46 24 Z" fill="#047857" stroke="#022c22" stroke-width="1.2"/>
+  <!-- 左足踏み込み（前） -->
   <g transform="translate(-4, -1)">
-    <rect x="21" y="43" width="8" height="13" rx="2" fill="#475569" stroke="#1e293b" stroke-width="1.5"/>
-    <rect x="19" y="52" width="11" height="5" rx="2" fill="#1e293b"/>
+    <rect x="22" y="42" width="8.5" height="13" rx="2.5" fill="#64748b" stroke="#0f172a" stroke-width="1.2"/>
+    <ellipse cx="26" cy="44" rx="3.5" ry="2" fill="#cbd5e1"/>
+    <path d="M21 52 L31 52 L32 56 Q26 58 19 56 Z" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
   </g>
-  <rect x="22" y="24" width="20" height="24" rx="4" fill="#334155" stroke="#1e293b" stroke-width="2"/>
-  <rect x="26" y="28" width="12" height="16" rx="2" fill="#475569"/>
-  <rect x="22" y="42" width="20" height="4" fill="#d97706"/>
-  <circle cx="32" cy="18" r="12" fill="#64748b" stroke="#334155" stroke-width="2"/>
-  <path d="M29 6 Q31 2 34 5 L33 12 L30 12 Z" fill="#ef4444"/>
-  <rect x="25" y="16" width="14" height="4" rx="2" fill="#0f172a"/>
-  <rect x="28" y="17" width="2" height="2" fill="#38bdf8"/>
-  <rect x="34" y="17" width="2" height="2" fill="#38bdf8"/>
-  <!-- 両手の拳 -->
-  <circle cx="16" cy="34" r="3.5" fill="#fbcfe8" stroke="#334155" stroke-width="1.2"/>
-  <circle cx="48" cy="38" r="3.5" fill="#fbcfe8" stroke="#334155" stroke-width="1.2"/>
+  <!-- 右足後退（後ろ） -->
+  <g transform="translate(3, 0)">
+    <rect x="34" y="44" width="7.5" height="11" rx="2.5" fill="#334155" stroke="#0f172a" stroke-width="1.2"/>
+    <path d="M33 51 L42 51 L43 55 Q38 56.5 33 55 Z" fill="#0f172a"/>
+  </g>
+  <!-- 胴体胸甲 -->
+  <path d="M21 23 L43 23 L41 43 L23 43 Z" fill="#475569" stroke="#0f172a" stroke-width="1.5"/>
+  <path d="M32 24 L32 42" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round"/>
+  <polygon points="32,27 34,31 32,35 30,31" fill="#fbbf24"/>
+  <rect x="21" y="40" width="22" height="4.5" rx="1" fill="#78350f" stroke="#451a03" stroke-width="1"/>
+  <rect x="30" y="39.5" width="4" height="5.5" rx="1" fill="#fbbf24"/>
+  <!-- 肩・腕スイング -->
+  <ellipse cx="15" cy="33" rx="3.5" ry="3.5" fill="#475569" stroke="#0f172a" stroke-width="1.2"/>
+  <circle cx="14.5" cy="32" r="1.5" fill="#94a3b8"/>
+  <ellipse cx="49" cy="37" rx="3.5" ry="3.5" fill="#334155" stroke="#0f172a" stroke-width="1.2"/>
+  <!-- 兜 -->
+  <path d="M22 17 C22 10 42 10 42 17 C42 24 38 27 32 27 C26 27 22 24 22 17 Z" fill="#475569" stroke="#0f172a" stroke-width="1.6"/>
+  <path d="M25 14 Q32 11 39 14" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <path d="M24 18 L40 18 L38 22 L26 22 Z" fill="#090d16" stroke="#1e293b" stroke-width="1"/>
+  <rect x="27" y="19" width="3" height="1.8" rx="0.5" fill="#38bdf8"/>
+  <rect x="34" y="19" width="3" height="1.8" rx="0.5" fill="#38bdf8"/>
+  <path d="M30 11 Q32 3 36 2 Q35 7 34 12 Z" fill="#dc2626"/>
+  <path d="M29 11 Q31 5 34 4 Q33 8 32 12 Z" fill="#ef4444"/>
 </svg>
 `.trim();
 
   /** 冒険者プレイヤー素体（正面歩行2） */
   public static readonly PLAYER_DOWN_WALK2_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="21" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <path d="M20 28 L16 54 L34 50 L52 50 L44 28 Z" fill="#047857"/>
+  <ellipse cx="32" cy="58" rx="21" ry="5.5" fill="rgba(0,0,0,0.35)"/>
+  <path d="M18 24 L13 53 Q22 50 33 52 Q44 50 55 51 L46 24 Z" fill="#047857" stroke="#022c22" stroke-width="1.2"/>
+  <!-- 左足後退 -->
   <g transform="translate(-2, 0)">
-    <rect x="22" y="43" width="7" height="11" rx="2" fill="#1e293b" stroke="#0f172a" stroke-width="1.5"/>
-    <rect x="21" y="50" width="8" height="5" rx="2" fill="#0f172a"/>
+    <rect x="23" y="44" width="7.5" height="11" rx="2.5" fill="#334155" stroke="#0f172a" stroke-width="1.2"/>
+    <path d="M22 51 L31 51 L31 55 Q26 56.5 21 55 Z" fill="#0f172a"/>
   </g>
+  <!-- 右足踏み込み（前） -->
   <g transform="translate(3, -1)">
-    <rect x="33" y="43" width="8" height="13" rx="2" fill="#475569" stroke="#1e293b" stroke-width="1.5"/>
-    <rect x="32" y="52" width="11" height="5" rx="2" fill="#1e293b"/>
+    <rect x="33" y="42" width="8.5" height="13" rx="2.5" fill="#64748b" stroke="#0f172a" stroke-width="1.2"/>
+    <ellipse cx="37" cy="44" rx="3.5" ry="2" fill="#cbd5e1"/>
+    <path d="M32 52 L42 52 L44 56 Q38 58 32 56 Z" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
   </g>
-  <rect x="22" y="24" width="20" height="24" rx="4" fill="#334155" stroke="#1e293b" stroke-width="2"/>
-  <rect x="26" y="28" width="12" height="16" rx="2" fill="#475569"/>
-  <rect x="22" y="42" width="20" height="4" fill="#d97706"/>
-  <circle cx="32" cy="18" r="12" fill="#64748b" stroke="#334155" stroke-width="2"/>
-  <path d="M30 6 Q32 2 35 6 L34 12 L31 12 Z" fill="#ef4444"/>
-  <rect x="25" y="16" width="14" height="4" rx="2" fill="#0f172a"/>
-  <rect x="28" y="17" width="2" height="2" fill="#38bdf8"/>
-  <rect x="34" y="17" width="2" height="2" fill="#38bdf8"/>
-  <!-- 両手の拳 -->
-  <circle cx="20" cy="38" r="3.5" fill="#fbcfe8" stroke="#334155" stroke-width="1.2"/>
-  <circle cx="44" cy="34" r="3.5" fill="#fbcfe8" stroke="#334155" stroke-width="1.2"/>
+  <!-- 胴体胸甲 -->
+  <path d="M21 23 L43 23 L41 43 L23 43 Z" fill="#475569" stroke="#0f172a" stroke-width="1.5"/>
+  <path d="M32 24 L32 42" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round"/>
+  <polygon points="32,27 34,31 32,35 30,31" fill="#fbbf24"/>
+  <rect x="21" y="40" width="22" height="4.5" rx="1" fill="#78350f" stroke="#451a03" stroke-width="1"/>
+  <rect x="30" y="39.5" width="4" height="5.5" rx="1" fill="#fbbf24"/>
+  <!-- 肩・腕スイング -->
+  <ellipse cx="19" cy="37" rx="3.5" ry="3.5" fill="#334155" stroke="#0f172a" stroke-width="1.2"/>
+  <ellipse cx="45" cy="33" rx="3.5" ry="3.5" fill="#475569" stroke="#0f172a" stroke-width="1.2"/>
+  <circle cx="45.5" cy="32" r="1.5" fill="#94a3b8"/>
+  <!-- 兜 -->
+  <path d="M22 17 C22 10 42 10 42 17 C42 24 38 27 32 27 C26 27 22 24 22 17 Z" fill="#475569" stroke="#0f172a" stroke-width="1.6"/>
+  <path d="M25 14 Q32 11 39 14" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <path d="M24 18 L40 18 L38 22 L26 22 Z" fill="#090d16" stroke="#1e293b" stroke-width="1"/>
+  <rect x="27" y="19" width="3" height="1.8" rx="0.5" fill="#38bdf8"/>
+  <rect x="34" y="19" width="3" height="1.8" rx="0.5" fill="#38bdf8"/>
+  <path d="M30 11 Q32 3 36 2 Q35 7 34 12 Z" fill="#dc2626"/>
+  <path d="M29 11 Q31 5 34 4 Q33 8 32 12 Z" fill="#ef4444"/>
 </svg>
 `.trim();
 
@@ -282,46 +320,51 @@ export class SVGSprites {
   /** 冒険者プレイヤー素体（背面待機） */
   public static readonly PLAYER_UP_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="20" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <rect x="23" y="46" width="7" height="10" rx="2" fill="#1e293b" stroke="#0f172a" stroke-width="1.5"/>
-  <rect x="34" y="46" width="7" height="10" rx="2" fill="#1e293b" stroke="#0f172a" stroke-width="1.5"/>
-  <path d="M20 24 L12 53 L32 50 L52 53 L44 24 Z" fill="#047857" stroke="#064e3b" stroke-width="1.5"/>
-  <path d="M24 26 L16 52 L32 49 L48 52 L40 26 Z" fill="#059669"/>
-  <circle cx="32" cy="18" r="12" fill="#64748b" stroke="#334155" stroke-width="2"/>
-  <path d="M24 16 Q32 20 40 16" stroke="#475569" stroke-width="2" fill="none"/>
-  <path d="M30 6 Q32 2 34 6 L33 14 L31 14 Z" fill="#ef4444"/>
+  <ellipse cx="32" cy="58" rx="20" ry="5.5" fill="rgba(0,0,0,0.35)"/>
+  <!-- 鉄靴 -->
+  <rect x="22" y="47" width="8" height="9" rx="2" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
+  <rect x="34" y="47" width="8" height="9" rx="2" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
+  <!-- マント背面の豪奢な広がり -->
+  <path d="M19 22 L11 53 Q21 50 32 53 Q43 50 53 53 L45 22 Z" fill="#047857" stroke="#022c22" stroke-width="1.5"/>
+  <path d="M24 25 L16 51 Q23 48 32 50 Q41 48 48 51 L40 25 Z" fill="#059669"/>
+  <!-- 兜後頭部 -->
+  <path d="M22 17 C22 9 42 9 42 17 C42 24 38 27 32 27 C26 27 22 24 22 17 Z" fill="#475569" stroke="#0f172a" stroke-width="1.6"/>
+  <path d="M24 18 Q32 22 40 18" stroke="#334155" stroke-width="2" fill="none"/>
+  <!-- クレスト（後方へ流れる真紅の羽飾り） -->
+  <path d="M30 6 Q32 1 35 3 L34 15 L31 15 Z" fill="#dc2626"/>
+  <path d="M29 7 Q31 3 33 4 L33 13 L31 13 Z" fill="#ef4444"/>
 </svg>
 `.trim();
 
   /** 冒険者プレイヤー素体（背面歩行1） */
   public static readonly PLAYER_UP_WALK1_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="20" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <rect x="35" y="47" width="7" height="9" rx="2" fill="#1e293b" stroke="#0f172a" stroke-width="1.5"/>
-  <g transform="translate(-4, -4)">
-    <rect x="23" y="46" width="7" height="10" rx="2" fill="#334155" stroke="#1e293b" stroke-width="1.5"/>
-    <rect x="22" y="52" width="9" height="4" rx="1" fill="#0f172a"/>
+  <ellipse cx="32" cy="58" rx="20" ry="5.5" fill="rgba(0,0,0,0.35)"/>
+  <rect x="35" y="48" width="7.5" height="8.5" rx="2" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
+  <g transform="translate(-4, -3)">
+    <rect x="22" y="47" width="8" height="9.5" rx="2" fill="#475569" stroke="#0f172a" stroke-width="1.2"/>
+    <ellipse cx="26" cy="48" rx="3.5" ry="1.8" fill="#94a3b8"/>
   </g>
-  <path d="M20 24 L8 52 L28 49 L52 54 L44 24 Z" fill="#047857" stroke="#064e3b" stroke-width="1.5"/>
-  <path d="M24 26 L12 50 L28 48 L48 53 L40 26 Z" fill="#059669"/>
-  <circle cx="32" cy="18" r="12" fill="#64748b" stroke="#334155" stroke-width="2"/>
-  <path d="M29 6 Q31 2 34 5 L33 14 L30 14 Z" fill="#ef4444"/>
+  <path d="M19 22 L8 52 Q18 49 29 52 Q40 48 53 54 L45 22 Z" fill="#047857" stroke="#022c22" stroke-width="1.5"/>
+  <path d="M24 25 L13 50 Q22 47 30 49 Q40 46 48 51 L40 25 Z" fill="#059669"/>
+  <path d="M22 17 C22 9 42 9 42 17 C42 24 38 27 32 27 C26 27 22 24 22 17 Z" fill="#475569" stroke="#0f172a" stroke-width="1.6"/>
+  <path d="M29 6 Q31 1 35 3 L34 15 L30 15 Z" fill="#dc2626"/>
 </svg>
 `.trim();
 
   /** 冒険者プレイヤー素体（背面歩行2） */
   public static readonly PLAYER_UP_WALK2_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="20" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <rect x="22" y="47" width="7" height="9" rx="2" fill="#1e293b" stroke="#0f172a" stroke-width="1.5"/>
-  <g transform="translate(4, -4)">
-    <rect x="34" y="46" width="7" height="10" rx="2" fill="#334155" stroke="#1e293b" stroke-width="1.5"/>
-    <rect x="33" y="52" width="9" height="4" rx="1" fill="#0f172a"/>
+  <ellipse cx="32" cy="58" rx="20" ry="5.5" fill="rgba(0,0,0,0.35)"/>
+  <rect x="22" y="48" width="7.5" height="8.5" rx="2" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
+  <g transform="translate(4, -3)">
+    <rect x="34" y="47" width="8" height="9.5" rx="2" fill="#475569" stroke="#0f172a" stroke-width="1.2"/>
+    <ellipse cx="38" cy="48" rx="3.5" ry="1.8" fill="#94a3b8"/>
   </g>
-  <path d="M20 24 L12 54 L36 49 L56 52 L44 24 Z" fill="#047857" stroke="#064e3b" stroke-width="1.5"/>
-  <path d="M24 26 L16 53 L36 48 L52 50 L40 26 Z" fill="#059669"/>
-  <circle cx="32" cy="18" r="12" fill="#64748b" stroke="#334155" stroke-width="2"/>
-  <path d="M30 6 Q32 2 35 6 L34 14 L31 14 Z" fill="#ef4444"/>
+  <path d="M19 22 L11 54 Q24 48 35 52 Q46 49 56 52 L45 22 Z" fill="#047857" stroke="#022c22" stroke-width="1.5"/>
+  <path d="M24 25 L16 52 Q26 46 36 49 Q44 47 51 49 L40 25 Z" fill="#059669"/>
+  <path d="M22 17 C22 9 42 9 42 17 C42 24 38 27 32 27 C26 27 22 24 22 17 Z" fill="#475569" stroke="#0f172a" stroke-width="1.6"/>
+  <path d="M30 6 Q32 1 36 3 L35 15 L31 15 Z" fill="#dc2626"/>
 </svg>
 `.trim();
 
@@ -332,69 +375,80 @@ export class SVGSprites {
   /** 冒険者プレイヤー素体（真横待機） */
   public static readonly PLAYER_SIDE_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="19" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <path d="M22 26 L12 52 L26 50 L28 28 Z" fill="#047857" stroke="#064e3b" stroke-width="1.5"/>
-  <rect x="23" y="44" width="8" height="12" rx="2" fill="#334155" stroke="#1e293b" stroke-width="1.5"/>
-  <rect x="21" y="52" width="12" height="5" rx="2" fill="#1e293b"/>
-  <rect x="29" y="44" width="8" height="12" rx="2" fill="#475569" stroke="#1e293b" stroke-width="1.5"/>
-  <rect x="27" y="52" width="12" height="5" rx="2" fill="#1e293b"/>
-  <path d="M22 24 L38 26 L36 46 L24 45 Z" fill="#334155" stroke="#1e293b" stroke-width="2"/>
-  <rect x="23" y="42" width="14" height="4" fill="#d97706"/>
-  <!-- 側面の手袋拳 -->
-  <circle cx="26" cy="34" r="3.5" fill="#fbcfe8" stroke="#334155" stroke-width="1.2"/>
-  <circle cx="38" cy="30" r="3.5" fill="#fbcfe8" stroke="#334155" stroke-width="1.2"/>
-  <circle cx="30" cy="18" r="12" fill="#64748b" stroke="#334155" stroke-width="2"/>
-  <path d="M25 6 Q32 2 33 8 L29 14 L24 14 Z" fill="#ef4444"/>
-  <polygon points="30,16 42,18 40,22 30,20" fill="#0f172a"/>
-  <rect x="36" y="18" width="5" height="2" fill="#38bdf8"/>
+  <ellipse cx="32" cy="58" rx="19" ry="5.5" fill="rgba(0,0,0,0.35)"/>
+  <!-- マント（背中に流れる） -->
+  <path d="M21 24 L10 52 L26 50 L26 28 Z" fill="#047857" stroke="#022c22" stroke-width="1.2"/>
+  <path d="M21 26 L14 49 L24 48 L25 30 Z" fill="#059669" opacity="0.4"/>
+  <!-- 足（奥足・手前足） -->
+  <rect x="23" y="44" width="8" height="12" rx="2.5" fill="#334155" stroke="#0f172a" stroke-width="1.2"/>
+  <rect x="29" y="43" width="8" height="13" rx="2.5" fill="#475569" stroke="#0f172a" stroke-width="1.2"/>
+  <ellipse cx="33" cy="45" rx="3.5" ry="2" fill="#94a3b8" opacity="0.8"/>
+  <path d="M28 52 L39 52 L40 56 Q34 57.5 28 56 Z" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
+  <!-- 胴体胸甲（側面） -->
+  <path d="M21 23 L39 25 L37 44 L23 44 Z" fill="#475569" stroke="#0f172a" stroke-width="1.5"/>
+  <line x1="28" y1="24" x2="28" y2="43" stroke="#94a3b8" stroke-width="1.2"/>
+  <rect x="22" y="40" width="16" height="4.5" fill="#78350f" stroke="#451a03" stroke-width="1"/>
+  <!-- 肩甲と手甲（拳） -->
+  <path d="M25 24 Q30 22 33 26 L30 32 Q25 31 23 27 Z" fill="#475569" stroke="#0f172a" stroke-width="1.2"/>
+  <ellipse cx="27" cy="25" rx="2.5" ry="1.2" fill="#94a3b8"/>
+  <ellipse cx="36" cy="33" rx="3.5" ry="3.5" fill="#475569" stroke="#0f172a" stroke-width="1.2"/>
+  <circle cx="37" cy="32" r="1.5" fill="#94a3b8"/>
+  <!-- 兜横顔 -->
+  <path d="M20 17 C20 10 40 10 40 17 C40 24 36 27 30 27 C24 27 20 24 20 17 Z" fill="#475569" stroke="#0f172a" stroke-width="1.6"/>
+  <path d="M24 13 Q31 10 38 13" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <!-- 横向きスリットバイザー -->
+  <polygon points="29,17 41,19 39,23 29,21" fill="#090d16" stroke="#1e293b" stroke-width="1"/>
+  <rect x="34" y="19" width="4.5" height="2" rx="0.5" fill="#38bdf8"/>
+  <!-- クレスト（後方への羽） -->
+  <path d="M24 10 Q28 2 34 3 Q31 8 28 13 Z" fill="#dc2626"/>
 </svg>
 `.trim();
 
   /** 冒険者プレイヤー素体（真横歩行1） */
   public static readonly PLAYER_SIDE_WALK1_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="21" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <path d="M22 26 L8 50 L24 48 L28 28 Z" fill="#047857" stroke="#064e3b" stroke-width="1.5"/>
+  <ellipse cx="32" cy="58" rx="21" ry="5.5" fill="rgba(0,0,0,0.35)"/>
+  <path d="M21 24 L7 50 L23 48 L26 28 Z" fill="#047857" stroke="#022c22" stroke-width="1.2"/>
   <g transform="translate(-4, 0) rotate(-15 22 44)">
-    <rect x="20" y="44" width="7" height="11" rx="2" fill="#1e293b" stroke="#0f172a" stroke-width="1.5"/>
-    <rect x="18" y="51" width="10" height="5" rx="2" fill="#0f172a"/>
+    <rect x="20" y="44" width="7" height="11" rx="2" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
   </g>
   <g transform="translate(6, -1) rotate(15 32 44)">
-    <rect x="30" y="43" width="8" height="13" rx="2" fill="#475569" stroke="#1e293b" stroke-width="1.5"/>
-    <rect x="29" y="52" width="13" height="5" rx="2" fill="#1e293b"/>
+    <rect x="29" y="42" width="8.5" height="13" rx="2.5" fill="#64748b" stroke="#0f172a" stroke-width="1.2"/>
+    <ellipse cx="33" cy="44" rx="3.5" ry="2" fill="#cbd5e1"/>
+    <path d="M28 52 L39 52 L40 56 Q34 57.5 28 56 Z" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
   </g>
-  <path d="M22 24 L38 26 L36 46 L24 45 Z" fill="#334155" stroke="#1e293b" stroke-width="2"/>
-  <rect x="23" y="42" width="14" height="4" fill="#d97706"/>
-  <circle cx="24" cy="34" r="3.5" fill="#fbcfe8" stroke="#334155" stroke-width="1.2"/>
-  <circle cx="40" cy="28" r="3.5" fill="#fbcfe8" stroke="#334155" stroke-width="1.2"/>
-  <circle cx="30" cy="18" r="12" fill="#64748b" stroke="#334155" stroke-width="2"/>
-  <path d="M24 6 Q31 2 32 8 L28 14 L23 14 Z" fill="#ef4444"/>
-  <polygon points="30,16 42,18 40,22 30,20" fill="#0f172a"/>
-  <rect x="36" y="18" width="5" height="2" fill="#38bdf8"/>
+  <path d="M21 23 L39 25 L37 44 L23 44 Z" fill="#475569" stroke="#0f172a" stroke-width="1.5"/>
+  <rect x="22" y="40" width="16" height="4.5" fill="#78350f" stroke="#451a03" stroke-width="1"/>
+  <ellipse cx="38" cy="30" rx="3.5" ry="3.5" fill="#475569" stroke="#0f172a" stroke-width="1.2"/>
+  <circle cx="39" cy="29" r="1.5" fill="#94a3b8"/>
+  <path d="M20 17 C20 10 40 10 40 17 C40 24 36 27 30 27 C24 27 20 24 20 17 Z" fill="#475569" stroke="#0f172a" stroke-width="1.6"/>
+  <polygon points="29,17 41,19 39,23 29,21" fill="#090d16" stroke="#1e293b" stroke-width="1"/>
+  <rect x="34" y="19" width="4.5" height="2" rx="0.5" fill="#38bdf8"/>
+  <path d="M24 10 Q28 2 34 3 Q31 8 28 13 Z" fill="#dc2626"/>
 </svg>
 `.trim();
 
   /** 冒険者プレイヤー素体（真横歩行2） */
   public static readonly PLAYER_SIDE_WALK2_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="21" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <path d="M22 26 L12 54 L26 50 L28 28 Z" fill="#047857" stroke="#064e3b" stroke-width="1.5"/>
+  <ellipse cx="32" cy="58" rx="21" ry="5.5" fill="rgba(0,0,0,0.35)"/>
+  <path d="M21 24 L11 54 L25 50 L26 28 Z" fill="#047857" stroke="#022c22" stroke-width="1.2"/>
   <g transform="translate(-2, 0) rotate(10 24 44)">
-    <rect x="22" y="44" width="8" height="12" rx="2" fill="#334155" stroke="#1e293b" stroke-width="1.5"/>
-    <rect x="20" y="52" width="11" height="5" rx="2" fill="#1e293b"/>
+    <rect x="22" y="44" width="8" height="12" rx="2" fill="#334155" stroke="#0f172a" stroke-width="1.2"/>
   </g>
   <g transform="translate(4, -2) rotate(-10 32 44)">
-    <rect x="28" y="44" width="8" height="12" rx="2" fill="#475569" stroke="#1e293b" stroke-width="1.5"/>
-    <rect x="27" y="51" width="12" height="5" rx="2" fill="#1e293b"/>
+    <rect x="28" y="43" width="8.5" height="13" rx="2.5" fill="#64748b" stroke="#0f172a" stroke-width="1.2"/>
+    <ellipse cx="32" cy="45" rx="3.5" ry="2" fill="#cbd5e1"/>
+    <path d="M27 52 L38 52 L39 56 Q33 57.5 27 56 Z" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
   </g>
-  <path d="M22 24 L38 26 L36 46 L24 45 Z" fill="#334155" stroke="#1e293b" stroke-width="2"/>
-  <rect x="23" y="42" width="14" height="4" fill="#d97706"/>
-  <circle cx="28" cy="34" r="3.5" fill="#fbcfe8" stroke="#334155" stroke-width="1.2"/>
-  <circle cx="36" cy="32" r="3.5" fill="#fbcfe8" stroke="#334155" stroke-width="1.2"/>
-  <circle cx="30" cy="18" r="12" fill="#64748b" stroke="#334155" stroke-width="2"/>
-  <path d="M25 6 Q32 2 34 8 L29 14 L24 14 Z" fill="#ef4444"/>
-  <polygon points="30,16 42,18 40,22 30,20" fill="#0f172a"/>
-  <rect x="36" y="18" width="5" height="2" fill="#38bdf8"/>
+  <path d="M21 23 L39 25 L37 44 L23 44 Z" fill="#475569" stroke="#0f172a" stroke-width="1.5"/>
+  <rect x="22" y="40" width="16" height="4.5" fill="#78350f" stroke="#451a03" stroke-width="1"/>
+  <ellipse cx="35" cy="35" rx="3.5" ry="3.5" fill="#475569" stroke="#0f172a" stroke-width="1.2"/>
+  <circle cx="36" cy="34" r="1.5" fill="#94a3b8"/>
+  <path d="M20 17 C20 10 40 10 40 17 C40 24 36 27 30 27 C24 27 20 24 20 17 Z" fill="#475569" stroke="#0f172a" stroke-width="1.6"/>
+  <polygon points="29,17 41,19 39,23 29,21" fill="#090d16" stroke="#1e293b" stroke-width="1"/>
+  <rect x="34" y="19" width="4.5" height="2" rx="0.5" fill="#38bdf8"/>
+  <path d="M24 10 Q28 2 34 3 Q31 8 28 13 Z" fill="#dc2626"/>
 </svg>
 `.trim();
 
@@ -402,75 +456,36 @@ export class SVGSprites {
   // 4. プレイヤー斜め手前（Down-Right / Down-Left）素体SVG
   // ==========================================
 
-  /** 冒険者プレイヤー素体（斜め前待機: クォータービュー45度、素手構え） */
+  /** 冒険者プレイヤー素体（斜め前待機） */
   public static readonly PLAYER_DIAG_DOWN_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="20" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <path d="M16 26 L6 52 L22 52 L42 54 L36 28 Z" fill="#047857" stroke="#064e3b" stroke-width="1.5"/>
-  <rect x="20" y="44" width="7" height="12" rx="2" fill="#1e293b" stroke="#0f172a" stroke-width="1.5"/>
-  <rect x="18" y="52" width="10" height="5" rx="2" fill="#0f172a"/>
-  <rect x="30" y="45" width="8" height="12" rx="2" fill="#475569" stroke="#1e293b" stroke-width="1.5"/>
-  <rect x="30" y="53" width="12" height="5" rx="2" fill="#1e293b"/>
-  <path d="M18 24 L38 27 L34 47 L18 45 Z" fill="#334155" stroke="#1e293b" stroke-width="2"/>
-  <path d="M22 27 L36 29 L33 43 L21 41 Z" fill="#475569"/>
-  <rect x="18" y="42" width="18" height="4" fill="#d97706"/>
+  <ellipse cx="32" cy="58" rx="20" ry="5.5" fill="rgba(0,0,0,0.35)"/>
+  <path d="M16 25 L6 52 Q18 51 30 52 L44 53 L38 27 Z" fill="#047857" stroke="#022c22" stroke-width="1.2"/>
+  <rect x="19" y="43" width="7.5" height="12" rx="2" fill="#334155" stroke="#0f172a" stroke-width="1.2"/>
+  <rect x="30" y="43" width="8.5" height="13" rx="2.5" fill="#475569" stroke="#0f172a" stroke-width="1.2"/>
+  <ellipse cx="34" cy="45" rx="3.5" ry="2" fill="#94a3b8"/>
+  <path d="M29 52 L40 52 L41 56 Q35 57.5 29 56 Z" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
+  <path d="M18 23 L40 26 L36 44 L19 43 Z" fill="#475569" stroke="#0f172a" stroke-width="1.5"/>
+  <line x1="28" y1="24" x2="27" y2="43" stroke="#94a3b8" stroke-width="1.2"/>
+  <polygon points="28,28 30,32 28,36 26,32" fill="#fbbf24"/>
+  <rect x="18" y="40" width="19" height="4.5" fill="#78350f" stroke="#451a03" stroke-width="1"/>
   <!-- 両手の拳 -->
-  <circle cx="16" cy="35" r="3.5" fill="#fbcfe8" stroke="#334155" stroke-width="1.2"/>
-  <circle cx="42" cy="32" r="3.5" fill="#fbcfe8" stroke="#334155" stroke-width="1.2"/>
-  <circle cx="29" cy="18" r="12" fill="#64748b" stroke="#334155" stroke-width="2"/>
-  <path d="M25 6 Q30 2 33 7 L29 13 L25 13 Z" fill="#ef4444"/>
-  <polygon points="26,16 40,19 37,23 25,20" fill="#0f172a"/>
-  <rect x="32" y="19" width="6" height="2" rx="1" fill="#38bdf8"/>
+  <ellipse cx="15" cy="35" rx="3.5" ry="3.5" fill="#334155" stroke="#0f172a" stroke-width="1.2"/>
+  <ellipse cx="43" cy="33" rx="3.5" ry="3.5" fill="#475569" stroke="#0f172a" stroke-width="1.2"/>
+  <circle cx="43.5" cy="32" r="1.5" fill="#94a3b8"/>
+  <!-- 兜（クォータービュー） -->
+  <path d="M21 17 C21 10 39 10 39 17 C39 24 35 27 29 27 C23 27 21 24 21 17 Z" fill="#475569" stroke="#0f172a" stroke-width="1.6"/>
+  <path d="M24 13 Q31 10 37 13" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <polygon points="25,17 39,19 36,23 24,21" fill="#090d16" stroke="#1e293b" stroke-width="1"/>
+  <rect x="30" y="19" width="6" height="2" rx="0.5" fill="#38bdf8"/>
+  <path d="M26 10 Q29 2 34 3 Q31 8 29 13 Z" fill="#dc2626"/>
 </svg>
 `.trim();
 
   /** 冒険者プレイヤー素体（斜め前歩行1） */
-  public static readonly PLAYER_DIAG_DOWN_WALK1_SVG = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="21" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <path d="M16 26 L4 50 L20 50 L42 54 L36 28 Z" fill="#047857" stroke="#064e3b" stroke-width="1.5"/>
-  <g transform="translate(3, 0)">
-    <rect x="30" y="44" width="7" height="11" rx="2" fill="#1e293b" stroke="#0f172a" stroke-width="1.5"/>
-    <rect x="31" y="51" width="8" height="5" rx="2" fill="#0f172a"/>
-  </g>
-  <g transform="translate(-4, -1)">
-    <rect x="19" y="44" width="8" height="13" rx="2" fill="#475569" stroke="#1e293b" stroke-width="1.5"/>
-    <rect x="17" y="53" width="11" height="5" rx="2" fill="#1e293b"/>
-  </g>
-  <path d="M18 24 L38 27 L34 47 L18 45 Z" fill="#334155" stroke="#1e293b" stroke-width="2"/>
-  <rect x="18" y="42" width="18" height="4" fill="#d97706"/>
-  <circle cx="15" cy="34" r="3.5" fill="#fbcfe8" stroke="#334155" stroke-width="1.2"/>
-  <circle cx="44" cy="30" r="3.5" fill="#fbcfe8" stroke="#334155" stroke-width="1.2"/>
-  <circle cx="29" cy="18" r="12" fill="#64748b" stroke="#334155" stroke-width="2"/>
-  <path d="M25 6 Q30 2 33 7 L29 13 L25 13 Z" fill="#ef4444"/>
-  <polygon points="26,16 40,19 37,23 25,20" fill="#0f172a"/>
-  <rect x="32" y="19" width="6" height="2" rx="1" fill="#38bdf8"/>
-</svg>
-`.trim();
-
+  public static readonly PLAYER_DIAG_DOWN_WALK1_SVG = SVGSprites.PLAYER_DIAG_DOWN_SVG;
   /** 冒険者プレイヤー素体（斜め前歩行2） */
-  public static readonly PLAYER_DIAG_DOWN_WALK2_SVG = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="21" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <path d="M16 26 L10 54 L24 50 L44 50 L36 28 Z" fill="#047857" stroke="#064e3b" stroke-width="1.5"/>
-  <g transform="translate(-2, 0)">
-    <rect x="19" y="44" width="7" height="11" rx="2" fill="#1e293b" stroke="#0f172a" stroke-width="1.5"/>
-    <rect x="18" y="51" width="8" height="5" rx="2" fill="#0f172a"/>
-  </g>
-  <g transform="translate(4, -1)">
-    <rect x="30" y="44" width="8" height="13" rx="2" fill="#475569" stroke="#1e293b" stroke-width="1.5"/>
-    <rect x="29" y="53" width="11" height="5" rx="2" fill="#1e293b"/>
-  </g>
-  <path d="M18 24 L38 27 L34 47 L18 45 Z" fill="#334155" stroke="#1e293b" stroke-width="2"/>
-  <rect x="18" y="42" width="18" height="4" fill="#d97706"/>
-  <circle cx="17" cy="35" r="3.5" fill="#fbcfe8" stroke="#334155" stroke-width="1.2"/>
-  <circle cx="40" cy="34" r="3.5" fill="#fbcfe8" stroke="#334155" stroke-width="1.2"/>
-  <circle cx="29" cy="18" r="12" fill="#64748b" stroke="#334155" stroke-width="2"/>
-  <path d="M25 6 Q30 2 33 7 L29 13 L25 13 Z" fill="#ef4444"/>
-  <polygon points="26,16 40,19 37,23 25,20" fill="#0f172a"/>
-  <rect x="32" y="19" width="6" height="2" rx="1" fill="#38bdf8"/>
-</svg>
-`.trim();
+  public static readonly PLAYER_DIAG_DOWN_WALK2_SVG = SVGSprites.PLAYER_DIAG_DOWN_SVG;
 
   // ==========================================
   // 5. プレイヤー斜め奥（Up-Right / Up-Left）素体SVG
@@ -479,60 +494,38 @@ export class SVGSprites {
   /** 冒険者プレイヤー素体（斜め後ろ待機） */
   public static readonly PLAYER_DIAG_UP_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="20" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <rect x="20" y="47" width="7" height="9" rx="2" fill="#1e293b" stroke="#0f172a" stroke-width="1.5"/>
-  <rect x="31" y="47" width="7" height="9" rx="2" fill="#1e293b" stroke="#0f172a" stroke-width="1.5"/>
-  <path d="M18 24 L8 50 L26 50 L48 54 L36 24 Z" fill="#047857" stroke="#064e3b" stroke-width="1.5"/>
-  <path d="M22 26 L12 48 L26 48 L44 51 L32 26 Z" fill="#059669"/>
-  <circle cx="30" cy="18" r="12" fill="#64748b" stroke="#334155" stroke-width="2"/>
-  <path d="M24 16 Q31 21 38 17" stroke="#475569" stroke-width="2" fill="none"/>
-  <path d="M28 6 Q32 2 35 6 L33 13 L30 13 Z" fill="#ef4444"/>
+  <ellipse cx="32" cy="58" rx="20" ry="5.5" fill="rgba(0,0,0,0.35)"/>
+  <rect x="19" y="47" width="7.5" height="9" rx="2" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
+  <rect x="31" y="47" width="7.5" height="9" rx="2" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
+  <path d="M18 22 L7 51 Q17 49 29 52 L50 54 L40 23 Z" fill="#047857" stroke="#022c22" stroke-width="1.5"/>
+  <path d="M22 25 L12 49 Q20 47 29 50 L46 51 L36 25 Z" fill="#059669"/>
+  <path d="M21 17 C21 9 39 9 39 17 C39 24 35 27 29 27 C23 27 21 24 21 17 Z" fill="#475569" stroke="#0f172a" stroke-width="1.6"/>
+  <path d="M24 16 Q31 20 37 17" stroke="#334155" stroke-width="2" fill="none"/>
+  <path d="M28 6 Q30 1 34 3 L33 14 L29 14 Z" fill="#dc2626"/>
 </svg>
 `.trim();
 
   /** 冒険者プレイヤー素体（斜め後ろ歩行1） */
-  public static readonly PLAYER_DIAG_UP_WALK1_SVG = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="20" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <rect x="32" y="47" width="7" height="9" rx="2" fill="#1e293b" stroke="#0f172a" stroke-width="1.5"/>
-  <g transform="translate(-4, -4)">
-    <rect x="20" y="46" width="7" height="10" rx="2" fill="#334155" stroke="#1e293b" stroke-width="1.5"/>
-    <rect x="19" y="52" width="9" height="4" rx="1" fill="#0f172a"/>
-  </g>
-  <path d="M18 24 L6 48 L24 48 L48 53 L36 24 Z" fill="#047857" stroke="#064e3b" stroke-width="1.5"/>
-  <circle cx="30" cy="18" r="12" fill="#64748b" stroke="#334155" stroke-width="2"/>
-  <path d="M28 6 Q32 2 35 6 L33 13 L30 13 Z" fill="#ef4444"/>
-</svg>
-`.trim();
-
+  public static readonly PLAYER_DIAG_UP_WALK1_SVG = SVGSprites.PLAYER_DIAG_UP_SVG;
   /** 冒険者プレイヤー素体（斜め後ろ歩行2） */
-  public static readonly PLAYER_DIAG_UP_WALK2_SVG = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="20" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <rect x="19" y="47" width="7" height="9" rx="2" fill="#1e293b" stroke="#0f172a" stroke-width="1.5"/>
-  <g transform="translate(4, -4)">
-    <rect x="31" y="46" width="7" height="10" rx="2" fill="#334155" stroke="#1e293b" stroke-width="1.5"/>
-    <rect x="30" y="52" width="9" height="4" rx="1" fill="#0f172a"/>
-  </g>
-  <path d="M18 24 L10 52 L30 48 L50 51 L36 24 Z" fill="#047857" stroke="#064e3b" stroke-width="1.5"/>
-  <circle cx="30" cy="18" r="12" fill="#64748b" stroke="#334155" stroke-width="2"/>
-  <path d="M28 6 Q32 2 35 6 L33 13 L30 13 Z" fill="#ef4444"/>
-</svg>
-`.trim();
+  public static readonly PLAYER_DIAG_UP_WALK2_SVG = SVGSprites.PLAYER_DIAG_UP_SVG;
 
   /** 冒険者プレイヤー（力尽き・倒れ姿） */
   public static readonly PLAYER_DEAD_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="46" rx="26" ry="10" fill="rgba(0,0,0,0.5)"/>
-  <path d="M12 40 Q24 32 44 36 Q52 46 40 52 Q22 54 12 40 Z" fill="#047857" stroke="#064e3b" stroke-width="1.5"/>
-  <path d="M16 42 Q26 36 40 38 Q46 46 36 50 Q22 51 16 42 Z" fill="#059669"/>
-  <rect x="8" y="42" width="14" height="6" rx="2" fill="#1e293b" stroke="#0f172a" stroke-width="1.5" transform="rotate(-10 15 45)"/>
-  <rect x="6" y="44" width="6" height="7" rx="2" fill="#0f172a"/>
-  <path d="M20 36 L36 34 L38 48 L22 50 Z" fill="#334155" stroke="#1e293b" stroke-width="2"/>
-  <rect x="22" y="42" width="14" height="4" fill="#d97706"/>
-  <circle cx="42" cy="42" r="10" fill="#64748b" stroke="#334155" stroke-width="2"/>
-  <path d="M38 32 Q42 28 44 33 L41 38 Z" fill="#ef4444"/>
-  <polygon points="40,40 50,42 48,46 38,44" fill="#0f172a"/>
+  <ellipse cx="32" cy="48" rx="26" ry="10" fill="rgba(0,0,0,0.5)"/>
+  <!-- 地面に広がったマント -->
+  <path d="M10 40 Q22 30 46 34 Q54 46 40 52 Q20 54 10 40 Z" fill="#047857" stroke="#022c22" stroke-width="1.5"/>
+  <path d="M14 42 Q24 34 42 36 Q48 46 36 50 Q20 51 14 42 Z" fill="#059669" opacity="0.4"/>
+  <!-- 倒れた脚部 -->
+  <rect x="7" y="42" width="14" height="6" rx="2" fill="#334155" stroke="#0f172a" stroke-width="1.2" transform="rotate(-12 14 45)"/>
+  <!-- 倒れた胸甲 -->
+  <path d="M18 35 L38 33 L40 48 L20 50 Z" fill="#475569" stroke="#0f172a" stroke-width="1.8"/>
+  <rect x="20" y="42" width="16" height="4" fill="#78350f"/>
+  <!-- 倒れた兜と外れたプルーム -->
+  <circle cx="43" cy="41" r="10.5" fill="#475569" stroke="#0f172a" stroke-width="1.8"/>
+  <path d="M38 31 Q42 27 45 32 L41 37 Z" fill="#dc2626"/>
+  <polygon points="41,39 52,41 49,45 39,43" fill="#090d16"/>
 </svg>
 `.trim();
 
@@ -555,80 +548,172 @@ export class SVGSprites {
   // ==========================================
   // 既存モンスターSVG（スライム、ゴブリン、スケルトン、ゴーレム、マンドラゴラ、サハギン）
   // ==========================================
+
+  /** スライム正面（透き通るエメラルドゼリー、内部魔力核、うるおい反射） */
   public static readonly SLIME_DOWN_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="56" rx="22" ry="6" fill="rgba(0,0,0,0.3)"/>
-  <path d="M32 10 C46 10 56 26 56 42 C56 52 46 56 32 56 C18 56 8 52 8 42 C8 26 18 10 32 10 Z" fill="#10b981" stroke="#047857" stroke-width="2"/>
-  <path d="M32 18 C42 18 50 30 50 42 C50 50 42 52 32 52 C22 52 14 50 14 42 C14 30 22 18 32 18 Z" fill="#34d399" opacity="0.6"/>
-  <ellipse cx="24" cy="36" rx="4" ry="6" fill="#064e3b"/>
-  <circle cx="23" cy="34" r="2" fill="#ffffff"/>
-  <ellipse cx="40" cy="36" rx="4" ry="6" fill="#064e3b"/>
-  <circle cx="39" cy="34" r="2" fill="#ffffff"/>
-  <ellipse cx="24" cy="20" rx="6" ry="3" transform="rotate(-25 24 20)" fill="#a7f3d0"/>
+  <!-- 足元影 -->
+  <ellipse cx="32" cy="56" rx="22" ry="6" fill="rgba(0,0,0,0.35)"/>
+  <!-- ゼリー状ボディ外殻（深いエメラルドグラデーション） -->
+  <path d="M32 10 C46 10 56 24 56 42 C56 52 46 56 32 56 C18 56 8 52 8 42 C8 24 18 10 32 10 Z" fill="#10b981" stroke="#064e3b" stroke-width="1.8"/>
+  <path d="M32 16 C43 16 52 26 52 41 C52 49 43 53 32 53 C21 53 12 49 12 41 C12 26 21 16 32 16 Z" fill="#34d399" opacity="0.6"/>
+  <!-- 内部に透けて浮かぶ魔力核（コア） -->
+  <circle cx="32" cy="38" r="9" fill="#0284c7" opacity="0.85"/>
+  <circle cx="31" cy="37" r="7" fill="#38bdf8"/>
+  <ellipse cx="30" cy="35" rx="3" ry="2" fill="#ffffff" opacity="0.9"/>
+  <!-- 気泡 -->
+  <circle cx="21" cy="44" r="2.2" fill="#a7f3d0" opacity="0.65"/>
+  <circle cx="43" cy="42" r="1.8" fill="#a7f3d0" opacity="0.6"/>
+  <!-- 生き生きとした瞳（左目・右目） -->
+  <ellipse cx="24" cy="31" rx="4.5" ry="6.5" fill="#022c22"/>
+  <ellipse cx="23" cy="29" rx="2.5" ry="3.5" fill="#ffffff"/>
+  <circle cx="25.5" cy="34" r="1.2" fill="#ffffff"/>
+  <ellipse cx="40" cy="31" rx="4.5" ry="6.5" fill="#022c22"/>
+  <ellipse cx="39" cy="29" rx="2.5" ry="3.5" fill="#ffffff"/>
+  <circle cx="41.5" cy="34" r="1.2" fill="#ffffff"/>
+  <!-- 表面のうるおい光沢ハイライト -->
+  <path d="M22 14 Q32 12 40 16 Q34 19 22 17 Z" fill="#ffffff" opacity="0.75"/>
+  <ellipse cx="46" cy="25" rx="3" ry="5" transform="rotate(25 46 25)" fill="#ffffff" opacity="0.45"/>
+  <ellipse cx="16" cy="38" rx="2" ry="4" transform="rotate(-15 16 38)" fill="#a7f3d0" opacity="0.5"/>
 </svg>`.trim();
 
   public static readonly SLIME_UP_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="56" rx="22" ry="6" fill="rgba(0,0,0,0.3)"/>
-  <path d="M32 10 C46 10 56 26 56 42 C56 52 46 56 32 56 C18 56 8 52 8 42 C8 26 18 10 32 10 Z" fill="#10b981" stroke="#047857" stroke-width="2"/>
-  <path d="M32 18 C42 18 50 30 50 42 C50 50 42 52 32 52 C22 52 14 50 14 42 C14 30 22 18 32 18 Z" fill="#34d399" opacity="0.6"/>
+  <ellipse cx="32" cy="56" rx="22" ry="6" fill="rgba(0,0,0,0.35)"/>
+  <path d="M32 10 C46 10 56 24 56 42 C56 52 46 56 32 56 C18 56 8 52 8 42 C8 24 18 10 32 10 Z" fill="#10b981" stroke="#064e3b" stroke-width="1.8"/>
+  <path d="M32 16 C43 16 52 26 52 41 C52 49 43 53 32 53 C21 53 12 49 12 41 C12 26 21 16 32 16 Z" fill="#34d399" opacity="0.6"/>
+  <circle cx="32" cy="38" r="9" fill="#0284c7" opacity="0.65"/>
+  <circle cx="31" cy="37" r="7" fill="#38bdf8" opacity="0.7"/>
+  <path d="M22 14 Q32 12 40 16 Q34 19 22 17 Z" fill="#ffffff" opacity="0.65"/>
 </svg>`.trim();
 
   public static readonly SLIME_SIDE_SVG = SVGSprites.SLIME_DOWN_SVG;
   public static readonly SLIME_DIAG_DOWN_SVG = SVGSprites.SLIME_DOWN_SVG;
   public static readonly SLIME_DIAG_UP_SVG = SVGSprites.SLIME_UP_SVG;
 
+  /** ゴブリン正面（尖った大耳、鋲留め革鎧、ギラつく黄赤の瞳、鋭い牙） */
   public static readonly GOBLIN_DOWN_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="18" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <path d="M16 26 L4 18 L18 32 Z" fill="#84cc16" stroke="#4d7c0f" stroke-width="1.5"/>
-  <path d="M48 26 L60 18 L46 32 Z" fill="#84cc16" stroke="#4d7c0f" stroke-width="1.5"/>
-  <rect x="22" y="32" width="20" height="22" rx="4" fill="#78350f" stroke="#451a03" stroke-width="2"/>
-  <circle cx="32" cy="26" r="14" fill="#84cc16" stroke="#4d7c0f" stroke-width="2"/>
-  <circle cx="26" cy="27" r="3" fill="#dc2626"/>
-  <circle cx="38" cy="27" r="3" fill="#dc2626"/>
+  <ellipse cx="32" cy="58" rx="18" ry="5" fill="rgba(0,0,0,0.35)"/>
+  <!-- 尖った長い耳（左・右、ピアス付き） -->
+  <path d="M18 24 L2 16 Q10 28 20 30 Z" fill="#65a30d" stroke="#365314" stroke-width="1.2"/>
+  <path d="M16 23 L6 18 Q12 26 18 27 Z" fill="#ec4899" opacity="0.35"/>
+  <circle cx="5" cy="20" r="1.5" fill="#fbbf24"/>
+  <path d="M46 24 L62 16 Q54 28 44 30 Z" fill="#65a30d" stroke="#365314" stroke-width="1.2"/>
+  <path d="M48 23 L58 18 Q52 26 46 27 Z" fill="#ec4899" opacity="0.35"/>
+  <!-- 足と腰布 -->
+  <rect x="23" y="46" width="7" height="10" rx="2" fill="#4d7c0f" stroke="#365314" stroke-width="1"/>
+  <rect x="34" y="46" width="7" height="10" rx="2" fill="#4d7c0f" stroke="#365314" stroke-width="1"/>
+  <!-- ツギハギの鋲留め革鎧胴体 -->
+  <path d="M20 30 L44 30 L42 47 L22 47 Z" fill="#78350f" stroke="#451a03" stroke-width="1.5"/>
+  <line x1="28" y1="31" x2="36" y2="46" stroke="#92400e" stroke-width="2"/>
+  <circle cx="24" cy="35" r="1.3" fill="#fbbf24"/>
+  <circle cx="40" cy="35" r="1.3" fill="#fbbf24"/>
+  <circle cx="25" cy="42" r="1.3" fill="#fbbf24"/>
+  <circle cx="39" cy="42" r="1.3" fill="#fbbf24"/>
+  <!-- 頭部（輪郭、頬骨、顎） -->
+  <ellipse cx="32" cy="24" rx="14" ry="12" fill="#65a30d" stroke="#365314" stroke-width="1.5"/>
+  <!-- 尖った鼻としわ -->
+  <polygon points="32,23 30,27 34,27" fill="#4d7c0f"/>
+  <path d="M28 17 Q32 15 36 17" stroke="#365314" stroke-width="1.2" fill="none"/>
+  <!-- ギラつく黄色い目と鋭い瞳孔 -->
+  <ellipse cx="26" cy="21" rx="3.5" ry="3" fill="#fef08a" stroke="#ca8a04" stroke-width="0.8"/>
+  <ellipse cx="26" cy="21" rx="1.2" ry="2.2" fill="#dc2626"/>
+  <ellipse cx="38" cy="21" rx="3.5" ry="3" fill="#fef08a" stroke="#ca8a04" stroke-width="0.8"/>
+  <ellipse cx="38" cy="21" rx="1.2" ry="2.2" fill="#dc2626"/>
+  <!-- 凶悪な口と突き出た下牙 -->
+  <path d="M26 30 Q32 34 38 30" stroke="#1f2937" stroke-width="1.5" fill="none"/>
+  <polygon points="28,32 29,28 30,32" fill="#fef3c7"/>
+  <polygon points="34,32 35,28 36,32" fill="#fef3c7"/>
 </svg>`.trim();
 
   public static readonly GOBLIN_UP_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="18" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <circle cx="32" cy="26" r="14" fill="#84cc16" stroke="#4d7c0f" stroke-width="2"/>
-  <rect x="22" y="32" width="20" height="22" rx="4" fill="#78350f" stroke="#451a03" stroke-width="2"/>
+  <ellipse cx="32" cy="58" rx="18" ry="5" fill="rgba(0,0,0,0.35)"/>
+  <path d="M18 24 L2 16 Q10 28 20 30 Z" fill="#65a30d" stroke="#365314" stroke-width="1.2"/>
+  <path d="M46 24 L62 16 Q54 28 44 30 Z" fill="#65a30d" stroke="#365314" stroke-width="1.2"/>
+  <ellipse cx="32" cy="24" rx="14" ry="12" fill="#65a30d" stroke="#365314" stroke-width="1.5"/>
+  <path d="M20 30 L44 30 L42 47 L22 47 Z" fill="#78350f" stroke="#451a03" stroke-width="1.5"/>
+  <rect x="23" y="46" width="7" height="10" rx="2" fill="#4d7c0f"/>
+  <rect x="34" y="46" width="7" height="10" rx="2" fill="#4d7c0f"/>
 </svg>`.trim();
 
   public static readonly GOBLIN_SIDE_SVG = SVGSprites.GOBLIN_DOWN_SVG;
   public static readonly GOBLIN_DIAG_DOWN_SVG = SVGSprites.GOBLIN_DOWN_SVG;
   public static readonly GOBLIN_DIAG_UP_SVG = SVGSprites.GOBLIN_UP_SVG;
 
+  /** スケルトン正面（精巧な頭蓋骨、青白く灯るソウルアイ、肋骨・胸郭、骨盤） */
   public static readonly SKELETON_DOWN_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="18" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <path d="M22 20 Q32 10 42 20 L40 32 L24 32 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
-  <circle cx="27" cy="22" r="3.5" fill="#0f172a"/>
-  <circle cx="37" cy="22" r="3.5" fill="#0f172a"/>
-  <line x1="32" y1="34" x2="32" y2="48" stroke="#f8fafc" stroke-width="3"/>
-  <line x1="24" y1="38" x2="40" y2="38" stroke="#f8fafc" stroke-width="2.5"/>
-  <line x1="26" y1="44" x2="38" y2="44" stroke="#f8fafc" stroke-width="2.5"/>
+  <ellipse cx="32" cy="58" rx="18" ry="5" fill="rgba(0,0,0,0.35)"/>
+  <!-- 骨盤と脚の骨 -->
+  <path d="M24 43 Q32 40 40 43 L37 47 L27 47 Z" fill="#e2e8f0" stroke="#475569" stroke-width="1"/>
+  <line x1="26" y1="47" x2="25" y2="56" stroke="#e2e8f0" stroke-width="3" stroke-linecap="round"/>
+  <line x1="38" y1="47" x2="39" y2="56" stroke="#e2e8f0" stroke-width="3" stroke-linecap="round"/>
+  <ellipse cx="24" cy="57" rx="3" ry="1.5" fill="#cbd5e1"/>
+  <ellipse cx="40" cy="57" rx="3" ry="1.5" fill="#cbd5e1"/>
+  <!-- 脊椎と胸郭・肋骨 -->
+  <line x1="32" y1="28" x2="32" y2="44" stroke="#cbd5e1" stroke-width="3.5"/>
+  <path d="M21 32 Q32 35 43 32" stroke="#f1f5f9" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+  <path d="M22 36 Q32 39 42 36" stroke="#f1f5f9" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+  <path d="M24 40 Q32 43 40 40" stroke="#f1f5f9" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+  <!-- 頭蓋骨 -->
+  <path d="M21 17 C21 9 43 9 43 17 C43 23 40 25 38 27 L26 27 C24 25 21 23 21 17 Z" fill="#e2e8f0" stroke="#475569" stroke-width="1.5"/>
+  <!-- 深い眼窩と青白く灯るソウルアイ -->
+  <ellipse cx="27" cy="18" rx="3.5" ry="4" fill="#0f172a"/>
+  <circle cx="27" cy="18" r="1.5" fill="#38bdf8"/>
+  <circle cx="27" cy="18" r="0.7" fill="#ffffff"/>
+  <ellipse cx="37" cy="18" rx="3.5" ry="4" fill="#0f172a"/>
+  <circle cx="37" cy="18" r="1.5" fill="#38bdf8"/>
+  <circle cx="37" cy="18" r="0.7" fill="#ffffff"/>
+  <polygon points="32,21 31,23 33,23" fill="#0f172a"/>
+  <!-- 歯列 -->
+  <rect x="27" y="25" width="2" height="3" fill="#f8fafc" stroke="#475569" stroke-width="0.5"/>
+  <rect x="30" y="25" width="2" height="3" fill="#f8fafc" stroke="#475569" stroke-width="0.5"/>
+  <rect x="33" y="25" width="2" height="3" fill="#f8fafc" stroke="#475569" stroke-width="0.5"/>
+  <rect x="36" y="25" width="2" height="3" fill="#f8fafc" stroke="#475569" stroke-width="0.5"/>
 </svg>`.trim();
 
   public static readonly SKELETON_UP_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="18" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <path d="M22 20 Q32 10 42 20 L40 32 L24 32 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
-  <line x1="32" y1="34" x2="32" y2="48" stroke="#f8fafc" stroke-width="3"/>
+  <ellipse cx="32" cy="58" rx="18" ry="5" fill="rgba(0,0,0,0.35)"/>
+  <path d="M21 17 C21 9 43 9 43 17 C43 23 40 25 38 27 L26 27 C24 25 21 23 21 17 Z" fill="#e2e8f0" stroke="#475569" stroke-width="1.5"/>
+  <line x1="32" y1="28" x2="32" y2="44" stroke="#cbd5e1" stroke-width="3.5"/>
+  <path d="M21 32 Q32 35 43 32" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <path d="M22 36 Q32 39 42 36" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <line x1="26" y1="47" x2="25" y2="56" stroke="#e2e8f0" stroke-width="3" stroke-linecap="round"/>
+  <line x1="38" y1="47" x2="39" y2="56" stroke="#e2e8f0" stroke-width="3" stroke-linecap="round"/>
 </svg>`.trim();
 
   public static readonly SKELETON_SIDE_SVG = SVGSprites.SKELETON_DOWN_SVG;
   public static readonly SKELETON_DIAG_DOWN_SVG = SVGSprites.SKELETON_DOWN_SVG;
   public static readonly SKELETON_DIAG_UP_SVG = SVGSprites.SKELETON_UP_SVG;
 
+  /** 岩石ゴーレム（立体多面体ブロック、古代発光ルーン、苔・ひび割れ） */
   public static readonly GOLEM_DOWN_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="22" ry="6" fill="rgba(0,0,0,0.35)"/>
-  <rect x="18" y="24" width="28" height="26" rx="5" fill="#78716c" stroke="#44403c" stroke-width="2"/>
-  <rect x="22" y="10" width="20" height="16" rx="4" fill="#a8a29e" stroke="#44403c" stroke-width="2"/>
-  <circle cx="27" cy="18" r="2.5" fill="#f59e0b"/>
-  <circle cx="37" cy="18" r="2.5" fill="#f59e0b"/>
+  <ellipse cx="32" cy="58" rx="22" ry="6" fill="rgba(0,0,0,0.4)"/>
+  <!-- 両足巨岩ブロック -->
+  <polygon points="18,48 28,46 29,56 16,56" fill="#78716c" stroke="#292524" stroke-width="1.5"/>
+  <polygon points="36,46 46,48 48,56 35,56" fill="#78716c" stroke="#292524" stroke-width="1.5"/>
+  <!-- 巨岩胴体 -->
+  <polygon points="16,24 48,24 45,46 19,46" fill="#78716c" stroke="#292524" stroke-width="2"/>
+  <path d="M22 28 Q26 26 28 32 Q32 30 36 34" stroke="#292524" stroke-width="1.2" fill="none"/>
+  <path d="M20 36 Q24 38 22 42" stroke="#84cc16" stroke-width="1.5" fill="none"/>
+  <!-- 胸の古代ルーン発光 -->
+  <polygon points="32,28 36,33 32,38 28,33" fill="#f59e0b" stroke="#fef08a" stroke-width="1"/>
+  <line x1="32" y1="26" x2="32" y2="40" stroke="#fef08a" stroke-width="1"/>
+  <!-- 肩の巨石 -->
+  <polygon points="10,22 18,20 20,32 11,30" fill="#a8a29e" stroke="#292524" stroke-width="1.5"/>
+  <polygon points="54,22 46,20 44,32 53,30" fill="#a8a29e" stroke="#292524" stroke-width="1.5"/>
+  <!-- 頭部巨岩 -->
+  <polygon points="23,10 41,10 43,22 21,22" fill="#78716c" stroke="#292524" stroke-width="2"/>
+  <ellipse cx="32" cy="11" rx="7" ry="2" fill="#d6d3d1" opacity="0.6"/>
+  <!-- 琥珀の光眼 -->
+  <circle cx="27" cy="16" r="2.5" fill="#f59e0b"/>
+  <circle cx="27" cy="16" r="1.2" fill="#ffffff"/>
+  <circle cx="37" cy="16" r="2.5" fill="#f59e0b"/>
+  <circle cx="37" cy="16" r="1.2" fill="#ffffff"/>
 </svg>`.trim();
 
   public static readonly GOLEM_UP_SVG = SVGSprites.GOLEM_DOWN_SVG;
@@ -636,13 +721,29 @@ export class SVGSprites {
   public static readonly GOLEM_DIAG_DOWN_SVG = SVGSprites.GOLEM_DOWN_SVG;
   public static readonly GOLEM_DIAG_UP_SVG = SVGSprites.GOLEM_DOWN_SVG;
 
+  /** マンドラゴラ（ねじれ根茎、叫ぶ怪顔、生い茂る毒草の葉脈） */
   public static readonly MANDRAGORA_DOWN_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="32" cy="56" rx="16" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <path d="M20 28 Q32 20 44 28 Q44 48 32 54 Q20 48 20 28 Z" fill="#65a30d" stroke="#365314" stroke-width="2"/>
-  <circle cx="28" cy="34" r="3" fill="#000000"/>
-  <circle cx="36" cy="34" r="3" fill="#000000"/>
-  <ellipse cx="32" cy="14" rx="6" ry="12" fill="#22c55e"/>
+  <!-- 根の脚 -->
+  <path d="M24 46 Q20 52 18 56 Q23 54 26 48 Z" fill="#65a30d" stroke="#365314" stroke-width="1"/>
+  <path d="M40 46 Q44 52 46 56 Q41 54 38 48 Z" fill="#65a30d" stroke="#365314" stroke-width="1"/>
+  <!-- 根茎の肉体（深いシワ） -->
+  <path d="M19 28 Q32 18 45 28 Q46 46 32 52 Q18 46 19 28 Z" fill="#65a30d" stroke="#365314" stroke-width="1.8"/>
+  <path d="M22 34 Q32 30 42 34" stroke="#365314" stroke-width="1" fill="none"/>
+  <path d="M23 42 Q32 40 41 42" stroke="#365314" stroke-width="1" fill="none"/>
+  <!-- 狂気の叫ぶ顔 -->
+  <ellipse cx="27" cy="30" rx="3.5" ry="4.5" fill="#14532d"/>
+  <circle cx="27" cy="29" r="1.5" fill="#ffffff"/>
+  <ellipse cx="37" cy="30" rx="3.5" ry="4.5" fill="#14532d"/>
+  <circle cx="37" cy="29" r="1.5" fill="#ffffff"/>
+  <!-- 叫ぶ口 -->
+  <ellipse cx="32" cy="39" rx="4" ry="5.5" fill="#14532d"/>
+  <path d="M30 42 Q32 44 34 42" stroke="#f87171" stroke-width="1.2" fill="none"/>
+  <!-- 頭頂の繁茂する鮮やかな毒草の葉 -->
+  <path d="M32 20 Q20 10 16 2 Q28 6 32 18 Z" fill="#22c55e" stroke="#15803d" stroke-width="1.2"/>
+  <path d="M32 20 Q44 10 48 2 Q36 6 32 18 Z" fill="#22c55e" stroke="#15803d" stroke-width="1.2"/>
+  <path d="M32 20 Q32 6 32 0 Q36 8 32 18 Z" fill="#4ade80" stroke="#15803d" stroke-width="1.2"/>
 </svg>`.trim();
 
   public static readonly MANDRAGORA_UP_SVG = SVGSprites.MANDRAGORA_DOWN_SVG;
@@ -650,16 +751,37 @@ export class SVGSprites {
   public static readonly MANDRAGORA_DIAG_DOWN_SVG = SVGSprites.MANDRAGORA_DOWN_SVG;
   public static readonly MANDRAGORA_DIAG_UP_SVG = SVGSprites.MANDRAGORA_DOWN_SVG;
 
+  /** サハギン戦士（背ビレ、深海魚鱗グラデーション、鋭い水掻き鉤爪、魚の眼球） */
   public static readonly SAHAGIN_DOWN_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="32" cy="58" rx="18" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <circle cx="32" cy="24" r="14" fill="#06b6d4" stroke="#083344" stroke-width="2"/>
-  <circle cx="26" cy="22" r="3.5" fill="#fef08a"/>
-  <circle cx="38" cy="22" r="3.5" fill="#fef08a"/>
-  <circle cx="26" cy="22" r="1.5" fill="#000000"/>
-  <circle cx="38" cy="22" r="1.5" fill="#000000"/>
-  <rect x="22" y="32" width="20" height="24" rx="4" fill="#0891b2" stroke="#083344" stroke-width="2"/>
-  <line x1="48" y1="10" x2="48" y2="52" stroke="#cbd5e1" stroke-width="2"/>
+  <!-- 背ビレ（トゲとヒレ膜） -->
+  <path d="M32 6 Q34 18 36 28 L30 26 Q30 16 32 6 Z" fill="#5eead4" stroke="#0f766e" stroke-width="1.2"/>
+  <path d="M32 6 L38 12 L33 16 L40 20 L34 24" stroke="#14b8a6" stroke-width="1.5" fill="none"/>
+  <!-- 足と水掻き -->
+  <rect x="23" y="46" width="7" height="10" rx="2" fill="#0f766e" stroke="#134e4a" stroke-width="1"/>
+  <polygon points="19,57 28,54 27,57" fill="#2dd4bf"/>
+  <rect x="34" y="46" width="7" height="10" rx="2" fill="#0f766e" stroke="#134e4a" stroke-width="1"/>
+  <polygon points="45,57 36,54 37,57" fill="#2dd4bf"/>
+  <!-- 胴体と鱗模様 -->
+  <path d="M20 28 L44 28 L42 46 L22 46 Z" fill="#0d9488" stroke="#134e4a" stroke-width="1.5"/>
+  <path d="M26 32 Q29 35 32 32 Q35 35 38 32" stroke="#14b8a6" stroke-width="1.2" fill="none"/>
+  <path d="M24 38 Q28 41 32 38 Q36 41 40 38" stroke="#14b8a6" stroke-width="1.2" fill="none"/>
+  <!-- 魚面の頭部とエラ -->
+  <ellipse cx="32" cy="22" rx="13" ry="11" fill="#0d9488" stroke="#134e4a" stroke-width="1.5"/>
+  <path d="M22 23 Q20 26 22 29" stroke="#115e59" stroke-width="1.5" fill="none"/>
+  <path d="M42 23 Q44 26 42 29" stroke="#115e59" stroke-width="1.5" fill="none"/>
+  <!-- ギョロリとした大きな魚の眼球 -->
+  <circle cx="26" cy="20" r="4" fill="#fef08a" stroke="#ca8a04" stroke-width="1"/>
+  <circle cx="26" cy="20" r="1.8" fill="#000000"/>
+  <circle cx="27.5" cy="18.5" r="1" fill="#ffffff"/>
+  <circle cx="38" cy="20" r="4" fill="#fef08a" stroke="#ca8a04" stroke-width="1"/>
+  <circle cx="38" cy="20" r="1.8" fill="#000000"/>
+  <circle cx="39.5" cy="18.5" r="1" fill="#ffffff"/>
+  <!-- 鋭い口元と牙 -->
+  <path d="M28 28 Q32 31 36 28" stroke="#134e4a" stroke-width="1.5" fill="none"/>
+  <polygon points="29,28 30,26 31,28" fill="#ffffff"/>
+  <polygon points="33,28 34,26 35,28" fill="#ffffff"/>
 </svg>`.trim();
 
   public static readonly SAHAGIN_UP_SVG = SVGSprites.SAHAGIN_DOWN_SVG;

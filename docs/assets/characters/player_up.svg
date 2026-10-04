@@ -1,10 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="20" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <rect x="23" y="46" width="7" height="10" rx="2" fill="#1e293b" stroke="#0f172a" stroke-width="1.5"/>
-  <rect x="34" y="46" width="7" height="10" rx="2" fill="#1e293b" stroke="#0f172a" stroke-width="1.5"/>
-  <path d="M20 24 L12 53 L32 50 L52 53 L44 24 Z" fill="#047857" stroke="#064e3b" stroke-width="1.5"/>
-  <path d="M24 26 L16 52 L32 49 L48 52 L40 26 Z" fill="#059669"/>
-  <circle cx="32" cy="18" r="12" fill="#64748b" stroke="#334155" stroke-width="2"/>
-  <path d="M24 16 Q32 20 40 16" stroke="#475569" stroke-width="2" fill="none"/>
-  <path d="M30 6 Q32 2 34 6 L33 14 L31 14 Z" fill="#ef4444"/>
+  <ellipse cx="32" cy="58" rx="20" ry="5.5" fill="rgba(0,0,0,0.35)"/>
+  <!-- 鉄靴 -->
+  <rect x="22" y="47" width="8" height="9" rx="2" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
+  <rect x="34" y="47" width="8" height="9" rx="2" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
+  <!-- マント背面の豪奢な広がり -->
+  <path d="M19 22 L11 53 Q21 50 32 53 Q43 50 53 53 L45 22 Z" fill="#047857" stroke="#022c22" stroke-width="1.5"/>
+  <path d="M24 25 L16 51 Q23 48 32 50 Q41 48 48 51 L40 25 Z" fill="#059669"/>
+  <!-- 兜後頭部 -->
+  <path d="M22 17 C22 9 42 9 42 17 C42 24 38 27 32 27 C26 27 22 24 22 17 Z" fill="#475569" stroke="#0f172a" stroke-width="1.6"/>
+  <path d="M24 18 Q32 22 40 18" stroke="#334155" stroke-width="2" fill="none"/>
+  <!-- クレスト（後方へ流れる真紅の羽飾り） -->
+  <path d="M30 6 Q32 1 35 3 L34 15 L31 15 Z" fill="#dc2626"/>
+  <path d="M29 7 Q31 3 33 4 L33 13 L31 13 Z" fill="#ef4444"/>
 </svg>
