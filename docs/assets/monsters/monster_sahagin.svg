@@ -1,30 +1,40 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="18" ry="5" fill="rgba(0,0,0,0.3)"/>
-  <!-- 背ビレ（トゲとヒレ膜） -->
-  <path d="M32 6 Q34 18 36 28 L30 26 Q30 16 32 6 Z" fill="#5eead4" stroke="#0f766e" stroke-width="1.2"/>
-  <path d="M32 6 L38 12 L33 16 L40 20 L34 24" stroke="#14b8a6" stroke-width="1.5" fill="none"/>
-  <!-- 足と水掻き -->
-  <rect x="23" y="46" width="7" height="10" rx="2" fill="#0f766e" stroke="#134e4a" stroke-width="1"/>
-  <polygon points="19,57 28,54 27,57" fill="#2dd4bf"/>
-  <rect x="34" y="46" width="7" height="10" rx="2" fill="#0f766e" stroke="#134e4a" stroke-width="1"/>
-  <polygon points="45,57 36,54 37,57" fill="#2dd4bf"/>
-  <!-- 胴体と鱗模様 -->
-  <path d="M20 28 L44 28 L42 46 L22 46 Z" fill="#0d9488" stroke="#134e4a" stroke-width="1.5"/>
-  <path d="M26 32 Q29 35 32 32 Q35 35 38 32" stroke="#14b8a6" stroke-width="1.2" fill="none"/>
-  <path d="M24 38 Q28 41 32 38 Q36 41 40 38" stroke="#14b8a6" stroke-width="1.2" fill="none"/>
-  <!-- 魚面の頭部とエラ -->
-  <ellipse cx="32" cy="22" rx="13" ry="11" fill="#0d9488" stroke="#134e4a" stroke-width="1.5"/>
-  <path d="M22 23 Q20 26 22 29" stroke="#115e59" stroke-width="1.5" fill="none"/>
-  <path d="M42 23 Q44 26 42 29" stroke="#115e59" stroke-width="1.5" fill="none"/>
-  <!-- ギョロリとした大きな魚の眼球 -->
-  <circle cx="26" cy="20" r="4" fill="#fef08a" stroke="#ca8a04" stroke-width="1"/>
-  <circle cx="26" cy="20" r="1.8" fill="#000000"/>
-  <circle cx="27.5" cy="18.5" r="1" fill="#ffffff"/>
-  <circle cx="38" cy="20" r="4" fill="#fef08a" stroke="#ca8a04" stroke-width="1"/>
-  <circle cx="38" cy="20" r="1.8" fill="#000000"/>
-  <circle cx="39.5" cy="18.5" r="1" fill="#ffffff"/>
+  <ellipse cx="32" cy="58" rx="19" ry="5.5" fill="rgba(0,0,0,0.4)"/>
+  <!-- 右手: 白銀に光る三叉銛（トライデント） -->
+  <g transform="rotate(-15 14 36)">
+    <line x1="14" y1="4" x2="14" y2="48" stroke="#0284c7" stroke-width="2.8" stroke-linecap="round"/>
+    <path d="M7 6 L14 16 L21 6" stroke="#38bdf8" stroke-width="2" fill="none"/>
+    <polygon points="14,2 11,8 17,8" fill="#e0f2fe" stroke="#0284c7" stroke-width="1"/>
+    <polygon points="7,4 5,9 9,9" fill="#bae6fd"/>
+    <polygon points="21,4 19,9 23,9" fill="#bae6fd"/>
+  </g>
+  <!-- 巨大な半透明トゲ背ビレ -->
+  <path d="M32 4 Q38 16 42 28 L30 26 Q30 14 32 4 Z" fill="#2dd4bf" stroke="#0f766e" stroke-width="1.5" opacity="0.9"/>
+  <line x1="32" y1="4" x2="42" y2="14" stroke="#14b8a6" stroke-width="1.8"/>
+  <line x1="32" y1="12" x2="44" y2="20" stroke="#14b8a6" stroke-width="1.8"/>
+  <!-- 水掻き付き両足 -->
+  <rect x="22" y="46" width="7" height="11" rx="2" fill="#0f766e" stroke="#134e4a" stroke-width="1.2"/>
+  <polygon points="18,57 28,54 27,58" fill="#2dd4bf" stroke="#0f766e" stroke-width="0.8"/>
+  <rect x="33" y="46" width="7" height="11" rx="2" fill="#0f766e" stroke="#134e4a" stroke-width="1.2"/>
+  <polygon points="46,57 36,54 37,58" fill="#2dd4bf" stroke="#0f766e" stroke-width="0.8"/>
+  <!-- 魚鱗胴体と珊瑚ブレストプレート -->
+  <path d="M19 26 L45 26 L42 46 L22 46 Z" fill="#0d9488" stroke="#134e4a" stroke-width="1.8"/>
+  <path d="M24 30 Q28 33 32 30 Q36 33 40 30" stroke="#5eead4" stroke-width="1.2" fill="none"/>
+  <path d="M23 36 Q28 39 32 36 Q36 39 41 36" stroke="#5eead4" stroke-width="1.2" fill="none"/>
+  <path d="M25 41 Q28 44 32 41 Q36 44 39 41" stroke="#5eead4" stroke-width="1.2" fill="none"/>
+  <!-- 魚面の頭部とエラヒレ -->
+  <ellipse cx="32" cy="20" rx="14" ry="12" fill="#0d9488" stroke="#134e4a" stroke-width="1.8"/>
+  <path d="M20 22 Q17 25 20 28" stroke="#115e59" stroke-width="2" fill="none"/>
+  <path d="M44 22 Q47 25 44 28" stroke="#115e59" stroke-width="2" fill="none"/>
+  <!-- ギョロリと光る大きな魚の眼球（ハイライト入り） -->
+  <circle cx="26" cy="18" r="4.5" fill="#fef08a" stroke="#ca8a04" stroke-width="1.2"/>
+  <circle cx="26" cy="18" r="2.2" fill="#020617"/>
+  <circle cx="27.5" cy="16.5" r="1.2" fill="#ffffff"/>
+  <circle cx="38" cy="18" r="4.5" fill="#fef08a" stroke="#ca8a04" stroke-width="1.2"/>
+  <circle cx="38" cy="18" r="2.2" fill="#020617"/>
+  <circle cx="39.5" cy="16.5" r="1.2" fill="#ffffff"/>
   <!-- 鋭い口元と牙 -->
-  <path d="M28 28 Q32 31 36 28" stroke="#134e4a" stroke-width="1.5" fill="none"/>
-  <polygon points="29,28 30,26 31,28" fill="#ffffff"/>
-  <polygon points="33,28 34,26 35,28" fill="#ffffff"/>
+  <path d="M27 27 Q32 31 37 27" stroke="#134e4a" stroke-width="1.8" fill="none"/>
+  <polygon points="28,27 29,24 30,27" fill="#ffffff"/>
+  <polygon points="34,27 35,24 36,27" fill="#ffffff"/>
 </svg>

@@ -1,18 +1,33 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="22" ry="6" fill="rgba(0,0,0,0.4)"/>
-  <polygon points="18,48 28,46 29,56 16,56" fill="#78716c" stroke="#292524" stroke-width="1.5"/>
-  <polygon points="36,46 46,48 48,56 35,56" fill="#78716c" stroke="#292524" stroke-width="1.5"/>
-  <polygon points="16,24 48,24 45,46 19,46" fill="#78716c" stroke="#292524" stroke-width="2"/>
-  <path d="M22 28 Q26 26 28 32 Q32 30 36 34" stroke="#292524" stroke-width="1.2" fill="none"/>
-  <path d="M20 36 Q24 38 22 42" stroke="#84cc16" stroke-width="1.5" fill="none"/>
-  <polygon points="32,28 36,33 32,38 28,33" fill="#f59e0b" stroke="#fef08a" stroke-width="1"/>
-  <line x1="32" y1="26" x2="32" y2="40" stroke="#fef08a" stroke-width="1"/>
-  <polygon points="10,22 18,20 20,32 11,30" fill="#a8a29e" stroke="#292524" stroke-width="1.5"/>
-  <polygon points="54,22 46,20 44,32 53,30" fill="#a8a29e" stroke="#292524" stroke-width="1.5"/>
-  <polygon points="23,10 41,10 43,22 21,22" fill="#78716c" stroke="#292524" stroke-width="2"/>
-  <ellipse cx="32" cy="11" rx="7" ry="2" fill="#d6d3d1" opacity="0.6"/>
-  <circle cx="27" cy="16" r="2.5" fill="#f59e0b"/>
-  <circle cx="27" cy="16" r="1.2" fill="#ffffff"/>
-  <circle cx="37" cy="16" r="2.5" fill="#f59e0b"/>
-  <circle cx="37" cy="16" r="1.2" fill="#ffffff"/>
+  <ellipse cx="32" cy="58" rx="24" ry="6" fill="rgba(0,0,0,0.45)"/>
+  <!-- 両足巨石ブロック -->
+  <polygon points="16,46 28,44 29,57 14,57" fill="#57534e" stroke="#1c1917" stroke-width="2"/>
+  <line x1="22" y1="45" x2="21" y2="56" stroke="#a8a29e" stroke-width="1"/>
+  <polygon points="36,44 48,46 50,57 35,57" fill="#57534e" stroke="#1c1917" stroke-width="2"/>
+  <line x1="42" y1="45" x2="43" y2="56" stroke="#a8a29e" stroke-width="1"/>
+  <!-- 巨大胴体（多面体＆灼熱ルーン） -->
+  <polygon points="14,22 50,22 46,47 18,47" fill="#44403c" stroke="#1c1917" stroke-width="2.5"/>
+  <polygon points="17,25 47,25 43,36 21,36" fill="#57534e"/>
+  <!-- 胸のクラックから漏れる灼熱の溶岩魔導コア -->
+  <circle cx="32" cy="33" r="8" fill="#f59e0b" opacity="0.35"/>
+  <path d="M26 27 L32 33 L28 41 L36 37 L38 43" stroke="#f97316" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <polygon points="32,27 36,33 32,39 28,33" fill="#fef08a" stroke="#ea580c" stroke-width="1.2"/>
+  <circle cx="32" cy="33" r="2" fill="#ffffff"/>
+  <!-- 両肩の棘状巨石アーマー -->
+  <polygon points="8,18 18,16 20,32 9,30" fill="#78716c" stroke="#1c1917" stroke-width="2"/>
+  <line x1="10" y1="20" x2="17" y2="30" stroke="#d6d3d1" stroke-width="1.2"/>
+  <polygon points="56,18 46,16 44,32 55,30" fill="#78716c" stroke="#1c1917" stroke-width="2"/>
+  <line x1="54" y1="20" x2="47" y2="30" stroke="#d6d3d1" stroke-width="1.2"/>
+  <!-- 巨岩のハンマーハンド腕 -->
+  <ellipse cx="8" cy="38" rx="6" ry="8" fill="#57534e" stroke="#1c1917" stroke-width="1.8"/>
+  <ellipse cx="56" cy="38" rx="6" ry="8" fill="#57534e" stroke="#1c1917" stroke-width="1.8"/>
+  <!-- 頭部巨岩 -->
+  <polygon points="22,8 42,8 45,21 19,21" fill="#57534e" stroke="#1c1917" stroke-width="2"/>
+  <line x1="23" y1="10" x2="41" y2="10" stroke="#a8a29e" stroke-width="2"/>
+  <!-- 苔むした緑の風合い -->
+  <path d="M20 18 Q23 15 25 18" stroke="#84cc16" stroke-width="1.8" fill="none"/>
+  <path d="M38 18 Q41 16 43 19" stroke="#84cc16" stroke-width="1.8" fill="none"/>
+  <!-- 黄金に輝く眼光 -->
+  <rect x="25" y="14" width="4" height="3" rx="1" fill="#fef08a" stroke="#ea580c" stroke-width="0.8"/>
+  <rect x="35" y="14" width="4" height="3" rx="1" fill="#fef08a" stroke="#ea580c" stroke-width="0.8"/>
 </svg>

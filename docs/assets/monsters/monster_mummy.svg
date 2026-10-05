@@ -1,22 +1,58 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="16" ry="5" fill="rgba(0,0,0,0.35)"/>
-  <!-- 全身包帯巻きのシルエット -->
-  <rect x="22" y="10" width="20" height="20" rx="3" fill="#d4d4d8" stroke="#a1a1aa" stroke-width="1.5"/>
-  <!-- 包帯の筋ライン -->
-  <line x1="22" y1="14" x2="42" y2="17" stroke="#71717a" stroke-width="1.5"/>
-  <line x1="22" y1="22" x2="42" y2="21" stroke="#71717a" stroke-width="1.5"/>
-  <line x1="22" y1="28" x2="42" y2="26" stroke="#71717a" stroke-width="1.5"/>
-  <!-- 包帯の隙間から光る黄金の眼 -->
-  <rect x="25" y="18" width="14" height="4" fill="#18181b"/>
-  <circle cx="28" cy="20" r="1.5" fill="#facc15"/>
-  <circle cx="36" cy="20" r="1.5" fill="#facc15"/>
-  <!-- 胴体と包帯 -->
-  <rect x="18" y="30" width="28" height="22" rx="2" fill="#e4e4e7" stroke="#a1a1aa" stroke-width="1.5"/>
-  <line x1="18" y1="36" x2="46" y2="39" stroke="#71717a" stroke-width="1.8"/>
-  <line x1="18" y1="44" x2="46" y2="42" stroke="#71717a" stroke-width="1.8"/>
-  <!-- たれる包帯の端 -->
-  <path d="M42 44 Q48 52 44 60" stroke="#d4d4d8" stroke-width="3" fill="none"/>
-  <!-- 足 -->
-  <rect x="23" y="52" width="7" height="8" fill="#a1a1aa"/>
-  <rect x="34" y="52" width="7" height="8" fill="#a1a1aa"/>
+  <!-- 接地ドロップシャドウ -->
+  <ellipse cx="32" cy="58" rx="18" ry="5" fill="rgba(0,0,0,0.4)"/>
+
+  <!-- 宙にたなびく解けた呪文包帯の端（美しい曲線） -->
+  <path d="M44 42 Q56 46 52 56 Q48 62 44 58" stroke="#e4e4e7" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M18 38 Q8 44 12 52" stroke="#d4d4d8" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+  <!-- 全身包帯巻きの胴体（多重交差レイヤー） -->
+  <path d="M20 28 L16 52 L48 52 L44 28 Z" fill="#d4d4d8" stroke="#71717a" stroke-width="1.8"/>
+  <path d="M17 34 Q32 30 47 35" stroke="#a1a1aa" stroke-width="2" fill="none"/>
+  <path d="M16 41 Q32 45 48 39" stroke="#71717a" stroke-width="2.2" fill="none"/>
+  <path d="M16 47 Q32 43 48 48" stroke="#a1a1aa" stroke-width="2" fill="none"/>
+
+  <!-- 胸元の黄金とターコイズの古代スカラベ護符（アミュレット） -->
+  <polygon points="32,32 36,36 32,41 28,36" fill="#fbbf24" stroke="#b45309" stroke-width="1"/>
+  <circle cx="32" cy="36" r="2" fill="#06b6d4"/>
+
+  <!-- 両手（包帯の隙間から覗く干からびた黒褐色の手と呪いの鉤爪） -->
+  <!-- 左手 -->
+  <path d="M18 32 L11 38 L14 41 L20 35 Z" fill="#3f3f46" stroke="#18181b" stroke-width="1"/>
+  <polygon points="10,37 7,39 10,40" fill="#18181b"/>
+  <!-- 右手 -->
+  <path d="M44 32 L51 38 L48 41 L42 35 Z" fill="#3f3f46" stroke="#18181b" stroke-width="1"/>
+  <polygon points="52,37 55,39 52,40" fill="#18181b"/>
+
+  <!-- 両足包帯巻き -->
+  <rect x="22" y="50" width="7" height="9" fill="#d4d4d8" stroke="#71717a" stroke-width="1"/>
+  <line x1="22" y1="54" x2="29" y2="55" stroke="#71717a" stroke-width="1.2"/>
+  <rect x="33" y="50" width="7" height="9" fill="#d4d4d8" stroke="#71717a" stroke-width="1"/>
+  <line x1="33" y1="54" x2="40" y2="53" stroke="#71717a" stroke-width="1.2"/>
+
+  <!-- 頭部（幾重にも巻かれた包帯球体） -->
+  <ellipse cx="32" cy="20" rx="12" ry="12.5" fill="#e4e4e7" stroke="#71717a" stroke-width="1.8"/>
+  <path d="M21 16 Q32 19 43 15" stroke="#a1a1aa" stroke-width="2" fill="none"/>
+  <path d="M20 25 Q32 22 44 26" stroke="#71717a" stroke-width="2.2" fill="none"/>
+
+  <!-- 古代ファラオ額飾り（金とラピスラズリのネメス・ウラエウスコブラ） -->
+  <path d="M19 12 Q32 8 45 12 L43 16 Q32 12 21 16 Z" fill="#fbbf24" stroke="#b45309" stroke-width="1"/>
+  <line x1="27" y1="10" x2="26" y2="15" stroke="#1d4ed8" stroke-width="2"/>
+  <line x1="37" y1="10" x2="38" y2="15" stroke="#1d4ed8" stroke-width="2"/>
+  <!-- コブラ聖蛇の額飾りエンブレム -->
+  <polygon points="32,7 34,12 32,14 30,12" fill="#fbbf24" stroke="#b45309" stroke-width="0.8"/>
+  <circle cx="32" cy="10" r="1" fill="#dc2626"/>
+
+  <!-- 包帯の隙間の漆黒の闇 -->
+  <path d="M22 18 Q32 16 42 18 Q32 23 22 18 Z" fill="#09090b"/>
+
+  <!-- 爛々と黄金に発光する古代の呪眼 -->
+  <circle cx="27" cy="19.5" r="2.2" fill="#facc15"/>
+  <circle cx="27" cy="19.5" r="1" fill="#ffffff"/>
+  <circle cx="37" cy="19.5" r="2.2" fill="#facc15"/>
+  <circle cx="37" cy="19.5" r="1" fill="#ffffff"/>
+  <!-- 漏れ出る呪詛の紫光粒子 -->
+  <circle cx="24" cy="18" r="0.8" fill="#c084fc"/>
+  <circle cx="40" cy="18" r="0.8" fill="#c084fc"/>
+  <circle cx="32" cy="24" r="0.7" fill="#c084fc"/>
 </svg>

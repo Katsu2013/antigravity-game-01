@@ -1,22 +1,55 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="18" ry="5" fill="rgba(0,0,0,0.35)"/>
-  <!-- ローブ裾（布の重なりと金糸トリム） -->
-  <path d="M22 28 L14 54 L50 54 L42 28 Z" fill="#2e1065" stroke="#1e1b4b" stroke-width="1.8"/>
-  <path d="M26 28 L20 54 L44 54 L38 28 Z" fill="#3b0764"/>
-  <line x1="16" y1="52" x2="48" y2="52" stroke="#fbbf24" stroke-width="1.5"/>
-  <path d="M32 28 L32 52" stroke="#d97706" stroke-width="1" stroke-dasharray="2,2"/>
-  <!-- 尖がりフード頭部（深い陰影） -->
-  <path d="M20 28 Q32 2 44 28 Q32 24 20 28 Z" fill="#3b0764" stroke="#1e1b4b" stroke-width="1.8"/>
-  <path d="M24 24 Q32 8 40 24" stroke="#581c87" stroke-width="2" fill="none"/>
-  <!-- フード内の深淵の闇と怪しく光る紫眼 -->
-  <path d="M22 25 Q32 21 42 25 Q32 29 22 25 Z" fill="#020617"/>
-  <ellipse cx="27" cy="25" rx="2.5" ry="1.5" fill="#f0abfc"/>
-  <circle cx="27" cy="25" r="0.8" fill="#ffffff"/>
-  <ellipse cx="37" cy="25" rx="2.5" ry="1.5" fill="#f0abfc"/>
-  <circle cx="37" cy="25" r="0.8" fill="#ffffff"/>
-  <!-- 魔導杖（木目シャフト、金台座、浮遊する魔力オーブ） -->
-  <line x1="48" y1="12" x2="48" y2="52" stroke="#451a03" stroke-width="3"/>
-  <polygon points="45,14 51,14 48,18" fill="#fbbf24"/>
-  <circle cx="48" cy="11" r="5.5" fill="#a855f7" stroke="#e879f9" stroke-width="1.5"/>
-  <circle cx="46.5" cy="9.5" r="1.8" fill="#ffffff"/>
+  <!-- 接地浮遊シャドウ -->
+  <ellipse cx="32" cy="58" rx="18" ry="4.5" fill="rgba(0,0,0,0.35)"/>
+
+  <!-- ローブ裾（外層マントの重なりとドレープ） -->
+  <path d="M20 28 L12 55 Q22 52 32 55 Q42 52 52 55 L44 28 Z" fill="#1e1b4b" stroke="#0f0728" stroke-width="1.8"/>
+  <!-- 内層ローブ（深紫と金糸刺繍） -->
+  <path d="M24 28 L17 54 Q25 51 32 53 Q39 51 47 54 L40 28 Z" fill="#3b0764"/>
+  <path d="M28 28 L23 53 Q28 51 32 52 Q36 51 41 53 L36 28 Z" fill="#581c87"/>
+  <!-- ローブ裾の古代金糸トリム & ルーン飾り -->
+  <path d="M15 52 Q23 49 32 51 Q41 49 49 52" stroke="#fbbf24" stroke-width="1.6" fill="none"/>
+  <circle cx="24" cy="50" r="1" fill="#fde68a"/>
+  <circle cx="32" cy="49" r="1.2" fill="#fde68a"/>
+  <circle cx="40" cy="50" r="1" fill="#fde68a"/>
+
+  <!-- 胸元の黄金アミュレット（真紅の魔導宝石） -->
+  <polygon points="32,32 35,36 32,40 29,36" fill="#fbbf24" stroke="#d97706" stroke-width="0.8"/>
+  <circle cx="32" cy="36" r="1.8" fill="#ef4444"/>
+
+  <!-- 左手（詠唱の構え: 紫電の魔力粒子） -->
+  <ellipse cx="20" cy="38" rx="2.8" ry="2.2" fill="#cbd5e1" stroke="#475569" stroke-width="1"/>
+  <circle cx="17" cy="36" r="1.5" fill="#c084fc" opacity="0.8"/>
+  <circle cx="15" cy="33" r="1" fill="#e879f9" opacity="0.6"/>
+
+  <!-- 尖がり魔導フード頭部（深い立体陰影） -->
+  <path d="M18 28 Q32 -2 46 28 Q32 23 18 28 Z" fill="#2e1065" stroke="#0f0728" stroke-width="1.8"/>
+  <path d="M22 25 Q32 4 42 25" stroke="#4c1d95" stroke-width="2" fill="none"/>
+  <!-- フードの金糸縁取り -->
+  <path d="M19 28 Q32 22 45 28" stroke="#fbbf24" stroke-width="1.2" fill="none"/>
+
+  <!-- フード内の深淵の漆黒 -->
+  <path d="M21 25 Q32 21 43 25 Q32 30 21 25 Z" fill="#020617"/>
+  <!-- 怪しくギラつく双眸の魔眼（マゼンタ怪光とスパーク） -->
+  <ellipse cx="27" cy="25" rx="3" ry="1.8" fill="#f0abfc"/>
+  <ellipse cx="27" cy="25" rx="1.5" ry="1" fill="#ffffff"/>
+  <ellipse cx="37" cy="25" rx="3" ry="1.8" fill="#f0abfc"/>
+  <ellipse cx="37" cy="25" rx="1.5" ry="1" fill="#ffffff"/>
+  <!-- 魔眼の放電スパーク -->
+  <line x1="23" y1="25" x2="25" y2="25" stroke="#e879f9" stroke-width="0.8"/>
+  <line x1="39" y1="25" x2="41" y2="25" stroke="#e879f9" stroke-width="0.8"/>
+
+  <!-- 右手: 魔導杖（古木シャフト、金爪台座、浮遊回転オーブ） -->
+  <line x1="49" y1="12" x2="49" y2="54" stroke="#451a03" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="49" y1="14" x2="49" y2="52" stroke="#78350f" stroke-width="1.5"/>
+  <!-- 杖頭の黄金鉤爪台座 -->
+  <path d="M44 14 Q49 19 54 14 L52 17 Q49 15 46 17 Z" fill="#fbbf24" stroke="#b45309" stroke-width="1"/>
+  <!-- 浮遊する紫電の暗黒魔力球 -->
+  <circle cx="49" cy="9" r="8" fill="#a855f7" opacity="0.3"/>
+  <circle cx="49" cy="9" r="6" fill="#7e22ce" stroke="#e879f9" stroke-width="1.5"/>
+  <circle cx="47.5" cy="7.5" r="2.2" fill="#ffffff"/>
+  <!-- オーブを周回する魔力軌道リング -->
+  <ellipse cx="49" cy="9" rx="8" ry="3.5" fill="none" stroke="#f0abfc" stroke-width="1" transform="rotate(-20 49 9)"/>
+  <!-- オーブの稲妻スパーク -->
+  <polygon points="50,2 47,8 52,7 48,15 54,6 49,7" fill="#fde68a"/>
 </svg>
