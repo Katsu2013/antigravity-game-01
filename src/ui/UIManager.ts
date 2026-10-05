@@ -1092,7 +1092,7 @@ export class UIManager {
       this.logListEl.appendChild(entryEl);
     }
 
-    // 5. 画面上部ティッカーの更新（最新ログと種別カラーを反映、約3.2秒後に自動フェードアウト）
+    // 5. 画面上部ティッカーの更新（最新ログと種別カラーを反映、2行表示メッセージをじっくり読めるよう約4.5秒後に自動フェードアウト）
     if (this.engine.logs.length > 0) {
       const latestLog = this.engine.logs[0];
       if (latestLog.id !== this.lastHandledLogId) {
@@ -1107,7 +1107,7 @@ export class UIManager {
         this.tickerTimerId = window.setTimeout(() => {
           this.mobileTickerEl.classList.add('ticker-hidden');
           this.tickerTimerId = null;
-        }, 3200);
+        }, 4500);
       }
     }
 
