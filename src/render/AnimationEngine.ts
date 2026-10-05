@@ -682,11 +682,7 @@ export class AnimationEngine {
           state.renderX += dx * ratio;
           state.renderY += dy * ratio;
 
-          // 滑走中の冷気・霜の軌跡パーティクルを継続発生
-          this.triggerFrostTrailParticles(state.renderX, state.renderY);
-          if (state.id === 'player') {
-            this.triggerSweatParticles(state.renderX, state.renderY);
-          }
+          // ※煙に見える白丸粒子は完全撤去し、クリーンな氷面を維持
         } else {
           state.renderX = state.targetX;
           state.renderY = state.targetY;

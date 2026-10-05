@@ -137,8 +137,6 @@ export class CanvasRenderer {
       didFall,
       _slipDamage
     ) => {
-      const dx = Math.sign(toX - fromX);
-      const dy = Math.sign(toY - fromY);
       const dist = Math.hypot(toX - fromX, toY - fromY);
       const slideDuration = durationSec || Math.max(0.5, (dist / 3.0) + 0.15);
 
@@ -163,7 +161,6 @@ export class CanvasRenderer {
         }
       };
 
-      this.anim.triggerFrostParticles(fromX, fromY, dx, dy);
       this.anim.triggerIceSlideMotion(slideDuration);
     };
   }
@@ -2373,26 +2370,42 @@ export class CanvasRenderer {
         }
       }
 
-      // 氷上滑走中演出: ユーザー要望に基づき体を斜め上方に向け、上体を反らしながら滑っていく
+      // 氷上滑走中演出: ユーザー要望「左を向いて歩いていたら、左上方を向いて滑っていく」に基づき、
+      // 表情（横顔）が見えるスプライトのまま、体全体を斜め上方に大きく傾けて（仰天ポーズ）滑走！
       const isSlidingOnIce = this.anim.isIceSliding() || anim.isSliding;
       if (isSlidingOnIce) {
-        spriteKey = 'player_diag_up'; // 斜め上方を向くスプライト
         bobY = 0; // 滑走中は足踏み上下動なし
 
-        // 移動方位（X成分）に合わせて右斜め上 or 左斜め上を向く
-        if (anim.facingDir === -1 || dir.includes('left')) {
-          scaleX = -1.0; // 左斜め上
-          effectiveDir = 'up_left';
-          rotation = 0.26 + this.anim.playerSlipTilt; // 上体を反らし仰天ポーズ
+        if (dir.includes('left') || anim.facingDir === -1) {
+          // 左向きスプライト（横顔が見える状態）
+          spriteKey = 'player_side';
+          scaleX = -1.0;
+          effectiveDir = 'left';
+          // 左上方を向く傾き（反時計回りに約32度傾斜：頭と上半身が左上方を向き、足が下へ滑り出す）
+          rotation = -0.55 + this.anim.playerSlipTilt * 0.3;
+        } else if (dir.includes('right') || anim.facingDir === 1) {
+          // 右向きスプライト
+          spriteKey = 'player_side';
+          scaleX = 1.0;
+          effectiveDir = 'right';
+          // 右上方を向く傾き（時計回りに約32度傾斜：頭と上半身が右上方を向き、足が下へ滑り出す）
+          rotation = 0.55 + this.anim.playerSlipTilt * 0.3;
+        } else if (dir === 'up') {
+          spriteKey = 'player_diag_up';
+          scaleX = anim.facingDir === -1 ? -1.0 : 1.0;
+          effectiveDir = anim.facingDir === -1 ? 'up_left' : 'up_right';
+          rotation = (scaleX > 0 ? -0.4 : 0.4) + this.anim.playerSlipTilt * 0.3;
         } else {
-          scaleX = 1.0; // 右斜め上
-          effectiveDir = 'up_right';
-          rotation = -0.26 + this.anim.playerSlipTilt; // 上体を反らし仰天ポーズ
+          // down (真下)
+          spriteKey = 'player_side';
+          scaleX = anim.facingDir === -1 ? -1.0 : 1.0;
+          effectiveDir = anim.facingDir === -1 ? 'left' : 'right';
+          rotation = (scaleX < 0 ? -0.55 : 0.55) + this.anim.playerSlipTilt * 0.3;
         }
       }
 
-      // 移動時の足元ステップダスト演出
-      if (anim.isWalking) {
+      // 移動時の足元ステップダスト演出（※滑走中は土煙が出ないよう完全に抑制）
+      if (anim.isWalking && !isSlidingOnIce) {
         const dustAlpha = Math.abs(Math.sin(anim.walkTime)) * 0.4;
         if (dustAlpha > 0.05) {
           ctx.fillStyle = `rgba(148, 163, 184, ${dustAlpha})`;
@@ -2417,24 +2430,67 @@ export class CanvasRenderer {
         }
       }
 
-      // 氷上滑走時の足元シャープ切削ライン（※煙状の粉塵ではなくスケート刃の鋭い光跡）
+      // 氷上滑走時の風切りスピード線演出（※煙ではなく、ピューッと後方に吹き抜けるシャープな風線）
       if (isSlidingOnIce) {
         ctx.save();
-        ctx.strokeStyle = 'rgba(186, 230, 253, 0.85)';
-        ctx.lineWidth = 1.8;
-        ctx.beginPath();
-        const slideLineDir = scaleX;
-        ctx.moveTo(cx - slideLineDir * size * 0.28, cy + size * 0.38);
-        ctx.lineTo(cx + slideLineDir * size * 0.28, cy + size * 0.38);
-        ctx.stroke();
+        ctx.lineCap = 'round';
 
-        // 鋭くキラッと光る氷の微細な結晶スパークル（1〜2個のシャープな輝き）
-        ctx.fillStyle = '#f0f9ff';
-        const sparkleX = cx + (Math.random() - 0.5) * size * 0.3;
-        const sparkleY = cy + size * 0.37;
-        ctx.beginPath();
-        ctx.arc(sparkleX, sparkleY, 1.2, 0, Math.PI * 2);
-        ctx.fill();
+        // 進行方向の逆向きベクトル（風が後ろへ抜ける方向）
+        let windDx = 0;
+        let windDy = 0;
+        if (dir.includes('left')) windDx = 1;
+        else if (dir.includes('right')) windDx = -1;
+        if (dir.includes('up')) windDy = 1;
+        else if (dir.includes('down')) windDy = -1;
+        if (windDx === 0 && windDy === 0) windDx = anim.facingDir === -1 ? 1 : -1;
+
+        const windLen = Math.hypot(windDx, windDy) || 1;
+        const normWindX = windDx / windLen;
+        const normWindY = windDy / windLen;
+        const perpX = -normWindY;
+        const perpY = normWindX;
+
+        // キャラクター後方に吹き抜ける風切りスピードライン（画像のようなシャープな白い風線）
+        const time = this.anim.globalTime * 22;
+        const windStreaks = [
+          { lateral: -size * 0.28, length: size * 0.65, width: 2.2, offsetPhase: 0 },
+          { lateral: size * 0.06, length: size * 0.85, width: 3.0, offsetPhase: 2.6 },
+          { lateral: size * 0.34, length: size * 0.55, width: 1.8, offsetPhase: 5.2 },
+        ];
+
+        for (let i = 0; i < windStreaks.length; i++) {
+          const streak = windStreaks[i];
+          const phase = (time + streak.offsetPhase) % 8;
+          const flowProgress = phase / 8; // 0.0 -> 1.0
+          const currentAlpha = Math.sin(flowProgress * Math.PI) * 0.95;
+
+          const baseDist = size * 0.15 + flowProgress * size * 0.45;
+          const startX = cx + normWindX * baseDist + perpX * streak.lateral;
+          const startY = cy + normWindY * baseDist + perpY * streak.lateral;
+          const endX = startX + normWindX * streak.length;
+          const endY = startY + normWindY * streak.length;
+
+          // 緩やかな弧を描くシャープな風切り曲線
+          const curveSide = streak.lateral > 0 ? 5 : -5;
+          const ctrlX = (startX + endX) / 2 + perpX * curveSide;
+          const ctrlY = (startY + endY) / 2 + perpY * curveSide;
+
+          ctx.lineWidth = streak.width;
+          ctx.strokeStyle = `rgba(255, 255, 255, ${currentAlpha})`;
+          ctx.beginPath();
+          ctx.moveTo(startX, startY);
+          ctx.quadraticCurveTo(ctrlX, ctrlY, endX, endY);
+          ctx.stroke();
+
+          // 風線の中央コア（より明るい白い光条）
+          ctx.lineWidth = streak.width * 0.5;
+          ctx.strokeStyle = `rgba(224, 242, 254, ${currentAlpha * 0.85})`;
+          ctx.beginPath();
+          ctx.moveTo(startX, startY);
+          ctx.quadraticCurveTo(ctrlX, ctrlY, endX, endY);
+          ctx.stroke();
+        }
+
         ctx.restore();
       }
 
