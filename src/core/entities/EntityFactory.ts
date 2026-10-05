@@ -470,21 +470,21 @@ export class EntityFactory {
     const id = `item_${++this.idCounter}`;
     const roll = Math.random();
 
-    // 1. ポーション・回復・強化薬 (28%)
-    if (roll < 0.10) {
+    // 1. ポーション・薬草・草類 (22%)
+    if (roll < 0.05) {
       // 薬草
       return {
         id,
         name: '薬草',
         category: 'POTION',
-        description: '飲むとHPが15回復する不思議な薬草。',
+        description: '飲むとHPが15回復する不思議な薬草。敵に投げ当てるとアンデッドにダメージを与える。',
         value: 15,
         x,
         y,
         symbol: '!',
         color: '#10b981',
       };
-    } else if (roll < 0.16) {
+    } else if (roll < 0.09) {
       // 特薬草
       return {
         id,
@@ -497,7 +497,20 @@ export class EntityFactory {
         symbol: '!',
         color: '#34d399',
       };
-    } else if (roll < 0.20) {
+    } else if (roll < 0.12) {
+      // 弟切草
+      return {
+        id,
+        name: '弟切草',
+        category: 'POTION',
+        description: '鮮烈な赤い草。飲むとHPが100超回復する。アンデッドに投げると大打撃を与える。',
+        value: 100,
+        x,
+        y,
+        symbol: '!',
+        color: '#ef4444',
+      };
+    } else if (roll < 0.14) {
       // どくけし草
       return {
         id,
@@ -510,7 +523,33 @@ export class EntityFactory {
         symbol: '!',
         color: '#22c55e',
       };
-    } else if (roll < 0.24) {
+    } else if (roll < 0.16) {
+      // 命の草
+      return {
+        id,
+        name: '命の草',
+        category: 'POTION',
+        description: '生命力が湧き上がる薬草。最大HPが永続的に5上昇する。',
+        value: 5,
+        x,
+        y,
+        symbol: '!',
+        color: '#10b981',
+      };
+    } else if (roll < 0.18) {
+      // すばやさの草
+      return {
+        id,
+        name: 'すばやさの草',
+        category: 'POTION',
+        description: '飲むと足が軽くなり、10ターンの間倍速で行動できる。',
+        value: 10,
+        x,
+        y,
+        symbol: '!',
+        color: '#06b6d4',
+      };
+    } else if (roll < 0.20) {
       // 剛力の秘薬
       return {
         id,
@@ -523,7 +562,7 @@ export class EntityFactory {
         symbol: '!',
         color: '#f43f5e',
       };
-    } else if (roll < 0.26) {
+    } else if (roll < 0.215) {
       // 力の種
       return {
         id,
@@ -536,23 +575,23 @@ export class EntityFactory {
         symbol: 'o',
         color: '#f97316',
       };
-    } else if (roll < 0.28) {
-      // すばやさの種
+    } else if (roll < 0.22) {
+      // 復活の草 (超レア)
       return {
         id,
-        name: 'すばやさの種',
+        name: '復活の草',
         category: 'POTION',
-        description: '飲むと体が軽くなり、永続的に攻撃力+1、防御力+1が上昇する霊種。',
-        value: 2,
+        description: '倒れたとき奇跡を起こす聖なる草。所持しているだけで力尽きた瞬間にHP全快で復活する。',
+        value: 999,
         x,
         y,
-        symbol: 'o',
-        color: '#06b6d4',
+        symbol: '!',
+        color: '#fbbf24',
       };
     }
 
-    // 2. 食料（おにぎり・パン） (18%)
-    else if (roll < 0.38) {
+    // 2. 食料（おにぎり・パン） (12%)
+    else if (roll < 0.28) {
       // 特製おにぎり
       return {
         id,
@@ -565,7 +604,7 @@ export class EntityFactory {
         symbol: '%',
         color: '#f8fafc',
       };
-    } else if (roll < 0.44) {
+    } else if (roll < 0.32) {
       // 大きなパン
       return {
         id,
@@ -578,7 +617,7 @@ export class EntityFactory {
         symbol: '%',
         color: '#fbbf24',
       };
-    } else if (roll < 0.46) {
+    } else if (roll < 0.34) {
       // 巨大なおにぎり
       return {
         id,
@@ -593,8 +632,191 @@ export class EntityFactory {
       };
     }
 
-    // 3. 武器（8種） (22%)
+    // 3. 飛び道具・矢 (14%)
+    else if (roll < 0.41) {
+      // 木の矢 (5〜15本)
+      const count = Math.floor(Math.random() * 11) + 5;
+      return {
+        id,
+        name: '木の矢',
+        category: 'ARROW',
+        description: `真っ直ぐ飛ぶ木の矢。8方向に撃って離れた敵を攻撃する。床に落ちた矢は回収可能。`,
+        value: 6,
+        count,
+        x,
+        y,
+        symbol: ')',
+        color: '#b45309',
+      };
+    } else if (roll < 0.46) {
+      // 鉄の矢 (4〜10本)
+      const count = Math.floor(Math.random() * 7) + 4;
+      return {
+        id,
+        name: '鉄の矢',
+        category: 'ARROW',
+        description: `鋭利な鋼鉄の矢。高い威力を誇り、離れた敵に大ダメージを与える。`,
+        value: 10,
+        count,
+        x,
+        y,
+        symbol: ')',
+        color: '#94a3b8',
+      };
+    } else if (roll < 0.48) {
+      // 銀の矢 (3〜6本、全貫通！)
+      const count = Math.floor(Math.random() * 4) + 3;
+      return {
+        id,
+        name: '銀の矢',
+        category: 'ARROW',
+        description: `聖なる光を纏う銀の矢。直線上のすべてのモンスターを一直線に貫通して薙ぎ払う。`,
+        value: 14,
+        count,
+        x,
+        y,
+        symbol: ')',
+        color: '#38bdf8',
+      };
+    }
+
+    // 4. 魔法の杖 (14%)
     else if (roll < 0.51) {
+      // 吹き飛ばしの杖
+      const charges = Math.floor(Math.random() * 3) + 4; // 4〜6回
+      return {
+        id,
+        name: '吹き飛ばしの杖',
+        category: 'STAFF',
+        description: '振ると暴風魔法を放ち、直線の敵を5マス後方へ吹き飛ばす。壁に激突すると10ダメージ。',
+        value: 5,
+        charges,
+        x,
+        y,
+        symbol: '-',
+        color: '#10b981',
+      };
+    } else if (roll < 0.54) {
+      // 場所替えの杖
+      const charges = Math.floor(Math.random() * 3) + 4;
+      return {
+        id,
+        name: '場所替えの杖',
+        category: 'STAFF',
+        description: '振ると空間転移光を放ち、命中したモンスターとプレイヤーの位置を入れ替える。',
+        value: 1,
+        charges,
+        x,
+        y,
+        symbol: '-',
+        color: '#818cf8',
+      };
+    } else if (roll < 0.57) {
+      // かなしばりの杖
+      const charges = Math.floor(Math.random() * 3) + 3; // 3〜5回
+      return {
+        id,
+        name: 'かなしばりの杖',
+        category: 'STAFF',
+        description: '振ると麻痺雷を放ち、命中したモンスターを金縛り状態にして完全に行動不能にする。',
+        value: 1,
+        charges,
+        x,
+        y,
+        symbol: '-',
+        color: '#eab308',
+      };
+    } else if (roll < 0.59) {
+      // 睡眠の杖
+      const charges = Math.floor(Math.random() * 3) + 3;
+      return {
+        id,
+        name: '睡眠の杖',
+        category: 'STAFF',
+        description: '振ると催眠波を放ち、命中したモンスターを数ターン深い眠りに落とす。',
+        value: 5,
+        charges,
+        x,
+        y,
+        symbol: '-',
+        color: '#a855f7',
+      };
+    } else if (roll < 0.605) {
+      // 封印の杖
+      const charges = Math.floor(Math.random() * 3) + 3;
+      return {
+        id,
+        name: '封印の杖',
+        category: 'STAFF',
+        description: '振ると呪封光を放ち、モンスターの特殊能力や分裂・遠距離攻撃を完全に封じ込める。',
+        value: 1,
+        charges,
+        x,
+        y,
+        symbol: '-',
+        color: '#ef4444',
+      };
+    } else if (roll < 0.62) {
+      // 雷鳴の杖
+      const charges = Math.floor(Math.random() * 3) + 3;
+      return {
+        id,
+        name: '雷鳴の杖',
+        category: 'STAFF',
+        description: '振ると激しい電撃ビームを放ち、命中した敵に固定25の大ダメージを与える。',
+        value: 25,
+        charges,
+        x,
+        y,
+        symbol: '-',
+        color: '#facc15',
+      };
+    }
+
+    // 5. 腕輪 (5%)
+    else if (roll < 0.64) {
+      // ちからの腕輪
+      return {
+        id,
+        name: 'ちからの腕輪',
+        category: 'TALISMAN',
+        description: '身につけると筋力が強化され、攻撃力が3上昇する黄金の腕輪。',
+        value: 3,
+        x,
+        y,
+        symbol: '=',
+        color: '#f59e0b',
+      };
+    } else if (roll < 0.655) {
+      // 遠見の腕輪
+      return {
+        id,
+        name: '遠見の腕輪',
+        category: 'TALISMAN',
+        description: '身につけると洞察力が高まり、視界の広さと敵の察知能力が向上する神秘の腕輪。',
+        value: 1,
+        x,
+        y,
+        symbol: '=',
+        color: '#06b6d4',
+      };
+    } else if (roll < 0.67) {
+      // すり抜けの腕輪
+      return {
+        id,
+        name: 'すり抜けの腕輪',
+        category: 'TALISMAN',
+        description: '身につけると身体が霊体化し、障害物や敵のすり抜け回避率が高まる幻の腕輪。',
+        value: 1,
+        x,
+        y,
+        symbol: '=',
+        color: '#c084fc',
+      };
+    }
+
+    // 6. 武器（9種、ランダム+1値ボーナスあり） (13%)
+    else if (roll < 0.70) {
       // 青銅の短剣
       return {
         id,
@@ -607,33 +829,37 @@ export class EntityFactory {
         symbol: '/',
         color: '#d97706',
       };
-    } else if (roll < 0.56) {
+    } else if (roll < 0.73) {
       // 鉄の剣
+      const up = Math.random() < 0.25 ? 1 : 0;
       return {
         id,
         name: '鉄の剣',
         category: 'WEAPON',
         description: '鍛えられた片手剣。装備すると攻撃力が4上昇する。',
         value: 4,
+        upgradeLevel: up,
         x,
         y,
         symbol: '/',
         color: '#38bdf8',
       };
-    } else if (roll < 0.60) {
+    } else if (roll < 0.75) {
       // ミスリルの剣
+      const up = Math.random() < 0.2 ? 1 : 0;
       return {
         id,
         name: 'ミスリルの剣',
         category: 'WEAPON',
         description: '神聖な銀白の魔導剣。装備すると攻撃力が7大幅上昇する。',
         value: 7,
+        upgradeLevel: up,
         x,
         y,
         symbol: '/',
         color: '#818cf8',
       };
-    } else if (roll < 0.63) {
+    } else if (roll < 0.765) {
       // ウォーハンマー
       return {
         id,
@@ -646,7 +872,20 @@ export class EntityFactory {
         symbol: '/',
         color: '#eab308',
       };
-    } else if (roll < 0.65) {
+    } else if (roll < 0.775) {
+      // ドラゴンキラー
+      return {
+        id,
+        name: 'ドラゴンキラー',
+        category: 'WEAPON',
+        description: '龍の堅い鱗を断ち切る特効大剣。ドラゴン種族に対して2倍の破滅的ダメージを与える。',
+        value: 9,
+        x,
+        y,
+        symbol: '/',
+        color: '#ea580c',
+      };
+    } else if (roll < 0.785) {
       // 炎の剣
       return {
         id,
@@ -659,7 +898,7 @@ export class EntityFactory {
         symbol: '/',
         color: '#ef4444',
       };
-    } else if (roll < 0.665) {
+    } else if (roll < 0.792) {
       // ホーリーランス
       return {
         id,
@@ -672,7 +911,7 @@ export class EntityFactory {
         symbol: '/',
         color: '#fef08a',
       };
-    } else if (roll < 0.675) {
+    } else if (roll < 0.797) {
       // ルーンの剣
       return {
         id,
@@ -685,7 +924,7 @@ export class EntityFactory {
         symbol: '/',
         color: '#c084fc',
       };
-    } else if (roll < 0.68) {
+    } else if (roll < 0.80) {
       // 妖刀ムラマサ
       return {
         id,
@@ -700,8 +939,8 @@ export class EntityFactory {
       };
     }
 
-    // 4. 盾（8種） (18%)
-    else if (roll < 0.73) {
+    // 7. 盾（8種、ランダム+1値ボーナスあり） (9%)
+    else if (roll < 0.825) {
       // 木の盾
       return {
         id,
@@ -714,7 +953,7 @@ export class EntityFactory {
         symbol: ')',
         color: '#b45309',
       };
-    } else if (roll < 0.77) {
+    } else if (roll < 0.845) {
       // 青銅の盾
       return {
         id,
@@ -727,7 +966,7 @@ export class EntityFactory {
         symbol: ')',
         color: '#d97706',
       };
-    } else if (roll < 0.80) {
+    } else if (roll < 0.86) {
       // 風の盾
       return {
         id,
@@ -740,20 +979,22 @@ export class EntityFactory {
         symbol: ')',
         color: '#10b981',
       };
-    } else if (roll < 0.825) {
+    } else if (roll < 0.87) {
       // 鋼の盾
+      const up = Math.random() < 0.25 ? 1 : 0;
       return {
         id,
         name: '鋼の盾',
         category: 'SHIELD',
         description: '頑丈な銀鋼の盾。装備すると防御力が4上昇する。',
         value: 4,
+        upgradeLevel: up,
         x,
         y,
         symbol: ')',
         color: '#a78bfa',
       };
-    } else if (roll < 0.845) {
+    } else if (roll < 0.878) {
       // タワーシールド
       return {
         id,
@@ -766,7 +1007,7 @@ export class EntityFactory {
         symbol: ')',
         color: '#94a3b8',
       };
-    } else if (roll < 0.855) {
+    } else if (roll < 0.884) {
       // 魔法の盾
       return {
         id,
@@ -779,7 +1020,7 @@ export class EntityFactory {
         symbol: ')',
         color: '#38bdf8',
       };
-    } else if (roll < 0.86) {
+    } else if (roll < 0.887) {
       // ドラゴンの盾
       return {
         id,
@@ -792,7 +1033,7 @@ export class EntityFactory {
         symbol: ')',
         color: '#f43f5e',
       };
-    } else if (roll < 0.865) {
+    } else if (roll < 0.89) {
       // イージスの盾
       return {
         id,
@@ -807,8 +1048,47 @@ export class EntityFactory {
       };
     }
 
-    // 5. 巻物（5種） (13.5%)
-    else if (roll < 0.90) {
+    // 8. 巻物（8種） (11%)
+    else if (roll < 0.91) {
+      // 天の恵みの巻物
+      return {
+        id,
+        name: '天の恵みの巻物',
+        category: 'SCROLL',
+        description: '読むと装備中の武器を鍛錬強化し、攻撃力を永続的に+1引き上げる神聖な巻物。',
+        value: 1,
+        x,
+        y,
+        symbol: '?',
+        color: '#facc15',
+      };
+    } else if (roll < 0.93) {
+      // 地の恵みの巻物
+      return {
+        id,
+        name: '地の恵みの巻物',
+        category: 'SCROLL',
+        description: '読むと装備中の盾を堅牢に鍛錬し、防御力を永続的に+1引き上げる大地の巻物。',
+        value: 1,
+        x,
+        y,
+        symbol: '?',
+        color: '#38bdf8',
+      };
+    } else if (roll < 0.945) {
+      // 真空斬りの巻物
+      return {
+        id,
+        name: '真空斬りの巻物',
+        category: 'SCROLL',
+        description: '読むと鋭い真空の刃が旋回し、部屋内のすべての敵に20の大ダメージを与える。',
+        value: 20,
+        x,
+        y,
+        symbol: '?',
+        color: '#34d399',
+      };
+    } else if (roll < 0.96) {
       // ワープの巻物
       return {
         id,
@@ -821,7 +1101,7 @@ export class EntityFactory {
         symbol: '?',
         color: '#f472b6',
       };
-    } else if (roll < 0.93) {
+    } else if (roll < 0.975) {
       // 雷の巻物
       return {
         id,
@@ -834,7 +1114,7 @@ export class EntityFactory {
         symbol: '?',
         color: '#fbbf24',
       };
-    } else if (roll < 0.955) {
+    } else if (roll < 0.985) {
       // 睡眠の巻物
       return {
         id,
@@ -847,7 +1127,7 @@ export class EntityFactory {
         symbol: '?',
         color: '#818cf8',
       };
-    } else if (roll < 0.975) {
+    } else if (roll < 0.993) {
       // 混乱の巻物
       return {
         id,

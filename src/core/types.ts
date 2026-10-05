@@ -91,7 +91,10 @@ export type ItemCategory =
   | 'FOOD'    // 食料（満腹度回復）
   | 'WEAPON'  // 武器（攻撃力上昇）
   | 'SHIELD'  // 盾（防御力上昇）
-  | 'SCROLL'; // 巻物（ワープ・広域効果）
+  | 'SCROLL'  // 巻物（ワープ・広域効果）
+  | 'ARROW'   // 矢・飛び道具（遠距離直線攻撃）
+  | 'STAFF'   // 魔法の杖（回数制の遠距離特殊効果）
+  | 'TALISMAN'; // 腕輪・装飾品（パッシブ能力）
 
 /**
  * ゲーム内に登場するアイテムの完全な情報を表すインターフェース。
@@ -107,6 +110,14 @@ export interface Item {
   description: string;
   /** アイテムの効果基本値（回復量や攻撃力・防御力加算値） */
   value: number;
+  /** スタック数（矢・投擲具等の所持本数） */
+  count?: number;
+  /** 杖の残り使用回数 */
+  charges?: number;
+  /** 装備品の強化値（+1, +2等） */
+  upgradeLevel?: number;
+  /** 特殊効果識別子（例: 'KNOCKBACK', 'SWITCH', 'PARALYZE', 'REVIVE'等） */
+  specialEffect?: string;
   /** 床に落ちている場合のX座標 */
   x: number;
   /** 床に落ちている場合のY座標 */
@@ -216,6 +227,14 @@ export interface Monster {
   hasBackBlindSpot?: boolean;
   /** 衝撃によるスタン・気絶中かどうか（大石や氷塊直撃時: 1ターン行動不能） */
   isStunned?: boolean;
+  /** 金縛り状態かどうか（攻撃を受けるまで一切行動不能） */
+  isParalyzed?: boolean;
+  /** 睡眠状態の残りターン数（0で起床） */
+  sleepTurns?: number;
+  /** 混乱状態の残りターン数（0で回復） */
+  confuseTurns?: number;
+  /** 特殊能力が封印されているかどうか */
+  isSealed?: boolean;
   /** 画面描画用シンボル文字（例: 's', 'g', 'k'） */
   symbol: string;
   /** 画面描画用カラーコード */
@@ -270,6 +289,34 @@ export type ActionType =
       type: 'DROP_ITEM';
       /** 捨てるアイテムのID */
       itemId: string;
+    }
+  /**
+   * 飛び道具（弓矢など）を発射するアクション。
+   */
+  | {
+      type: 'SHOOT';
+      /** 発射する矢のアイテムID（省略時は所持している矢から自動選択） */
+      itemId?: string;
+      dx?: number;
+      dy?: number;
+    }
+  /**
+   * 魔法の杖を向いている方向へ振るアクション。
+   */
+  | {
+      type: 'ZAP_STAFF';
+      itemId: string;
+      dx?: number;
+      dy?: number;
+    }
+  /**
+   * インベントリ内のアイテムを向いている方向へ投げつけるアクション。
+   */
+  | {
+      type: 'THROW_ITEM';
+      itemId: string;
+      dx?: number;
+      dy?: number;
     }
   /**
    * 現在立っているマスの下り階段を利用して次のフロアへ降りるアクション。
@@ -332,6 +379,10 @@ export interface PlayerState {
   equippedWeapon: Item | null;
   /** 現在装備している左手盾（未装備時は null） */
   equippedShield: Item | null;
+  /** 現在装備している腕輪・装飾品（未装備時は null） */
+  equippedTalisman?: Item | null;
+  /** 倍速行動バフの残りターン数（すばやさの草） */
+  speedTurns?: number;
   /** 生存フラグ（falseの場合はゲームオーバー） */
   isAlive: boolean;
 }

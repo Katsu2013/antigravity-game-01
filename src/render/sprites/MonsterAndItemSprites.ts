@@ -776,4 +776,212 @@ export class MonsterAndItemSprites {
   <circle cx="24" cy="20" r="2.5" fill="#ffffff"/>
   <circle cx="44" cy="40" r="2" fill="#ffffff" opacity="0.8"/>
 </svg>`.trim();
+
+  // =========================================================================
+  // 6. 飛び道具・矢 (ARROWS)
+  // =========================================================================
+
+  /** 木の矢 (ITEM_ARROW: 木製シャフト、羽、鉄の鏃) */
+  public static readonly ITEM_ARROW_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="56" rx="16" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <!-- 束ねられた3本の矢 -->
+  <g transform="rotate(-30 32 32)">
+    <line x1="12" y1="32" x2="48" y2="32" stroke="#92400e" stroke-width="3" stroke-linecap="round"/>
+    <polygon points="44,26 56,32 44,38" fill="#94a3b8" stroke="#475569" stroke-width="1.5"/>
+    <path d="M12,32 L6,26 L16,32 L6,38 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+  </g>
+  <g transform="rotate(-45 32 32)">
+    <line x1="10" y1="32" x2="52" y2="32" stroke="#b45309" stroke-width="3.5" stroke-linecap="round"/>
+    <polygon points="48,25 60,32 48,39" fill="#cbd5e1" stroke="#64748b" stroke-width="1.5"/>
+    <path d="M10,32 L4,25 L14,32 L4,39 Z" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  </g>
+</svg>`.trim();
+
+  /** 鉄の矢 (ITEM_ARROW_IRON: 重厚な鋼鉄鏃) */
+  public static readonly ITEM_ARROW_IRON_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="56" rx="16" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <g transform="rotate(-45 32 32)">
+    <line x1="8" y1="32" x2="50" y2="32" stroke="#475569" stroke-width="3.5" stroke-linecap="round"/>
+    <!-- 鋭利な大型鉄鏃 -->
+    <polygon points="44,23 60,32 44,41" fill="#94a3b8" stroke="#1e293b" stroke-width="2"/>
+    <line x1="44" y1="32" x2="58" y2="32" stroke="#ffffff" stroke-width="1.5"/>
+    <!-- 矢羽（黒鷹の羽根） -->
+    <path d="M10,32 L2,24 L14,32 L2,40 Z" fill="#334155" stroke="#0f172a" stroke-width="1.2"/>
+  </g>
+</svg>`.trim();
+
+  /** 銀の矢 (ITEM_ARROW_SILVER: 貫通する白銀の神秘光) */
+  public static readonly ITEM_ARROW_SILVER_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="56" rx="18" ry="4.5" fill="rgba(0,0,0,0.25)"/>
+  <!-- 銀の光彩オーラ -->
+  <line x1="12" y1="52" x2="52" y2="12" stroke="#38bdf8" stroke-width="8" opacity="0.4" stroke-linecap="round"/>
+  <g transform="rotate(-45 32 32)">
+    <line x1="6" y1="32" x2="52" y2="32" stroke="#e0f2fe" stroke-width="3.5" stroke-linecap="round"/>
+    <polygon points="46,24 62,32 46,40" fill="#f8fafc" stroke="#38bdf8" stroke-width="2"/>
+    <path d="M8,32 L0,23 L12,32 L0,41 Z" fill="#bae6fd" stroke="#0284c7" stroke-width="1.2"/>
+  </g>
+</svg>`.trim();
+
+  // =========================================================================
+  // 7. 魔法の杖 (STAFFS)
+  // =========================================================================
+
+  /** 魔法の杖・共通 (ITEM_STAFF: 研ぎ澄まされた木製シャフトと輝く水晶) */
+  public static readonly ITEM_STAFF_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="56" rx="14" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <!-- 杖の軸 -->
+  <line x1="18" y1="50" x2="44" y2="18" stroke="#78350f" stroke-width="5" stroke-linecap="round"/>
+  <line x1="18" y1="50" x2="44" y2="18" stroke="#b45309" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 金具 -->
+  <circle cx="43" cy="19" r="6" fill="#eab308" stroke="#a16207" stroke-width="1.5"/>
+  <!-- 先端オーブ -->
+  <circle cx="46" cy="15" r="7" fill="#a855f7" stroke="#6b21a8" stroke-width="1.5"/>
+  <circle cx="44" cy="13" r="2.5" fill="#ffffff"/>
+</svg>`.trim();
+
+  /** 吹き飛ばしの杖 (ITEM_STAFF_BLAST: 翠緑の風の宝玉) */
+  public static readonly ITEM_STAFF_BLAST_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="56" rx="14" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <line x1="18" y1="50" x2="44" y2="18" stroke="#475569" stroke-width="5" stroke-linecap="round"/>
+  <!-- 風の旋回エフェクト -->
+  <circle cx="46" cy="15" r="9" fill="none" stroke="#34d399" stroke-width="2" stroke-dasharray="6,4"/>
+  <circle cx="46" cy="15" r="6.5" fill="#10b981" stroke="#047857" stroke-width="1.5"/>
+  <circle cx="44" cy="13" r="2.5" fill="#a7f3d0"/>
+</svg>`.trim();
+
+  /** 場所替えの杖 (ITEM_STAFF_SWITCH: 双対する転移オーブ) */
+  public static readonly ITEM_STAFF_SWITCH_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="56" rx="14" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <line x1="18" y1="50" x2="44" y2="18" stroke="#312e81" stroke-width="5" stroke-linecap="round"/>
+  <!-- 双対ワープオーブ -->
+  <circle cx="43" cy="13" r="5" fill="#38bdf8" stroke="#0284c7" stroke-width="1.5"/>
+  <circle cx="49" cy="19" r="5" fill="#f43f5e" stroke="#be123c" stroke-width="1.5"/>
+  <circle cx="42" cy="11" r="1.8" fill="#ffffff"/>
+</svg>`.trim();
+
+  /** かなしばりの杖 (ITEM_STAFF_PARALYZE: 黄金の麻痺水晶) */
+  public static readonly ITEM_STAFF_PARALYZE_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="56" rx="14" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <line x1="18" y1="50" x2="44" y2="18" stroke="#713f12" stroke-width="5" stroke-linecap="round"/>
+  <!-- 稲妻スパーク -->
+  <polygon points="46,6 42,14 48,14 44,24 53,13 47,13" fill="#eab308" stroke="#ca8a04" stroke-width="1"/>
+  <circle cx="46" cy="15" r="7" fill="#fbbf24" stroke="#d97706" stroke-width="1.5" opacity="0.85"/>
+  <circle cx="44" cy="13" r="2.5" fill="#fef08a"/>
+</svg>`.trim();
+
+  /** 雷鳴の杖 (ITEM_STAFF_THUNDER: 強力な電撃光球) */
+  public static readonly ITEM_STAFF_THUNDER_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="56" rx="14" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <line x1="18" y1="50" x2="44" y2="18" stroke="#1e1b4b" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="46" cy="15" r="9" fill="#6366f1" opacity="0.4"/>
+  <circle cx="46" cy="15" r="7" fill="#818cf8" stroke="#4338ca" stroke-width="1.8"/>
+  <circle cx="44" cy="13" r="3" fill="#ffffff"/>
+</svg>`.trim();
+
+  // =========================================================================
+  // 8. 腕輪・装飾品 (TALISMANS / RINGS)
+  // =========================================================================
+
+  /** 腕輪 (ITEM_RING: 黄金の輪と中央に嵌め込まれた神秘の宝石) */
+  public static readonly ITEM_RING_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="56" rx="14" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <!-- リング外枠 -->
+  <ellipse cx="32" cy="34" rx="16" ry="14" fill="none" stroke="#f59e0b" stroke-width="5"/>
+  <ellipse cx="32" cy="34" rx="16" ry="14" fill="none" stroke="#fef08a" stroke-width="2"/>
+  <!-- 宝石座 -->
+  <polygon points="32,14 38,20 32,26 26,20" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/>
+  <circle cx="31" cy="18" r="1.8" fill="#ffffff"/>
+</svg>`.trim();
+
+  // =========================================================================
+  // 9. 追加の草・薬 (HERBS)
+  // =========================================================================
+
+  /** 復活の草 (ITEM_POTION_REVIVE: 奇跡の四つ葉と輝く聖光) */
+  public static readonly ITEM_POTION_REVIVE_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="56" rx="14" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <!-- 黄金の聖光オーラ -->
+  <circle cx="32" cy="32" r="16" fill="#fef08a" opacity="0.35"/>
+  <!-- 茎 -->
+  <path d="M32 50 Q32 38 32 32" stroke="#16a34a" stroke-width="3" stroke-linecap="round"/>
+  <!-- 4枚の黄金の葉 -->
+  <ellipse cx="25" cy="25" rx="6" ry="7" fill="#eab308" stroke="#ca8a04" stroke-width="1.2" transform="rotate(-30 25 25)"/>
+  <ellipse cx="39" cy="25" rx="6" ry="7" fill="#eab308" stroke="#ca8a04" stroke-width="1.2" transform="rotate(30 39 25)"/>
+  <ellipse cx="25" cy="37" rx="6" ry="7" fill="#ca8a04" stroke="#a16207" stroke-width="1.2" transform="rotate(30 25 37)"/>
+  <ellipse cx="39" cy="37" rx="6" ry="7" fill="#ca8a04" stroke="#a16207" stroke-width="1.2" transform="rotate(-30 39 37)"/>
+  <!-- 中心輝き -->
+  <circle cx="32" cy="31" r="3" fill="#ffffff"/>
+</svg>`.trim();
+
+  /** 弟切草 (ITEM_POTION_OTOGIRI: 鮮やかな深紅の薬効草) */
+  public static readonly ITEM_POTION_OTOGIRI_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="56" rx="14" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <path d="M32 52 Q34 40 32 32" stroke="#15803d" stroke-width="3" stroke-linecap="round"/>
+  <!-- 深紅の花弁 -->
+  <ellipse cx="26" cy="26" rx="5" ry="8" fill="#ef4444" stroke="#b91c1c" stroke-width="1.2" transform="rotate(-35 26 26)"/>
+  <ellipse cx="38" cy="26" rx="5" ry="8" fill="#ef4444" stroke="#b91c1c" stroke-width="1.2" transform="rotate(35 38 26)"/>
+  <ellipse cx="32" cy="20" rx="5" ry="8" fill="#dc2626" stroke="#991b1b" stroke-width="1.2"/>
+  <circle cx="32" cy="27" r="3" fill="#fbbf24"/>
+</svg>`.trim();
+
+  /** 命の草 (ITEM_POTION_LIFE: 生命力を宿すエメラルドの薬草) */
+  public static readonly ITEM_POTION_LIFE_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="56" rx="14" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <circle cx="32" cy="32" r="14" fill="#a7f3d0" opacity="0.4"/>
+  <path d="M32 52 Q30 38 32 28" stroke="#047857" stroke-width="3" stroke-linecap="round"/>
+  <path d="M32 28 Q20 18 24 34 Q32 32 32 28 Z" fill="#10b981" stroke="#047857" stroke-width="1.5"/>
+  <path d="M32 28 Q44 18 40 34 Q32 32 32 28 Z" fill="#34d399" stroke="#059669" stroke-width="1.5"/>
+  <circle cx="28" cy="26" r="2" fill="#ffffff" opacity="0.8"/>
+</svg>`.trim();
+
+  // =========================================================================
+  // 10. 追加の巻物 (SCROLLS)
+  // =========================================================================
+
+  /** 天の恵みの巻物 (ITEM_SCROLL_UPGRADE_ATK: 黄金の神光を放つ鍛冶の巻物) */
+  public static readonly ITEM_SCROLL_UPGRADE_ATK_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="56" rx="14" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <rect x="18" y="20" width="28" height="24" rx="3" fill="#fef08a" stroke="#ca8a04" stroke-width="2"/>
+  <line x1="16" y1="20" x2="16" y2="44" stroke="#a16207" stroke-width="4" stroke-linecap="round"/>
+  <line x1="48" y1="20" x2="48" y2="44" stroke="#a16207" stroke-width="4" stroke-linecap="round"/>
+  <!-- 黄金の剣シンボル印 -->
+  <polygon points="32,24 35,30 33,30 33,38 31,38 31,30 29,30" fill="#dc2626"/>
+  <line x1="28" y1="34" x2="36" y2="34" stroke="#dc2626" stroke-width="1.5"/>
+</svg>`.trim();
+
+  /** 地の恵みの巻物 (ITEM_SCROLL_UPGRADE_DEF: 堅牢な大地の加護を放つ巻物) */
+  public static readonly ITEM_SCROLL_UPGRADE_DEF_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="56" rx="14" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <rect x="18" y="20" width="28" height="24" rx="3" fill="#bae6fd" stroke="#0284c7" stroke-width="2"/>
+  <line x1="16" y1="20" x2="16" y2="44" stroke="#0369a1" stroke-width="4" stroke-linecap="round"/>
+  <line x1="48" y1="20" x2="48" y2="44" stroke="#0369a1" stroke-width="4" stroke-linecap="round"/>
+  <!-- 盾シンボル印 -->
+  <path d="M28 26 L36 26 L36 34 Q32 38 32 38 Q28 38 28 34 Z" fill="#2563eb" stroke="#1d4ed8" stroke-width="1"/>
+</svg>`.trim();
+
+  /** 真空斬りの巻物 (ITEM_SCROLL_VACUUM: 部屋全体を切り裂く烈風の刃) */
+  public static readonly ITEM_SCROLL_VACUUM_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="56" rx="14" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <rect x="18" y="20" width="28" height="24" rx="3" fill="#a7f3d0" stroke="#059669" stroke-width="2"/>
+  <line x1="16" y1="20" x2="16" y2="44" stroke="#047857" stroke-width="4" stroke-linecap="round"/>
+  <line x1="48" y1="20" x2="48" y2="44" stroke="#047857" stroke-width="4" stroke-linecap="round"/>
+  <!-- 鋭い旋風スラッシュ印 -->
+  <path d="M25 36 Q32 24 39 26 Q32 32 25 36 Z" fill="#047857"/>
+  <path d="M27 26 Q34 32 37 38" stroke="#10b981" stroke-width="2" fill="none"/>
+</svg>`.trim();
 }

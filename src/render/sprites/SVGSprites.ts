@@ -171,6 +171,25 @@ export type SpriteId =
   | 'item_scroll_light'
   | 'item_scroll_sleep'
   | 'item_scroll_confuse'
+  | 'item_scroll_upgrade_atk'
+  | 'item_scroll_upgrade_def'
+  | 'item_scroll_vacuum'
+  // 飛び道具（矢）
+  | 'item_arrow'
+  | 'item_arrow_iron'
+  | 'item_arrow_silver'
+  // 魔法の杖
+  | 'item_staff'
+  | 'item_staff_blast'
+  | 'item_staff_switch'
+  | 'item_staff_paralyze'
+  | 'item_staff_thunder'
+  // 腕輪
+  | 'item_ring'
+  // 追加の草
+  | 'item_potion_revive'
+  | 'item_potion_otogiri'
+  | 'item_potion_life'
   // 障害物グラフィックスプライト
   | 'obstacle_dirt_block'
   | 'obstacle_tree_stump'
@@ -1021,6 +1040,26 @@ export class SVGSprites {
       obstacle_snow_mound: MonsterAndItemSprites.OBSTACLE_SNOW_MOUND_SVG,
       obstacle_push_rock: MonsterAndItemSprites.OBSTACLE_PUSH_ROCK_SVG,
       obstacle_ice_block: MonsterAndItemSprites.OBSTACLE_ICE_BLOCK_SVG,
+      // 飛び道具（矢）
+      item_arrow: MonsterAndItemSprites.ITEM_ARROW_SVG,
+      item_arrow_iron: MonsterAndItemSprites.ITEM_ARROW_IRON_SVG,
+      item_arrow_silver: MonsterAndItemSprites.ITEM_ARROW_SILVER_SVG,
+      // 魔法の杖
+      item_staff: MonsterAndItemSprites.ITEM_STAFF_SVG,
+      item_staff_blast: MonsterAndItemSprites.ITEM_STAFF_BLAST_SVG,
+      item_staff_switch: MonsterAndItemSprites.ITEM_STAFF_SWITCH_SVG,
+      item_staff_paralyze: MonsterAndItemSprites.ITEM_STAFF_PARALYZE_SVG,
+      item_staff_thunder: MonsterAndItemSprites.ITEM_STAFF_THUNDER_SVG,
+      // 腕輪
+      item_ring: MonsterAndItemSprites.ITEM_RING_SVG,
+      // 追加の草
+      item_potion_revive: MonsterAndItemSprites.ITEM_POTION_REVIVE_SVG,
+      item_potion_otogiri: MonsterAndItemSprites.ITEM_POTION_OTOGIRI_SVG,
+      item_potion_life: MonsterAndItemSprites.ITEM_POTION_LIFE_SVG,
+      // 追加の巻物
+      item_scroll_upgrade_atk: MonsterAndItemSprites.ITEM_SCROLL_UPGRADE_ATK_SVG,
+      item_scroll_upgrade_def: MonsterAndItemSprites.ITEM_SCROLL_UPGRADE_DEF_SVG,
+      item_scroll_vacuum: MonsterAndItemSprites.ITEM_SCROLL_VACUUM_SVG,
     };
 
     const promises: Promise<void>[] = [];
@@ -1068,7 +1107,10 @@ export class SVGSprites {
     name?: string
   ): SpriteId {
     if (name) {
-      // ポーション・薬・種
+      // ポーション・薬・種・草
+      if (name.includes('復活')) return 'item_potion_revive';
+      if (name.includes('弟切草')) return 'item_potion_otogiri';
+      if (name.includes('命の草')) return 'item_potion_life';
       if (name.includes('特薬草')) return 'item_potion_high';
       if (name.includes('剛力')) return 'item_potion_str';
       if (name.includes('どくけし') || name.includes('毒消し')) return 'item_potion_antidote';
@@ -1078,6 +1120,18 @@ export class SVGSprites {
       if (name.includes('巨大なおにぎり')) return 'item_food_big_riceball';
       if (name.includes('おにぎり')) return 'item_food_riceball';
       if (name.includes('パン')) return 'item_food';
+      // 飛び道具（矢）
+      if (name.includes('銀の矢')) return 'item_arrow_silver';
+      if (name.includes('鉄の矢')) return 'item_arrow_iron';
+      if (name.includes('矢')) return 'item_arrow';
+      // 魔法の杖
+      if (name.includes('吹き飛ばし')) return 'item_staff_blast';
+      if (name.includes('場所替え')) return 'item_staff_switch';
+      if (name.includes('かなしばり') || name.includes('金縛り')) return 'item_staff_paralyze';
+      if (name.includes('雷鳴')) return 'item_staff_thunder';
+      if (name.includes('杖')) return 'item_staff';
+      // 腕輪
+      if (name.includes('腕輪')) return 'item_ring';
       // 武器
       if (name.includes('短剣') || name.includes('青銅の短剣')) return 'item_weapon_dagger';
       if (name.includes('ムラマサ') || name.includes('妖刀')) return 'item_weapon_muramasa';
@@ -1097,6 +1151,9 @@ export class SVGSprites {
       if (name.includes('ドラゴン')) return 'item_shield_dragon';
       if (name.includes('盾')) return 'item_shield';
       // 巻物
+      if (name.includes('天の恵み')) return 'item_scroll_upgrade_atk';
+      if (name.includes('地の恵み')) return 'item_scroll_upgrade_def';
+      if (name.includes('真空斬り')) return 'item_scroll_vacuum';
       if (name.includes('雷')) return 'item_scroll_thunder';
       if (name.includes('あかり')) return 'item_scroll_light';
       if (name.includes('睡眠')) return 'item_scroll_sleep';
@@ -1105,6 +1162,12 @@ export class SVGSprites {
     }
 
     switch (category) {
+      case 'ARROW':
+        return 'item_arrow';
+      case 'STAFF':
+        return 'item_staff';
+      case 'TALISMAN':
+        return 'item_ring';
       case 'POTION':
         return 'item_potion';
       case 'FOOD':

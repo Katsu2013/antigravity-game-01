@@ -80,6 +80,16 @@ export class GameEngine {
     damage?: number
   ) => void;
 
+  /** 飛び道具・光線演出発生時コールバック */
+  public onProjectile?: (
+    fromX: number,
+    fromY: number,
+    toX: number,
+    toY: number,
+    type: 'ARROW' | 'BEAM' | 'STONE' | 'ITEM',
+    color: string
+  ) => void;
+
   /** 演出アニメーション中（岩押し・氷滑走・沼脱出など）に次の操作を遮断するミリ秒タイムスタンプ */
   public actionLockUntil = 0;
 
@@ -167,6 +177,27 @@ export class GameEngine {
     this.addLog('持ち物を種類順に整理整頓した。', 'info');
     this.saveGame();
     this.notify();
+  }
+
+  /**
+   * 飛び道具（弓矢など）を発射します。
+   */
+  public shoot(arrowId?: string): boolean {
+    return this.executeAction({ type: 'SHOOT', itemId: arrowId });
+  }
+
+  /**
+   * 魔法の杖を振ります。
+   */
+  public zapStaff(staffId: string): boolean {
+    return this.executeAction({ type: 'ZAP_STAFF', itemId: staffId });
+  }
+
+  /**
+   * アイテムを向いている方向へ投げつけます。
+   */
+  public throwItem(itemId: string): boolean {
+    return this.executeAction({ type: 'THROW_ITEM', itemId });
   }
 
   /**
@@ -552,6 +583,75 @@ export class GameEngine {
         break;
       }
 
+      case 'SHOOT': {
+        const result = ItemSystem.shootArrow(
+          this.player,
+          this.map,
+          action.itemId,
+          action.dx,
+          action.dy
+        );
+        this.addLog(result.message, result.success ? 'info' : 'warning');
+        if (result.projectile) {
+          this.onProjectile?.(
+            result.projectile.fromX,
+            result.projectile.fromY,
+            result.projectile.toX,
+            result.projectile.toY,
+            result.projectile.type,
+            result.projectile.color
+          );
+        }
+        turnPassed = result.success;
+        break;
+      }
+
+      case 'ZAP_STAFF': {
+        const result = ItemSystem.zapStaff(
+          this.player,
+          this.map,
+          action.itemId,
+          action.dx,
+          action.dy
+        );
+        this.addLog(result.message, result.success ? 'info' : 'warning');
+        if (result.projectile) {
+          this.onProjectile?.(
+            result.projectile.fromX,
+            result.projectile.fromY,
+            result.projectile.toX,
+            result.projectile.toY,
+            result.projectile.type,
+            result.projectile.color
+          );
+        }
+        turnPassed = result.success;
+        break;
+      }
+
+      case 'THROW_ITEM': {
+        const result = ItemSystem.throwItem(
+          this.player,
+          this.map,
+          action.itemId,
+          action.dx,
+          action.dy
+        );
+        this.addLog(result.message, result.success ? 'info' : 'warning');
+        if (result.projectile) {
+          this.onProjectile?.(
+            result.projectile.fromX,
+            result.projectile.fromY,
+            result.projectile.toX,
+            result.projectile.toY,
+            result.projectile.type,
+            result.projectile.color
+          );
+        }
+        turnPassed = result.success;
+        break;
+      }
+
       case 'DESCEND': {
         const currentTile = this.map.tiles[this.player.y][this.player.x];
         if (currentTile === TileType.StairsDown) {
@@ -597,6 +697,19 @@ export class GameEngine {
     this.updateMonsters();
 
     if (!this.player.isAlive) {
+      const reviveIdx = this.player.inventory.findIndex((it) => it.name.includes('復活の草'));
+      if (reviveIdx !== -1) {
+        this.player.inventory.splice(reviveIdx, 1);
+        this.player.hp = this.player.maxHp;
+        this.player.isAlive = true;
+        this.addLog(
+          '力尽きて倒れた……だが、袋の中の【復活の草】が神々しい黄金の光を放ち、奇跡的に息を吹き返した！(HP全快)',
+          'info'
+        );
+        this.notify();
+        return;
+      }
+
       const cause = this.lastDefeatCause || '力尽きて倒れてしまった';
       this.addLog(`あなたは${cause}…… (GAME OVER)`, 'damage');
       // 死亡時: パーマデス担保のためセーブデータを削除しハイスコアを保存
@@ -618,6 +731,14 @@ export class GameEngine {
     }
 
     this.player.turn += 1;
+
+    // 倍速バフのターン経過
+    if (this.player.speedTurns && this.player.speedTurns > 0) {
+      this.player.speedTurns--;
+      if (this.player.speedTurns === 0) {
+        this.addLog('疾風の加護が解け、通常速度に戻った。', 'normal');
+      }
+    }
 
     // 2. 満腹度の減少（10ターンごとに1%減少）
     if (this.player.turn % 10 === 0 && this.player.hunger > 0) {
@@ -1307,14 +1428,55 @@ export class GameEngine {
         return;
       }
 
-      // 0. 大石や氷塊の直撃でスタン（気絶・怯み）中のモンスターは行動不能（1ターン行動スキップ）
+      // 0-A. 金縛り中のモンスターは完全に行動不能
+      if (monster.isParalyzed) {
+        continue;
+      }
+
+      // 0-B. 睡眠中のモンスターはターン経過で目を覚ますまで行動不能
+      if (monster.sleepTurns && monster.sleepTurns > 0) {
+        monster.sleepTurns--;
+        continue;
+      }
+
+      // 0-C. 混乱中のモンスターはランダム行動
+      if (monster.confuseTurns && monster.confuseTurns > 0) {
+        monster.confuseTurns--;
+        const dirs = [
+          { dx: 1, dy: 0 }, { dx: -1, dy: 0 }, { dx: 0, dy: 1 }, { dx: 0, dy: -1 },
+          { dx: 1, dy: 1 }, { dx: -1, dy: -1 }, { dx: 1, dy: -1 }, { dx: -1, dy: 1 },
+        ];
+        const rDir = dirs[Math.floor(Math.random() * dirs.length)];
+        const nx = monster.x + rDir.dx;
+        const ny = monster.y + rDir.dy;
+        if (
+          nx >= 0 && nx < this.map.width && ny >= 0 && ny < this.map.height &&
+          this.map.tiles[ny][nx] !== TileType.Wall
+        ) {
+          if (nx === playerPos.x && ny === playerPos.y) {
+            this.onAttack?.(monster.id, rDir.dx, rDir.dy, 'player');
+            this.onDamage?.('player');
+            const combat = CombatSystem.monsterAttack(monster, this.player);
+            this.addLog(
+              `${monster.name} は混乱して突進してきた！ あなたは ${combat.damage} のダメージを受けた！`,
+              'damage'
+            );
+          } else if (!this.map.monsters.some((m) => m !== monster && m.x === nx && m.y === ny)) {
+            monster.x = nx;
+            monster.y = ny;
+          }
+        }
+        continue;
+      }
+
+      // 0-D. 大石や氷塊の直撃でスタン（気絶・怯み）中のモンスターは行動不能（1ターン行動スキップ）
       if (monster.isStunned) {
         monster.isStunned = false;
         continue;
       }
 
-      // 1. 擬態・休眠中のミミック（MIMIC）は刺激されるまで動かない
-      if (monster.isDormant) {
+      // 1. 擬態・休眠中のミミック（MIMIC）は刺激されるまで動かない（封印されていなければ）
+      if (monster.isDormant && !monster.isSealed) {
         continue;
       }
 
@@ -1343,15 +1505,27 @@ export class GameEngine {
           'damage'
         );
         if (!this.player.isAlive) {
-          this.lastDefeatCause = `${monster.name} の攻撃により力尽きた`;
-          return; // 死亡確定時は即座に全モンスターの行動を完全終了！
+          const reviveIdx = this.player.inventory.findIndex((it) => it.name.includes('復活の草'));
+          if (reviveIdx !== -1) {
+            this.player.inventory.splice(reviveIdx, 1);
+            this.player.hp = this.player.maxHp;
+            this.player.isAlive = true;
+            this.addLog(
+              '力尽きて倒れた……だが、袋の中の【復活の草】が神々しい黄金の光を放ち、奇跡的に息を吹き返した！(HP全快)',
+              'info'
+            );
+          } else {
+            this.lastDefeatCause = `${monster.name} の攻撃により力尽きた`;
+            return; // 死亡確定時は即座に全モンスターの行動を完全終了！
+          }
         }
         continue;
       }
 
-      // 4. 中距離遠隔攻撃（メイジ、インプ等）: 距離2〜3マスで射線が通る場合
+      // 4. 中距離遠隔攻撃（メイジ、インプ等）: 距離2〜3マスで射線が通る場合（封印されていない場合）
       if (
         monster.hasRangedAttack &&
+        !monster.isSealed &&
         distToPlayer >= 2 &&
         distToPlayer <= 3 &&
         isPlayerVisible
@@ -1388,9 +1562,20 @@ export class GameEngine {
           }
 
           if (this.player.hp <= 0) {
-            this.player.isAlive = false;
-            this.lastDefeatCause = `${monster.name} の遠隔攻撃により力尽きた`;
-            return; // 死亡確定時は即座に全モンスターの行動を完全終了！
+            const reviveIdx = this.player.inventory.findIndex((it) => it.name.includes('復活の草'));
+            if (reviveIdx !== -1) {
+              this.player.inventory.splice(reviveIdx, 1);
+              this.player.hp = this.player.maxHp;
+              this.player.isAlive = true;
+              this.addLog(
+                '力尽きて倒れた……だが、袋の中の【復活の草】が神々しい黄金の光を放ち、奇跡的に息を吹き返した！(HP全快)',
+                'info'
+              );
+            } else {
+              this.player.isAlive = false;
+              this.lastDefeatCause = `${monster.name} の遠隔攻撃により力尽きた`;
+              return; // 死亡確定時は即座に全モンスターの行動を完全終了！
+            }
           }
           continue;
         }

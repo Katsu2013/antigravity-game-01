@@ -369,7 +369,7 @@ export class UIManager {
   }
 
   /**
-   * 現在選択中のアイテムを使用（消費・装備・外す）します。
+   * 現在選択中のアイテムを使用（消費・装備・外す・撃つ・振る）します。
    */
   public useSelectedInventoryItem(): void {
     const items = this.engine.player.inventory;
@@ -377,7 +377,31 @@ export class UIManager {
     const item = items[this.selectedInventoryIndex];
     if (!item) return;
 
-    this.engine.executeAction({ type: 'USE_ITEM', itemId: item.id });
+    if (item.category === 'ARROW') {
+      this.engine.shoot(item.id);
+    } else if (item.category === 'STAFF') {
+      this.engine.zapStaff(item.id);
+    } else {
+      this.engine.executeAction({ type: 'USE_ITEM', itemId: item.id });
+    }
+
+    const nextLen = this.engine.player.inventory.length;
+    if (this.selectedInventoryIndex >= nextLen) {
+      this.selectedInventoryIndex = Math.max(0, nextLen - 1);
+    }
+    this.highlightSelectedInventoryItem();
+  }
+
+  /**
+   * 現在選択中のアイテムを向いている方向に投げます。
+   */
+  public throwSelectedInventoryItem(): void {
+    const items = this.engine.player.inventory;
+    if (items.length === 0) return;
+    const item = items[this.selectedInventoryIndex];
+    if (!item) return;
+
+    this.engine.throwItem(item.id);
 
     const nextLen = this.engine.player.inventory.length;
     if (this.selectedInventoryIndex >= nextLen) {
@@ -548,7 +572,8 @@ export class UIManager {
     for (const item of player.inventory) {
       const isEquipped =
         player.equippedWeapon?.id === item.id ||
-        player.equippedShield?.id === item.id;
+        player.equippedShield?.id === item.id ||
+        player.equippedTalisman?.id === item.id;
 
       const card = document.createElement('div');
       card.className = `inventory-item-card ${isEquipped ? 'equipped' : ''}`;
@@ -571,13 +596,22 @@ export class UIManager {
         icon.textContent = item.symbol;
       }
 
-      // アイテム名・装備タグ
+      // アイテム名・装備タグ・残数・強化値
       const nameRow = document.createElement('div');
       nameRow.className = 'item-name-row';
 
       const name = document.createElement('span');
       name.className = 'item-name';
-      name.textContent = item.name;
+      let displayName = item.name;
+      if (item.upgradeLevel && item.upgradeLevel > 0) {
+        displayName += `+${item.upgradeLevel}`;
+      }
+      if (item.category === 'ARROW' && item.count !== undefined) {
+        displayName += ` [${item.count}]`;
+      } else if (item.category === 'STAFF' && item.charges !== undefined) {
+        displayName += ` [${item.charges}]`;
+      }
+      name.textContent = displayName;
       nameRow.appendChild(name);
 
       if (isEquipped) {
@@ -591,19 +625,46 @@ export class UIManager {
       const actions = document.createElement('div');
       actions.className = 'item-actions';
 
-      // 使う/装備ボタン
+      // 使う/装備/撃つ/振るボタン
       const useBtn = document.createElement('button');
       useBtn.className = 'item-btn use-btn';
-      useBtn.textContent =
-        item.category === 'WEAPON' || item.category === 'SHIELD'
-          ? isEquipped
-            ? '外す'
-            : '装備'
-          : '使う';
+      if (item.category === 'ARROW') {
+        useBtn.textContent = '撃つ';
+        useBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.engine.shoot(item.id);
+        });
+      } else if (item.category === 'STAFF') {
+        useBtn.textContent = '振る';
+        useBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.engine.zapStaff(item.id);
+        });
+      } else if (
+        item.category === 'WEAPON' ||
+        item.category === 'SHIELD' ||
+        item.category === 'TALISMAN'
+      ) {
+        useBtn.textContent = isEquipped ? '外す' : '装備';
+        useBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.engine.executeAction({ type: 'USE_ITEM', itemId: item.id });
+        });
+      } else {
+        useBtn.textContent = '使う';
+        useBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.engine.executeAction({ type: 'USE_ITEM', itemId: item.id });
+        });
+      }
 
-      useBtn.addEventListener('click', (e) => {
+      // 投げるボタン
+      const throwBtn = document.createElement('button');
+      throwBtn.className = 'item-btn throw-btn';
+      throwBtn.textContent = '投げる';
+      throwBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        this.engine.executeAction({ type: 'USE_ITEM', itemId: item.id });
+        this.engine.throwItem(item.id);
       });
 
       // 置くボタン
@@ -616,6 +677,7 @@ export class UIManager {
       });
 
       actions.appendChild(useBtn);
+      actions.appendChild(throwBtn);
       actions.appendChild(dropBtn);
 
       // 上段: アイコン ＋ アイテム名・装備タグ ＋ 操作ボタン

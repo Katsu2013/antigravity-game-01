@@ -163,6 +163,11 @@ export class CanvasRenderer {
 
       this.anim.triggerIceSlideMotion(slideDuration);
     };
+
+    // 飛び道具・杖ビームアニメーションの購読
+    this.engine.onProjectile = (fromX, fromY, toX, toY, type, color) => {
+      this.anim.triggerProjectile(fromX, fromY, toX, toY, type, color);
+    };
   }
 
   /**
@@ -397,6 +402,9 @@ export class CanvasRenderer {
 
     // 5.5. 演出パーティクルの描画（破砕片・土煙・きらめき等）
     this.drawParticles(ctx, cameraX, cameraY, effectiveTileSize);
+
+    // 5.6. 飛翔中の飛び道具・魔法ビーム光線・投擲物の描画
+    this.drawProjectiles(ctx, cameraX, cameraY, effectiveTileSize);
 
     // 6. 死亡時ゲームオーバー暗幕・ドラマチックヴィネットエフェクト
     if (!player.isAlive) {
@@ -2069,6 +2077,138 @@ export class CanvasRenderer {
   }
 
   /**
+   * 飛翔中の飛び道具（矢、石、アイテム）および魔法の杖のビーム光線を描画します。
+   */
+  private drawProjectiles(
+    ctx: CanvasRenderingContext2D,
+    cameraX: number,
+    cameraY: number,
+    tileSize: number
+  ): void {
+    if (!this.anim.projectiles || this.anim.projectiles.length === 0) return;
+
+    ctx.save();
+    for (const p of this.anim.projectiles) {
+      const fromScreenX = cameraX + (p.fromX + 0.5) * tileSize;
+      const fromScreenY = cameraY + (p.fromY + 0.5) * tileSize;
+      const toScreenX = cameraX + (p.toX + 0.5) * tileSize;
+      const toScreenY = cameraY + (p.toY + 0.5) * tileSize;
+
+      const curScreenX = fromScreenX + (toScreenX - fromScreenX) * p.progress;
+      let curScreenY = fromScreenY + (toScreenY - fromScreenY) * p.progress;
+
+      const angle = Math.atan2(toScreenY - fromScreenY, toScreenX - fromScreenX);
+
+      if (p.type === 'BEAM') {
+        // 杖の魔法光線（太いグローライン＋中心コアレーザー＋先端スパーク）
+        const alpha = Math.sin(p.progress * Math.PI); // フェードイン・アウト
+        ctx.save();
+        ctx.globalAlpha = Math.max(0.2, alpha);
+
+        // 外側グロー
+        ctx.strokeStyle = p.color;
+        ctx.lineWidth = 8;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(fromScreenX, fromScreenY);
+        ctx.lineTo(toScreenX, toScreenY);
+        ctx.stroke();
+
+        // 内側コア光線
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(fromScreenX, fromScreenY);
+        ctx.lineTo(toScreenX, toScreenY);
+        ctx.stroke();
+
+        // 先端スパーク
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(curScreenX, curScreenY, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      } else if (p.type === 'ARROW') {
+        // 矢の描画（直線高速飛翔＋矢羽・鏃）
+        ctx.save();
+        ctx.translate(curScreenX, curScreenY);
+        ctx.rotate(angle);
+
+        // 矢のトレイル（飛行の残像）
+        ctx.strokeStyle = p.color;
+        ctx.globalAlpha = 0.5;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(-16, 0);
+        ctx.lineTo(0, 0);
+        ctx.stroke();
+
+        // 矢のシャフト
+        ctx.strokeStyle = '#b45309';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(-10, 0);
+        ctx.lineTo(8, 0);
+        ctx.stroke();
+
+        // 矢羽（後部フェザー）
+        ctx.fillStyle = '#e2e8f0';
+        ctx.beginPath();
+        ctx.moveTo(-10, 0);
+        ctx.lineTo(-13, -3);
+        ctx.lineTo(-8, 0);
+        ctx.lineTo(-13, 3);
+        ctx.closePath();
+        ctx.fill();
+
+        // 鏃（先端メタルヘッド）
+        ctx.fillStyle = p.color === '#e2e8f0' ? '#f8fafc' : '#94a3b8';
+        ctx.beginPath();
+        ctx.moveTo(8, -4);
+        ctx.lineTo(13, 0);
+        ctx.lineTo(8, 4);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      } else {
+        // STONE or ITEM: 放物線アークを描いて回転しながら飛ぶ
+        const arcHeight = Math.sin(p.progress * Math.PI) * (tileSize * 0.8);
+        curScreenY -= arcHeight;
+
+        ctx.save();
+        ctx.translate(curScreenX, curScreenY);
+        ctx.rotate(p.progress * Math.PI * 8); // 高速回転
+
+        if (p.type === 'STONE') {
+          // 石ころ
+          ctx.fillStyle = '#78716c';
+          ctx.beginPath();
+          ctx.arc(0, 0, 5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#a8a29e';
+          ctx.beginPath();
+          ctx.arc(-1, -1, 3, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          // アイテム投擲（汎用アイテム光弾 / ドロップ体）
+          ctx.fillStyle = p.color || '#38bdf8';
+          ctx.shadowColor = p.color || '#38bdf8';
+          ctx.shadowBlur = 6;
+          ctx.beginPath();
+          ctx.arc(0, 0, 6, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(-2, -2, 2.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+    }
+    ctx.restore();
+  }
+
+  /**
    * 敵モンスターをSVGスプライトおよび向き・アニメーション付きで描画します。
    *
    * @param ctx - Canvas描画コンテキスト
@@ -2206,6 +2346,45 @@ export class CanvasRenderer {
     }
 
     ctx.restore();
+
+    // 状態異常アイコン（頭上バッジ）の描画
+    const statusBadges: { icon: string; bg: string; color: string }[] = [];
+    if (monster.isParalyzed) {
+      statusBadges.push({ icon: '⚡', bg: '#854d0e', color: '#fef08a' }); // かなしばり
+    }
+    if ((monster.sleepTurns ?? 0) > 0) {
+      statusBadges.push({ icon: '💤', bg: '#3730a3', color: '#c7d2fe' }); // 睡眠
+    }
+    if ((monster.confuseTurns ?? 0) > 0) {
+      statusBadges.push({ icon: '💫', bg: '#86198f', color: '#f5d0fe' }); // 混乱
+    }
+    if (monster.isSealed) {
+      statusBadges.push({ icon: '🔒', bg: '#991b1b', color: '#fee2e2' }); // 封印
+    }
+
+    if (statusBadges.length > 0) {
+      const badgeSize = Math.max(12, Math.floor(tileSize * 0.38));
+      const totalW = statusBadges.length * (badgeSize + 2) - 2;
+      let startBx = cx - totalW / 2;
+      const startBy = screenY - badgeSize + 2;
+
+      for (const badge of statusBadges) {
+        ctx.fillStyle = badge.bg;
+        ctx.beginPath();
+        ctx.arc(startBx + badgeSize / 2, startBy + badgeSize / 2, badgeSize / 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = badge.color;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.font = `${Math.floor(badgeSize * 0.7)}px sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = badge.color;
+        ctx.fillText(badge.icon, startBx + badgeSize / 2, startBy + badgeSize / 2);
+        startBx += badgeSize + 2;
+      }
+    }
 
     // HPバーの描画（ダメージを受けている場合のみ）
     if (monster.hp < monster.maxHp) {

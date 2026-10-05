@@ -39,11 +39,17 @@ export class CombatSystem {
     let bonusDef = 0;
 
     if (player.equippedWeapon) {
-      bonusAtk += player.equippedWeapon.value;
+      bonusAtk += player.equippedWeapon.value + (player.equippedWeapon.upgradeLevel ?? 0);
     }
 
     if (player.equippedShield) {
-      bonusDef += player.equippedShield.value;
+      bonusDef += player.equippedShield.value + (player.equippedShield.upgradeLevel ?? 0);
+    }
+
+    if (player.equippedTalisman) {
+      if (player.equippedTalisman.name.includes('ちから') || player.equippedTalisman.name.includes('力')) {
+        bonusAtk += player.equippedTalisman.value || 3;
+      }
     }
 
     player.atk = player.baseAtk + bonusAtk;
@@ -55,7 +61,7 @@ export class CombatSystem {
    *
    * @param player - 攻撃側のプレイヤー
    * @param monster - 攻撃対象のモンスター
-   * @param isBackstab - 背後からの不意打ちかどうか（ダメージ1.5倍）
+   * @param isBackstab - 背後からの不意打ちかどうか（ダメージ1.6倍）
    * @returns 戦闘結果オブジェクト
    */
   public static playerAttack(
@@ -63,9 +69,23 @@ export class CombatSystem {
     monster: Monster,
     isBackstab = false
   ): CombatResult {
+    // 攻撃を受けたモンスターの金縛り・睡眠状態を解除
+    if (monster.isParalyzed) {
+      monster.isParalyzed = false;
+    }
+    if (monster.sleepTurns) {
+      monster.sleepTurns = 0;
+    }
+
     // ダメージ計算: ATK * (0.85 〜 1.15) - DEF
     const variance = 0.85 + Math.random() * 0.3;
-    const baseDamage = player.atk * variance - monster.def;
+    let baseDamage = player.atk * variance - monster.def;
+
+    // 特効武器判定（ドラゴンキラー等）
+    if (player.equippedWeapon?.specialEffect === 'DRAGON_SLAYER' && monster.type === 'DRAGON') {
+      baseDamage *= 1.8;
+    }
+
     let damage = Math.max(1, Math.round(baseDamage));
 
     if (isBackstab) {
@@ -93,6 +113,53 @@ export class CombatSystem {
       didLevelUp,
       expGained,
       isBackstab,
+    };
+  }
+
+  /**
+   * 飛び道具（弓矢・投石・投擲アイテム）によるモンスターへの遠距離ダメージを計算・適用します。
+   *
+   * @param player - 攻撃側のプレイヤー
+   * @param monster - 標的モンスター
+   * @param projectilePower - 飛び道具の威力
+   * @returns 戦闘結果オブジェクト
+   */
+  public static calculateRangedDamage(
+    player: PlayerState,
+    monster: Monster,
+    projectilePower: number
+  ): CombatResult {
+    // 被弾により金縛り・睡眠は解除
+    if (monster.isParalyzed) {
+      monster.isParalyzed = false;
+    }
+    if (monster.sleepTurns) {
+      monster.sleepTurns = 0;
+    }
+
+    // 遠隔ダメージ式: 飛び道具威力 + (ATK * 0.35) - (DEF * 0.7)
+    const variance = 0.9 + Math.random() * 0.25;
+    const rawDamage = (projectilePower + player.atk * 0.35) * variance - monster.def * 0.7;
+    const damage = Math.max(1, Math.round(rawDamage));
+
+    monster.hp = Math.max(0, monster.hp - damage);
+    const isDefeated = monster.hp <= 0;
+    let didLevelUp = false;
+    let expGained = 0;
+
+    if (isDefeated) {
+      expGained = monster.expValue;
+      player.exp += expGained;
+      didLevelUp = this.checkLevelUp(player);
+    }
+
+    return {
+      attackerName: 'あなた',
+      defenderName: monster.name,
+      damage,
+      isDefeated,
+      didLevelUp,
+      expGained,
     };
   }
 

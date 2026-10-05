@@ -34,6 +34,20 @@ export interface VisualParticle {
 }
 
 /**
+ * 飛翔中の飛び道具や魔法ビームの視覚状態を表すインターフェース。
+ */
+export interface VisualProjectile {
+  fromX: number;
+  fromY: number;
+  toX: number;
+  toY: number;
+  type: 'ARROW' | 'BEAM' | 'STONE' | 'ITEM';
+  color: string;
+  progress: number;
+  speed: number;
+}
+
+/**
  * 個々のエンティティの動的アニメーション状態を表すインターフェース。
  */
 export interface EntityAnimState {
@@ -129,6 +143,34 @@ export class AnimationEngine {
   /** 氷スリップ転倒ダウン経過時間（秒、未発生時は -1） */
   private playerSlipFallTime = -1;
   private playerSlipFallDuration = 0.45;
+
+  /** 飛行中の飛び道具・ビーム光線リスト */
+  public projectiles: VisualProjectile[] = [];
+
+  /**
+   * 飛び道具（矢・石・杖の光線・投擲アイテム）の飛翔アニメーションをトリガーします。
+   */
+  public triggerProjectile(
+    fromX: number,
+    fromY: number,
+    toX: number,
+    toY: number,
+    type: 'ARROW' | 'BEAM' | 'STONE' | 'ITEM',
+    color: string
+  ): void {
+    const dist = Math.hypot(toX - fromX, toY - fromY);
+    const speed = type === 'BEAM' ? 7.0 : type === 'ARROW' ? Math.max(6.0, 16.0 / (dist || 1)) : 5.0;
+    this.projectiles.push({
+      fromX,
+      fromY,
+      toX,
+      toY,
+      type,
+      color,
+      progress: 0,
+      speed,
+    });
+  }
 
   /**
    * 画面全体の地響きスクリーンシェイクをトリガーします。
@@ -639,6 +681,15 @@ export class AnimationEngine {
       this.playerSlipFallTime -= dt;
     } else {
       this.playerSlipFallTime = -1;
+    }
+
+    // 飛翔体進行更新
+    for (let i = this.projectiles.length - 1; i >= 0; i--) {
+      const p = this.projectiles[i];
+      p.progress += dt * p.speed;
+      if (p.progress >= 1.0) {
+        this.projectiles.splice(i, 1);
+      }
     }
 
     // 1. 各エンティティの状態補間

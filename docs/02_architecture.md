@@ -161,13 +161,25 @@ IndexedDB を採用（LocalStorageの5MB制限や同期ブロックによる描�
 export type GameAction =
   | { type: 'MOVE'; dx: number; dy: number } // 8方向移動
   | { type: 'ATTACK'; dx: number; dy: number } // 指定方向への攻撃
+  | { type: 'SHOOT'; itemId?: string }        // 矢の8方向射出
+  | { type: 'ZAP_STAFF'; itemId: string }     // 魔法の杖の照射
+  | { type: 'THROW_ITEM'; itemId: string }    // アイテムの投擲
   | { type: 'WAIT' }                          // 足踏み（HP回復）
   | { type: 'PICKUP' }                        // アイテム取得
   | { type: 'DESCEND' }                       // 階段を降りる
-  | { type: 'USE_ITEM'; itemId: string }      // アイテム使用
+  | { type: 'USE_ITEM'; itemId: string }      // アイテム使用・装備変更
   | { type: 'DROP_ITEM'; itemId: string }     // アイテム捨てる
   | { type: 'CHANGE_FACING'; dx: number; dy: number }; // 向き変更のみ
 ```
+
+- **アニメーション＆飛翔体アーキテクチャ (`AnimationEngine`)**:
+  - `CanvasRenderer` と疎結合したアニメーションエンジンが `VisualProjectile`（矢の弾道、杖の魔法レーザービーム、アイテム放物線アーク）を毎フレーム更新・補間描画。
+  - キャラクターの滑らかな移動補間、氷上スリップ（焦り振動＋傾き）、転倒スクワッシュ変形、泥濘脱出ジャンプ、被弾赤フラッシュを論理フレームレートから独立して滑らかに60fps補間描画。
+
+- **状態異常管理アーキテクチャ**:
+  - モンスター構造体に `isParalyzed`, `sleepTurns`, `confuseTurns`, `isSealed` を保持。
+  - `GameEngine.updateMonsters` にて、金縛り（完全静止）、睡眠（ターン減算＆被弾解除）、混乱（8方向ランダム移動・同士討ち）、封印（特殊攻撃無効化）をターン毎に一元処理。
+  - プレイヤーの死亡検知時にインベントリの「復活の草」を自動検索し、HP全快での即時奇跡蘇生（パーマデス回避）を割り込み処理。
 
 - **PC 入力**:
   - キーボードイベント（`keydown`）を直接 `GameAction` へマッピング。
