@@ -1243,9 +1243,19 @@ export class GameEngine {
    * マップ上の生存モンスター全員の自律AI（索敵・追跡・近接＆中距離攻撃）を実行します。
    */
   private updateMonsters(): void {
+    // プレイヤーが既に死亡している場合は一切のモンスター行動・攻撃を実行しない
+    if (!this.player.isAlive) {
+      return;
+    }
+
     const playerPos = { x: this.player.x, y: this.player.y };
 
     for (const monster of this.map.monsters) {
+      // ターン中の攻撃でプレイヤーが死亡した場合は即座に完全中断し、後続モンスターは攻撃しない
+      if (!this.player.isAlive) {
+        return;
+      }
+
       // 0. 大石や氷塊の直撃でスタン（気絶・怯み）中のモンスターは行動不能（1ターン行動スキップ）
       if (monster.isStunned) {
         monster.isStunned = false;
@@ -1283,7 +1293,7 @@ export class GameEngine {
         );
         if (!this.player.isAlive) {
           this.lastDefeatCause = `${monster.name} の攻撃により力尽きた`;
-          break;
+          return; // 死亡確定時は即座に全モンスターの行動を完全終了！
         }
         continue;
       }
@@ -1329,7 +1339,7 @@ export class GameEngine {
           if (this.player.hp <= 0) {
             this.player.isAlive = false;
             this.lastDefeatCause = `${monster.name} の遠隔攻撃により力尽きた`;
-            break;
+            return; // 死亡確定時は即座に全モンスターの行動を完全終了！
           }
           continue;
         }

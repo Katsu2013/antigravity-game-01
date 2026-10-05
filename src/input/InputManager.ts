@@ -77,7 +77,24 @@ export class InputManager {
    * @param action - 実行するアクション
    */
   private dispatchAction(action: ActionType): void {
-    if (this.engine.isActionLocked()) return;
+    // 死亡している場合はリスタートアクション以外は一切受け付けない
+    if (!this.engine.player.isAlive && action.type !== 'RESTART') {
+      return;
+    }
+    // 演出アニメーション中（岩押し・氷滑走等）は操作を受け付けない
+    if (this.engine.isActionLocked()) {
+      return;
+    }
+    // タイトル画面が表示されている時はダンジョン内操作を受け付けない
+    const titleScreen = document.getElementById('title-screen');
+    if (titleScreen && !titleScreen.classList.contains('hidden')) {
+      return;
+    }
+    // モーダル（所持品一覧、ゲームオーバー、スコア、ヘルプ等）が開いている時はダンジョン内操作を遮断
+    if (this.ui.isAnyModalOpen() && action.type !== 'RESTART') {
+      return;
+    }
+
     this.engine.executeAction(action);
   }
 
@@ -316,6 +333,11 @@ export class InputManager {
    */
   private bindMouse(): void {
     this.canvas.addEventListener('click', (e: MouseEvent) => {
+      // 死亡中またはモーダル（所持品一覧・ゲームオーバー・ヘルプ等）表示中は無効
+      if (!this.engine.player.isAlive || this.ui.isAnyModalOpen()) {
+        return;
+      }
+
       const rect = this.canvas.getBoundingClientRect();
       const clickX = e.clientX - rect.left;
       const clickY = e.clientY - rect.top;
@@ -344,6 +366,12 @@ export class InputManager {
     this.canvas.addEventListener(
       'touchstart',
       (e: TouchEvent) => {
+        // 死亡中またはモーダル表示中は無効
+        if (!this.engine.player.isAlive || this.ui.isAnyModalOpen()) {
+          this.isTouching = false;
+          return;
+        }
+
         if (e.touches.length === 1) {
           this.isTouching = true;
           this.touchStartX = e.touches[0].clientX;
@@ -358,6 +386,11 @@ export class InputManager {
       (e: TouchEvent) => {
         if (!this.isTouching) return;
         this.isTouching = false;
+
+        // 死亡中またはモーダル表示中は無効
+        if (!this.engine.player.isAlive || this.ui.isAnyModalOpen()) {
+          return;
+        }
 
         const touchEndX = e.changedTouches[0].clientX;
         const touchEndY = e.changedTouches[0].clientY;
@@ -477,6 +510,12 @@ export class InputManager {
       btn.addEventListener('pointerdown', (e: PointerEvent) => {
         e.preventDefault();
 
+        // 死亡時または所持品以外のモーダル（ヘルプ・ゲームオーバー・スコア等）が開いている場合は何もしない
+        if (!this.engine.player.isAlive || (this.ui.isAnyModalOpen() && !this.ui.isInventoryOpen())) {
+          this.stopButtonRepeat();
+          return;
+        }
+
         // 所持品モーダル表示中の十字キー操作（上下でアイテム選択カーソル移動）
         if (this.ui.isInventoryOpen()) {
           const dir = btn.dataset.dir;
@@ -523,6 +562,9 @@ export class InputManager {
     // [Aボタン] 決定 / 拾う / 階段（所持品モーダル中はアイテム使用/装備）
     document.getElementById('btn-pad-a')?.addEventListener('pointerdown', (e) => {
       e.preventDefault();
+      if (!this.engine.player.isAlive || (this.ui.isAnyModalOpen() && !this.ui.isInventoryOpen())) {
+        return;
+      }
       if (this.ui.isInventoryOpen()) {
         this.ui.useSelectedInventoryItem();
         return;
@@ -535,6 +577,9 @@ export class InputManager {
     if (btnB) {
       btnB.addEventListener('pointerdown', (e) => {
         e.preventDefault();
+        if (!this.engine.player.isAlive || (this.ui.isAnyModalOpen() && !this.ui.isInventoryOpen())) {
+          return;
+        }
         if (this.ui.isInventoryOpen()) {
           this.ui.closeInventoryModal();
           return;
@@ -559,6 +604,7 @@ export class InputManager {
       btnX.addEventListener('pointerdown', (e) => {
         e.preventDefault();
         e.stopPropagation();
+        if (!this.engine.player.isAlive) return;
         this.ui.toggleInventoryModal();
       });
       btnX.addEventListener('click', (e) => {
@@ -570,6 +616,9 @@ export class InputManager {
     // [Yボタン] ミニマップ切替（所持品モーダル中は持ち物整理整頓）
     document.getElementById('btn-pad-y')?.addEventListener('pointerdown', (e) => {
       e.preventDefault();
+      if (!this.engine.player.isAlive || (this.ui.isAnyModalOpen() && !this.ui.isInventoryOpen())) {
+        return;
+      }
       if (this.ui.isInventoryOpen()) {
         this.ui.sortInventoryFromUI();
         return;
@@ -580,12 +629,18 @@ export class InputManager {
     // HUDのミニマップ切替ボタン
     document.getElementById('btn-toggle-map')?.addEventListener('click', (e) => {
       e.preventDefault();
+      if (!this.engine.player.isAlive || this.ui.isAnyModalOpen()) {
+        return;
+      }
       this.toggleMinimap();
     });
 
     // 再生成ボタン
     document.getElementById('btn-regen')?.addEventListener('pointerdown', (e) => {
       e.preventDefault();
+      if (!this.engine.player.isAlive || this.ui.isAnyModalOpen()) {
+        return;
+      }
       this.dispatchAction({ type: 'REGEN' });
     });
   }

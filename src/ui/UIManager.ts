@@ -267,6 +267,18 @@ export class UIManager {
   }
 
   /**
+   * いずれかのモーダル（インベントリ、ゲームオーバー、スコア、ヘルプ）が開いているかを判定します。
+   */
+  public isAnyModalOpen(): boolean {
+    return (
+      this.isInventoryOpen() ||
+      !this.gameOverModalEl.classList.contains('hidden') ||
+      !this.scoresModalEl.classList.contains('hidden') ||
+      !this.helpModalEl.classList.contains('hidden')
+    );
+  }
+
+  /**
    * インベントリモーダルを開きます。
    * 下部コントローラーをインベントリ操作モード（使う/閉じる/整理）へ切り替えます。
    */
