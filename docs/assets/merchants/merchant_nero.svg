@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- 接地影 -->
+  <ellipse cx="32" cy="58" rx="20" ry="5.5" fill="rgba(0,0,0,0.35)"/>
+  <!-- 両足・革ブーツ -->
+  <rect x="23" y="47" width="8" height="9" rx="2.5" fill="#78350f" stroke="#451a03" stroke-width="1.2"/>
+  <rect x="33" y="47" width="8" height="9" rx="2.5" fill="#78350f" stroke="#451a03" stroke-width="1.2"/>
+  <!-- 胴体ローブ・上着 -->
+  <path d="M19 28 L45 28 L47 48 L17 48 Z" fill="#1e3a8a" stroke="#172554" stroke-width="1.5"/>
+  <!-- 革のエプロン -->
+  <path d="M22 30 L42 30 L40 47 L24 47 Z" fill="#b45309" stroke="#78350f" stroke-width="1.2"/>
+  <!-- エプロンのポケットとゴールド刺繍 -->
+  <rect x="26" y="38" width="12" height="7" rx="1.5" fill="#92400e" stroke="#d97706" stroke-width="1"/>
+  <circle cx="32" cy="41.5" r="2" fill="#fbbf24"/>
+  <!-- 右手: ずっしり重い金貨袋 -->
+  <path d="M46 36 Q49 32 52 35 Q55 38 54 44 Q52 48 47 47 Q44 45 44 40 Z" fill="#ca8a04" stroke="#854d0e" stroke-width="1.2"/>
+  <polygon points="48,34 51,32 50,35" fill="#eab308"/>
+  <line x1="47" y1="36" x2="52" y2="36" stroke="#713f12" stroke-width="1.5"/>
+  <text x="49" y="44" font-size="7" font-weight="bold" fill="#713f12" text-anchor="middle">G</text>
+  <!-- 左手: 招き手 -->
+  <circle cx="17" cy="38" r="3.5" fill="#fed7aa" stroke="#c2410c" stroke-width="1"/>
+  <!-- 商人の豊かな白髭 -->
+  <path d="M22 25 Q32 37 42 25 Q38 34 32 36 Q26 34 22 25 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+  <!-- 顔・肌 -->
+  <circle cx="32" cy="22" r="9" fill="#fed7aa" stroke="#c2410c" stroke-width="1.2"/>
+  <!-- 穏やかな目（笑顔） -->
+  <path d="M27 21 Q29 19 31 21" stroke="#7c2d12" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M33 21 Q35 19 37 21" stroke="#7c2d12" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <!-- 赤ら顔の鼻と頬 -->
+  <ellipse cx="32" cy="23.5" rx="2" ry="1.5" fill="#f97316"/>
+  <circle cx="25" cy="23" r="1.5" fill="#fb7185" opacity="0.6"/>
+  <circle cx="39" cy="23" r="1.5" fill="#fb7185" opacity="0.6"/>
+  <!-- 商人帽（緑のベレー帽と黄金の羽飾り） -->
+  <ellipse cx="32" cy="15" rx="13" ry="5.5" fill="#15803d" stroke="#14532d" stroke-width="1.5"/>
+  <ellipse cx="32" cy="13" rx="10" ry="4" fill="#16a34a"/>
+  <!-- 黄金の羽飾り -->
+  <path d="M38 14 Q46 6 48 3 Q43 9 40 13 Z" fill="#fbbf24" stroke="#d97706" stroke-width="0.8"/>
+</svg>

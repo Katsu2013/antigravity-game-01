@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="56" rx="14" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <path d="M32 52 Q34 40 32 32" stroke="#15803d" stroke-width="3" stroke-linecap="round"/>
+  <!-- 深紅の花弁 -->
+  <ellipse cx="26" cy="26" rx="5" ry="8" fill="#ef4444" stroke="#b91c1c" stroke-width="1.2" transform="rotate(-35 26 26)"/>
+  <ellipse cx="38" cy="26" rx="5" ry="8" fill="#ef4444" stroke="#b91c1c" stroke-width="1.2" transform="rotate(35 38 26)"/>
+  <ellipse cx="32" cy="20" rx="5" ry="8" fill="#dc2626" stroke="#991b1b" stroke-width="1.2"/>
+  <circle cx="32" cy="27" r="3" fill="#fbbf24"/>
+</svg>

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="56" rx="16" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <g transform="rotate(-45 32 32)">
+    <line x1="8" y1="32" x2="50" y2="32" stroke="#475569" stroke-width="3.5" stroke-linecap="round"/>
+    <!-- 鋭利な大型鉄鏃 -->
+    <polygon points="44,23 60,32 44,41" fill="#94a3b8" stroke="#1e293b" stroke-width="2"/>
+    <line x1="44" y1="32" x2="58" y2="32" stroke="#ffffff" stroke-width="1.5"/>
+    <!-- 矢羽（黒鷹の羽根） -->
+    <path d="M10,32 L2,24 L14,32 L2,40 Z" fill="#334155" stroke="#0f172a" stroke-width="1.2"/>
+  </g>
+</svg>

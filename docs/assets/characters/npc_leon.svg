@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="15" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <!-- 巨大バックパック（背後） -->
+  <rect x="18" y="22" width="28" height="24" rx="4" fill="#78350f" stroke="#451a03" stroke-width="1.5"/>
+  <rect x="20" y="24" width="24" height="6" fill="#92400e"/>
+  <line x1="24" y1="30" x2="24" y2="44" stroke="#451a03" stroke-width="1.2"/>
+  <line x1="40" y1="30" x2="40" y2="44" stroke="#451a03" stroke-width="1.2"/>
+  <!-- 丸めた寝袋（バックパック上） -->
+  <rect x="20" y="17" width="24" height="6" rx="3" fill="#15803d" stroke="#14532d" stroke-width="1.2"/>
+  <!-- 青いマント -->
+  <path d="M22 26 L16 52 L26 50 L32 52 L38 50 L48 52 L42 26 Z" fill="#2563eb" stroke="#1d4ed8" stroke-width="1.5"/>
+  <!-- 体（旅人の服・革ベルト） -->
+  <ellipse cx="32" cy="38" rx="9" ry="11" fill="#3b82f6"/>
+  <rect x="26" y="36" width="12" height="4" fill="#854d0e"/>
+  <circle cx="32" cy="38" r="2" fill="#fbbf24"/>
+  <!-- 足・ブーツ -->
+  <rect x="25" y="48" width="5" height="9" rx="2" fill="#78350f"/>
+  <rect x="34" y="48" width="5" height="9" rx="2" fill="#78350f"/>
+  <!-- 頭部・顔 -->
+  <ellipse cx="32" cy="22" rx="7.5" ry="7" fill="#fde047"/>
+  <ellipse cx="32" cy="22" rx="7" ry="6.5" fill="#fed7aa"/>
+  <!-- 茶髪 -->
+  <path d="M25 19 Q32 15 39 19 Q36 24 25 19 Z" fill="#78350f"/>
+  <!-- 冒険者の羽帽子 -->
+  <ellipse cx="32" cy="16" rx="10" ry="3.5" fill="#16a34a" stroke="#15803d" stroke-width="1"/>
+  <path d="M25 15 Q32 9 39 15 Z" fill="#15803d"/>
+  <!-- 帽子に差した白い羽根 -->
+  <path d="M37 14 Q44 6 46 4 Q43 11 39 15 Z" fill="#f8fafc" stroke="#94a3b8" stroke-width="0.8"/>
+  <!-- 瞳・笑顔 -->
+  <ellipse cx="29" cy="21" rx="1" ry="1.2" fill="#1e293b"/>
+  <ellipse cx="35" cy="21" rx="1" ry="1.2" fill="#1e293b"/>
+  <path d="M30 25 Q32 27 34 25" stroke="#9a3412" stroke-width="1" fill="none"/>
+  <!-- 手を振るポーズ -->
+  <circle cx="19" cy="35" r="3" fill="#fed7aa"/>
+  <circle cx="45" cy="35" r="3" fill="#fed7aa"/>
+</svg>

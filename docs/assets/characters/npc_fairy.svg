@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- 接地浮遊影（ふわふわ浮遊） -->
+  <ellipse cx="32" cy="58" rx="11" ry="3" fill="rgba(16,185,129,0.25)"/>
+  <!-- 背中の透明な妖精の羽（4枚） -->
+  <path d="M30 28 Q10 10 12 24 Q14 36 30 32 Z" fill="rgba(110,231,183,0.65)" stroke="#34d399" stroke-width="1.2"/>
+  <path d="M30 32 Q14 36 18 46 Q24 48 30 36 Z" fill="rgba(167,243,208,0.55)" stroke="#34d399" stroke-width="1"/>
+  <path d="M34 28 Q54 10 52 24 Q50 36 34 32 Z" fill="rgba(110,231,183,0.65)" stroke="#34d399" stroke-width="1.2"/>
+  <path d="M34 32 Q50 36 46 46 Q40 48 34 36 Z" fill="rgba(167,243,208,0.55)" stroke="#34d399" stroke-width="1"/>
+  <!-- エメラルドのワンピース -->
+  <path d="M26 30 L22 47 Q32 50 42 47 L38 30 Z" fill="#10b981" stroke="#047857" stroke-width="1.2"/>
+  <path d="M25 43 Q32 46 39 43" stroke="#a7f3d0" stroke-width="1.5" fill="none"/>
+  <!-- 小さな足 -->
+  <circle cx="28" cy="49" r="2" fill="#fed7aa"/>
+  <circle cx="36" cy="49" r="2" fill="#fed7aa"/>
+  <!-- 顔・ピンク髪 -->
+  <ellipse cx="32" cy="22" rx="7" ry="6.5" fill="#fed7aa"/>
+  <path d="M24 20 Q32 12 40 20 Q42 28 40 30 Q38 23 32 23 Q26 23 24 30 Z" fill="#f43f5e"/>
+  <!-- 金のティアラ -->
+  <polygon points="28,14 30,17 32,13 34,17 36,14 35,18 29,18" fill="#fbbf24" stroke="#d97706" stroke-width="0.8"/>
+  <!-- きらめく瞳・微笑み -->
+  <ellipse cx="29" cy="21" rx="1.5" ry="2" fill="#047857"/>
+  <circle cx="29.5" cy="20.5" r="0.6" fill="#ffffff"/>
+  <ellipse cx="35" cy="21" rx="1.5" ry="2" fill="#047857"/>
+  <circle cx="35.5" cy="20.5" r="0.6" fill="#ffffff"/>
+  <ellipse cx="27" cy="24" rx="1.5" ry="0.8" fill="#fda4af" opacity="0.8"/>
+  <ellipse cx="37" cy="24" rx="1.5" ry="0.8" fill="#fda4af" opacity="0.8"/>
+  <path d="M30.5 25 Q32 26.5 33.5 25" stroke="#e11d48" stroke-width="1" fill="none"/>
+  <!-- 右手: ハートの回復ステッキ -->
+  <line x1="40" y1="32" x2="48" y2="20" stroke="#f59e0b" stroke-width="1.5"/>
+  <path d="M47 18 Q45 15 48 13 Q51 15 49 18 L48 20 Z" fill="#ec4899"/>
+  <!-- 周囲の回復キラキラ星 -->
+  <polygon points="16,16 17,18 19,19 17,20 16,22 15,20 13,19 15,18" fill="#34d399"/>
+  <polygon points="48,38 49,40 51,41 49,42 48,44 47,42 45,41 47,40" fill="#fef08a"/>
+</svg>

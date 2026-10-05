@@ -269,6 +269,43 @@
 
 ダンジョン第2層以降、極低確率でフロア内に出現する個性豊かなレアキャラクターです（第50層ボスフロアを除く）。
 
+<div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px;">
+  <!-- さすらいの冒険者レオン -->
+  <div style="background-color: #0f172a; border: 1px solid #3b82f6; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/characters/npc_leon.svg" width="88" height="88" alt="冒険者レオン" style="display: inline-block;" />
+    <div style="color: #60a5fa; font-weight: bold; font-size: 13px; margin-top: 6px;">冒険者レオン</div>
+    <div style="color: #94a3b8; font-size: 11px;">物々交換 🎒</div>
+  </div>
+
+  <!-- 賭博仙人ガンジ -->
+  <div style="background-color: #0f172a; border: 1px solid #a855f7; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/characters/npc_gambler.svg" width="88" height="88" alt="賭博仙人ガンジ" style="display: inline-block;" />
+    <div style="color: #c084fc; font-weight: bold; font-size: 13px; margin-top: 6px;">賭博仙人ガンジ</div>
+    <div style="color: #94a3b8; font-size: 11px;">じゃんけん 🎲</div>
+  </div>
+
+  <!-- 慈愛の妖精ピクシー -->
+  <div style="background-color: #0f172a; border: 1px solid #10b981; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/characters/npc_fairy.svg" width="88" height="88" alt="妖精ピクシー" style="display: inline-block;" />
+    <div style="color: #34d399; font-weight: bold; font-size: 13px; margin-top: 6px;">妖精ピクシー</div>
+    <div style="color: #94a3b8; font-size: 11px;">無差別癒やし 💖</div>
+  </div>
+
+  <!-- さすらいの鍛冶職人バルカン -->
+  <div style="background-color: #0f172a; border: 1px solid #ea580c; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/characters/npc_blacksmith.svg" width="88" height="88" alt="鍛冶職人バルカン" style="display: inline-block;" />
+    <div style="color: #fb923c; font-weight: bold; font-size: 13px; margin-top: 6px;">鍛冶職人バルカン</div>
+    <div style="color: #94a3b8; font-size: 11px;">無料鍛錬 🔨</div>
+  </div>
+
+  <!-- スクーターおじさん -->
+  <div style="background-color: #0f172a; border: 1px solid #ef4444; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/characters/npc_scooter_down.svg" width="88" height="88" alt="スクーターおじさん" style="display: inline-block;" />
+    <div style="color: #f87171; font-weight: bold; font-size: 13px; margin-top: 6px;">スクーターおじさん</div>
+    <div style="color: #94a3b8; font-size: 11px;">横断・安全運転 🛵</div>
+  </div>
+</div>
+
 1. **さすらいの冒険者レオン（WANDERING_ADVENTURER）** 🎒
    - **外見**: 鮮やかな青いマントと緑の羽帽子、大きなリュックを背負った旅の青年。
    - **機能**: **「物々交換」**。レオンが求めているカテゴリのアイテム（武器、盾、薬草、巻物、食料等）をプレイヤーが1つ渡すと、レオンが所持している上質・強化済みのアイテム（通常より1ランク上、階層に応じた強化値付き）と無償で交換してくれます。
@@ -297,6 +334,23 @@
 ---
 
 ## 9. 武具合成・第50層ボス・真のエンディング（実装完了）
+
+<div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px;">
+  <!-- 合成の壺 -->
+  <div style="background-color: #082f49; border: 2px solid #06b6d4; border-radius: 12px; padding: 16px; text-align: center; width: 150px; box-shadow: 0 0 12px rgba(6,182,212,0.3);">
+    <img src="assets/items/item_pot_synthesis.svg" width="88" height="88" alt="合成の壺" style="display: inline-block;" />
+    <div style="color: #22d3ee; font-weight: bold; font-size: 13px; margin-top: 6px;">合成の壺</div>
+    <div style="color: #67e8f9; font-size: 11px;">強化値合算 ＆ 印継承</div>
+  </div>
+
+  <!-- 奈落の魔王アビス・ロード -->
+  <div style="background-color: #1e112a; border: 2px solid #a855f7; border-radius: 12px; padding: 16px; text-align: center; width: 150px; box-shadow: 0 0 16px rgba(168,85,247,0.3);">
+    <img src="assets/monsters/monster_abyss_lord.svg" width="88" height="88" alt="魔王アビス・ロード" style="display: inline-block;" />
+    <div style="color: #c084fc; font-weight: bold; font-size: 13px; margin-top: 6px;">魔王アビス・ロード</div>
+    <div style="color: #e879f9; font-size: 11px;">第50層 最深部ボス</div>
+  </div>
+</div>
+
 - **合成の壺と印・ルーン継承システム**:
   - ベース武具と素材武具を選択して合成。強化値（+値）が合算され、素材武具の特殊能力印がベース武具の空きスロット（最大5枠）へ自動継承。
   - 【竜】竜特効、【炎】炎追加ダメージ、【聖】聖浄化、【連】2回攻撃、【会】会心率+25%、【竜耐】火炎半減、【魔】魔弾半減、【見】完全見切り回避15%、【防】被ダメ20%軽減の9大印が戦闘・被弾時に完全発動。
@@ -312,6 +366,78 @@
 ## 10. 多種多様な名物店主たち（ショップNPCバリエーション）
 
 ダンジョン内のショップには、従来の店主だけでなく、風来のシレン・トルネコの大冒険をはじめとする名作ローグライクへのリスペクトを込めた多彩な店主たちがランダムに店番として登場します。各店主ごとに専用のSVGスプライト、台詞、性格、怒りモードが実装されています。
+
+<div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px;">
+  <!-- 大商人トルネー 通常 -->
+  <div style="background-color: #0f172a; border: 1px solid #3b82f6; border-radius: 12px; padding: 14px; text-align: center; width: 130px;">
+    <img src="assets/merchants/merchant_torneko.svg" width="76" height="76" alt="大商人トルネー" style="display: inline-block;" />
+    <div style="color: #60a5fa; font-weight: bold; font-size: 12px; margin-top: 4px;">大商人トルネー</div>
+    <div style="color: #94a3b8; font-size: 10px;">通常</div>
+  </div>
+
+  <!-- 大商人トルネー 激怒 -->
+  <div style="background-color: #1e1111; border: 1px solid #ef4444; border-radius: 12px; padding: 14px; text-align: center; width: 130px;">
+    <img src="assets/merchants/merchant_torneko_angry.svg" width="76" height="76" alt="激怒トルネー" style="display: inline-block;" />
+    <div style="color: #f87171; font-weight: bold; font-size: 12px; margin-top: 4px;">激怒トルネー</div>
+    <div style="color: #ef4444; font-size: 10px;">パン投げ</div>
+  </div>
+
+  <!-- 風来坊シレンス 通常 -->
+  <div style="background-color: #0f172a; border: 1px solid #0284c7; border-radius: 12px; padding: 14px; text-align: center; width: 130px;">
+    <img src="assets/merchants/merchant_shiren.svg" width="76" height="76" alt="風来坊シレンス" style="display: inline-block;" />
+    <div style="color: #38bdf8; font-weight: bold; font-size: 12px; margin-top: 4px;">風来坊シレンス</div>
+    <div style="color: #94a3b8; font-size: 10px;">通常</div>
+  </div>
+
+  <!-- 風来坊シレンス 激怒 -->
+  <div style="background-color: #1e1111; border: 1px solid #dc2626; border-radius: 12px; padding: 14px; text-align: center; width: 130px;">
+    <img src="assets/merchants/merchant_shiren_angry.svg" width="76" height="76" alt="修羅シレンス" style="display: inline-block;" />
+    <div style="color: #f87171; font-weight: bold; font-size: 12px; margin-top: 4px;">修羅シレンス</div>
+    <div style="color: #dc2626; font-size: 10px;">真空波</div>
+  </div>
+
+  <!-- 鍛冶商人ゴルド 通常 -->
+  <div style="background-color: #0f172a; border: 1px solid #d97706; border-radius: 12px; padding: 14px; text-align: center; width: 130px;">
+    <img src="assets/merchants/merchant_goldo.svg" width="76" height="76" alt="鍛冶商人ゴルド" style="display: inline-block;" />
+    <div style="color: #fbbf24; font-weight: bold; font-size: 12px; margin-top: 4px;">鍛冶商人ゴルド</div>
+    <div style="color: #94a3b8; font-size: 10px;">通常</div>
+  </div>
+
+  <!-- 鍛冶商人ゴルド 激怒 -->
+  <div style="background-color: #1e1111; border: 1px solid #b91c1c; border-radius: 12px; padding: 14px; text-align: center; width: 130px;">
+    <img src="assets/merchants/merchant_goldo_angry.svg" width="76" height="76" alt="噴火ゴルド" style="display: inline-block;" />
+    <div style="color: #f87171; font-weight: bold; font-size: 12px; margin-top: 4px;">噴火親父ゴルド</div>
+    <div style="color: #b91c1c; font-size: 10px;">鉄塊投げ</div>
+  </div>
+
+  <!-- 魔導商人セリア 通常 -->
+  <div style="background-color: #0f172a; border: 1px solid #a855f7; border-radius: 12px; padding: 14px; text-align: center; width: 130px;">
+    <img src="assets/merchants/merchant_celia.svg" width="76" height="76" alt="魔導商人セリア" style="display: inline-block;" />
+    <div style="color: #c084fc; font-weight: bold; font-size: 12px; margin-top: 4px;">魔導商人セリア</div>
+    <div style="color: #94a3b8; font-size: 10px;">通常</div>
+  </div>
+
+  <!-- 魔導商人セリア 激怒 -->
+  <div style="background-color: #1e1111; border: 1px solid #9333ea; border-radius: 12px; padding: 14px; text-align: center; width: 130px;">
+    <img src="assets/merchants/merchant_celia_angry.svg" width="76" height="76" alt="冷徹セリア" style="display: inline-block;" />
+    <div style="color: #f87171; font-weight: bold; font-size: 12px; margin-top: 4px;">冷徹魔女セリア</div>
+    <div style="color: #9333ea; font-size: 10px;">雷撃ボルト</div>
+  </div>
+
+  <!-- 元祖商人ネロ 通常 -->
+  <div style="background-color: #0f172a; border: 1px solid #eab308; border-radius: 12px; padding: 14px; text-align: center; width: 130px;">
+    <img src="assets/merchants/merchant_nero.svg" width="76" height="76" alt="商人ネロ" style="display: inline-block;" />
+    <div style="color: #facc15; font-weight: bold; font-size: 12px; margin-top: 4px;">商人ネロ</div>
+    <div style="color: #94a3b8; font-size: 10px;">通常</div>
+  </div>
+
+  <!-- 元祖商人ネロ 激怒 -->
+  <div style="background-color: #1e1111; border: 1px solid #ef4444; border-radius: 12px; padding: 14px; text-align: center; width: 130px;">
+    <img src="assets/merchants/merchant_nero_angry.svg" width="76" height="76" alt="怒りネロ" style="display: inline-block;" />
+    <div style="color: #f87171; font-weight: bold; font-size: 12px; margin-top: 4px;">怒りの店主ネロ</div>
+    <div style="color: #ef4444; font-size: 10px;">包丁投げ</div>
+  </div>
+</div>
 
 1. **大商人トルネー（TORNEKO風）**
    - **外見**: 青いターバン頭巾、赤白ストライプのゆったり服、青いマント、大きな福耳、立派なカイゼル髭、抱えた大袋。

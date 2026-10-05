@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="16" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <!-- 青白い抜刀闘気オーラ -->
+  <circle cx="32" cy="32" r="25" fill="#e0f2fe" opacity="0.3"/>
+  <!-- 縞合羽（風になびく） -->
+  <path d="M12 24 L4 54 L58 50 L52 24 Z" fill="#1e3a8a" stroke="#0f172a" stroke-width="2"/>
+  <path d="M14 26 L8 52 L18 52 L22 26 Z" fill="#f8fafc"/>
+  <path d="M28 26 L26 52 L36 52 L36 26 Z" fill="#f8fafc"/>
+  <!-- 抜き放たれた名刀（白刃が青光り） -->
+  <line x1="20" y1="42" x2="6" y2="16" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+  <line x1="20" y1="42" x2="6" y2="16" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="6" cy="16" r="2.5" fill="#bae6fd"/>
+  <!-- 深く被った三度笠と光る鋭い眼光 -->
+  <ellipse cx="32" cy="18" rx="18" ry="7" fill="#92400e" stroke="#451a03" stroke-width="2"/>
+  <!-- 影の中の光る紅蓮の眼 -->
+  <circle cx="29" cy="24" r="1.5" fill="#ef4444"/>
+  <circle cx="35" cy="24" r="1.5" fill="#ef4444"/>
+</svg>

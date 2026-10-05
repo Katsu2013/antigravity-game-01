@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="15" ry="3.5" fill="rgba(0,0,0,0.25)"/>
+  <!-- 背後の紫電魔法陣 -->
+  <circle cx="32" cy="28" r="22" fill="none" stroke="#c084fc" stroke-width="1.5" stroke-dasharray="3,3"/>
+  <polygon points="32,8 48,36 16,36" fill="none" stroke="#a855f7" stroke-width="1"/>
+  <polygon points="32,48 48,20 16,20" fill="none" stroke="#a855f7" stroke-width="1"/>
+  <!-- ローブ -->
+  <path d="M22 26 L14 54 Q32 60 50 54 L42 26 Z" fill="#581c87" stroke="#3b0764" stroke-width="1.8"/>
+  <!-- 逆立つ金髪 -->
+  <path d="M20 16 Q10 26 12 42" stroke="#fef08a" stroke-width="3" fill="none"/>
+  <path d="M44 16 Q54 26 52 42" stroke="#fef08a" stroke-width="3" fill="none"/>
+  <!-- 尖ったエルフ耳 -->
+  <polygon points="22,18 10,10 23,22" fill="#fbcfe8" stroke="#f472b6" stroke-width="1"/>
+  <polygon points="42,18 54,10 41,22" fill="#fbcfe8" stroke="#f472b6" stroke-width="1"/>
+  <!-- 顔と真紅の魔眼 -->
+  <circle cx="32" cy="20" r="7.5" fill="#fbcfe8"/>
+  <ellipse cx="29" cy="20" rx="1.5" ry="2" fill="#dc2626"/>
+  <ellipse cx="35" cy="20" rx="1.5" ry="2" fill="#dc2626"/>
+</svg>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="56" rx="16" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <!-- 束ねられた3本の矢 -->
+  <g transform="rotate(-30 32 32)">
+    <line x1="12" y1="32" x2="48" y2="32" stroke="#92400e" stroke-width="3" stroke-linecap="round"/>
+    <polygon points="44,26 56,32 44,38" fill="#94a3b8" stroke="#475569" stroke-width="1.5"/>
+    <path d="M12,32 L6,26 L16,32 L6,38 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+  </g>
+  <g transform="rotate(-45 32 32)">
+    <line x1="10" y1="32" x2="52" y2="32" stroke="#b45309" stroke-width="3.5" stroke-linecap="round"/>
+    <polygon points="48,25 60,32 48,39" fill="#cbd5e1" stroke="#64748b" stroke-width="1.5"/>
+    <path d="M10,32 L4,25 L14,32 L4,39 Z" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  </g>
+</svg>

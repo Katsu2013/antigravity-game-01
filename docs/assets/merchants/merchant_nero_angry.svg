@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- 紅蓮の怒気炎オーラ -->
+  <path d="M10 50 Q4 32 18 20 Q24 6 32 2 Q40 6 46 20 Q60 32 54 50 Q40 62 32 60 Q24 62 10 50 Z" fill="#ef4444" opacity="0.35"/>
+  <path d="M14 48 Q10 34 20 24 Q26 10 32 8 Q38 10 44 24 Q54 34 50 48 Z" fill="#f97316" opacity="0.45"/>
+  <!-- 接地影 -->
+  <ellipse cx="32" cy="58" rx="22" ry="6" fill="rgba(0,0,0,0.5)"/>
+  <!-- 両足 -->
+  <rect x="22" y="46" width="9" height="10" rx="2.5" fill="#450a0a" stroke="#180202" stroke-width="1.5"/>
+  <rect x="33" y="46" width="9" height="10" rx="2.5" fill="#450a0a" stroke="#180202" stroke-width="1.5"/>
+  <!-- 胴体・紅蓮の戦闘服 -->
+  <path d="M18 28 L46 28 L48 48 L16 48 Z" fill="#991b1b" stroke="#450a0a" stroke-width="1.8"/>
+  <!-- 右手: 振り上げた巨大な黄金棍棒 -->
+  <g transform="rotate(-30 48 20)">
+    <line x1="48" y1="2" x2="48" y2="34" stroke="#ca8a04" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="48" cy="4" r="5" fill="#eab308" stroke="#ca8a04" stroke-width="1.5"/>
+    <circle cx="45" cy="4" r="1.5" fill="#ffffff"/>
+    <polygon points="44,8 52,8 50,14 46,14" fill="#fbbf24"/>
+  </g>
+  <!-- 左手: 怒りの拳 -->
+  <ellipse cx="15" cy="36" rx="4" ry="4" fill="#fca5a5" stroke="#991b1b" stroke-width="1.5"/>
+  <!-- 逆立つ白髭と怒りの口 -->
+  <path d="M20 24 Q32 38 44 24 Q40 37 32 40 Q24 37 20 24 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+  <path d="M26 30 Q32 36 38 30 Z" fill="#450a0a"/>
+  <polygon points="28,30 30,33 32,30 34,33 36,30" fill="#ffffff"/>
+  <!-- 顔・怒りで充血 -->
+  <circle cx="32" cy="20" r="9.5" fill="#fca5a5" stroke="#991b1b" stroke-width="1.5"/>
+  <!-- 怒りの青筋マーク -->
+  <path d="M37 14 L41 18 M41 14 L37 18" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/>
+  <!-- ギラつく血走った赤眼 -->
+  <ellipse cx="27" cy="19" rx="3.5" ry="3" fill="#ffffff" stroke="#991b1b" stroke-width="1"/>
+  <circle cx="28" cy="19" r="1.8" fill="#dc2626"/>
+  <circle cx="28.5" cy="18.5" r="0.6" fill="#ffffff"/>
+  <ellipse cx="37" cy="19" rx="3.5" ry="3" fill="#ffffff" stroke="#991b1b" stroke-width="1"/>
+  <circle cx="36" cy="19" r="1.8" fill="#dc2626"/>
+  <circle cx="36.5" cy="18.5" r="0.6" fill="#ffffff"/>
+  <!-- 逆立つ怒髪 -->
+  <path d="M22 13 L26 4 L30 11 L34 2 L38 11 L42 5 L42 14 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+</svg>

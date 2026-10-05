@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "doc": "typedoc"
+    "doc": "typedoc",
+    "export-assets": "node scripts/export_docs_assets.mjs"
   },
   "devDependencies": {
     "typedoc": "^0.28.3",

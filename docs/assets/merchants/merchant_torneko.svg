@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="18" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <!-- 青いマント -->
+  <path d="M14 26 L8 54 Q32 58 56 54 L50 26 Z" fill="#1d4ed8" stroke="#1e3a8a" stroke-width="1.8"/>
+  <!-- 赤白縦縞のゆったり商人の服（ふくよかな胴体） -->
+  <ellipse cx="32" cy="40" rx="15" ry="14" fill="#ffffff" stroke="#991b1b" stroke-width="1.5"/>
+  <!-- 赤い縦縞ストライプ -->
+  <path d="M23 28 Q22 40 23 52" stroke="#dc2626" stroke-width="3" fill="none"/>
+  <path d="M29 26 Q29 40 29 54" stroke="#dc2626" stroke-width="3" fill="none"/>
+  <path d="M35 26 Q35 40 35 54" stroke="#dc2626" stroke-width="3" fill="none"/>
+  <path d="M41 28 Q42 40 41 52" stroke="#dc2626" stroke-width="3" fill="none"/>
+  <!-- 太い革ベルトと金バックル -->
+  <rect x="18" y="44" width="28" height="4" fill="#78350f"/>
+  <rect x="29" y="43" width="6" height="6" fill="#facc15" stroke="#b45309" stroke-width="0.8"/>
+  <!-- 右手: 商品が詰まった巨大な麻袋 -->
+  <ellipse cx="48" cy="38" rx="9" ry="11" fill="#d97706" stroke="#92400e" stroke-width="1.5"/>
+  <path d="M46 27 L48 30 L50 27 Z" fill="#b45309"/>
+  <!-- 顔（ふくよかな丸顔・大きな福耳） -->
+  <circle cx="32" cy="22" r="10" fill="#fde68a" stroke="#d97706" stroke-width="1.2"/>
+  <!-- 福耳 -->
+  <ellipse cx="21" cy="23" rx="2.5" ry="4.5" fill="#fde68a" stroke="#d97706" stroke-width="0.8"/>
+  <ellipse cx="43" cy="23" rx="2.5" ry="4.5" fill="#fde68a" stroke="#d97706" stroke-width="0.8"/>
+  <!-- 青いターバン頭巾 -->
+  <path d="M21 19 Q32 10 43 19 Q32 14 21 19 Z" fill="#1e40af" stroke="#172554" stroke-width="1.5"/>
+  <ellipse cx="32" cy="14" rx="10" ry="6" fill="#2563eb" stroke="#1d4ed8" stroke-width="1.2"/>
+  <!-- つぶらな温和な瞳 -->
+  <circle cx="28" cy="20" r="1.5" fill="#1e293b"/>
+  <circle cx="36" cy="20" r="1.5" fill="#1e293b"/>
+  <!-- 赤い丸鼻 -->
+  <ellipse cx="32" cy="22" rx="2.5" ry="2" fill="#f87171"/>
+  <!-- 立派なカイゼル髭 -->
+  <path d="M24 25 Q32 24 32 26 Q32 24 40 25 Q32 29 24 25 Z" fill="#78350f" stroke="#451a03" stroke-width="0.8"/>
+  <!-- 満面の商人スマイル -->
+  <path d="M29 28 Q32 31 35 28" stroke="#991b1b" stroke-width="1.2" fill="none"/>
+  <!-- 短い足 -->
+  <rect x="24" y="52" width="6" height="5" rx="2" fill="#78350f"/>
+  <rect x="34" y="52" width="6" height="5" rx="2" fill="#78350f"/>
+</svg>

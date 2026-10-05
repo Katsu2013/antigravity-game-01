@@ -110,7 +110,7 @@
 
 ---
 
-## 2. 敵モンスター全14種（Monster Specification）
+## 2. 敵モンスター＆第50層ボス一覧（Monster & Boss Specification）
 
 ダンジョンのバイオームおよびフロア深度（1〜50階）に応じて、個性豊かで凶悪なモンスターが生息しています。
 スライムと同等以上の圧倒的なクオリティを目指し、全モンスターが武器（棍棒、錆びた剣、三叉銛、魔導杖、ピッチフォークなど）・防具（円盾、バックラー、革鎧、ブレストプレートなど）・立体陰影・骨格/筋肉テクスチャ・発光エフェクト（ソウルアイ、赤熱ブレス、魔導オーブ、古代呪眼）を備えた、超美麗な純粋ベクターSVGで描画されます。また、全種が8方向追従に対応しています。
@@ -226,6 +226,22 @@
     <div style="color: #e4e4e7; font-weight: bold; font-size: 13px; margin-top: 6px;">古代のミイラ</div>
     <div style="color: #94a3b8; font-size: 11px;">HP: 32 / ATK: 10</div>
     <div style="color: #64748b; font-size: 10px; margin-top: 2px;">呪術の包帯を纏う高防御怪人</div>
+  </div>
+
+  <!-- 番犬・警備犬 -->
+  <div style="background-color: #0f172a; border: 1px solid #b45309; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/monsters/monster_guard_dog.svg" width="88" height="88" alt="警備番犬" style="display: inline-block;" />
+    <div style="color: #f59e0b; font-weight: bold; font-size: 13px; margin-top: 6px;">警備番犬</div>
+    <div style="color: #94a3b8; font-size: 11px;">HP: 75 / ATK: 24</div>
+    <div style="color: #64748b; font-size: 10px; margin-top: 2px;">泥棒時に群れで追跡・2回行動</div>
+  </div>
+
+  <!-- 奈落の魔王アビス・ロード -->
+  <div style="background-color: #1e112a; border: 2px solid #a855f7; border-radius: 12px; padding: 16px; text-align: center; width: 140px; box-shadow: 0 0 16px rgba(168,85,247,0.3);">
+    <img src="assets/monsters/monster_abyss_lord.svg" width="88" height="88" alt="魔王アビス・ロード" style="display: inline-block;" />
+    <div style="color: #c084fc; font-weight: bold; font-size: 13px; margin-top: 6px;">奈落の魔王アビス</div>
+    <div style="color: #e879f9; font-size: 11px; font-weight: bold;">HP: 1200 / ATK: 48</div>
+    <div style="color: #a855f7; font-size: 10px; margin-top: 2px;">第50層君臨・火炎ブレス</div>
   </div>
 </div>
 
@@ -453,6 +469,83 @@
     <div style="color: #f472b6; font-weight: bold; font-size: 13px; margin-top: 6px;">混乱の巻物</div>
     <div style="color: #94a3b8; font-size: 11px;">部屋全体の敵を同士討ち</div>
   </div>
+
+  <!-- 合成の壺 -->
+  <div style="background-color: #082f49; border: 2px solid #06b6d4; border-radius: 12px; padding: 16px; text-align: center; width: 140px; box-shadow: 0 0 12px rgba(6,182,212,0.3);">
+    <img src="assets/items/item_pot_synthesis.svg" width="72" height="72" alt="合成の壺" style="display: inline-block;" />
+    <div style="color: #22d3ee; font-weight: bold; font-size: 13px; margin-top: 6px;">合成の壺</div>
+    <div style="color: #67e8f9; font-size: 11px;">武具強化値合算＆印継承</div>
+  </div>
+
+  <!-- 復活の草 -->
+  <div style="background-color: #0f172a; border: 1px solid #eab308; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/items/item_potion_revive.svg" width="72" height="72" alt="復活の草" style="display: inline-block;" />
+    <div style="color: #facc15; font-weight: bold; font-size: 13px; margin-top: 6px;">復活の草</div>
+    <div style="color: #94a3b8; font-size: 11px;">力尽きた時にHP全快蘇生</div>
+  </div>
+
+  <!-- 弟切草 -->
+  <div style="background-color: #0f172a; border: 1px solid #10b981; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/items/item_potion_otogiri.svg" width="72" height="72" alt="弟切草" style="display: inline-block;" />
+    <div style="color: #34d399; font-weight: bold; font-size: 13px; margin-top: 6px;">弟切草</div>
+    <div style="color: #94a3b8; font-size: 11px;">HP 100 回復</div>
+  </div>
+
+  <!-- 命の草 -->
+  <div style="background-color: #0f172a; border: 1px solid #ec4899; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/items/item_potion_life.svg" width="72" height="72" alt="命の草" style="display: inline-block;" />
+    <div style="color: #f472b6; font-weight: bold; font-size: 13px; margin-top: 6px;">命の草</div>
+    <div style="color: #94a3b8; font-size: 11px;">最大HP +5 永続上昇</div>
+  </div>
+
+  <!-- ゴールドの山 -->
+  <div style="background-color: #0f172a; border: 1px solid #ca8a04; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/items/item_gold_pile.svg" width="72" height="72" alt="ゴールド" style="display: inline-block;" />
+    <div style="color: #fbbf24; font-weight: bold; font-size: 13px; margin-top: 6px;">ゴールド通貨</div>
+    <div style="color: #94a3b8; font-size: 11px;">ショップ売買用の資金</div>
+  </div>
+
+  <!-- 木の矢 -->
+  <div style="background-color: #0f172a; border: 1px solid #78350f; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/items/item_arrow.svg" width="72" height="72" alt="木の矢" style="display: inline-block;" />
+    <div style="color: #d97706; font-weight: bold; font-size: 13px; margin-top: 6px;">木の矢</div>
+    <div style="color: #94a3b8; font-size: 11px;">直線の敵へ遠隔射撃</div>
+  </div>
+
+  <!-- 魔法の杖 -->
+  <div style="background-color: #0f172a; border: 1px solid #7e22ce; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/items/item_staff.svg" width="72" height="72" alt="魔法の杖" style="display: inline-block;" />
+    <div style="color: #c084fc; font-weight: bold; font-size: 13px; margin-top: 6px;">魔法の杖</div>
+    <div style="color: #94a3b8; font-size: 11px;">直線魔法光線を放つ</div>
+  </div>
+
+  <!-- まもりの指輪 -->
+  <div style="background-color: #0f172a; border: 1px solid #38bdf8; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/items/item_ring.svg" width="72" height="72" alt="まもりの指輪" style="display: inline-block;" />
+    <div style="color: #38bdf8; font-weight: bold; font-size: 13px; margin-top: 6px;">まもりの指輪</div>
+    <div style="color: #94a3b8; font-size: 11px;">装備中 DEF +3</div>
+  </div>
+
+  <!-- 天の恵みの巻物 -->
+  <div style="background-color: #0f172a; border: 1px solid #eab308; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/items/item_scroll_upgrade_atk.svg" width="72" height="72" alt="天の恵みの巻物" style="display: inline-block;" />
+    <div style="color: #facc15; font-weight: bold; font-size: 13px; margin-top: 6px;">天の恵みの巻物</div>
+    <div style="color: #94a3b8; font-size: 11px;">装備中の武器を+1強化</div>
+  </div>
+
+  <!-- 地の恵みの巻物 -->
+  <div style="background-color: #0f172a; border: 1px solid #3b82f6; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/items/item_scroll_upgrade_def.svg" width="72" height="72" alt="地の恵みの巻物" style="display: inline-block;" />
+    <div style="color: #60a5fa; font-weight: bold; font-size: 13px; margin-top: 6px;">地の恵みの巻物</div>
+    <div style="color: #94a3b8; font-size: 11px;">装備中の盾を+1強化</div>
+  </div>
+
+  <!-- 真空斬りの巻物 -->
+  <div style="background-color: #0f172a; border: 1px solid #06b6d4; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/items/item_scroll_vacuum.svg" width="72" height="72" alt="真空斬りの巻物" style="display: inline-block;" />
+    <div style="color: #22d3ee; font-weight: bold; font-size: 13px; margin-top: 6px;">真空斬りの巻物</div>
+    <div style="color: #94a3b8; font-size: 11px;">部屋全体の敵へ鋭い真空波</div>
+  </div>
 </div>
 
 ### 持ち物整理機能（インベントリソート）
@@ -536,7 +629,58 @@
 
 ## 7. レアキャラクター＆特殊NPC（Rare Wanderers & Fairies）
 
-第2層以降のダンジョン内にて、約28%の確率でフロアの部屋内に1体だけ出現する旅人・仙人・妖精です。頭上に特有のアイコンバッジ（🎒, 🎲, 💖, 🔨）が浮遊表示され、近づくか対話することで独自のイベントが発生します。
+ダンジョン内に出現する個性豊かな旅人・仙人・妖精、および突如ダンジョンを疾走するスクーターおじさんです。
+
+<div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px;">
+  <!-- さすらいの冒険者レオン -->
+  <div style="background-color: #0f172a; border: 1px solid #3b82f6; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/characters/npc_leon.svg" width="88" height="88" alt="冒険者レオン" style="display: inline-block;" />
+    <div style="color: #60a5fa; font-weight: bold; font-size: 13px; margin-top: 6px;">冒険者レオン</div>
+    <div style="color: #94a3b8; font-size: 11px;">物々交換（Trade）</div>
+  </div>
+
+  <!-- 賭博仙人ガンジ -->
+  <div style="background-color: #0f172a; border: 1px solid #a855f7; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/characters/npc_gambler.svg" width="88" height="88" alt="賭博仙人ガンジ" style="display: inline-block;" />
+    <div style="color: #c084fc; font-weight: bold; font-size: 13px; margin-top: 6px;">賭博仙人ガンジ</div>
+    <div style="color: #94a3b8; font-size: 11px;">じゃんけん勝負（枠拡張）</div>
+  </div>
+
+  <!-- 慈愛の妖精ピクシー -->
+  <div style="background-color: #0f172a; border: 1px solid #10b981; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/characters/npc_fairy.svg" width="88" height="88" alt="妖精ピクシー" style="display: inline-block;" />
+    <div style="color: #34d399; font-weight: bold; font-size: 13px; margin-top: 6px;">妖精ピクシー</div>
+    <div style="color: #94a3b8; font-size: 11px;">敵味方無差別癒やし</div>
+  </div>
+
+  <!-- さすらいの鍛冶職人バルカン -->
+  <div style="background-color: #0f172a; border: 1px solid #ea580c; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/characters/npc_blacksmith.svg" width="88" height="88" alt="鍛冶職人バルカン" style="display: inline-block;" />
+    <div style="color: #fb923c; font-weight: bold; font-size: 13px; margin-top: 6px;">鍛冶職人バルカン</div>
+    <div style="color: #94a3b8; font-size: 11px;">武具の無料鍛錬</div>
+  </div>
+
+  <!-- スクーターおじさん（正面） -->
+  <div style="background-color: #0f172a; border: 1px solid #ef4444; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/characters/npc_scooter_down.svg" width="88" height="88" alt="スクーターおじさん 正面" style="display: inline-block;" />
+    <div style="color: #f87171; font-weight: bold; font-size: 13px; margin-top: 6px;">スクーターおじさん</div>
+    <div style="color: #94a3b8; font-size: 11px;">正面（トコトコ走行）</div>
+  </div>
+
+  <!-- スクーターおじさん（横向き走行） -->
+  <div style="background-color: #0f172a; border: 1px solid #ef4444; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/characters/npc_scooter_side.svg" width="88" height="88" alt="スクーターおじさん 横" style="display: inline-block;" />
+    <div style="color: #f87171; font-weight: bold; font-size: 13px; margin-top: 6px;">スクーター疾走</div>
+    <div style="color: #94a3b8; font-size: 11px;">横向き（マフラー排気）</div>
+  </div>
+
+  <!-- スクーターおじさん（後ろ姿） -->
+  <div style="background-color: #0f172a; border: 1px solid #ef4444; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/characters/npc_scooter_up.svg" width="88" height="88" alt="スクーターおじさん 後ろ" style="display: inline-block;" />
+    <div style="color: #f87171; font-weight: bold; font-size: 13px; margin-top: 6px;">走り去る姿</div>
+    <div style="color: #94a3b8; font-size: 11px;">北向き（テールランプ）</div>
+  </div>
+</div>
 
 ### 7.1. さすらいの冒険者レオン（WANDERING_ADVENTURER / 🎒）
 - **外見的特徴**: 鳥の羽をあしらった緑の旅帽子、スカイブルーのマント、大荷物を詰めたリュックサック。
@@ -567,4 +711,91 @@
 - **対話イベント**: **「武具の無償強化（Free Smithing）」**
   - プレイヤーが現在装備している武器または盾を、丹念に叩いて鍛錬。
   - +1〜+2 の強化値を無償で付与してくれます（同一フロアにつき1回限定）。
+
+### 7.5. スクーターおじさん（SCOOTER_GUY / 🛵）
+- **外見的特徴**: レトロなクリーム色のヘルメット、丸メガネ、ちょび髭、緑のナイロンジャンパー、赤い原付スクーター。
+- **行動パターン**: **脈絡なくダンジョンをトコトコと横断して去っていく**謎のおじさん。敵でも味方でもなく、何をするわけでもなく安全運転で走り抜けます。
+- **演出＆サウンド**:
+  - Web Audio APIによる単気筒4ストエンジンの排気パルス音（トコトコトコ…ブルルルン！）が近接時に響きます。
+  - 話しかけると「おっと危ないよ若者！ 一時停止はちゃんと左右確認しなきゃダメだよ！」「制限速度は30km/h厳守！」など日常会話。
+  - 目的地に到達すると「じゃあね〜！ 安全運転でね〜！」とクラクション（プッピー！）を鳴らして去っていきます。
+
+---
+
+## 8. 多種多様な名物店主たち（Shopkeepers Specification）
+
+ダンジョン内のショップには、名作ローグライクへのリスペクトを込めた多彩な店主たちがランダムに店番として登場します。各店主には専用のビジュアル（通常姿および泥棒時の激怒姿）、専用の警告台詞、お仕置きビンタ、および個性豊かな遠隔追撃攻撃が実装されています。
+
+<div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px;">
+  <!-- 大商人トルネー 通常 -->
+  <div style="background-color: #0f172a; border: 1px solid #3b82f6; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/merchants/merchant_torneko.svg" width="88" height="88" alt="大商人トルネー" style="display: inline-block;" />
+    <div style="color: #60a5fa; font-weight: bold; font-size: 13px; margin-top: 6px;">大商人トルネー</div>
+    <div style="color: #94a3b8; font-size: 11px;">通常（温厚な商人）</div>
+  </div>
+
+  <!-- 大商人トルネー 激怒 -->
+  <div style="background-color: #1e1111; border: 1px solid #ef4444; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/merchants/merchant_torneko_angry.svg" width="88" height="88" alt="激怒トルネー" style="display: inline-block;" />
+    <div style="color: #f87171; font-weight: bold; font-size: 13px; margin-top: 6px;">激怒トルネー</div>
+    <div style="color: #ef4444; font-size: 11px;">大袋振り回し・パン投げ</div>
+  </div>
+
+  <!-- 風来坊シレンス 通常 -->
+  <div style="background-color: #0f172a; border: 1px solid #0284c7; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/merchants/merchant_shiren.svg" width="88" height="88" alt="風来坊シレンス" style="display: inline-block;" />
+    <div style="color: #38bdf8; font-weight: bold; font-size: 13px; margin-top: 6px;">風来坊シレンス</div>
+    <div style="color: #94a3b8; font-size: 11px;">通常（三度笠と相棒）</div>
+  </div>
+
+  <!-- 風来坊シレンス 激怒 -->
+  <div style="background-color: #1e1111; border: 1px solid #dc2626; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/merchants/merchant_shiren_angry.svg" width="88" height="88" alt="修羅シレンス" style="display: inline-block;" />
+    <div style="color: #f87171; font-weight: bold; font-size: 13px; margin-top: 6px;">修羅シレンス</div>
+    <div style="color: #dc2626; font-size: 11px;">抜刀・真空波</div>
+  </div>
+
+  <!-- 鍛冶商人ゴルド 通常 -->
+  <div style="background-color: #0f172a; border: 1px solid #d97706; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/merchants/merchant_goldo.svg" width="88" height="88" alt="鍛冶商人ゴルド" style="display: inline-block;" />
+    <div style="color: #fbbf24; font-weight: bold; font-size: 13px; margin-top: 6px;">鍛冶商人ゴルド</div>
+    <div style="color: #94a3b8; font-size: 11px;">通常（赤髭ドワーフ）</div>
+  </div>
+
+  <!-- 鍛冶商人ゴルド 激怒 -->
+  <div style="background-color: #1e1111; border: 1px solid #b91c1c; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/merchants/merchant_goldo_angry.svg" width="88" height="88" alt="噴火ゴルド" style="display: inline-block;" />
+    <div style="color: #f87171; font-weight: bold; font-size: 13px; margin-top: 6px;">噴火親父ゴルド</div>
+    <div style="color: #b91c1c; font-size: 11px;">赤熱ハンマー・鉄塊投げ</div>
+  </div>
+
+  <!-- 魔導商人セリア 通常 -->
+  <div style="background-color: #0f172a; border: 1px solid #a855f7; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/merchants/merchant_celia.svg" width="88" height="88" alt="魔導商人セリア" style="display: inline-block;" />
+    <div style="color: #c084fc; font-weight: bold; font-size: 13px; margin-top: 6px;">魔導商人セリア</div>
+    <div style="color: #94a3b8; font-size: 11px;">通常（エルフの魔女）</div>
+  </div>
+
+  <!-- 魔導商人セリア 激怒 -->
+  <div style="background-color: #1e1111; border: 1px solid #9333ea; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/merchants/merchant_celia_angry.svg" width="88" height="88" alt="冷徹セリア" style="display: inline-block;" />
+    <div style="color: #f87171; font-weight: bold; font-size: 13px; margin-top: 6px;">冷徹魔女セリア</div>
+    <div style="color: #9333ea; font-size: 11px;">紫電魔法陣・雷撃ボルト</div>
+  </div>
+
+  <!-- 元祖商人ネロ 通常 -->
+  <div style="background-color: #0f172a; border: 1px solid #eab308; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/merchants/merchant_nero.svg" width="88" height="88" alt="商人ネロ" style="display: inline-block;" />
+    <div style="color: #facc15; font-weight: bold; font-size: 13px; margin-top: 6px;">商人ネロ</div>
+    <div style="color: #94a3b8; font-size: 11px;">通常（黄色ターバン）</div>
+  </div>
+
+  <!-- 元祖商人ネロ 激怒 -->
+  <div style="background-color: #1e1111; border: 1px solid #ef4444; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
+    <img src="assets/merchants/merchant_nero_angry.svg" width="88" height="88" alt="怒りネロ" style="display: inline-block;" />
+    <div style="color: #f87171; font-weight: bold; font-size: 13px; margin-top: 6px;">怒りの店主ネロ</div>
+    <div style="color: #ef4444; font-size: 11px;">逆立ち怒髪・包丁投げ</div>
+  </div>
+</div>
+
 

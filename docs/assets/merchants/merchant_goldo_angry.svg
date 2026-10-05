@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="16" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <!-- 爆炎オーラ -->
+  <circle cx="32" cy="30" r="25" fill="#fef08a" opacity="0.3"/>
+  <!-- 赤熱した巨大ハンマー -->
+  <line x1="46" y1="36" x2="54" y2="8" stroke="#78350f" stroke-width="3"/>
+  <rect x="46" y="4" width="16" height="9" rx="2" fill="#ef4444" stroke="#b91c1c" stroke-width="1.5"/>
+  <circle cx="54" cy="8" r="3" fill="#fef08a"/>
+  <!-- 体躯 -->
+  <rect x="20" y="28" width="24" height="24" rx="4" fill="#991b1b" stroke="#7f1d1d" stroke-width="2"/>
+  <!-- 逆立つ赤髭 -->
+  <path d="M22 22 Q32 38 42 22 Q36 44 32 46 Q28 44 22 22 Z" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/>
+  <!-- 怒りの鬼面 -->
+  <circle cx="32" cy="18" r="8" fill="#f87171"/>
+  <circle cx="28" cy="18" r="2" fill="#ffffff"/>
+  <circle cx="28" cy="18" r="1" fill="#7f1d1d"/>
+  <circle cx="36" cy="18" r="2" fill="#ffffff"/>
+  <circle cx="36" cy="18" r="1" fill="#7f1d1d"/>
+</svg>

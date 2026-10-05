@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="18" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <!-- 激怒オーラ（赤と黄の閃光） -->
+  <circle cx="32" cy="34" r="24" fill="#fee2e2" opacity="0.35"/>
+  <!-- 青いマント（逆立ち） -->
+  <path d="M12 22 L6 52 Q32 60 58 52 L52 22 Z" fill="#991b1b" stroke="#7f1d1d" stroke-width="2"/>
+  <!-- 胴体 -->
+  <ellipse cx="32" cy="40" rx="15" ry="14" fill="#ffffff" stroke="#991b1b" stroke-width="1.5"/>
+  <path d="M23 28 Q22 40 23 52" stroke="#dc2626" stroke-width="3" fill="none"/>
+  <path d="M29 26 Q29 40 29 54" stroke="#dc2626" stroke-width="3" fill="none"/>
+  <path d="M35 26 Q35 40 35 54" stroke="#dc2626" stroke-width="3" fill="none"/>
+  <path d="M41 28 Q42 40 41 52" stroke="#dc2626" stroke-width="3" fill="none"/>
+  <!-- 振り回す巨大麻袋 -->
+  <ellipse cx="50" cy="24" rx="11" ry="13" fill="#b45309" stroke="#78350f" stroke-width="2"/>
+  <!-- 顔（怒りで真っ赤） -->
+  <circle cx="32" cy="22" r="10" fill="#f87171" stroke="#b91c1c" stroke-width="1.5"/>
+  <!-- 吊り上がった怒りの鬼眼 -->
+  <line x1="25" y1="18" x2="30" y2="21" stroke="#450a0a" stroke-width="2"/>
+  <circle cx="28" cy="21" r="1.5" fill="#fef08a"/>
+  <line x1="39" y1="18" x2="34" y2="21" stroke="#450a0a" stroke-width="2"/>
+  <circle cx="36" cy="21" r="1.5" fill="#fef08a"/>
+  <!-- 激怒の大口 -->
+  <path d="M28 26 Q32 33 36 26 Z" fill="#450a0a"/>
+  <!-- 怒りマーク（額） -->
+  <path d="M37 13 L42 17 M42 13 L37 17" stroke="#dc2626" stroke-width="2"/>
+  <!-- 青いターバン -->
+  <ellipse cx="32" cy="14" rx="10" ry="6" fill="#1e3a8a" stroke="#172554" stroke-width="1.5"/>
+</svg>

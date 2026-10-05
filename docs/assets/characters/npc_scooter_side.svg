@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="60" rx="20" ry="3.5" fill="rgba(0,0,0,0.35)"/>
+  <!-- 後輪 -->
+  <circle cx="18" cy="52" r="6" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
+  <circle cx="18" cy="52" r="3" fill="#94a3b8"/>
+  <!-- 前輪 -->
+  <circle cx="46" cy="52" r="6" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
+  <circle cx="46" cy="52" r="3" fill="#94a3b8"/>
+  <!-- マフラー排気管 -->
+  <rect x="14" y="53" width="10" height="2.5" rx="1" fill="#94a3b8" stroke="#475569" stroke-width="0.8"/>
+  <!-- トコトコ排気煙 -->
+  <circle cx="10" cy="53" r="1.5" fill="#cbd5e1" opacity="0.6"/>
+  <circle cx="6" cy="50" r="2" fill="#e2e8f0" opacity="0.4"/>
+  <!-- 赤いボディフレーム -->
+  <path d="M16 48 L28 48 L36 48 L44 38 L42 36 L34 44 L24 44 L16 44 Z" fill="#dc2626" stroke="#991b1b" stroke-width="1.2"/>
+  <!-- 白いフロントレッグシールド -->
+  <path d="M42 36 L46 48 L43 50 L39 38 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+  <!-- ハンドル＆前照灯 -->
+  <line x1="41" y1="36" x2="40" y2="30" stroke="#64748b" stroke-width="2"/>
+  <circle cx="46" cy="35" r="3.5" fill="#fef08a" stroke="#ca8a04" stroke-width="1"/>
+  <!-- シート -->
+  <rect x="20" y="40" width="12" height="4" rx="2" fill="#1e293b"/>
+  <!-- おじさんのズボンと足 -->
+  <path d="M26 42 L34 46 L35 50" stroke="#334155" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- おじさんの緑ジャンパー胴体（前傾姿勢） -->
+  <path d="M24 28 L34 32 L32 42 L22 38 Z" fill="#15803d" stroke="#166534" stroke-width="1.2"/>
+  <!-- 腕（ハンドルへ） -->
+  <path d="M28 30 L38 31" stroke="#15803d" stroke-width="3.5" stroke-linecap="round"/>
+  <circle cx="39" cy="31" r="2" fill="#f8fafc"/>
+  <!-- 顔と横顔メガネ -->
+  <ellipse cx="32" cy="18" rx="5.5" ry="6" fill="#fbcfe8"/>
+  <circle cx="34.5" cy="17" r="1.8" fill="none" stroke="#334155" stroke-width="0.8"/>
+  <rect x="34" y="20" width="2.5" height="1" fill="#334155"/>
+  <!-- ヘルメット -->
+  <path d="M26 18 Q26 9 33 9 Q39 9 39 18 L39 20 Q32 19 26 20 Z" fill="#fef3c7" stroke="#d97706" stroke-width="1.3"/>
+  <path d="M35 15 L39 16 L38 18 L35 17 Z" fill="#38bdf8" opacity="0.6"/>
+</svg>

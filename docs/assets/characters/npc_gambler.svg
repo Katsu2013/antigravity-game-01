@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="16" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <!-- 紫の道着（広がる裾） -->
+  <path d="M22 30 L14 54 L50 54 L42 30 Z" fill="#6b21a8" stroke="#3b0764" stroke-width="1.5"/>
+  <path d="M27 30 L32 46 L37 30 Z" fill="#a855f7"/>
+  <rect x="24" y="44" width="16" height="4" fill="#fbbf24"/>
+  <!-- 仙人の頭部 -->
+  <ellipse cx="32" cy="20" rx="8" ry="7" fill="#fed7aa"/>
+  <!-- 白い長眉 -->
+  <path d="M25 16 Q28 13 30 17" stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <path d="M39 16 Q36 13 34 17" stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <!-- 細めた笑い目 -->
+  <path d="M27 19 Q29 21 31 19" stroke="#1e293b" stroke-width="1.2" fill="none"/>
+  <path d="M33 19 Q35 21 37 19" stroke="#1e293b" stroke-width="1.2" fill="none"/>
+  <!-- 頭頂の白髪お団子・かんざし -->
+  <circle cx="32" cy="11" r="4.5" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+  <line x1="26" y1="10" x2="38" y2="12" stroke="#d97706" stroke-width="1.8" stroke-linecap="round"/>
+  <!-- 胸まで伸びる立派な長い白髭 -->
+  <path d="M27 24 Q32 42 32 45 Q32 42 37 24 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+  <!-- 左手: 赤いサイコロ（ダイス）を宙に浮かす -->
+  <rect x="13" y="32" width="9" height="9" rx="1.5" fill="#dc2626" stroke="#991b1b" stroke-width="1" transform="rotate(12 17 36)"/>
+  <circle cx="17.5" cy="36.5" r="1.5" fill="#ffffff"/>
+  <!-- 右手: 金の扇子 -->
+  <path d="M42 36 L52 26 Q56 34 50 42 Z" fill="#fbbf24" stroke="#d97706" stroke-width="1.2"/>
+  <line x1="42" y1="36" x2="52" y2="28" stroke="#b45309" stroke-width="0.8"/>
+  <line x1="42" y1="36" x2="52" y2="34" stroke="#b45309" stroke-width="0.8"/>
+  <line x1="42" y1="36" x2="50" y2="40" stroke="#b45309" stroke-width="0.8"/>
+</svg>

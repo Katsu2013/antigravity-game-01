@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- 接地影 -->
+  <ellipse cx="32" cy="56" rx="16" ry="4" fill="rgba(0,0,0,0.35)"/>
+  <!-- コインの山（最下段） -->
+  <ellipse cx="24" cy="51" rx="8" ry="4" fill="#ca8a04" stroke="#854d0e" stroke-width="1"/>
+  <ellipse cx="24" cy="49" rx="7.5" ry="3.5" fill="#eab308"/>
+  <ellipse cx="40" cy="51" rx="8" ry="4" fill="#ca8a04" stroke="#854d0e" stroke-width="1"/>
+  <ellipse cx="40" cy="49" rx="7.5" ry="3.5" fill="#eab308"/>
+  <ellipse cx="32" cy="52" rx="9" ry="4.5" fill="#ca8a04" stroke="#854d0e" stroke-width="1"/>
+  <ellipse cx="32" cy="50" rx="8.5" ry="4" fill="#fbbf24"/>
+  <!-- コインの山（中段） -->
+  <ellipse cx="26" cy="44" rx="8" ry="4" fill="#ca8a04" stroke="#854d0e" stroke-width="1"/>
+  <ellipse cx="26" cy="42" rx="7.5" ry="3.5" fill="#fde047"/>
+  <text x="26" y="44" font-size="5" font-weight="bold" fill="#854d0e" text-anchor="middle">G</text>
+  <ellipse cx="38" cy="44" rx="8" ry="4" fill="#ca8a04" stroke="#854d0e" stroke-width="1"/>
+  <ellipse cx="38" cy="42" rx="7.5" ry="3.5" fill="#fde047"/>
+  <text x="38" y="44" font-size="5" font-weight="bold" fill="#854d0e" text-anchor="middle">G</text>
+  <!-- 頂上の大金貨 -->
+  <ellipse cx="32" cy="35" rx="9" ry="4.5" fill="#ca8a04" stroke="#854d0e" stroke-width="1.2"/>
+  <ellipse cx="32" cy="33" rx="8.5" ry="4" fill="#fef08a"/>
+  <text x="32" y="35" font-size="6" font-weight="bold" fill="#a16207" text-anchor="middle">★</text>
+  <!-- キラリと光る星スパークル -->
+  <polygon points="44,25 46,28 49,29 46,30 44,33 43,30 40,29 43,28" fill="#ffffff"/>
+  <polygon points="18,33 19,35 21,36 19,37 18,39 17,37 15,36 17,35" fill="#fef08a"/>
+  <polygon points="32,20 33,22 35,23 33,24 32,26 31,24 29,23 31,22" fill="#ffffff"/>
+</svg>
