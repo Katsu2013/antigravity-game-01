@@ -11,6 +11,7 @@ import { AnimationEngine } from './AnimationEngine';
 import { SVGSprites, SpriteId } from './sprites/SVGSprites';
 import { TileSprites } from './sprites/TileSprites';
 import { EquipmentSprites } from './sprites/EquipmentSprites';
+import { SoundSystem } from '../audio/SoundSystem';
 
 /**
  * 2D Canvas描画管理クラス。
@@ -102,12 +103,14 @@ export class CanvasRenderer {
     };
 
     this.engine.onObstaclePush = (obstacle, _dx, _dy) => {
+      SoundSystem.getInstance().playPushObstacle();
       this.anim.triggerDustParticles(obstacle.x, obstacle.y);
       this.anim.triggerHeavyDustParticles(obstacle.x, obstacle.y);
       this.anim.triggerScreenShake(0.35, 3.5); // 地響きスクリーンシェイク
     };
 
     this.engine.onObstacleBreak = (obstacle) => {
+      SoundSystem.getInstance().playBreakObstacle();
       const color =
         obstacle.type === 'ICE_BLOCK'
           ? '#7dd3fc'

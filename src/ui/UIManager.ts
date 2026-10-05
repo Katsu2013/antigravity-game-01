@@ -7,6 +7,7 @@
 import { GameEngine } from '../core/GameEngine';
 import { SVGSprites } from '../render/sprites/SVGSprites';
 import { RunStats, StorageManager } from '../storage/StorageManager';
+import { SoundSystem } from '../audio/SoundSystem';
 
 /**
  * DOM UIコンポーネント管理クラス。
@@ -156,6 +157,26 @@ export class UIManager {
    * モーダル開閉等のUIイベントをバインドします。
    */
   private bindModalEvents(): void {
+    // サウンド切替ボタン
+    const soundBtn = document.getElementById('btn-sound-toggle') as HTMLButtonElement | null;
+    if (soundBtn) {
+      const updateSoundBtn = () => {
+        const isMuted = SoundSystem.getInstance().isMuted();
+        soundBtn.textContent = isMuted ? '🔇 SE: OFF' : '🔊 SE: ON';
+        if (isMuted) {
+          soundBtn.classList.remove('highlight');
+        } else {
+          soundBtn.classList.add('highlight');
+        }
+      };
+      updateSoundBtn();
+      soundBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        SoundSystem.getInstance().toggleMute();
+        updateSoundBtn();
+      });
+    }
+
     // 持ち物ボタン（上部HUD & モバイル操作パネル）
     document.getElementById('btn-inventory-top')?.addEventListener('click', (e) => {
       e.stopPropagation();

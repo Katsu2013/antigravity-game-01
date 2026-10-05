@@ -8,6 +8,7 @@ import { GameEngine } from '../core/GameEngine';
 import { ActionType } from '../core/types';
 import { CanvasRenderer } from '../render/CanvasRenderer';
 import { UIManager } from '../ui/UIManager';
+import { SoundSystem } from '../audio/SoundSystem';
 
 /**
  * 入力抽象化マネージャークラス。
@@ -77,6 +78,8 @@ export class InputManager {
    * @param action - 実行するアクション
    */
   private dispatchAction(action: ActionType): void {
+    SoundSystem.getInstance().unlock();
+
     // 死亡している場合はリスタートアクション以外は一切受け付けない
     if (!this.engine.player.isAlive && action.type !== 'RESTART') {
       return;

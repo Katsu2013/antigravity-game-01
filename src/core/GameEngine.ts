@@ -12,6 +12,7 @@ import { CombatSystem } from './systems/CombatSystem';
 import { ItemSystem } from './systems/ItemSystem';
 import { ShopSystem } from './systems/ShopSystem';
 import { StorageManager } from '../storage/StorageManager';
+import { SoundSystem } from '../audio/SoundSystem';
 import {
   ActionType,
   CardinalDirection,
@@ -504,6 +505,13 @@ export class GameEngine {
 
       case 'PICKUP': {
         const result = ItemSystem.pickupItem(this.player, this.map);
+        if (result.success) {
+          if (result.message.includes('G') || result.message.includes('ゴールド')) {
+            SoundSystem.getInstance().playGold();
+          } else {
+            SoundSystem.getInstance().playPickup();
+          }
+        }
         this.addLog(result.message, result.success ? 'info' : 'warning');
         turnPassed = result.success;
         break;
@@ -516,6 +524,13 @@ export class GameEngine {
         );
         if (hasGroundItem) {
           const result = ItemSystem.pickupItem(this.player, this.map);
+          if (result.success) {
+            if (result.message.includes('G') || result.message.includes('ゴールド')) {
+              SoundSystem.getInstance().playGold();
+            } else {
+              SoundSystem.getInstance().playPickup();
+            }
+          }
           this.addLog(result.message, result.success ? 'info' : 'warning');
           turnPassed = result.success;
           break;
@@ -524,6 +539,7 @@ export class GameEngine {
         // 2. 階段マス判定（足元）
         const currentTile = this.map.tiles[this.player.y][this.player.x];
         if (currentTile === TileType.StairsDown) {
+          SoundSystem.getInstance().playStairs();
           if (this.map.isThiefMode) {
             this.addLog(
               '泥棒大成功！！ 店主と番犬の猛追撃を振り切り、商品を無事に手に入れた！',
@@ -614,6 +630,7 @@ export class GameEngine {
 
         // 4. 正面に敵・障害物がなく足元にも階段・アイテムがない場合、正面に向かって素振り（空振り攻撃）を実行！
         this.onAttack?.('player', fdx, fdy, '');
+        SoundSystem.getInstance().playMiss();
         this.addLog('正面へ剣を素振りした。手応えはない。', 'normal');
         turnPassed = true;
         break;
@@ -621,6 +638,9 @@ export class GameEngine {
 
       case 'USE_ITEM': {
         const result = ItemSystem.useItem(this.player, this.map, action.itemId);
+        if (result.success) {
+          SoundSystem.getInstance().playHeal();
+        }
         this.addLog(result.message, result.success ? 'info' : 'warning');
         turnPassed = result.success;
         if (result.success) {
@@ -644,6 +664,9 @@ export class GameEngine {
           action.dx,
           action.dy
         );
+        if (result.success) {
+          SoundSystem.getInstance().playShoot();
+        }
         this.addLog(result.message, result.success ? 'info' : 'warning');
         if (result.projectile) {
           this.onProjectile?.(
@@ -667,6 +690,9 @@ export class GameEngine {
           action.dx,
           action.dy
         );
+        if (result.success) {
+          SoundSystem.getInstance().playZap();
+        }
         this.addLog(result.message, result.success ? 'info' : 'warning');
         if (result.projectile) {
           this.onProjectile?.(
@@ -690,6 +716,9 @@ export class GameEngine {
           action.dx,
           action.dy
         );
+        if (result.success) {
+          SoundSystem.getInstance().playShoot();
+        }
         this.addLog(result.message, result.success ? 'info' : 'warning');
         if (result.projectile) {
           this.onProjectile?.(
@@ -708,6 +737,7 @@ export class GameEngine {
       case 'DESCEND': {
         const currentTile = this.map.tiles[this.player.y][this.player.x];
         if (currentTile === TileType.StairsDown) {
+          SoundSystem.getInstance().playStairs();
           if (this.map.isThiefMode) {
             this.addLog(
               '泥棒大成功！！ 店主と番犬の猛追撃を振り切り、商品を無事に手に入れた！',
@@ -763,6 +793,7 @@ export class GameEngine {
       const bill = ShopSystem.calculateBill(this.player, this.map);
       if (bill.unpaidItems.length > 0) {
         const theftRes = ShopSystem.triggerTheft(this.player, this.map);
+        SoundSystem.getInstance().playAlarm();
         this.addLog(theftRes.message, 'damage');
         this.onDamage?.('player');
       }
@@ -777,6 +808,7 @@ export class GameEngine {
         this.player.inventory.splice(reviveIdx, 1);
         this.player.hp = this.player.maxHp;
         this.player.isAlive = true;
+        SoundSystem.getInstance().playHeal();
         this.addLog(
           '力尽きて倒れた……だが、袋の中の【復活の草】が神々しい黄金の光を放ち、奇跡的に息を吹き返した！(HP全快)',
           'info'
@@ -1384,6 +1416,9 @@ export class GameEngine {
     this.onAttack?.('player', dx, dy, monster.id);
     this.onDamage?.(monster.id);
 
+    // 攻撃音再生（通常斬撃 or 会心の一撃）
+    SoundSystem.getInstance().playAttack(isBack);
+
     const result = CombatSystem.playerAttack(this.player, monster, isBack);
 
     if (result.isBackstab) {
@@ -1406,11 +1441,15 @@ export class GameEngine {
       this.map.monsters = this.map.monsters.filter((m) => m.id !== monster.id);
 
       if (result.didLevelUp) {
+        SoundSystem.getInstance().playLevelUp();
         this.addLog(
           `レベルが上がった！ (Lv.${this.player.level} / 最大HP+5 / 攻撃+2 / 防御+1 / HP+5回復)`,
           'turn-header'
         );
       }
+    } else {
+      // 生存時は肉弾ヒット音
+      SoundSystem.getInstance().playMonsterHit();
     }
   }
 
@@ -1531,6 +1570,7 @@ export class GameEngine {
           if (nx === playerPos.x && ny === playerPos.y) {
             this.onAttack?.(monster.id, rDir.dx, rDir.dy, 'player');
             this.onDamage?.('player');
+            SoundSystem.getInstance().playPlayerHit();
             const combat = CombatSystem.monsterAttack(monster, this.player);
             this.addLog(
               `${monster.name} は混乱して突進してきた！ あなたは ${combat.damage} のダメージを受けた！`,
@@ -1579,6 +1619,7 @@ export class GameEngine {
 
         this.onAttack?.(monster.id, dx, dy, 'player');
         this.onDamage?.('player');
+        SoundSystem.getInstance().playPlayerHit();
         const combat = CombatSystem.monsterAttack(monster, this.player);
         this.addLog(
           `${monster.name} の攻撃！ あなたは ${combat.damage} のダメージを受けた！`,
@@ -1590,11 +1631,13 @@ export class GameEngine {
             this.player.inventory.splice(reviveIdx, 1);
             this.player.hp = this.player.maxHp;
             this.player.isAlive = true;
+            SoundSystem.getInstance().playHeal();
             this.addLog(
               '力尽きて倒れた……だが、袋の中の【復活の草】が神々しい黄金の光を放ち、奇跡的に息を吹き返した！(HP全快)',
               'info'
             );
           } else {
+            SoundSystem.getInstance().playDefeat();
             this.lastDefeatCause = `${monster.name} の攻撃により力尽きた`;
             return; // 死亡確定時は即座に全モンスターの行動を完全終了！
           }
@@ -1622,6 +1665,7 @@ export class GameEngine {
           const stepY = Math.sign(dy);
           this.onAttack?.(monster.id, stepX, stepY, 'player');
           this.onDamage?.('player');
+          SoundSystem.getInstance().playPlayerHit();
 
           const rangedDamage = Math.max(
             2,
@@ -1647,12 +1691,14 @@ export class GameEngine {
               this.player.inventory.splice(reviveIdx, 1);
               this.player.hp = this.player.maxHp;
               this.player.isAlive = true;
+              SoundSystem.getInstance().playHeal();
               this.addLog(
                 '力尽きて倒れた……だが、袋の中の【復活の草】が神々しい黄金の光を放ち、奇跡的に息を吹き返した！(HP全快)',
                 'info'
               );
             } else {
               this.player.isAlive = false;
+              SoundSystem.getInstance().playDefeat();
               this.lastDefeatCause = `${monster.name} の遠隔攻撃により力尽きた`;
               return; // 死亡確定時は即座に全モンスターの行動を完全終了！
             }
