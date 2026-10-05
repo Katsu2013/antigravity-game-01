@@ -355,9 +355,10 @@ export class AnimationEngine {
       state.direction = dy > 0 ? 'down' : 'up';
     }
 
-    // 階層移動やワープ等で急激なジャンプがあった場合は即時テレポート（※滑走移動中や大石押しはテレポートせずスライド）
+    // 階層移動・フロア初期化・ワープ等で急激なジャンプがあった場合は即時テレポート
+    // ※大石押し（最大3〜4マス）や氷滑走以外の長距離（4.5マス超）乖離は初期配置とみなし即座にテレポート
     const dist = Math.hypot(state.targetX - gridX, state.targetY - gridY);
-    if (!isSliding && !isPushable && dist > 3.5) {
+    if ((!isSliding && !isPushable && dist > 2.5) || dist > 4.5) {
       state.renderX = gridX;
       state.renderY = gridY;
     }
@@ -801,12 +802,25 @@ export class AnimationEngine {
   public pruneInactive(validIds: Set<string>): void {
     for (const [id, state] of this.states.entries()) {
       if (!validIds.has(id)) {
-        // スライド移動中または押し出し移動中は完了するまで破棄を保留
-        if (state.isSliding || state.isPushable) {
+        // スライド移動中または押し出し移動の途中（移動残余がある場合）のみ完了するまで破棄を保留
+        const isMoving = Math.hypot(state.targetX - state.renderX, state.targetY - state.renderY) > 0.05;
+        if ((state.isSliding || state.isPushable) && isMoving) {
           continue;
         }
         this.states.delete(id);
       }
     }
+  }
+
+  /**
+   * 新フロア生成時やゲームリセット時、プレイヤー以外の旧エンティティ（モンスター・障害物）のアニメーション状態を全クリアします。
+   */
+  public clearFloorEntities(): void {
+    const playerState = this.states.get('player');
+    this.states.clear();
+    if (playerState) {
+      this.states.set('player', playerState);
+    }
+    this.projectiles = [];
   }
 }

@@ -46,6 +46,9 @@ export class CanvasRenderer {
   /** 前フレームのタイムスタンプ（デルタタイム計算用） */
   private lastTime = 0;
 
+  /** 直前に描画したフロア階層番号（階層切り替え検知用） */
+  private lastFloor = 1;
+
   /**
    * CanvasRenderer のインスタンスを生成し、SVGスプライトのロード、
    * アニメーションエンジンの初期化、および描画ループを開始します。
@@ -211,6 +214,13 @@ export class CanvasRenderer {
    */
   private syncEntities(): void {
     const player = this.engine.player;
+
+    // フロア階層が切り替わった場合、旧フロアのエンティティ（モンスター・大石等）のアニメーションを全消去
+    if (this.lastFloor !== player.floor) {
+      this.lastFloor = player.floor;
+      this.anim.clearFloorEntities();
+    }
+
     const curTile = this.engine.map.tiles[player.y]?.[player.x];
     const isSwamp = curTile === TileType.Mud || curTile === TileType.Poison;
     this.anim.playerSinkOffsetY = isSwamp ? 4.5 : 0;

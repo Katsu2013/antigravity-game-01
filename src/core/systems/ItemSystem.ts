@@ -266,11 +266,35 @@ export class ItemSystem {
       }
 
       case 'ARROW': {
-        return this.shootArrow(player, map, item.id);
+        if (player.equippedArrow?.id === item.id) {
+          player.equippedArrow = null;
+          return {
+            success: true,
+            message: `${item.name} の装備を外した。`,
+          };
+        } else {
+          player.equippedArrow = item;
+          return {
+            success: true,
+            message: `${item.name} を装備した！(Bボタン / Fキーで即座に撃てる)`,
+          };
+        }
       }
 
       case 'STAFF': {
-        return this.zapStaff(player, map, item.id);
+        if (player.equippedStaff?.id === item.id) {
+          player.equippedStaff = null;
+          return {
+            success: true,
+            message: `${item.name} の装備を外した。`,
+          };
+        } else {
+          player.equippedStaff = item;
+          return {
+            success: true,
+            message: `${item.name} を装備した！(Yボタン / Tキーで即座に振れる)`,
+          };
+        }
       }
 
       case 'SCROLL': {
@@ -459,12 +483,13 @@ export class ItemSystem {
     dx?: number,
     dy?: number
   ): ItemActionResult {
-    const index = arrowId
-      ? player.inventory.findIndex((it) => it.id === arrowId)
-      : player.inventory.findIndex((it) => it.category === 'ARROW');
+    const targetArrowId = arrowId ?? player.equippedArrow?.id;
+    const index = targetArrowId
+      ? player.inventory.findIndex((it) => it.id === targetArrowId)
+      : -1;
 
     if (index === -1) {
-      return { success: false, message: '矢を持っていない！' };
+      return { success: false, message: '矢を装備していません！所持品から矢を装備してください。' };
     }
 
     const arrow = player.inventory[index];
@@ -474,6 +499,9 @@ export class ItemSystem {
     const count = arrow.count ?? 1;
     if (count <= 1) {
       player.inventory.splice(index, 1);
+      if (player.equippedArrow?.id === arrow.id) {
+        player.equippedArrow = null;
+      }
     } else {
       arrow.count = count - 1;
     }
@@ -566,13 +594,17 @@ export class ItemSystem {
   public static zapStaff(
     player: PlayerState,
     map: DungeonMap,
-    staffId: string,
+    staffId?: string,
     dx?: number,
     dy?: number
   ): ItemActionResult {
-    const index = player.inventory.findIndex((it) => it.id === staffId);
+    const targetStaffId = staffId ?? player.equippedStaff?.id;
+    const index = targetStaffId
+      ? player.inventory.findIndex((it) => it.id === targetStaffId)
+      : -1;
+
     if (index === -1) {
-      return { success: false, message: 'その杖は所持していない。' };
+      return { success: false, message: '魔法の杖を装備していません！所持品から杖を装備してください。' };
     }
 
     const staff = player.inventory[index];
@@ -732,6 +764,12 @@ export class ItemSystem {
       player.equippedTalisman = null;
       CombatSystem.updatePlayerStats(player);
     }
+    if (player.equippedArrow?.id === item.id) {
+      player.equippedArrow = null;
+    }
+    if (player.equippedStaff?.id === item.id) {
+      player.equippedStaff = null;
+    }
 
     const dirVec = this.resolveDirection(player, dx, dy);
     let currX = player.x;
@@ -881,6 +919,12 @@ export class ItemSystem {
       player.equippedTalisman = null;
       CombatSystem.updatePlayerStats(player);
     }
+    if (player.equippedArrow?.id === item.id) {
+      player.equippedArrow = null;
+    }
+    if (player.equippedStaff?.id === item.id) {
+      player.equippedStaff = null;
+    }
 
     item.x = player.x;
     item.y = player.y;
@@ -913,11 +957,15 @@ export class ItemSystem {
       const aEquipped =
         player.equippedWeapon?.id === a.id ||
         player.equippedShield?.id === a.id ||
-        player.equippedTalisman?.id === a.id;
+        player.equippedTalisman?.id === a.id ||
+        player.equippedArrow?.id === a.id ||
+        player.equippedStaff?.id === a.id;
       const bEquipped =
         player.equippedWeapon?.id === b.id ||
         player.equippedShield?.id === b.id ||
-        player.equippedTalisman?.id === b.id;
+        player.equippedTalisman?.id === b.id ||
+        player.equippedArrow?.id === b.id ||
+        player.equippedStaff?.id === b.id;
 
       // 1. 装備中アイテムを最優先
       if (aEquipped && !bEquipped) return -1;

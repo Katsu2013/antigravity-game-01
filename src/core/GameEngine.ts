@@ -257,6 +257,9 @@ export class GameEngine {
       ],
       equippedWeapon: null,
       equippedShield: null,
+      equippedTalisman: null,
+      equippedArrow: null,
+      equippedStaff: null,
       isAlive: true,
     };
 
@@ -473,7 +476,32 @@ export class GameEngine {
       }
 
       case 'INTERACT': {
-        // 1. プレイヤーの向いている方向（8方向）の直前マスを計算
+        // 1. 足元アイテム拾得判定（ボタン表示が「拾う」になっている場合は最優先で拾う）
+        const hasGroundItem = this.map.items.some(
+          (it) => it.x === this.player.x && it.y === this.player.y
+        );
+        if (hasGroundItem) {
+          const result = ItemSystem.pickupItem(this.player, this.map);
+          this.addLog(result.message, result.success ? 'info' : 'warning');
+          turnPassed = result.success;
+          break;
+        }
+
+        // 2. 階段マス判定（足元）
+        const currentTile = this.map.tiles[this.player.y][this.player.x];
+        if (currentTile === TileType.StairsDown) {
+          this.player.floor += 1;
+          this.player.turn += 1;
+          const nextBiome = DungeonGenerator.getBiomeForFloor(this.player.floor);
+          this.addLog(
+            `階段を降り、地下 ${this.player.floor} 階【${nextBiome.name}】へ進んだ。`,
+            'info'
+          );
+          this.generateFloor(this.player.floor);
+          return true;
+        }
+
+        // 3. プレイヤーの向いている方向（8方向）の直前マスを計算
         let fdx = 0;
         let fdy = 1;
         switch (this.player.direction) {
@@ -514,7 +542,7 @@ export class GameEngine {
         const targetX = this.player.x + fdx;
         const targetY = this.player.y + fdy;
 
-        // 正面マスにモンスターがいる場合は最優先で直接近接攻撃！
+        // 正面マスにモンスターがいる場合は直接近接攻撃！
         const facingMonster = this.map.monsters.find(
           (m) => m.x === targetX && m.y === targetY
         );
@@ -531,31 +559,6 @@ export class GameEngine {
         );
         if (facingObstacle) {
           turnPassed = this.interactWithObstacle(facingObstacle, fdx, fdy);
-          break;
-        }
-
-        // 2. 階段マス判定（足元）
-        const currentTile = this.map.tiles[this.player.y][this.player.x];
-        if (currentTile === TileType.StairsDown) {
-          this.player.floor += 1;
-          this.player.turn += 1;
-          const nextBiome = DungeonGenerator.getBiomeForFloor(this.player.floor);
-          this.addLog(
-            `階段を降り、地下 ${this.player.floor} 階【${nextBiome.name}】へ進んだ。`,
-            'info'
-          );
-          this.generateFloor(this.player.floor);
-          return true;
-        }
-
-        // 3. 足元アイテム拾得判定
-        const hasGroundItem = this.map.items.some(
-          (it) => it.x === this.player.x && it.y === this.player.y
-        );
-        if (hasGroundItem) {
-          const result = ItemSystem.pickupItem(this.player, this.map);
-          this.addLog(result.message, result.success ? 'info' : 'warning');
-          turnPassed = result.success;
           break;
         }
 

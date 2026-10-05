@@ -649,6 +649,33 @@ kbd {
     border-color: #ef4444;
     color: #fee2e2;
   }
+
+  /* 非活性（未装備）時のボタンスタイル: モノトーン・グレーアウト */
+  .pad-btn.btn-disabled {
+    background-color: #1e293b !important;
+    border-color: #475569 !important;
+    color: #64748b !important;
+    opacity: 0.55;
+    box-shadow: none !important;
+  }
+  .pad-btn.btn-disabled .btn-letter {
+    color: #64748b !important;
+  }
+  .pad-btn.btn-disabled .btn-sub {
+    color: #64748b !important;
+  }
+
+  /* アイテム足元時（拾う）のAボタンスタイル: 鮮やかな琥珀ゴールド */
+  .pad-btn.btn-pickup {
+    background-color: #b45309 !important;
+    border-color: #fbbf24 !important;
+    color: #fef3c7 !important;
+    box-shadow: 0 0 10px rgba(251, 191, 36, 0.45) !important;
+  }
+  .pad-btn.btn-pickup .btn-sub {
+    color: #ffffff !important;
+    font-weight: 900;
+  }
 }
 
 /* Modals (タイトル画面 z-index: 200 より前面の 300 に配置) */

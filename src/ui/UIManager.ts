@@ -327,15 +327,75 @@ export class UIManager {
       }
     }
 
-    const subA = document.querySelector('#btn-pad-a .btn-sub');
-    const subB = document.querySelector('#btn-pad-b .btn-sub');
-    const subX = document.querySelector('#btn-pad-x .btn-sub');
-    const subY = document.querySelector('#btn-pad-y .btn-sub');
+    const btnA = document.getElementById('btn-pad-a');
+    const btnB = document.getElementById('btn-pad-b');
+    const btnX = document.getElementById('btn-pad-x');
+    const btnY = document.getElementById('btn-pad-y');
 
-    if (subA) subA.textContent = isInventoryMode ? '使う' : '攻撃';
-    if (subB) subB.textContent = isInventoryMode ? '閉じる' : '撃つ';
-    if (subX) subX.textContent = isInventoryMode ? '投げる' : '持物';
-    if (subY) subY.textContent = isInventoryMode ? '整理' : '振る';
+    const subA = btnA?.querySelector('.btn-sub');
+    const subB = btnB?.querySelector('.btn-sub');
+    const subX = btnX?.querySelector('.btn-sub');
+    const subY = btnY?.querySelector('.btn-sub');
+
+    const player = this.engine.player;
+    const map = this.engine.map;
+
+    if (isInventoryMode) {
+      if (subA) subA.textContent = '使う';
+      if (subB) subB.textContent = '閉じる';
+      if (subX) subX.textContent = '投げる';
+      if (subY) subY.textContent = '整理';
+
+      btnA?.classList.remove('btn-pickup');
+      btnB?.classList.remove('btn-disabled');
+      btnY?.classList.remove('btn-disabled');
+    } else {
+      // 1. Aボタン: 足元アイテム判定（アイテムの上に乗った際は「拾う」と表示＆ゴールド強調）
+      const hasGroundItem = map?.items?.some(
+        (it) => it.x === player.x && it.y === player.y
+      );
+      if (subA) {
+        subA.textContent = hasGroundItem ? '拾う' : '攻撃';
+      }
+      if (btnA) {
+        if (hasGroundItem) {
+          btnA.classList.add('btn-pickup');
+          btnA.setAttribute('title', '足元の道具を拾う (Z/Enter/G)');
+        } else {
+          btnA.classList.remove('btn-pickup');
+          btnA.setAttribute('title', '攻撃/調べる/決定 (Z/Enter)');
+        }
+      }
+
+      // 2. Bボタン: 矢を装備して初めてカラフル（未装備はグレーアウト非活性）
+      const equippedArrow = player.equippedArrow;
+      if (equippedArrow) {
+        btnB?.classList.remove('btn-disabled');
+        const countStr = equippedArrow.count !== undefined ? `(${equippedArrow.count})` : '';
+        if (subB) subB.textContent = `撃つ${countStr}`;
+        btnB?.setAttribute('title', `${equippedArrow.name}を撃つ (F/Space)`);
+      } else {
+        btnB?.classList.add('btn-disabled');
+        if (subB) subB.textContent = '撃つ';
+        btnB?.setAttribute('title', '矢未装備 (所持品一覧から矢を装備してください)');
+      }
+
+      // 3. Yボタン: 杖を装備して初めてカラフル（未装備はグレーアウト非活性）
+      const equippedStaff = player.equippedStaff;
+      if (equippedStaff) {
+        btnY?.classList.remove('btn-disabled');
+        const chargeStr = equippedStaff.charges !== undefined ? `[${equippedStaff.charges}]` : '';
+        if (subY) subY.textContent = `振る${chargeStr}`;
+        btnY?.setAttribute('title', `${equippedStaff.name}を振る (T/V)`);
+      } else {
+        btnY?.classList.add('btn-disabled');
+        if (subY) subY.textContent = '振る';
+        btnY?.setAttribute('title', '杖未装備 (所持品一覧から杖を装備してください)');
+      }
+
+      // 4. Xボタン: 持ち物メニュー
+      if (subX) subX.textContent = '持物';
+    }
   }
 
   /**
@@ -382,17 +442,13 @@ export class UIManager {
     const isEquipment =
       item.category === 'WEAPON' ||
       item.category === 'SHIELD' ||
-      item.category === 'TALISMAN';
+      item.category === 'TALISMAN' ||
+      item.category === 'ARROW' ||
+      item.category === 'STAFF';
 
-    if (item.category === 'ARROW') {
-      this.engine.shoot(item.id);
-    } else if (item.category === 'STAFF') {
-      this.engine.zapStaff(item.id);
-    } else {
-      this.engine.executeAction({ type: 'USE_ITEM', itemId: item.id });
-    }
+    this.engine.executeAction({ type: 'USE_ITEM', itemId: item.id });
 
-    // 装備品以外の消費アイテム・遠距離アクション時は結果メッセージを見るためにインベントリを閉じる
+    // 装備品以外の消費アイテム使用時は結果メッセージを見るためにインベントリを閉じる
     if (!isEquipment) {
       this.closeInventoryModal();
       return;
@@ -549,6 +605,9 @@ export class UIManager {
       this.cancelGameOverTimer();
       this.gameOverModalEl.classList.add('hidden');
     }
+
+    // 8. コントローラーボタン表示（A: 攻撃/拾う、B/Y: 装備状態に応じたカラフル/グレーアウト）を常時同期
+    this.updateGamepadLabels(this.isInventoryOpen());
   }
 
   /**
@@ -582,7 +641,9 @@ export class UIManager {
       const isEquipped =
         player.equippedWeapon?.id === item.id ||
         player.equippedShield?.id === item.id ||
-        player.equippedTalisman?.id === item.id;
+        player.equippedTalisman?.id === item.id ||
+        player.equippedArrow?.id === item.id ||
+        player.equippedStaff?.id === item.id;
 
       const card = document.createElement('div');
       card.className = `inventory-item-card ${isEquipped ? 'equipped' : ''}`;
@@ -634,27 +695,15 @@ export class UIManager {
       const actions = document.createElement('div');
       actions.className = 'item-actions';
 
-      // 使う/装備/撃つ/振るボタン
+      // 装備/外す/使うボタン（武器・防具・腕輪・矢・杖はインベントリを開いたまま装備着脱）
       const useBtn = document.createElement('button');
       useBtn.className = 'item-btn use-btn';
-      if (item.category === 'ARROW') {
-        useBtn.textContent = '撃つ';
-        useBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          this.engine.shoot(item.id);
-          this.closeInventoryModal();
-        });
-      } else if (item.category === 'STAFF') {
-        useBtn.textContent = '振る';
-        useBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          this.engine.zapStaff(item.id);
-          this.closeInventoryModal();
-        });
-      } else if (
+      if (
         item.category === 'WEAPON' ||
         item.category === 'SHIELD' ||
-        item.category === 'TALISMAN'
+        item.category === 'TALISMAN' ||
+        item.category === 'ARROW' ||
+        item.category === 'STAFF'
       ) {
         useBtn.textContent = isEquipped ? '外す' : '装備';
         useBtn.addEventListener('click', (e) => {

@@ -381,6 +381,10 @@ export interface PlayerState {
   equippedShield: Item | null;
   /** 現在装備している腕輪・装飾品（未装備時は null） */
   equippedTalisman?: Item | null;
+  /** 現在装備している矢・飛び道具（未装備時は null） */
+  equippedArrow?: Item | null;
+  /** 現在装備している魔法の杖（未装備時は null） */
+  equippedStaff?: Item | null;
   /** 倍速行動バフの残りターン数（すばやさの草） */
   speedTurns?: number;
   /** 生存フラグ（falseの場合はゲームオーバー） */

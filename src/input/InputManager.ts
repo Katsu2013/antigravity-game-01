@@ -657,36 +657,32 @@ export class InputManager {
   }
 
   /**
-   * 所持品内の矢（木の矢・鉄の矢・銀の矢）を向いている方向へクイック射出します。
+   * 装備中の矢（木の矢・鉄の矢・銀の矢）を向いている方向へ射出します。
    */
   private quickShootArrow(): void {
     if (!this.engine.player.isAlive || (this.ui.isAnyModalOpen() && !this.ui.isInventoryOpen())) {
       return;
     }
-    const inventory = this.engine.player.inventory;
-    const arrow = inventory.find((item) => item.category === 'ARROW');
-    if (arrow) {
-      this.engine.shoot(arrow.id);
+    const equippedArrow = this.engine.player.equippedArrow;
+    if (equippedArrow) {
+      this.engine.shoot(equippedArrow.id);
     } else {
-      this.engine.addLog('矢を持っていません！', 'warning');
+      this.engine.addLog('矢を装備していません！所持品から矢を装備してください。', 'warning');
     }
   }
 
   /**
-   * 所持品内の魔法の杖を向いている方向へクイック照射します。
+   * 装備中の魔法の杖を向いている方向へ照射します。
    */
   private quickZapStaff(): void {
     if (!this.engine.player.isAlive || (this.ui.isAnyModalOpen() && !this.ui.isInventoryOpen())) {
       return;
     }
-    const inventory = this.engine.player.inventory;
-    const staff =
-      inventory.find((item) => item.category === 'STAFF' && (item.charges ?? 0) > 0) ??
-      inventory.find((item) => item.category === 'STAFF');
-    if (staff) {
-      this.engine.zapStaff(staff.id);
+    const equippedStaff = this.engine.player.equippedStaff;
+    if (equippedStaff) {
+      this.engine.zapStaff(equippedStaff.id);
     } else {
-      this.engine.addLog('魔法の杖を持っていません！', 'warning');
+      this.engine.addLog('魔法の杖を装備していません！所持品から杖を装備してください。', 'warning');
     }
   }
 }
