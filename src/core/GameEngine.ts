@@ -488,6 +488,7 @@ export class GameEngine {
           if (Math.random() < 0.40) {
             this.addLog('ズブズブ……！ 泥濘に足を取られて抜け出せない！', 'warning');
             this.onDamage?.('player'); // もがき振動演出
+            SoundSystem.getInstance().playSwampStuck();
             this.onSwampStuck?.(this.player.x, this.player.y);
             this.actionLockUntil = Date.now() + 1150; // 約1.15秒もがきロック
             turnPassed = true;
@@ -709,8 +710,9 @@ export class GameEngine {
 
         // 4. 正面に敵・障害物がなく足元にも階段・アイテムがない場合、正面に向かって素振り（空振り攻撃）を実行！
         this.onAttack?.('player', fdx, fdy, '');
-        SoundSystem.getInstance().playMiss();
-        this.addLog('正面へ剣を素振りした。手応えはない。', 'normal');
+        SoundSystem.getInstance().playMiss(!!this.player.equippedWeapon);
+        const swingName = this.player.equippedWeapon ? `${this.player.equippedWeapon.name}を素振りした` : '拳を素振りした';
+        this.addLog(`正面へ${swingName}。手応えはない。`, 'normal');
         turnPassed = true;
         break;
       }
@@ -756,7 +758,12 @@ export class GameEngine {
           action.dy
         );
         if (result.success) {
-          SoundSystem.getInstance().playShoot();
+          SoundSystem.getInstance().playBowShoot();
+          if (result.projectile?.hitMonsterId || result.projectile?.isHit) {
+            SoundSystem.getInstance().playArrowHit();
+          } else {
+            SoundSystem.getInstance().playArrowHitWall();
+          }
         }
         this.addLog(result.message, result.success ? 'info' : 'warning');
         if (result.projectile) {
@@ -774,6 +781,7 @@ export class GameEngine {
       }
 
       case 'ZAP_STAFF': {
+        const staff = this.player.inventory.find((it) => it.id === action.itemId) || this.player.equippedStaff;
         const result = ItemSystem.zapStaff(
           this.player,
           this.map,
@@ -782,7 +790,7 @@ export class GameEngine {
           action.dy
         );
         if (result.success) {
-          SoundSystem.getInstance().playZap();
+          SoundSystem.getInstance().playZapStaff(staff?.name);
         }
         this.addLog(result.message, result.success ? 'info' : 'warning');
         if (result.projectile) {
@@ -808,7 +816,10 @@ export class GameEngine {
           action.dy
         );
         if (result.success) {
-          SoundSystem.getInstance().playShoot();
+          SoundSystem.getInstance().playThrowItem();
+          if (result.projectile?.hitMonsterId || result.projectile?.isHit) {
+            SoundSystem.getInstance().playThrowHit();
+          }
         }
         this.addLog(result.message, result.success ? 'info' : 'warning');
         if (result.projectile) {
@@ -1083,6 +1094,7 @@ export class GameEngine {
     if (obstacle.isSliding) {
       this.addLog(`${obstacle.name} を力いっぱい蹴り出した！`, 'normal');
       this.onAttack?.('player', dx, dy, obstacle.id);
+      SoundSystem.getInstance().playIceSlide();
 
       const startX = obstacle.x;
       const startY = obstacle.y;
@@ -1180,6 +1192,7 @@ export class GameEngine {
         }
 
         this.onDamage?.(hitMonster.id);
+        SoundSystem.getInstance().playRockCrash();
         hitMonster.hp -= damage;
 
         // 氷塊は粉砕・消滅
@@ -1214,6 +1227,7 @@ export class GameEngine {
         this.onObstacleBreak?.(obstacle);
         return true;
       } else if (hitObstacle) {
+        SoundSystem.getInstance().playRockCrash();
         this.addLog(
           `${obstacle.name} が ${hitObstacle.name} に激突し、木っ端微塵に粉砕した！`,
           'normal'
@@ -1224,6 +1238,7 @@ export class GameEngine {
         );
         return true;
       } else if (hitWall) {
+        SoundSystem.getInstance().playRockCrash();
         this.addLog(
           `${obstacle.name} が壁に激突し、ガラガラと粉砕した！`,
           'normal'
@@ -1248,6 +1263,7 @@ export class GameEngine {
       // 1回目の試行: 肩を当てて力を込める
       if (obstacle.pushAttempts === 1) {
         this.onDamage?.(obstacle.id);
+        SoundSystem.getInstance().playPushStrain();
         this.actionLockUntil = Date.now() + 450; // 0.45秒ロック
         this.addLog(
           `${obstacle.name} に全力で肩を当てて押した！……重くてビクともしないが、もう少し力を込めれば動きそうだ！`,
@@ -1356,6 +1372,7 @@ export class GameEngine {
       obstacle.pushAttempts = 0;
       // 岩が画面上で目的マスに到着するまで入力を完全ロック（1マスあたり約750ms、2マスで約1500ms）
       this.actionLockUntil = Date.now() + Math.max(1450, Math.max(1, movedDist) * 750);
+      SoundSystem.getInstance().playRockSlide(Math.max(0.4, movedDist * 0.35));
       this.onObstaclePush?.(obstacle, dx, dy);
 
       if (hitMonster) {
@@ -1366,6 +1383,7 @@ export class GameEngine {
         }
 
         this.onDamage?.(hitMonster.id);
+        SoundSystem.getInstance().playRockCrash();
         const damage = monsterPinned ? 20 : 12;
         hitMonster.hp -= damage;
 
@@ -1420,11 +1438,13 @@ export class GameEngine {
       this.onDamage?.(obstacle.id);
 
       if (obstacle.hp > 0) {
+        SoundSystem.getInstance().playMonsterHit();
         this.addLog(
           `${obstacle.name} に一撃を加えた！（耐久度: ${obstacle.hp}/${obstacle.maxHp}）`,
           'damage'
         );
       } else {
+        SoundSystem.getInstance().playBreakObstacle();
         this.addLog(`${obstacle.name} を粉砕して道を切り開いた！`, 'info');
         this.onObstacleBreak?.(obstacle);
         this.map.obstacles = this.map.obstacles.filter(
@@ -1521,6 +1541,11 @@ export class GameEngine {
         }
 
         this.actionLockUntil = Date.now() + slideDurationMs;
+        if (didFall) {
+          SoundSystem.getInstance().playIceSlip();
+        } else {
+          SoundSystem.getInstance().playIceSlide();
+        }
         this.onIceSlide?.(
           this.player.x,
           this.player.y,
@@ -1550,6 +1575,7 @@ export class GameEngine {
 
     // 2. 泥濘床（TileType.Mud）: 足を取られターン消費増
     if (currentTile === TileType.Mud) {
+      SoundSystem.getInstance().playSwampStuck();
       this.addLog('ズブズブ…！ 泥濘に足が深く沈み込み、余分な時間がかかってしまった！', 'warning');
       this.onSwampStuck?.(this.player.x, this.player.y);
       this.actionLockUntil = Math.max(this.actionLockUntil, Date.now() + 900); // 泥への沈み込みロック
@@ -1588,8 +1614,8 @@ export class GameEngine {
     this.onAttack?.('player', dx, dy, monster.id);
     this.onDamage?.(monster.id);
 
-    // 攻撃音再生（通常斬撃 or 会心の一撃）
-    SoundSystem.getInstance().playAttack(isBack);
+    // 攻撃音再生（武器種別・素手パンチ・会心の一撃に応じた専用サウンド）
+    SoundSystem.getInstance().playAttackByWeapon(this.player.equippedWeapon, isBack);
 
     const result = CombatSystem.playerAttack(this.player, monster, isBack);
 

@@ -23,6 +23,7 @@ export interface ItemActionResult {
     type: 'ARROW' | 'BEAM' | 'STONE' | 'ITEM';
     color: string;
     hitMonsterId?: string;
+    isHit?: boolean;
   };
 }
 
@@ -620,6 +621,7 @@ export class ItemSystem {
         type: 'ARROW',
         color: isSilver ? '#e0f2fe' : '#fbbf24',
         hitMonsterId,
+        isHit: hitInfos.length > 0,
       },
     };
   }
@@ -908,6 +910,7 @@ export class ItemSystem {
         type: item.name.includes('石') ? 'STONE' : 'ITEM',
         color: item.color,
         hitMonsterId: hitMonster?.id,
+        isHit: !!hitMonster,
       },
     };
   }
