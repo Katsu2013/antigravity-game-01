@@ -66,6 +66,9 @@ export class EntityFactory {
       case 'ABYSS_LORD':
         return this.createAbyssLord(x, y);
 
+      case 'SCOOTER_GUY':
+        return this.createScooterGuy(x, y, x + 5, y + 5);
+
       case 'SLIME':
         return {
           id,
@@ -300,6 +303,22 @@ export class EntityFactory {
           isSlow: true, // 2ターンに1回しか動かない鈍重モンスター
           symbol: 'M',
           color: '#d4d4d8',
+        };
+
+      default:
+        return {
+          id,
+          name: 'スライム',
+          type: 'SLIME',
+          x,
+          y,
+          hp: 6,
+          maxHp: 6,
+          atk: 2,
+          def: 1,
+          expValue: 3,
+          symbol: 's',
+          color: '#38bdf8',
         };
     }
   }
@@ -1317,13 +1336,21 @@ export class EntityFactory {
   }
 
   /**
-   * 店主・商人ネロを生成します（平時は中立NPC・話しかけると買い物や会話が可能）。
+   * 店主（多種多様な商人たち）を生成します（平時は中立NPC・話しかけると買い物や会話が可能）。
    */
-  public static createMerchant(x: number, y: number): Monster {
+  public static createMerchant(
+    x: number,
+    y: number,
+    profile?: { id: string; name: string; color: string }
+  ): Monster {
     const id = `merchant_${++this.idCounter}`;
+    const profId = profile?.id ?? 'NERO';
+    const name = profile?.name ?? '商人ネロ';
+    const color = profile?.color ?? '#fbbf24';
+
     return {
       id,
-      name: '商人ネロ',
+      name,
       type: 'MERCHANT',
       x,
       y,
@@ -1334,8 +1361,42 @@ export class EntityFactory {
       expValue: 600,
       isFriendly: true,
       isShopkeeper: true,
+      shopkeeperProfileId: profId,
       symbol: 'M',
-      color: '#fbbf24',
+      color,
+    };
+  }
+
+  /**
+   * スクーターおじさんを生成します（脈絡なくダンジョンを疾走・通過する謎のオジサン）。
+   */
+  public static createScooterGuy(
+    x: number,
+    y: number,
+    targetX: number,
+    targetY: number
+  ): Monster {
+    const id = `scooter_guy_${++this.idCounter}`;
+    return {
+      id,
+      name: 'スクーターおじさん',
+      type: 'SCOOTER_GUY',
+      x,
+      y,
+      hp: 999,
+      maxHp: 999,
+      atk: 0,
+      def: 99,
+      expValue: 0,
+      isFriendly: true,
+      symbol: '🛵',
+      color: '#ef4444',
+      scooterData: {
+        targetX,
+        targetY,
+        despawnTurns: 45,
+        engineSoundTimer: 0,
+      },
     };
   }
 

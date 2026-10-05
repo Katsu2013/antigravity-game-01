@@ -26,9 +26,116 @@ export interface ShopBill {
 }
 
 /**
+ * 店主キャラクターの個性・外見・専用台詞を定義するインターフェース。
+ */
+export interface ShopkeeperProfile {
+  id: 'NERO' | 'TORNEKO' | 'SHIREN' | 'GOLDO' | 'CELIA';
+  name: string;
+  angryName: string;
+  color: string;
+  angryColor: string;
+  greetingMsg: string;
+  shortageMsg: (need: number, has: number) => string;
+  purchaseMsg: (cost: number, remain: number) => string;
+  sellMsg: (earned: number, total: number) => string;
+  settleMsg: (cost: number, sell: number, remain: number) => string;
+  angryTheftMsg: string;
+}
+
+/**
+ * 個性豊かな名物店主たちのプロファイル定義一覧。
+ */
+export const SHOPKEEPER_PROFILES: Record<string, ShopkeeperProfile> = {
+  TORNEKO: {
+    id: 'TORNEKO',
+    name: '大商人トルネー',
+    angryName: '激怒の大商人トルネー',
+    color: '#3b82f6',
+    angryColor: '#ef4444',
+    greetingMsg: '大商人トルネー「毎度あり！わしは世界一の武器商人を目指しておるんじゃ。良い品が揃っておるよ、ゆっくり見ていっておくれ！」',
+    shortageMsg: (need, has) => `大商人トルネー「おやおや、お金が足りんようじゃな！(必要: ${need}G / 所持金: ${has}G) 無理な買い物はいかんよ」`,
+    purchaseMsg: (cost, remain) => `大商人トルネー「まいどあり！代金 ${cost}G を頂戴したぞ。大事に使ってくだされ！(残金: ${remain}G)」`,
+    sellMsg: (earned, total) => `大商人トルネー「良い品を買い取らせてもらった！ ${earned}G をお渡ししよう！(所持金: ${total}G)」`,
+    settleMsg: (cost, sell, remain) => `大商人トルネー「差し引き精算じゃな！商品代金 ${cost}G から買取代 ${sell}G を相殺したぞ！(残金: ${remain}G)」`,
+    angryTheftMsg: '大商人トルネー「わ、わしの店で泥棒じゃとーーっ！？ 冒険者の風上にも置けん奴め！ 番犬ども、全財産を奪い返せーーっ！！」',
+  },
+  SHIREN: {
+    id: 'SHIREN',
+    name: '風来坊シレンス',
+    angryName: '修羅の風来坊シレンス',
+    color: '#0284c7',
+    angryColor: '#dc2626',
+    greetingMsg: '風来坊シレンス「……いらっしゃい。旅の備えなら揃っている。命を大事にしな。」',
+    shortageMsg: (need, has) => `風来坊シレンス「……手持ちが足りないようだ。(必要: ${need}G / 所持金: ${has}G) 悪いがツケは利かない。」`,
+    purchaseMsg: (cost, remain) => `風来坊シレンス「……代金 ${cost}G、確かに受け取った。道中気をつけてな。(残金: ${remain}G)」`,
+    sellMsg: (earned, total) => `風来坊シレンス「買い取ろう。代金 ${earned}G だ。(所持金: ${total}G)」`,
+    settleMsg: (cost, sell, remain) => `風来坊シレンス「差し引き完了だ。(購入 ${cost}G / 売却 ${sell}G / 残金: ${remain}G)」`,
+    angryTheftMsg: '風来坊シレンス「……泥棒か。迷宮の掟を破ったな。逃げ切れると思うなよ……！」',
+  },
+  GOLDO: {
+    id: 'GOLDO',
+    name: '鍛冶商人ゴルド',
+    angryName: '噴火の鍛冶親父ゴルド',
+    color: '#d97706',
+    angryColor: '#b91c1c',
+    greetingMsg: '鍛冶商人ゴルド「おう！冷やかしなら帰んな！俺が鍛え上げた業物ばかりだ、じっくり品定めしな！」',
+    shortageMsg: (need, has) => `鍛冶商人ゴルド「おいおい！金が足りねえぞ！(必要: ${need}G / 所持金: ${has}G) タダで譲るわけにはいかん！」`,
+    purchaseMsg: (cost, remain) => `鍛冶商人ゴルド「ガハハ！毎度！ ${cost}G いただきだ！その武具で敵をぶっ叩いてきな！(残金: ${remain}G)」`,
+    sellMsg: (earned, total) => `鍛冶商人ゴルド「よし、いい素材だ！ ${earned}G で引き取ってやるぜ！(所持金: ${total}G)」`,
+    settleMsg: (cost, sell, remain) => `鍛冶商人ゴルド「計算ぴったりだ！(代金 ${cost}G - 買取 ${sell}G / 残金: ${remain}G)」`,
+    angryTheftMsg: '鍛冶商人ゴルド「俺の目の前でタダ持ち出しだとぉ！？ 許さねえ！ ハンマーで叩き潰して鉄屑にしてやるわい！！」',
+  },
+  CELIA: {
+    id: 'CELIA',
+    name: '魔導商人セリア',
+    angryName: '冷徹な魔女セリア',
+    color: '#a855f7',
+    angryColor: '#9333ea',
+    greetingMsg: '魔導商人セリア「あら、ようこそ迷宮の迷い子さん。ふふ、何をお探し？ 深層は危険よ、しっかり準備なさいな。」',
+    shortageMsg: (need, has) => `魔導商人セリア「ふふ、ゴールドが足りないみたいよ？(必要: ${need}G / 所持金: ${has}G) お金は魔力と同じくらい大切よ。」`,
+    purchaseMsg: (cost, remain) => `魔導商人セリア「お買い上げありがとう。あなたに幸運の加護を。(代金 ${cost}G / 残金: ${remain}G)」`,
+    sellMsg: (earned, total) => `魔導商人セリア「素敵な不用品ね、 ${earned}G で買い取らせていただくわ。(所持金: ${total}G)」`,
+    settleMsg: (cost, sell, remain) => `魔導商人セリア「商品代 ${cost}G と買取代 ${sell}G を相殺して精算完了よ。ふふ、賢いお買い物ね。(残金: ${remain}G)」`,
+    angryTheftMsg: '魔導商人セリア「あらあら……私の店で泥棒？ 身の程知らずな子ね。逃げられると思ったら大間違いよ、灰にしてあげるわ！」',
+  },
+  NERO: {
+    id: 'NERO',
+    name: '商人ネロ',
+    angryName: '怒りの店主ネロ',
+    color: '#fbbf24',
+    angryColor: '#ef4444',
+    greetingMsg: '商人ネロ「毎度どうも！ごゆっくり見ていっておくれよ！」',
+    shortageMsg: (need, has) => `商人ネロ「お客さん、お金が足りないよ！(必要: ${need}G / 所持金: ${has}G)」`,
+    purchaseMsg: (cost, remain) => `まいどあり！代金 ${cost}G を支払い、商品を受け取りました。(残金: ${remain}G)`,
+    sellMsg: (earned, total) => `買い取り成立！不要品を売却して ${earned}G を受け取りました！(所持金: ${total}G)`,
+    settleMsg: (cost, sell, remain) => `会計完了！商品代金 ${cost}G から売却代金 ${sell}G を相殺し、精算しました。(残金: ${remain}G)`,
+    angryTheftMsg: '商人ネロ「泥棒だーーーっ！！ 番犬ども、あいつを絶対に逃すなーーっ！！」',
+  },
+};
+
+/**
  * ショップ関連のロジックを統括する静的システムクラス。
  */
 export class ShopSystem {
+  /**
+   * 店主プロファイルを取得します（未指定または未定義時はランダムまたはNERO）。
+   */
+  public static getProfile(id?: string): ShopkeeperProfile {
+    if (id && SHOPKEEPER_PROFILES[id]) {
+      return SHOPKEEPER_PROFILES[id];
+    }
+    return SHOPKEEPER_PROFILES.NERO;
+  }
+
+  /**
+   * ランダムな店主プロファイルを抽選します。
+   */
+  public static getRandomProfile(): ShopkeeperProfile {
+    const keys = Object.keys(SHOPKEEPER_PROFILES);
+    const chosen = keys[Math.floor(Math.random() * keys.length)];
+    return SHOPKEEPER_PROFILES[chosen];
+  }
+
   /**
    * 指定座標がショップ（店部屋）の内部領域に含まれるかを判定します。
    *
@@ -111,10 +218,16 @@ export class ShopSystem {
   ): { success: boolean; message: string; paid: number; earned: number } {
     const bill = this.calculateBill(player, map);
 
+    // 店主モンスターとプロファイルの特定
+    const merchant = map.monsters.find(
+      (m) => m.type === 'MERCHANT' || m.isShopkeeper === true
+    );
+    const profile = this.getProfile(merchant?.shopkeeperProfileId);
+
     if (bill.unpaidItems.length === 0 && bill.sellItems.length === 0) {
       return {
         success: true,
-        message: '店主ネロ「毎度どうも！ごゆっくり見ていっておくれよ！」',
+        message: profile.greetingMsg,
         paid: 0,
         earned: 0,
       };
@@ -123,7 +236,7 @@ export class ShopSystem {
     if (!bill.canAfford) {
       return {
         success: false,
-        message: `店主ネロ「お客さん、お金が足りないよ！(必要: ${bill.balance}G / 所持金: ${player.gold}G)」`,
+        message: profile.shortageMsg(bill.balance, player.gold),
         paid: 0,
         earned: 0,
       };
@@ -149,11 +262,11 @@ export class ShopSystem {
 
     let msg = '';
     if (bill.totalCost > 0 && bill.totalSell > 0) {
-      msg = `会計完了！商品代金 ${bill.totalCost}G から売却代金 ${bill.totalSell}G を相殺し、精算しました。(現在: ${player.gold}G)`;
+      msg = profile.settleMsg(bill.totalCost, bill.totalSell, player.gold);
     } else if (bill.totalCost > 0) {
-      msg = `まいどあり！代金 ${bill.totalCost}G を支払い、商品を受け取りました。(残金: ${player.gold}G)`;
+      msg = profile.purchaseMsg(bill.totalCost, player.gold);
     } else {
-      msg = `買い取り成立！不要品を売却して ${bill.totalSell}G を受け取りました！(所持金: ${player.gold}G)`;
+      msg = profile.sellMsg(bill.totalSell, player.gold);
     }
 
     return {
@@ -181,15 +294,17 @@ export class ShopSystem {
     const merchant = map.monsters.find(
       (m) => m.type === 'MERCHANT' || m.isShopkeeper === true
     );
+    const profile = this.getProfile(merchant?.shopkeeperProfileId);
+
     if (merchant) {
-      merchant.name = '怒りの店主ネロ';
+      merchant.name = profile.angryName;
       merchant.isFriendly = false;
       merchant.isAngryMerchant = true;
       merchant.hp = 350;
       merchant.maxHp = 350;
       merchant.atk = 65;
       merchant.def = 25;
-      merchant.color = '#ef4444';
+      merchant.color = profile.angryColor;
       merchant.symbol = 'M';
       merchant.isSlow = false;
     }

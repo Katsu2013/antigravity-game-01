@@ -1798,4 +1798,368 @@ export class MonsterAndItemSprites {
   <circle cx="48" cy="10" r="1.5" fill="#c084fc" opacity="0.6"/>
   <circle cx="32" cy="4" r="2" fill="#ef4444" opacity="0.7"/>
 </svg>`.trim();
+
+  // =========================================================================
+  // 17. スクーターおじさん (SCOOTER_GUY) - 5方向
+  // 脈絡なくダンジョンをスクーターで走り抜ける謎のオジサン
+  // =========================================================================
+
+  /** スクーターおじさん 正面（下向き: ヘルメット、丸メガネ、ちょび髭、緑ジャンパー、赤い原付スクーター、丸目ライト） */
+  public static readonly SCOOTER_GUY_DOWN_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- 接地影 -->
+  <ellipse cx="32" cy="60" rx="16" ry="3.5" fill="rgba(0,0,0,0.35)"/>
+  <!-- スクーター前輪タイヤ -->
+  <ellipse cx="32" cy="55" rx="5" ry="6" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
+  <ellipse cx="32" cy="55" rx="2.5" ry="3.5" fill="#94a3b8"/>
+  <!-- 赤いフロントフェンダー -->
+  <path d="M26 50 Q32 46 38 50 L37 53 Q32 50 27 53 Z" fill="#dc2626" stroke="#991b1b" stroke-width="1"/>
+  <!-- 白いレッグシールド -->
+  <path d="M22 38 Q32 35 42 38 L40 50 Q32 48 24 50 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+  <!-- スクーターハンドルバー -->
+  <line x1="18" y1="32" x2="46" y2="32" stroke="#64748b" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- ハンドルグリップ（黒） -->
+  <rect x="16" y="30.5" width="4" height="3" rx="1" fill="#0f172a"/>
+  <rect x="44" y="30.5" width="4" height="3" rx="1" fill="#0f172a"/>
+  <!-- 丸目ヘッドライト（黄色点灯） -->
+  <circle cx="32" cy="35" r="4.5" fill="#fef08a" stroke="#ca8a04" stroke-width="1.2"/>
+  <circle cx="32" cy="35" r="2.5" fill="#ffffff" opacity="0.8"/>
+  <!-- 左右丸型バックミラー -->
+  <circle cx="19" cy="27" r="2.2" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8"/>
+  <line x1="19" y1="29.2" x2="20" y2="32" stroke="#64748b" stroke-width="1"/>
+  <circle cx="45" cy="27" r="2.2" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8"/>
+  <line x1="45" y1="29.2" x2="44" y2="32" stroke="#64748b" stroke-width="1"/>
+  <!-- おじさんの緑ジャンパー胴体 -->
+  <rect x="25" y="24" width="14" height="12" rx="3" fill="#15803d" stroke="#166534" stroke-width="1.2"/>
+  <!-- ハンドルを握る手袋（軍手） -->
+  <circle cx="20" cy="32" r="2.5" fill="#f8fafc" stroke="#94a3b8" stroke-width="0.8"/>
+  <circle cx="44" cy="32" r="2.5" fill="#f8fafc" stroke="#94a3b8" stroke-width="0.8"/>
+  <!-- おじさんの顔 -->
+  <ellipse cx="32" cy="18" rx="6" ry="6.5" fill="#fbcfe8" stroke="#f472b6" stroke-width="0.8"/>
+  <!-- 丸メガネ -->
+  <circle cx="29.5" cy="17" r="2.2" fill="none" stroke="#334155" stroke-width="0.9"/>
+  <circle cx="34.5" cy="17" r="2.2" fill="none" stroke="#334155" stroke-width="0.9"/>
+  <line x1="31.7" y1="17" x2="32.3" y2="17" stroke="#334155" stroke-width="0.8"/>
+  <!-- ちょび髭と温和な口 -->
+  <rect x="30.5" y="20.5" width="3" height="1.2" rx="0.5" fill="#334155"/>
+  <path d="M30 22 Q32 23.5 34 22" stroke="#9f1239" stroke-width="0.8" fill="none"/>
+  <!-- クリーム色のジェットヘルメット -->
+  <path d="M24 16 Q24 7 32 7 Q40 7 40 16 L40 19 Q32 17 24 19 Z" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+  <!-- ヘルメットの開閉バイザーシールド（水色透明） -->
+  <path d="M26 14 Q32 12 38 14 L37 17 Q32 15 27 17 Z" fill="#38bdf8" opacity="0.6"/>
+  <!-- あご紐 -->
+  <path d="M25 18 Q32 25 39 18" stroke="#78350f" stroke-width="1" fill="none"/>
+  <!-- ステップボードに乗るおじさんの靴 -->
+  <rect x="22" y="47" width="4" height="6" rx="1.5" fill="#475569"/>
+  <rect x="38" y="47" width="4" height="6" rx="1.5" fill="#475569"/>
+</svg>`.trim();
+
+  /** スクーターおじさん 背面（上向き） */
+  public static readonly SCOOTER_GUY_UP_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="60" rx="16" ry="3.5" fill="rgba(0,0,0,0.35)"/>
+  <!-- スクーター後輪タイヤ -->
+  <ellipse cx="32" cy="55" rx="5" ry="6" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
+  <!-- 白いナンバープレート -->
+  <rect x="28" y="48" width="8" height="5" rx="0.8" fill="#f8fafc" stroke="#64748b" stroke-width="0.8"/>
+  <line x1="30" y1="50" x2="34" y2="50" stroke="#0284c7" stroke-width="0.7"/>
+  <!-- 赤いテールランプ -->
+  <rect x="29" y="44" width="6" height="3" rx="1" fill="#ef4444" stroke="#991b1b" stroke-width="0.8"/>
+  <!-- 金属製リアキャリア（荷台） -->
+  <rect x="25" y="38" width="14" height="4" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+  <!-- スクーターシート（黒） -->
+  <ellipse cx="32" cy="36" rx="8" ry="4" fill="#1e293b"/>
+  <!-- おじさんの緑ジャンパー背中 -->
+  <rect x="24" y="22" width="16" height="15" rx="3" fill="#15803d" stroke="#166534" stroke-width="1.3"/>
+  <line x1="32" y1="23" x2="32" y2="36" stroke="#166534" stroke-width="1"/>
+  <!-- ヘルメット後頭部（クリーム色） -->
+  <circle cx="32" cy="14" r="8.5" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+  <!-- ヘルメット後部ゴーグルバンド -->
+  <path d="M24 14 Q32 16 40 14" stroke="#78350f" stroke-width="2" fill="none"/>
+  <!-- 左右バックミラー -->
+  <circle cx="19" cy="27" r="2.2" fill="#334155"/>
+  <circle cx="45" cy="27" r="2.2" fill="#334155"/>
+  <!-- 右マフラー排気管（銀色・トコトコ煙） -->
+  <rect x="37" y="52" width="5" height="2.5" rx="1" fill="#94a3b8" stroke="#475569" stroke-width="0.8"/>
+  <circle cx="43" cy="51" r="1" fill="#cbd5e1" opacity="0.7"/>
+  <circle cx="45" cy="49" r="1.5" fill="#e2e8f0" opacity="0.5"/>
+</svg>`.trim();
+
+  /** スクーターおじさん 側面（横向き: 風を切って走る姿） */
+  public static readonly SCOOTER_GUY_SIDE_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="60" rx="20" ry="3.5" fill="rgba(0,0,0,0.35)"/>
+  <!-- 後輪 -->
+  <circle cx="18" cy="52" r="6" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
+  <circle cx="18" cy="52" r="3" fill="#94a3b8"/>
+  <!-- 前輪 -->
+  <circle cx="46" cy="52" r="6" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
+  <circle cx="46" cy="52" r="3" fill="#94a3b8"/>
+  <!-- マフラー排気管 -->
+  <rect x="14" y="53" width="10" height="2.5" rx="1" fill="#94a3b8" stroke="#475569" stroke-width="0.8"/>
+  <!-- トコトコ排気煙 -->
+  <circle cx="10" cy="53" r="1.5" fill="#cbd5e1" opacity="0.6"/>
+  <circle cx="6" cy="50" r="2" fill="#e2e8f0" opacity="0.4"/>
+  <!-- 赤いボディフレーム -->
+  <path d="M16 48 L28 48 L36 48 L44 38 L42 36 L34 44 L24 44 L16 44 Z" fill="#dc2626" stroke="#991b1b" stroke-width="1.2"/>
+  <!-- 白いフロントレッグシールド -->
+  <path d="M42 36 L46 48 L43 50 L39 38 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+  <!-- ハンドル＆前照灯 -->
+  <line x1="41" y1="36" x2="40" y2="30" stroke="#64748b" stroke-width="2"/>
+  <circle cx="46" cy="35" r="3.5" fill="#fef08a" stroke="#ca8a04" stroke-width="1"/>
+  <!-- シート -->
+  <rect x="20" y="40" width="12" height="4" rx="2" fill="#1e293b"/>
+  <!-- おじさんのズボンと足 -->
+  <path d="M26 42 L34 46 L35 50" stroke="#334155" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- おじさんの緑ジャンパー胴体（前傾姿勢） -->
+  <path d="M24 28 L34 32 L32 42 L22 38 Z" fill="#15803d" stroke="#166534" stroke-width="1.2"/>
+  <!-- 腕（ハンドルへ） -->
+  <path d="M28 30 L38 31" stroke="#15803d" stroke-width="3.5" stroke-linecap="round"/>
+  <circle cx="39" cy="31" r="2" fill="#f8fafc"/>
+  <!-- 顔と横顔メガネ -->
+  <ellipse cx="32" cy="18" rx="5.5" ry="6" fill="#fbcfe8"/>
+  <circle cx="34.5" cy="17" r="1.8" fill="none" stroke="#334155" stroke-width="0.8"/>
+  <rect x="34" y="20" width="2.5" height="1" fill="#334155"/>
+  <!-- ヘルメット -->
+  <path d="M26 18 Q26 9 33 9 Q39 9 39 18 L39 20 Q32 19 26 20 Z" fill="#fef3c7" stroke="#d97706" stroke-width="1.3"/>
+  <path d="M35 15 L39 16 L38 18 L35 17 Z" fill="#38bdf8" opacity="0.6"/>
+</svg>`.trim();
+
+  public static readonly SCOOTER_GUY_DIAG_DOWN_SVG = MonsterAndItemSprites.SCOOTER_GUY_SIDE_SVG;
+  public static readonly SCOOTER_GUY_DIAG_UP_SVG = MonsterAndItemSprites.SCOOTER_GUY_UP_SVG;
+
+  // =========================================================================
+  // 18. 多種多様な名物店主たち (MERCHANT VARIANTS)
+  // =========================================================================
+
+  /** 大商人トルネー (TORNEKO風: 青い頭巾、赤白ストライプ服、青マント、福耳、立派な髭、抱えた大袋) */
+  public static readonly MERCHANT_TORNEKO_DOWN_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="18" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <!-- 青いマント -->
+  <path d="M14 26 L8 54 Q32 58 56 54 L50 26 Z" fill="#1d4ed8" stroke="#1e3a8a" stroke-width="1.8"/>
+  <!-- 赤白縦縞のゆったり商人の服（ふくよかな胴体） -->
+  <ellipse cx="32" cy="40" rx="15" ry="14" fill="#ffffff" stroke="#991b1b" stroke-width="1.5"/>
+  <!-- 赤い縦縞ストライプ -->
+  <path d="M23 28 Q22 40 23 52" stroke="#dc2626" stroke-width="3" fill="none"/>
+  <path d="M29 26 Q29 40 29 54" stroke="#dc2626" stroke-width="3" fill="none"/>
+  <path d="M35 26 Q35 40 35 54" stroke="#dc2626" stroke-width="3" fill="none"/>
+  <path d="M41 28 Q42 40 41 52" stroke="#dc2626" stroke-width="3" fill="none"/>
+  <!-- 太い革ベルトと金バックル -->
+  <rect x="18" y="44" width="28" height="4" fill="#78350f"/>
+  <rect x="29" y="43" width="6" height="6" fill="#facc15" stroke="#b45309" stroke-width="0.8"/>
+  <!-- 右手: 商品が詰まった巨大な麻袋 -->
+  <ellipse cx="48" cy="38" rx="9" ry="11" fill="#d97706" stroke="#92400e" stroke-width="1.5"/>
+  <path d="M46 27 L48 30 L50 27 Z" fill="#b45309"/>
+  <!-- 顔（ふくよかな丸顔・大きな福耳） -->
+  <circle cx="32" cy="22" r="10" fill="#fde68a" stroke="#d97706" stroke-width="1.2"/>
+  <!-- 福耳 -->
+  <ellipse cx="21" cy="23" rx="2.5" ry="4.5" fill="#fde68a" stroke="#d97706" stroke-width="0.8"/>
+  <ellipse cx="43" cy="23" rx="2.5" ry="4.5" fill="#fde68a" stroke="#d97706" stroke-width="0.8"/>
+  <!-- 青いターバン頭巾 -->
+  <path d="M21 19 Q32 10 43 19 Q32 14 21 19 Z" fill="#1e40af" stroke="#172554" stroke-width="1.5"/>
+  <ellipse cx="32" cy="14" rx="10" ry="6" fill="#2563eb" stroke="#1d4ed8" stroke-width="1.2"/>
+  <!-- つぶらな温和な瞳 -->
+  <circle cx="28" cy="20" r="1.5" fill="#1e293b"/>
+  <circle cx="36" cy="20" r="1.5" fill="#1e293b"/>
+  <!-- 赤い丸鼻 -->
+  <ellipse cx="32" cy="22" rx="2.5" ry="2" fill="#f87171"/>
+  <!-- 立派なカイゼル髭 -->
+  <path d="M24 25 Q32 24 32 26 Q32 24 40 25 Q32 29 24 25 Z" fill="#78350f" stroke="#451a03" stroke-width="0.8"/>
+  <!-- 満面の商人スマイル -->
+  <path d="M29 28 Q32 31 35 28" stroke="#991b1b" stroke-width="1.2" fill="none"/>
+  <!-- 短い足 -->
+  <rect x="24" y="52" width="6" height="5" rx="2" fill="#78350f"/>
+  <rect x="34" y="52" width="6" height="5" rx="2" fill="#78350f"/>
+</svg>`.trim();
+
+  /** 怒れる大商人トルネー (激怒・大袋振り回し) */
+  public static readonly ANGRY_TORNEKO_DOWN_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="18" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <!-- 激怒オーラ（赤と黄の閃光） -->
+  <circle cx="32" cy="34" r="24" fill="#fee2e2" opacity="0.35"/>
+  <!-- 青いマント（逆立ち） -->
+  <path d="M12 22 L6 52 Q32 60 58 52 L52 22 Z" fill="#991b1b" stroke="#7f1d1d" stroke-width="2"/>
+  <!-- 胴体 -->
+  <ellipse cx="32" cy="40" rx="15" ry="14" fill="#ffffff" stroke="#991b1b" stroke-width="1.5"/>
+  <path d="M23 28 Q22 40 23 52" stroke="#dc2626" stroke-width="3" fill="none"/>
+  <path d="M29 26 Q29 40 29 54" stroke="#dc2626" stroke-width="3" fill="none"/>
+  <path d="M35 26 Q35 40 35 54" stroke="#dc2626" stroke-width="3" fill="none"/>
+  <path d="M41 28 Q42 40 41 52" stroke="#dc2626" stroke-width="3" fill="none"/>
+  <!-- 振り回す巨大麻袋 -->
+  <ellipse cx="50" cy="24" rx="11" ry="13" fill="#b45309" stroke="#78350f" stroke-width="2"/>
+  <!-- 顔（怒りで真っ赤） -->
+  <circle cx="32" cy="22" r="10" fill="#f87171" stroke="#b91c1c" stroke-width="1.5"/>
+  <!-- 吊り上がった怒りの鬼眼 -->
+  <line x1="25" y1="18" x2="30" y2="21" stroke="#450a0a" stroke-width="2"/>
+  <circle cx="28" cy="21" r="1.5" fill="#fef08a"/>
+  <line x1="39" y1="18" x2="34" y2="21" stroke="#450a0a" stroke-width="2"/>
+  <circle cx="36" cy="21" r="1.5" fill="#fef08a"/>
+  <!-- 激怒の大口 -->
+  <path d="M28 26 Q32 33 36 26 Z" fill="#450a0a"/>
+  <!-- 怒りマーク（額） -->
+  <path d="M37 13 L42 17 M42 13 L37 17" stroke="#dc2626" stroke-width="2"/>
+  <!-- 青いターバン -->
+  <ellipse cx="32" cy="14" rx="10" ry="6" fill="#1e3a8a" stroke="#172554" stroke-width="1.5"/>
+</svg>`.trim();
+
+  /** 風来坊シレンス (SHIREN風: 三度笠、青白縞合羽、竹筒、刀、肩の小動物) */
+  public static readonly MERCHANT_SHIREN_DOWN_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="16" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <!-- 縞合羽（マント: 青と白の縦縞模様） -->
+  <path d="M16 26 L10 52 L54 52 L48 26 Z" fill="#1e40af" stroke="#172554" stroke-width="1.5"/>
+  <path d="M18 28 L14 52 L22 52 L24 28 Z" fill="#f8fafc"/>
+  <path d="M30 28 L28 52 L36 52 L36 28 Z" fill="#f8fafc"/>
+  <path d="M42 28 L42 52 L48 52 L46 28 Z" fill="#f8fafc"/>
+  <!-- 旅の装束（着物と帯） -->
+  <rect x="24" y="32" width="16" height="18" fill="#334155"/>
+  <rect x="23" y="42" width="18" height="4" fill="#f59e0b"/>
+  <!-- 左腰の刀（柄と鍔） -->
+  <line x1="20" y1="46" x2="14" y2="40" stroke="#f1f5f9" stroke-width="2.5"/>
+  <rect x="18" y="43" width="3" height="3" fill="#fbbf24"/>
+  <!-- 肩に乗った黄色い小動物（相棒） -->
+  <ellipse cx="44" cy="24" rx="4" ry="3" fill="#facc15" stroke="#ca8a04" stroke-width="0.8"/>
+  <circle cx="46" cy="23" r="0.7" fill="#1e293b"/>
+  <polygon points="41,22 43,24 41,25" fill="#facc15"/>
+  <!-- 精悍な顔立ち -->
+  <circle cx="32" cy="23" r="7" fill="#fed7aa" stroke="#ea580c" stroke-width="0.8"/>
+  <!-- 涼やかな目元 -->
+  <line x1="28" y1="23" x2="31" y2="23" stroke="#0f172a" stroke-width="1.2"/>
+  <line x1="33" y1="23" x2="36" y2="23" stroke="#0f172a" stroke-width="1.2"/>
+  <!-- 立派な三度笠（編み笠） -->
+  <ellipse cx="32" cy="16" rx="18" ry="7" fill="#d97706" stroke="#92400e" stroke-width="1.5"/>
+  <ellipse cx="32" cy="14" rx="10" ry="4" fill="#b45309"/>
+  <!-- 笠の編み目ライン -->
+  <line x1="16" y1="16" x2="48" y2="16" stroke="#78350f" stroke-width="0.8"/>
+  <line x1="32" y1="9" x2="32" y2="21" stroke="#78350f" stroke-width="0.8"/>
+  <!-- 脚絆と草鞋 -->
+  <rect x="25" y="50" width="5" height="7" fill="#e2e8f0"/>
+  <rect x="34" y="50" width="5" height="7" fill="#e2e8f0"/>
+</svg>`.trim();
+
+  /** 怒れる風来坊シレンス (抜き身の青光り白刃・激怒の鬼気オーラ) */
+  public static readonly ANGRY_SHIREN_DOWN_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="16" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <!-- 青白い抜刀闘気オーラ -->
+  <circle cx="32" cy="32" r="25" fill="#e0f2fe" opacity="0.3"/>
+  <!-- 縞合羽（風になびく） -->
+  <path d="M12 24 L4 54 L58 50 L52 24 Z" fill="#1e3a8a" stroke="#0f172a" stroke-width="2"/>
+  <path d="M14 26 L8 52 L18 52 L22 26 Z" fill="#f8fafc"/>
+  <path d="M28 26 L26 52 L36 52 L36 26 Z" fill="#f8fafc"/>
+  <!-- 抜き放たれた名刀（白刃が青光り） -->
+  <line x1="20" y1="42" x2="6" y2="16" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+  <line x1="20" y1="42" x2="6" y2="16" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="6" cy="16" r="2.5" fill="#bae6fd"/>
+  <!-- 深く被った三度笠と光る鋭い眼光 -->
+  <ellipse cx="32" cy="18" rx="18" ry="7" fill="#92400e" stroke="#451a03" stroke-width="2"/>
+  <!-- 影の中の光る紅蓮の眼 -->
+  <circle cx="29" cy="24" r="1.5" fill="#ef4444"/>
+  <circle cx="35" cy="24" r="1.5" fill="#ef4444"/>
+</svg>`.trim();
+
+  /** ドワーフ商人ゴルド (GOLDO: 赤髭、革エプロン、鍛冶ハンマー) */
+  public static readonly MERCHANT_GOLDO_DOWN_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="16" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <!-- がっしりした体躯・革エプロン -->
+  <rect x="20" y="28" width="24" height="24" rx="4" fill="#78350f" stroke="#451a03" stroke-width="1.5"/>
+  <rect x="24" y="32" width="16" height="18" fill="#92400e"/>
+  <!-- 右手: 鍛冶屋の大槌（ハンマー） -->
+  <line x1="48" y1="48" x2="48" y2="24" stroke="#78350f" stroke-width="2.5"/>
+  <rect x="42" y="22" width="12" height="7" rx="1.5" fill="#475569" stroke="#1e293b" stroke-width="1.2"/>
+  <!-- ドワーフの頑丈な頭部 -->
+  <circle cx="32" cy="20" r="8" fill="#d97706" stroke="#92400e" stroke-width="1"/>
+  <!-- 鉄の額当て（ヘッドバンド） -->
+  <rect x="24" y="14" width="16" height="4" fill="#64748b" stroke="#334155" stroke-width="0.8"/>
+  <circle cx="32" cy="16" r="1.5" fill="#fbbf24"/>
+  <!-- 豊かな赤茶の長髭（胸元まで伸びる） -->
+  <path d="M24 22 Q32 38 40 22 Q36 40 32 44 Q28 40 24 22 Z" fill="#ea580c" stroke="#9a3412" stroke-width="1.2"/>
+  <!-- 太い眉と鋭い眼 -->
+  <line x1="27" y1="18" x2="30" y2="19" stroke="#9a3412" stroke-width="2"/>
+  <circle cx="28.5" cy="20" r="1.2" fill="#0f172a"/>
+  <line x1="37" y1="18" x2="34" y2="19" stroke="#9a3412" stroke-width="2"/>
+  <circle cx="35.5" cy="20" r="1.2" fill="#0f172a"/>
+  <!-- 頑丈な鉄ブーツ -->
+  <rect x="22" y="52" width="8" height="6" rx="2" fill="#334155"/>
+  <rect x="34" y="52" width="8" height="6" rx="2" fill="#334155"/>
+</svg>`.trim();
+
+  /** 怒れるドワーフ商人ゴルド (赤熱ハンマー振り上げ) */
+  public static readonly ANGRY_GOLDO_DOWN_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="16" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <!-- 爆炎オーラ -->
+  <circle cx="32" cy="30" r="25" fill="#fef08a" opacity="0.3"/>
+  <!-- 赤熱した巨大ハンマー -->
+  <line x1="46" y1="36" x2="54" y2="8" stroke="#78350f" stroke-width="3"/>
+  <rect x="46" y="4" width="16" height="9" rx="2" fill="#ef4444" stroke="#b91c1c" stroke-width="1.5"/>
+  <circle cx="54" cy="8" r="3" fill="#fef08a"/>
+  <!-- 体躯 -->
+  <rect x="20" y="28" width="24" height="24" rx="4" fill="#991b1b" stroke="#7f1d1d" stroke-width="2"/>
+  <!-- 逆立つ赤髭 -->
+  <path d="M22 22 Q32 38 42 22 Q36 44 32 46 Q28 44 22 22 Z" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/>
+  <!-- 怒りの鬼面 -->
+  <circle cx="32" cy="18" r="8" fill="#f87171"/>
+  <circle cx="28" cy="18" r="2" fill="#ffffff"/>
+  <circle cx="28" cy="18" r="1" fill="#7f1d1d"/>
+  <circle cx="36" cy="18" r="2" fill="#ffffff"/>
+  <circle cx="36" cy="18" r="1" fill="#7f1d1d"/>
+</svg>`.trim();
+
+  /** エルフ女商人セリア (CELIA: 金髪ロング、エルフ耳、紫の魔道ローブ、水晶玉) */
+  public static readonly MERCHANT_CELIA_DOWN_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="15" ry="3.5" fill="rgba(0,0,0,0.25)"/>
+  <!-- 紫の魔道シルクローブ（優美なドレス） -->
+  <path d="M22 26 L16 54 Q32 58 48 54 L42 26 Z" fill="#6b21a8" stroke="#4c1d95" stroke-width="1.5"/>
+  <path d="M25 28 L20 54 Q32 56 44 54 L39 28 Z" fill="#7e22ce"/>
+  <!-- 金の刺繍装飾帯 -->
+  <line x1="32" y1="28" x2="32" y2="54" stroke="#fbbf24" stroke-width="1.5"/>
+  <circle cx="32" cy="30" r="2" fill="#38bdf8"/>
+  <!-- 左手: 浮かぶ神秘の水晶玉 -->
+  <circle cx="16" cy="34" r="5" fill="#38bdf8" opacity="0.8" stroke="#0284c7" stroke-width="1"/>
+  <circle cx="15" cy="33" r="1.8" fill="#ffffff"/>
+  <!-- 金髪ロングウェーブの髪 -->
+  <path d="M20 18 Q16 36 20 44 Q24 32 24 20 Z" fill="#fef08a" stroke="#ca8a04" stroke-width="0.8"/>
+  <path d="M44 18 Q48 36 44 44 Q40 32 40 20 Z" fill="#fef08a" stroke="#ca8a04" stroke-width="0.8"/>
+  <!-- 尖ったエルフ耳 -->
+  <polygon points="22,18 12,12 23,22" fill="#fbcfe8" stroke="#f472b6" stroke-width="0.8"/>
+  <polygon points="42,18 52,12 41,22" fill="#fbcfe8" stroke="#f472b6" stroke-width="0.8"/>
+  <!-- 美しい顔立ち -->
+  <circle cx="32" cy="20" r="7.5" fill="#fbcfe8"/>
+  <!-- 前髪 -->
+  <path d="M24 16 Q32 20 40 16 Q32 12 24 16 Z" fill="#fef08a"/>
+  <!-- 魅惑的な紫の瞳 -->
+  <ellipse cx="29" cy="20" rx="1.3" ry="1.8" fill="#9333ea"/>
+  <circle cx="29.3" cy="19.5" r="0.5" fill="#ffffff"/>
+  <ellipse cx="35" cy="20" rx="1.3" ry="1.8" fill="#9333ea"/>
+  <circle cx="35.3" cy="19.5" r="0.5" fill="#ffffff"/>
+  <!-- 妖艶な微笑み -->
+  <path d="M30 24 Q32 25.5 34 24" stroke="#db2777" stroke-width="0.9" fill="none"/>
+</svg>`.trim();
+
+  /** 怒れるエルフ女商人セリア (真紅の瞳・紫電魔法陣) */
+  public static readonly ANGRY_CELIA_DOWN_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="15" ry="3.5" fill="rgba(0,0,0,0.25)"/>
+  <!-- 背後の紫電魔法陣 -->
+  <circle cx="32" cy="28" r="22" fill="none" stroke="#c084fc" stroke-width="1.5" stroke-dasharray="3,3"/>
+  <polygon points="32,8 48,36 16,36" fill="none" stroke="#a855f7" stroke-width="1"/>
+  <polygon points="32,48 48,20 16,20" fill="none" stroke="#a855f7" stroke-width="1"/>
+  <!-- ローブ -->
+  <path d="M22 26 L14 54 Q32 60 50 54 L42 26 Z" fill="#581c87" stroke="#3b0764" stroke-width="1.8"/>
+  <!-- 逆立つ金髪 -->
+  <path d="M20 16 Q10 26 12 42" stroke="#fef08a" stroke-width="3" fill="none"/>
+  <path d="M44 16 Q54 26 52 42" stroke="#fef08a" stroke-width="3" fill="none"/>
+  <!-- 尖ったエルフ耳 -->
+  <polygon points="22,18 10,10 23,22" fill="#fbcfe8" stroke="#f472b6" stroke-width="1"/>
+  <polygon points="42,18 54,10 41,22" fill="#fbcfe8" stroke="#f472b6" stroke-width="1"/>
+  <!-- 顔と真紅の魔眼 -->
+  <circle cx="32" cy="20" r="7.5" fill="#fbcfe8"/>
+  <ellipse cx="29" cy="20" rx="1.5" ry="2" fill="#dc2626"/>
+  <ellipse cx="35" cy="20" rx="1.5" ry="2" fill="#dc2626"/>
+</svg>`.trim();
 }

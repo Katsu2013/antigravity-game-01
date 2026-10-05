@@ -169,6 +169,7 @@ export type MonsterType =
   | 'GAMBLER_SAGE'          // 賭博仙人ガンジ（じゃんけん大勝負で所持枠拡張/ペナルティ）
   | 'HEALING_FAIRY'         // 慈愛の妖精ピクシー（敵なのにプレイヤーを回復してくれる）
   | 'TRAVELING_BLACKSMITH' // さすらいの鍛冶職人バルカン（装備品の無料鍛錬）
+  | 'SCOOTER_GUY'          // スクーターおじさん（脈絡なくダンジョンを通過する謎のオジサン）
   | 'ABYSS_LORD';          // 奈落の魔王アビス・ロード（第50層 最深部の支配者・大ボス）
 
 /**
@@ -278,6 +279,15 @@ export interface Monster {
     hasForged?: boolean;
     rpsStreak?: number;
   };
+  /** スクーターおじさんの横断走行データ（目標座標・デスポーン猶予等） */
+  scooterData?: {
+    targetX: number;
+    targetY: number;
+    despawnTurns: number;
+    engineSoundTimer?: number;
+  };
+  /** ショップ店主の固有プロファイルID（'NERO' | 'TORNEKO' | 'SHIREN' | 'GOLDO' | 'CELIA'） */
+  shopkeeperProfileId?: string;
   /** 画面描画用シンボル文字（例: 's', 'g', 'k'） */
   symbol: string;
   /** 画面描画用カラーコード */

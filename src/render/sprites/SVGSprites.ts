@@ -173,6 +173,30 @@ export type SpriteId =
   // 第50層ボス
   | 'abyss_lord'
   | 'abyss_lord_down'
+  // スクーターおじさん
+  | 'scooter_guy'
+  | 'scooter_guy_down'
+  | 'scooter_guy_up'
+  | 'scooter_guy_side'
+  | 'scooter_guy_diag_down'
+  | 'scooter_guy_diag_up'
+  // 店主バリエーション
+  | 'merchant_torneko'
+  | 'merchant_torneko_down'
+  | 'angry_merchant_torneko'
+  | 'angry_merchant_torneko_down'
+  | 'merchant_shiren'
+  | 'merchant_shiren_down'
+  | 'angry_merchant_shiren'
+  | 'angry_merchant_shiren_down'
+  | 'merchant_goldo'
+  | 'merchant_goldo_down'
+  | 'angry_merchant_goldo'
+  | 'angry_merchant_goldo_down'
+  | 'merchant_celia'
+  | 'merchant_celia_down'
+  | 'angry_merchant_celia'
+  | 'angry_merchant_celia_down'
   // アイテムグラフィックスプライト
   | 'item_gold'
   | 'item_pot_synthesis'
@@ -1047,6 +1071,35 @@ export class SVGSprites {
       traveling_blacksmith_down: MonsterAndItemSprites.TRAVELING_BLACKSMITH_DOWN_SVG,
       abyss_lord: MonsterAndItemSprites.ABYSS_LORD_DOWN_SVG,
       abyss_lord_down: MonsterAndItemSprites.ABYSS_LORD_DOWN_SVG,
+
+      // スクーターおじさん
+      scooter_guy: MonsterAndItemSprites.SCOOTER_GUY_DOWN_SVG,
+      scooter_guy_down: MonsterAndItemSprites.SCOOTER_GUY_DOWN_SVG,
+      scooter_guy_up: MonsterAndItemSprites.SCOOTER_GUY_UP_SVG,
+      scooter_guy_side: MonsterAndItemSprites.SCOOTER_GUY_SIDE_SVG,
+      scooter_guy_diag_down: MonsterAndItemSprites.SCOOTER_GUY_DIAG_DOWN_SVG,
+      scooter_guy_diag_up: MonsterAndItemSprites.SCOOTER_GUY_DIAG_UP_SVG,
+
+      // 店主バリエーション
+      merchant_torneko: MonsterAndItemSprites.MERCHANT_TORNEKO_DOWN_SVG,
+      merchant_torneko_down: MonsterAndItemSprites.MERCHANT_TORNEKO_DOWN_SVG,
+      angry_merchant_torneko: MonsterAndItemSprites.ANGRY_TORNEKO_DOWN_SVG,
+      angry_merchant_torneko_down: MonsterAndItemSprites.ANGRY_TORNEKO_DOWN_SVG,
+
+      merchant_shiren: MonsterAndItemSprites.MERCHANT_SHIREN_DOWN_SVG,
+      merchant_shiren_down: MonsterAndItemSprites.MERCHANT_SHIREN_DOWN_SVG,
+      angry_merchant_shiren: MonsterAndItemSprites.ANGRY_SHIREN_DOWN_SVG,
+      angry_merchant_shiren_down: MonsterAndItemSprites.ANGRY_SHIREN_DOWN_SVG,
+
+      merchant_goldo: MonsterAndItemSprites.MERCHANT_GOLDO_DOWN_SVG,
+      merchant_goldo_down: MonsterAndItemSprites.MERCHANT_GOLDO_DOWN_SVG,
+      angry_merchant_goldo: MonsterAndItemSprites.ANGRY_GOLDO_DOWN_SVG,
+      angry_merchant_goldo_down: MonsterAndItemSprites.ANGRY_GOLDO_DOWN_SVG,
+
+      merchant_celia: MonsterAndItemSprites.MERCHANT_CELIA_DOWN_SVG,
+      merchant_celia_down: MonsterAndItemSprites.MERCHANT_CELIA_DOWN_SVG,
+      angry_merchant_celia: MonsterAndItemSprites.ANGRY_CELIA_DOWN_SVG,
+      angry_merchant_celia_down: MonsterAndItemSprites.ANGRY_CELIA_DOWN_SVG,
 
       // アイテム
       item_gold: MonsterAndItemSprites.ITEM_GOLD_PILE_SVG,

@@ -1427,4 +1427,104 @@ export class SoundSystem {
       osc.stop(noteTime + dur);
     });
   }
+
+  /**
+   * スクーターおじさんの原付エンジン音（トコトコトコ…ブルルルン！）。
+   * 単気筒4スト/2ストエンジンの排気パルスをWeb Audioで合成。
+   */
+  public playScooterEngine(): void {
+    if (this.muted) return;
+    this.unlock();
+    if (!this.ctx || !this.masterGain) return;
+
+    const now = this.ctx.currentTime;
+    const dur = 0.38;
+
+    // 1. 低音排気ピストンパルス（鋸波と三角波の合成）
+    const osc = this.ctx.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(58, now);
+    osc.frequency.linearRampToValueAtTime(72, now + dur * 0.5);
+    osc.frequency.linearRampToValueAtTime(52, now + dur);
+
+    // エンジン回転のパルス振幅変調（LFO）
+    const lfo = this.ctx.createOscillator();
+    lfo.type = 'square';
+    lfo.frequency.setValueAtTime(18, now); // 秒間18回の爆発パルス
+
+    const lfoGain = this.ctx.createGain();
+    lfoGain.gain.setValueAtTime(0.5, now);
+    lfo.connect(lfoGain.gain);
+
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(260, now);
+    filter.frequency.linearRampToValueAtTime(380, now + dur * 0.5);
+    filter.frequency.linearRampToValueAtTime(220, now + dur);
+
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.35, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + dur);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.masterGain);
+
+    osc.start(now);
+    osc.stop(now + dur);
+
+    // 2. マフラー排気ノイズ
+    const noiseBuffer = this.createNoiseBuffer(dur);
+    if (noiseBuffer) {
+      const noise = this.ctx.createBufferSource();
+      noise.buffer = noiseBuffer;
+
+      const nFilter = this.ctx.createBiquadFilter();
+      nFilter.type = 'bandpass';
+      nFilter.frequency.setValueAtTime(320, now);
+      nFilter.Q.setValueAtTime(2.5, now);
+
+      const nGain = this.ctx.createGain();
+      nGain.gain.setValueAtTime(0.2, now);
+      nGain.gain.exponentialRampToValueAtTime(0.01, now + dur);
+
+      noise.connect(nFilter);
+      nFilter.connect(nGain);
+      nGain.connect(this.masterGain);
+
+      noise.start(now);
+      noise.stop(now + dur);
+    }
+  }
+
+  /**
+   * スクーターおじさんの原付ホーンクラクション音（プッピー！）。
+   */
+  public playScooterHorn(): void {
+    if (this.muted) return;
+    this.unlock();
+    if (!this.ctx || !this.masterGain) return;
+
+    const now = this.ctx.currentTime;
+    const notes = [620, 780]; // プッピー！
+    notes.forEach((freq, idx) => {
+      if (!this.ctx || !this.masterGain) return;
+      const t = now + idx * 0.09;
+      const dur = 0.08;
+
+      const osc = this.ctx.createOscillator();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, t);
+
+      const gain = this.ctx.createGain();
+      gain.gain.setValueAtTime(0.4, t);
+      gain.gain.exponentialRampToValueAtTime(0.01, t + dur);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+
+      osc.start(t);
+      osc.stop(t + dur);
+    });
+  }
 }

@@ -5,6 +5,7 @@
  */
 
 import { EntityFactory } from '../entities/EntityFactory';
+import { ShopSystem } from '../systems/ShopSystem';
 import {
   BiomeType,
   DungeonMap,
@@ -200,10 +201,11 @@ export class DungeonGenerator {
 
       // 【ショップ部屋の特別な配置処理】
       if (room.isShop) {
-        // 1. 店主（商人ネロ）を部屋中央に配置
+        // 1. 多種多様な店主からランダムに1人選定して部屋中央に配置
         const merchantX = room.x + Math.floor(room.w / 2);
         const merchantY = room.y + Math.floor(room.h / 2);
-        const merchant = EntityFactory.createMerchant(merchantX, merchantY);
+        const profile = ShopSystem.getRandomProfile();
+        const merchant = EntityFactory.createMerchant(merchantX, merchantY, profile);
         room.shopkeeperId = merchant.id;
         monsters.push(merchant);
 
@@ -335,6 +337,24 @@ export class DungeonGenerator {
           } else if (chosenType === 'TRAVELING_BLACKSMITH') {
             monsters.push(EntityFactory.createTravelingBlacksmith(rx, ry));
           }
+        }
+      }
+    }
+
+    // 【スクーターおじさんの確率出現】
+    // 2階以降49階まで、約25%の確率で登場！ダンジョンをただ横断・疾走して去っていく
+    if (floor >= 2 && floor < 50 && Math.random() < 0.25) {
+      if (rooms.length >= 2) {
+        const startRoom = rooms[0];
+        const endRoom = rooms[rooms.length - 1];
+        const sx = startRoom.x + Math.floor(startRoom.w / 2);
+        const sy = startRoom.y + Math.floor(startRoom.h / 2);
+        const tx = endRoom.x + Math.floor(endRoom.w / 2);
+        const ty = endRoom.y + Math.floor(endRoom.h / 2);
+
+        const isOccupied = monsters.some((m) => m.x === sx && m.y === sy);
+        if (!isOccupied && isWalkableTile(tiles[sy][sx]) && isWalkableTile(tiles[ty][tx])) {
+          monsters.push(EntityFactory.createScooterGuy(sx, sy, tx, ty));
         }
       }
     }

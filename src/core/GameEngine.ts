@@ -456,6 +456,13 @@ export class GameEngine {
             return false;
           }
 
+          // スクーターおじさんなら、攻撃せず呑気な会話が発生
+          if (targetMonster.type === 'SCOOTER_GUY') {
+            this.talkToScooterGuy(targetMonster);
+            this.notify();
+            return false;
+          }
+
           this.executePlayerAttack(targetMonster, action.dx, action.dy);
           turnPassed = true;
           break;
@@ -690,6 +697,13 @@ export class GameEngine {
           // レア中立NPCなら、攻撃ではなく対話イベントを開く
           if (facingMonster.isRareNpc) {
             this.onNpcInteract?.(facingMonster);
+            this.notify();
+            return false;
+          }
+
+          // スクーターおじさんなら、攻撃せず呑気な会話が発生
+          if (facingMonster.type === 'SCOOTER_GUY') {
+            this.talkToScooterGuy(facingMonster);
             this.notify();
             return false;
           }
@@ -1605,6 +1619,11 @@ export class GameEngine {
    * ミミックの擬態解除、背後不意打ち判定、ダメージ付与、撃破・レベルアップ処理を行います。
    */
   private executePlayerAttack(monster: Monster, dx: number, dy: number): void {
+    if (monster.type === 'SCOOTER_GUY') {
+      this.talkToScooterGuy(monster);
+      return;
+    }
+
     if (monster.isDormant) {
       monster.isDormant = false;
       this.addLog(`${monster.name} が正体を現して目を覚ました！`, 'warning');
@@ -1740,6 +1759,25 @@ export class GameEngine {
   }
 
   /**
+   * スクーターおじさんに接触・話しかけた時の呑気な日常会話処理。
+   */
+  private talkToScooterGuy(_monster: Monster): void {
+    SoundSystem.getInstance().playScooterHorn();
+    const quotes = [
+      'スクーターおじさん「おっと危ないよ若者！ 一時停止はちゃんと左右確認しなきゃダメだよ！」',
+      'スクーターおじさん「ちょっとそこ通るよ〜。駅前のスーパーが特売日でねぇ。」',
+      'スクーターおじさん「このダンジョン、一方通行の標識が見当たらないんだよねぇ。」',
+      'スクーターおじさん「ヘルメットのあご紐はしっかり締めなきゃ危ないよ！」',
+      'スクーターおじさん「夕飯のカレーのルーを買い忘れてね、急いでるんだ。」',
+      'スクーターおじさん「スクーターは燃費が良くて助かるよ。リッター50キロは走るからね。」',
+      'スクーターおじさん「制限速度は30km/h厳守！ 安全運転第一だよ！」',
+      'スクーターおじさん「あおり運転は道路交通法違反だよ！ 車間距離を保ってね！」',
+    ];
+    const quote = quotes[Math.floor(Math.random() * quotes.length)];
+    this.addLog(quote, 'turn-header');
+  }
+
+  /**
    * マップ上の生存モンスター全員の自律AI（索敵・追跡・近接＆中距離攻撃）を実行します。
    */
   private updateMonsters(): void {
@@ -1849,6 +1887,81 @@ export class GameEngine {
             monster.y = nextStep.y;
           }
         }
+        continue;
+      }
+
+      // 1.8. スクーターおじさん (SCOOTER_GUY) の横断・疾走AI
+      if (monster.type === 'SCOOTER_GUY' && monster.scooterData) {
+        monster.scooterData.despawnTurns--;
+
+        const distToPlayer = Math.hypot(monster.x - playerPos.x, monster.y - playerPos.y);
+
+        // プレイヤーの視界内または近接時（距離8以内）にエンジン音が軽快に鳴る
+        if (distToPlayer <= 8) {
+          monster.scooterData.engineSoundTimer = (monster.scooterData.engineSoundTimer ?? 0) + 1;
+          if (monster.scooterData.engineSoundTimer % 2 === 1) {
+            SoundSystem.getInstance().playScooterEngine();
+          }
+        }
+
+        // デスポーン判定（目標地点に到着、または滞在猶予ターン消化）
+        if (
+          monster.scooterData.despawnTurns <= 0 ||
+          (monster.x === monster.scooterData.targetX && monster.y === monster.scooterData.targetY)
+        ) {
+          if (distToPlayer <= 8) {
+            this.addLog('スクーターおじさん「じゃあね〜！ 安全運転でね〜！」ブルルンと走り去っていった。', 'info');
+            SoundSystem.getInstance().playScooterHorn();
+          }
+          this.map.monsters = this.map.monsters.filter((m) => m !== monster);
+          continue;
+        }
+
+        // 最短経路で目標地点へ向かって走行
+        const nextStep = Pathfinding.getNextStep(
+          this.map,
+          { x: monster.x, y: monster.y },
+          { x: monster.scooterData.targetX, y: monster.scooterData.targetY }
+        );
+
+        if (nextStep) {
+          if (nextStep.x === playerPos.x && nextStep.y === playerPos.y) {
+            SoundSystem.getInstance().playScooterHorn();
+            this.addLog('スクーターおじさん「おっと危ない！ ぶつかるところだったよ！」', 'normal');
+          } else {
+            const mdx = nextStep.x - monster.x;
+            const mdy = nextStep.y - monster.y;
+            monster.direction = this.calcDirection(mdx, mdy);
+            monster.x = nextStep.x;
+            monster.y = nextStep.y;
+
+            // 他のモンスターと鉢合わせた場合、そのモンスターが驚いて1マス避ける
+            const otherM = this.map.monsters.find(
+              (m) => m !== monster && m.x === nextStep.x && m.y === nextStep.y
+            );
+            if (otherM) {
+              const freeDirs = [
+                { dx: 1, dy: 0 }, { dx: -1, dy: 0 }, { dx: 0, dy: 1 }, { dx: 0, dy: -1 },
+              ];
+              for (const fd of freeDirs) {
+                const ox = otherM.x + fd.dx;
+                const oy = otherM.y + fd.dy;
+                if (
+                  ox >= 0 && ox < this.map.width && oy >= 0 && oy < this.map.height &&
+                  this.map.tiles[oy][ox] !== TileType.Wall &&
+                  !this.map.monsters.some((m) => m.x === ox && m.y === oy)
+                ) {
+                  otherM.x = ox;
+                  otherM.y = oy;
+                  break;
+                }
+              }
+            }
+          }
+        } else {
+          monster.scooterData.despawnTurns -= 2;
+        }
+
         continue;
       }
 
