@@ -443,9 +443,7 @@ export class GameEngine {
         if (targetMonster) {
           // 平時の中立店主NPCなら、攻撃ではなく話しかけ・会計を行う
           if (targetMonster.isFriendly && targetMonster.isShopkeeper) {
-            const checkoutRes = ShopSystem.checkout(this.player, this.map);
-            this.addLog(checkoutRes.message, checkoutRes.success ? 'turn-header' : 'warning');
-            this.notify();
+            this.handleShopkeeperInteraction(targetMonster, action.dx, action.dy);
             return false;
           }
 
@@ -688,9 +686,7 @@ export class GameEngine {
 
         if (facingMonster) {
           if (facingMonster.isFriendly && facingMonster.isShopkeeper) {
-            const checkoutRes = ShopSystem.checkout(this.player, this.map);
-            this.addLog(checkoutRes.message, checkoutRes.success ? 'turn-header' : 'warning');
-            this.notify();
+            this.handleShopkeeperInteraction(facingMonster, fdx, fdy);
             return false;
           }
 
@@ -1759,6 +1755,53 @@ export class GameEngine {
   }
 
   /**
+   * 店主NPCに接触または正面から話しかけた際の統合インタラクション処理。
+   * 会計、冷やかし警告、お仕置きビンタ（ダメージ＋ノックバック）、シャッター強制閉店を処理します。
+   */
+  private handleShopkeeperInteraction(
+    merchant: Monster,
+    dirX: number,
+    dirY: number
+  ): void {
+    const res = ShopSystem.handleTalkToShopkeeper(
+      this.player,
+      this.map,
+      merchant,
+      { dx: dirX, dy: dirY }
+    );
+
+    if (res.actionTaken === 'slap') {
+      SoundSystem.getInstance().playSlap();
+      this.onDamage?.('player');
+      const damage = res.slapDamage ?? 8;
+      this.player.hp = Math.max(1, this.player.hp - damage);
+
+      // ノックバック処理（後ろのマスが空いていれば1マス後退）
+      if (res.knockbackDir) {
+        const kx = this.player.x + res.knockbackDir.dx;
+        const ky = this.player.y + res.knockbackDir.dy;
+        if (
+          kx >= 0 &&
+          kx < this.map.width &&
+          ky >= 0 &&
+          ky < this.map.height &&
+          this.map.tiles[ky][kx] !== TileType.Wall &&
+          !(this.map.obstacles || []).some((o) => o.x === kx && o.y === ky) &&
+          !this.map.monsters.some((m) => m.x === kx && m.y === ky)
+        ) {
+          this.player.x = kx;
+          this.player.y = ky;
+        }
+      }
+    } else if (res.actionTaken === 'close_shop') {
+      SoundSystem.getInstance().playShutterClose();
+    }
+
+    this.addLog(res.message, res.type);
+    this.notify();
+  }
+
+  /**
    * スクーターおじさんに接触・話しかけた時の呑気な日常会話処理。
    */
   private talkToScooterGuy(_monster: Monster): void {
@@ -2026,6 +2069,96 @@ export class GameEngine {
           }
         }
         continue;
+      }
+
+      // 3.5. 泥棒モード中の激怒店主による遠隔追撃
+      if (
+        monster.isAngryMerchant &&
+        this.map.isThiefMode &&
+        distToPlayer >= 2 &&
+        distToPlayer <= 5 &&
+        isPlayerVisible
+      ) {
+        const dx = playerPos.x - monster.x;
+        const dy = playerPos.y - monster.y;
+        const isLine = dx === 0 || dy === 0 || Math.abs(dx) === Math.abs(dy);
+        if (
+          isLine &&
+          this.hasClearLineOfSight(monster.x, monster.y, playerPos.x, playerPos.y)
+        ) {
+          const theftAtk = ShopSystem.checkAndExecuteRangedTheftAttack(
+            monster,
+            this.player,
+            this.map,
+            true
+          );
+          if (theftAtk && theftAtk.executed) {
+            monster.direction = this.calcDirection(dx, dy);
+
+            // 飛翔体エフェクト発動
+            this.onProjectile?.(
+              monster.x,
+              monster.y,
+              playerPos.x,
+              playerPos.y,
+              theftAtk.projectileType,
+              theftAtk.color
+            );
+
+            // サウンド再生
+            if (theftAtk.soundType === 'thunder') {
+              SoundSystem.getInstance().playThunder();
+            } else if (theftAtk.soundType === 'slash') {
+              SoundSystem.getInstance().playSwordAttack();
+            } else if (theftAtk.soundType === 'hammer') {
+              SoundSystem.getInstance().playHammerAttack();
+            } else {
+              SoundSystem.getInstance().playThrowItem();
+            }
+
+            this.onDamage?.('player');
+            SoundSystem.getInstance().playPlayerHit();
+
+            let finalDamage = theftAtk.damage;
+            // 盾の印による軽減（魔法・雷撃）
+            const shieldRunes = this.player.equippedShield?.runes ?? [];
+            if (
+              theftAtk.soundType === 'thunder' &&
+              shieldRunes.includes('MAGIC_RESIST')
+            ) {
+              finalDamage = Math.max(1, Math.floor(finalDamage * 0.5));
+              this.addLog('【魔】魔法の盾が雷撃魔弾を半減した！', 'info');
+            }
+
+            this.player.hp = Math.max(0, this.player.hp - finalDamage);
+            this.addLog(
+              `${theftAtk.message} あなたは ${finalDamage} のダメージを受けた！`,
+              'damage'
+            );
+
+            if (this.player.hp <= 0) {
+              const reviveIdx = this.player.inventory.findIndex((it) =>
+                it.name.includes('復活の草')
+              );
+              if (reviveIdx !== -1) {
+                this.player.inventory.splice(reviveIdx, 1);
+                this.player.hp = this.player.maxHp;
+                this.player.isAlive = true;
+                SoundSystem.getInstance().playHeal();
+                this.addLog(
+                  '力尽きて倒れた……だが、袋の中の【復活の草】が神々しい黄金の光を放ち、奇跡的に息を吹き返した！(HP全快)',
+                  'info'
+                );
+              } else {
+                this.player.isAlive = false;
+                SoundSystem.getInstance().playDefeat();
+                this.lastDefeatCause = `${monster.name} の【${theftAtk.attackName}】により力尽きた`;
+                return; // 死亡確定時は即座に全モンスターの行動を完全終了！
+              }
+            }
+            continue;
+          }
+        }
       }
 
       // 4. 中距離遠隔攻撃（メイジ、インプ等）: 距離2〜3マスで射線が通る場合（封印されていない場合）

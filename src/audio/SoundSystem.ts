@@ -1527,4 +1527,110 @@ export class SoundSystem {
       osc.stop(t + dur);
     });
   }
+
+  /**
+   * 強烈なビンタ・張り手・峰打ち音（バシィッ！！）。
+   */
+  public playSlap(): void {
+    if (this.muted) return;
+    this.unlock();
+    if (!this.ctx || !this.masterGain) return;
+
+    const now = this.ctx.currentTime;
+    const dur = 0.16;
+
+    // 鋭い衝撃音（ノコギリ波急降下）
+    const osc = this.ctx.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(1100, now);
+    osc.frequency.exponentialRampToValueAtTime(120, now + dur);
+
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.85, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + dur);
+
+    osc.connect(gain);
+    gain.connect(this.masterGain);
+
+    osc.start(now);
+    osc.stop(now + dur);
+
+    // 平手打ちの肉破裂ノイズ
+    const noiseBuffer = this.createNoiseBuffer(dur);
+    if (noiseBuffer) {
+      const noise = this.ctx.createBufferSource();
+      noise.buffer = noiseBuffer;
+
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(2400, now);
+      filter.frequency.exponentialRampToValueAtTime(400, now + dur);
+      filter.Q.setValueAtTime(1.8, now);
+
+      const nGain = this.ctx.createGain();
+      nGain.gain.setValueAtTime(0.7, now);
+      nGain.gain.exponentialRampToValueAtTime(0.01, now + dur);
+
+      noise.connect(filter);
+      filter.connect(nGain);
+      nGain.connect(this.masterGain);
+
+      noise.start(now);
+      noise.stop(now + dur);
+    }
+  }
+
+  /**
+   * シャッター閉店ガラガラ音（ガラガラガッシャーン！）。
+   */
+  public playShutterClose(): void {
+    if (this.muted) return;
+    this.unlock();
+    if (!this.ctx || !this.masterGain) return;
+
+    const now = this.ctx.currentTime;
+
+    // ガラガラと落ちる金属スラット音
+    for (let i = 0; i < 6; i++) {
+      const t = now + i * 0.08;
+      const osc = this.ctx.createOscillator();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(320 + (i % 2) * 80, t);
+      osc.frequency.exponentialRampToValueAtTime(160, t + 0.06);
+
+      const g = this.ctx.createGain();
+      g.gain.setValueAtTime(0.3, t);
+      g.gain.exponentialRampToValueAtTime(0.01, t + 0.06);
+
+      osc.connect(g);
+      g.connect(this.masterGain);
+
+      osc.start(t);
+      osc.stop(t + 0.06);
+    }
+
+    // 最後のドスン・ガッシャーン接地音
+    const crashTime = now + 0.45;
+    const crashNoise = this.createNoiseBuffer(0.25);
+    if (crashNoise) {
+      const noise = this.ctx.createBufferSource();
+      noise.buffer = crashNoise;
+
+      const f = this.ctx.createBiquadFilter();
+      f.type = 'lowpass';
+      f.frequency.setValueAtTime(800, crashTime);
+      f.frequency.exponentialRampToValueAtTime(100, crashTime + 0.25);
+
+      const cg = this.ctx.createGain();
+      cg.gain.setValueAtTime(0.7, crashTime);
+      cg.gain.exponentialRampToValueAtTime(0.01, crashTime + 0.25);
+
+      noise.connect(f);
+      f.connect(cg);
+      cg.connect(this.masterGain);
+
+      noise.start(crashTime);
+      noise.stop(crashTime + 0.25);
+    }
+  }
 }

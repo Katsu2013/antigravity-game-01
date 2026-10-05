@@ -268,6 +268,10 @@ export interface Monster {
   isGuardDog?: boolean;
   /** 激怒モードの店主フラグ（泥棒追撃中） */
   isAngryMerchant?: boolean;
+  /** 店主にしつこく話しかけた連続回数 */
+  talkStreak?: number;
+  /** 店主が怒って店を閉めたフラグ */
+  isShopClosed?: boolean;
   /** レア中立NPCキャラクターフラグ（会話・イベント可能） */
   isRareNpc?: boolean;
   /** NPC専用イベントデータ（物々交換オファー、鍛錬フラグ等） */

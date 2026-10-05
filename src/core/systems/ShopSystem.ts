@@ -25,6 +25,39 @@ export interface ShopBill {
   canAfford: boolean;
 }
 
+export interface ShopkeeperTalkResult {
+  message: string;
+  type: 'normal' | 'info' | 'warning' | 'damage' | 'turn-header';
+  actionTaken?: 'slap' | 'close_shop' | 'checkout';
+  slapDamage?: number;
+  knockbackDir?: { dx: number; dy: number };
+}
+
+/**
+ * 店主が泥棒中のプレイヤーに対して遠隔攻撃を実行した結果を表すインターフェース。
+ */
+export interface ShopkeeperTheftAttackResult {
+  executed: boolean;
+  attackName: string;
+  message: string;
+  damage: number;
+  projectileType: 'ITEM' | 'ARROW' | 'BEAM' | 'STONE';
+  color: string;
+  soundType: 'thunder' | 'slash' | 'hammer' | 'throw' | 'slap';
+}
+
+/**
+ * 店主が泥棒追撃時に繰り出す遠隔攻撃の定義インターフェース。
+ */
+export interface ShopkeeperRangedAttack {
+  name: string;
+  msg: string;
+  damage: number;
+  projectileType: 'ITEM' | 'ARROW' | 'BEAM' | 'STONE';
+  color: string;
+  soundType: 'thunder' | 'slash' | 'hammer' | 'throw' | 'slap';
+}
+
 /**
  * 店主キャラクターの個性・外見・専用台詞を定義するインターフェース。
  */
@@ -40,6 +73,14 @@ export interface ShopkeeperProfile {
   sellMsg: (earned: number, total: number) => string;
   settleMsg: (cost: number, sell: number, remain: number) => string;
   angryTheftMsg: string;
+  /** しつこく話しかけられた時の困惑・警告台詞 */
+  annoyedMsg: (streak: number) => string;
+  /** 怒りのビンタ・張り手台詞 */
+  slapQuote: string;
+  /** シャッター強制閉店台詞 */
+  closeShopQuote: string;
+  /** 泥棒追撃時の遠隔攻撃定義 */
+  rangedAttack: ShopkeeperRangedAttack;
 }
 
 /**
@@ -58,6 +99,20 @@ export const SHOPKEEPER_PROFILES: Record<string, ShopkeeperProfile> = {
     sellMsg: (earned, total) => `大商人トルネー「良い品を買い取らせてもらった！ ${earned}G をお渡ししよう！(所持金: ${total}G)」`,
     settleMsg: (cost, sell, remain) => `大商人トルネー「差し引き精算じゃな！商品代金 ${cost}G から買取代 ${sell}G を相殺したぞ！(残金: ${remain}G)」`,
     angryTheftMsg: '大商人トルネー「わ、わしの店で泥棒じゃとーーっ！？ 冒険者の風上にも置けん奴め！ 番犬ども、全財産を奪い返せーーっ！！」',
+    annoyedMsg: (streak) =>
+      streak <= 4
+        ? '大商人トルネー「おやおや、何かお探しですかな？ 冷やかしなら困るんじゃが…」'
+        : '大商人トルネー「これこれ若者！ しつこいぞ！ これ以上からかったら怒るぞい！」',
+    slapQuote: '大商人トルネー「もう我慢ならんわい！ 塩でも食らえーーっ！！」',
+    closeShopQuote: '大商人トルネー「もうお前さんには売らん！ 本日の営業は店じまいじゃ！」',
+    rangedAttack: {
+      name: '巨大フランスパン投げ',
+      msg: '大商人トルネー「泥棒ーーっ！ そいつを返せーーっ！」と頑丈な特大フランスパンを投げつけてきた！',
+      damage: 14,
+      projectileType: 'ITEM',
+      color: '#f59e0b',
+      soundType: 'throw',
+    },
   },
   SHIREN: {
     id: 'SHIREN',
@@ -71,6 +126,20 @@ export const SHOPKEEPER_PROFILES: Record<string, ShopkeeperProfile> = {
     sellMsg: (earned, total) => `風来坊シレンス「買い取ろう。代金 ${earned}G だ。(所持金: ${total}G)」`,
     settleMsg: (cost, sell, remain) => `風来坊シレンス「差し引き完了だ。(購入 ${cost}G / 売却 ${sell}G / 残金: ${remain}G)」`,
     angryTheftMsg: '風来坊シレンス「……泥棒か。迷宮の掟を破ったな。逃げ切れると思うなよ……！」',
+    annoyedMsg: (streak) =>
+      streak <= 4
+        ? '風来坊シレンス「……用がないなら、静かに商品を見てくれ。」'
+        : '風来坊シレンス「……何度も同じことを言わせるな。次はないぞ。」',
+    slapQuote: '風来坊シレンス「……警告はしたはずだ。（パシィン！ 鞘の峰打ち！）」',
+    closeShopQuote: '風来坊シレンス「……冷やかしの相手をしている暇はない。店を閉める。」',
+    rangedAttack: {
+      name: '飛剣の真空波',
+      msg: '風来坊シレンス「逃がさん……！」と鋭い真空の刃を放ってきた！',
+      damage: 16,
+      projectileType: 'BEAM',
+      color: '#38bdf8',
+      soundType: 'slash',
+    },
   },
   GOLDO: {
     id: 'GOLDO',
@@ -84,6 +153,20 @@ export const SHOPKEEPER_PROFILES: Record<string, ShopkeeperProfile> = {
     sellMsg: (earned, total) => `鍛冶商人ゴルド「よし、いい素材だ！ ${earned}G で引き取ってやるぜ！(所持金: ${total}G)」`,
     settleMsg: (cost, sell, remain) => `鍛冶商人ゴルド「計算ぴったりだ！(代金 ${cost}G - 買取 ${sell}G / 残金: ${remain}G)」`,
     angryTheftMsg: '鍛冶商人ゴルド「俺の目の前でタダ持ち出しだとぉ！？ 許さねえ！ ハンマーで叩き潰して鉄屑にしてやるわい！！」',
+    annoyedMsg: (streak) =>
+      streak <= 4
+        ? '鍛冶商人ゴルド「おいおい！ 何度もつついてどうした！？ 買うもんねえなら邪魔だぜ！」'
+        : '鍛冶商人ゴルド「おい貴様！ 俺の仕事の邪魔をするな！ ハンマーが唸るぞ！」',
+    slapQuote: '鍛冶商人ゴルド「てめえ！ 脳天にゲンコツ食らわしてやるわい！！」',
+    closeShopQuote: '鍛冶商人ゴルド「やってられっか！ 今日はもう店じまいだ！ 帰れ帰れ！」',
+    rangedAttack: {
+      name: '鉄塊投げ',
+      msg: '鍛冶商人ゴルド「逃げるたぁいい度胸だ！」と重い鉄塊をドカンと投げつけてきた！',
+      damage: 18,
+      projectileType: 'STONE',
+      color: '#71717a',
+      soundType: 'hammer',
+    },
   },
   CELIA: {
     id: 'CELIA',
@@ -97,6 +180,20 @@ export const SHOPKEEPER_PROFILES: Record<string, ShopkeeperProfile> = {
     sellMsg: (earned, total) => `魔導商人セリア「素敵な不用品ね、 ${earned}G で買い取らせていただくわ。(所持金: ${total}G)」`,
     settleMsg: (cost, sell, remain) => `魔導商人セリア「商品代 ${cost}G と買取代 ${sell}G を相殺して精算完了よ。ふふ、賢いお買い物ね。(残金: ${remain}G)」`,
     angryTheftMsg: '魔導商人セリア「あらあら……私の店で泥棒？ 身の程知らずな子ね。逃げられると思ったら大間違いよ、灰にしてあげるわ！」',
+    annoyedMsg: (streak) =>
+      streak <= 4
+        ? '魔導商人セリア「ふふ、私の顔に何かついてるかしら？ 見惚れるのもいいけれど、お買い物はどう？」'
+        : '魔導商人セリア「あら……私を怒らせたいのかしら？ 後悔することになるわよ？」',
+    slapQuote: '魔導商人セリア「しつこい男は嫌いよ。（バチチッ！ 静電気ショック！）」',
+    closeShopQuote: '魔導商人セリア「冷やかしはお断りよ。ふふ、今日はもうおしまい。」',
+    rangedAttack: {
+      name: '紫電の雷撃ボルト',
+      msg: '魔導商人セリア「ふふ、逃げられるかしら？」と紫電の魔弾を撃ち込んできた！',
+      damage: 16,
+      projectileType: 'BEAM',
+      color: '#c084fc',
+      soundType: 'thunder',
+    },
   },
   NERO: {
     id: 'NERO',
@@ -110,6 +207,20 @@ export const SHOPKEEPER_PROFILES: Record<string, ShopkeeperProfile> = {
     sellMsg: (earned, total) => `買い取り成立！不要品を売却して ${earned}G を受け取りました！(所持金: ${total}G)`,
     settleMsg: (cost, sell, remain) => `会計完了！商品代金 ${cost}G から売却代金 ${sell}G を相殺し、精算しました。(残金: ${remain}G)`,
     angryTheftMsg: '商人ネロ「泥棒だーーーっ！！ 番犬ども、あいつを絶対に逃すなーーっ！！」',
+    annoyedMsg: (streak) =>
+      streak <= 4
+        ? '商人ネロ「お客さん、何か用かい？ 冷やかしはお断りだよ！」'
+        : '商人ネロ「いい加減にしな！ これ以上しつこくしたらタダじゃ置かないよ！」',
+    slapQuote: '商人ネロ「出て行けーーーーっ！！（ドゴォッ！ ほうきで叩き出された！）」',
+    closeShopQuote: '商人ネロ「もう営業終了だ！ シャッター閉めるよ！！」',
+    rangedAttack: {
+      name: '包丁投げ',
+      msg: '商人ネロ「この泥棒猫め！」と目にも留まらぬ速さで包丁を投げてきた！',
+      damage: 14,
+      projectileType: 'ARROW',
+      color: '#e2e8f0',
+      soundType: 'throw',
+    },
   },
 };
 
@@ -386,4 +497,140 @@ export class ShopSystem {
 
     return null;
   }
+
+  /**
+   * 店主NPCへ接触または話しかけた際の統合ハンドラ。
+   * 会計（購入・売却）があれば精算し、冷やかしやしつこい接触が続くと困惑→警告→お仕置きビンタまたは強制閉店に発展します。
+   */
+  public static handleTalkToShopkeeper(
+    player: PlayerState,
+    map: DungeonMap,
+    merchant: Monster,
+    facingDir?: { dx: number; dy: number }
+  ): ShopkeeperTalkResult {
+    const profile = this.getProfile(merchant.shopkeeperProfileId);
+
+    // 1. 既にシャッター閉店済みの場合は営業終了メッセージのみ
+    if (merchant.isShopClosed) {
+      return {
+        message: `${merchant.name}「本日の営業は終了しました。またのお越しをお待ちしております。」（シャッターが固く閉ざされている……）`,
+        type: 'warning',
+      };
+    }
+
+    // 2. 会計品（未会計アイテムまたは売却待ちアイテム）がある場合は精算処理
+    const bill = this.calculateBill(player, map);
+    if (bill.unpaidItems.length > 0 || bill.sellItems.length > 0) {
+      merchant.talkStreak = 0;
+      const checkoutRes = this.checkout(player, map);
+      return {
+        message: checkoutRes.message,
+        type: checkoutRes.success ? 'turn-header' : 'warning',
+        actionTaken: 'checkout',
+      };
+    }
+
+    // 3. 会計品がない状態での連続会話（冷やかし）カウント処理
+    merchant.talkStreak = (merchant.talkStreak ?? 0) + 1;
+    const streak = merchant.talkStreak;
+
+    // 1〜2回目: 通常の挨拶
+    if (streak <= 2) {
+      return {
+        message: profile.greetingMsg,
+        type: 'turn-header',
+      };
+    }
+
+    // 3〜4回目: 困惑メッセージ
+    if (streak <= 4) {
+      return {
+        message: profile.annoyedMsg(streak),
+        type: 'normal',
+      };
+    }
+
+    // 5〜6回目: 強い警告メッセージ
+    if (streak <= 6) {
+      return {
+        message: profile.annoyedMsg(streak),
+        type: 'warning',
+      };
+    }
+
+    // 7回目以上: お仕置きビンタ (50%) または シャッター強制閉店 (50%)
+    const doSlap = Math.random() < 0.5;
+
+    if (doSlap) {
+      merchant.talkStreak = 0;
+      const slapDamage = 8;
+      const knockbackDir = facingDir
+        ? { dx: -facingDir.dx, dy: -facingDir.dy }
+        : undefined;
+
+      return {
+        message: `${profile.slapQuote} あなたは痛烈なビンタを食らい、${slapDamage} のダメージを受けた！`,
+        type: 'damage',
+        actionTaken: 'slap',
+        slapDamage,
+        knockbackDir,
+      };
+    } else {
+      merchant.isShopClosed = true;
+      merchant.talkStreak = 0;
+
+      // 店内の未購入商品を全回収（撤去）
+      map.items = map.items.filter((it) => !it.isShopItem);
+
+      return {
+        message: `${profile.closeShopQuote} ガラガラガラ……！ 店主は商品を片付け、シャッターを下ろしてしまった！`,
+        type: 'warning',
+        actionTaken: 'close_shop',
+      };
+    }
+  }
+
+  /**
+   * 泥棒追撃中、店主がプレイヤーへ遠隔追撃を行うかを判定・実行します。
+   * 距離2〜5マス、射線が通る場合に50%の確率で発動します。
+   */
+  public static checkAndExecuteRangedTheftAttack(
+    merchant: Monster,
+    player: PlayerState,
+    map: DungeonMap,
+    hasLoS: boolean
+  ): ShopkeeperTheftAttackResult | null {
+    if (!map.isThiefMode || !merchant.isAngryMerchant || !player.isAlive) {
+      return null;
+    }
+
+    const dist = Math.max(
+      Math.abs(merchant.x - player.x),
+      Math.abs(merchant.y - player.y)
+    );
+
+    // 距離が2〜5マスで、射線が通っている場合に対象
+    if (dist < 2 || dist > 5 || !hasLoS) {
+      return null;
+    }
+
+    // 50%の確率で繰り出す
+    if (Math.random() < 0.5) {
+      return null;
+    }
+
+    const profile = this.getProfile(merchant.shopkeeperProfileId);
+    const ranged = profile.rangedAttack;
+
+    return {
+      executed: true,
+      attackName: ranged.name,
+      message: ranged.msg,
+      damage: ranged.damage,
+      projectileType: ranged.projectileType,
+      color: ranged.color,
+      soundType: ranged.soundType,
+    };
+  }
 }
+
