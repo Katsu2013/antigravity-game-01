@@ -539,6 +539,27 @@ export class CanvasRenderer {
       frontBase: '#0f172a',
       frontHighlight: '#1e293b',
     },
+    MAGMA: {
+      roofBase: '#7f1d1d',
+      roofHighlight: '#ef4444',
+      roofDetail: '#450a0a',
+      frontBase: '#250505',
+      frontHighlight: '#7f1d1d',
+    },
+    TEMPLE: {
+      roofBase: '#312e81',
+      roofHighlight: '#818cf8',
+      roofDetail: '#1e1b4b',
+      frontBase: '#0f0e26',
+      frontHighlight: '#3730a3',
+    },
+    ALTAR: {
+      roofBase: '#581c87',
+      roofHighlight: '#c084fc',
+      roofDetail: '#3b0764',
+      frontBase: '#1a052e',
+      frontHighlight: '#6b21a8',
+    },
   };
 
   /**
@@ -790,7 +811,15 @@ export class CanvasRenderer {
       if (floorSprite) {
         ctx.drawImage(floorSprite, x, y, s, s);
       } else {
-        ctx.fillStyle = '#253346';
+        const floorColors: Record<string, string> = {
+          MAGMA: '#3d1212',
+          TEMPLE: '#1e1b4b',
+          ALTAR: '#270c3e',
+          MECHA: '#2c1e11',
+          TOXIC: '#220d2d',
+          ISLAND: '#0f172a',
+        };
+        ctx.fillStyle = floorColors[biome] || '#253346';
         ctx.fillRect(x, y, s, s);
       }
     }
@@ -954,6 +983,30 @@ export class CanvasRenderer {
         wave: '#99f6e4',
         bank: '#0f172a',
         highlight: 'rgba(255, 255, 255, 0.85)',
+      },
+      MAGMA: {
+        base: 'rgba(239, 68, 68, 0.85)',
+        deep: 'rgba(185, 28, 28, 0.95)',
+        shallow: 'rgba(251, 146, 60, 0.70)',
+        wave: '#fed7aa',
+        bank: '#450a0a',
+        highlight: 'rgba(254, 240, 138, 0.90)',
+      },
+      TEMPLE: {
+        base: 'rgba(79, 70, 229, 0.82)',
+        deep: 'rgba(67, 56, 202, 0.94)',
+        shallow: 'rgba(129, 140, 248, 0.65)',
+        wave: '#c7d2fe',
+        bank: '#1e1b4b',
+        highlight: 'rgba(255, 255, 255, 0.85)',
+      },
+      ALTAR: {
+        base: 'rgba(88, 28, 135, 0.88)',
+        deep: 'rgba(59, 7, 100, 0.96)',
+        shallow: 'rgba(168, 85, 247, 0.70)',
+        wave: '#f3e8ff',
+        bank: '#1e0538',
+        highlight: 'rgba(255, 255, 255, 0.90)',
       },
     };
     const wc = waterColors[biome] || waterColors.STONE;
@@ -1241,6 +1294,9 @@ export class CanvasRenderer {
       TOXIC: { base: 'rgba(126, 34, 206, 0.82)' },
       MECHA: { base: 'rgba(180, 83, 9, 0.75)' },
       ISLAND: { base: 'rgba(14, 116, 144, 0.85)' },
+      MAGMA: { base: 'rgba(239, 68, 68, 0.85)' },
+      TEMPLE: { base: 'rgba(79, 70, 229, 0.82)' },
+      ALTAR: { base: 'rgba(88, 28, 135, 0.88)' },
     };
     const wc = waterColors[biome] || waterColors.RIVER;
     ctx.fillStyle = wc.base;
@@ -2325,7 +2381,7 @@ export class CanvasRenderer {
 
     const cx = screenX + tileSize / 2;
     const cy = screenY + tileSize / 2;
-    const size = tileSize * 0.95;
+    const size = monster.type === 'ABYSS_LORD' ? tileSize * 1.35 : tileSize * 0.95;
 
     // アイドルおよび歩行アニメーションの計算
     const time = this.anim.globalTime * 3.5 + anim.idleOffset;
@@ -2495,8 +2551,27 @@ export class CanvasRenderer {
       }
     }
 
-    // HPバーの描画（ダメージを受けている場合のみ）
-    if (monster.hp < monster.maxHp) {
+    // HPバーの描画（ボスの場合は常時豪華バー表示、通常敵は負傷時のみ表示）
+    if (monster.type === 'ABYSS_LORD') {
+      const barW = tileSize * 1.5;
+      const barH = 5;
+      const barX = cx - barW / 2;
+      const barY = screenY - 8;
+
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(barX - 1, barY - 1, barW + 2, barH + 2);
+
+      const hpRatio = Math.max(0, monster.hp / monster.maxHp);
+      const grad = ctx.createLinearGradient(barX, barY, barX + barW, barY);
+      grad.addColorStop(0, '#c084fc');
+      grad.addColorStop(1, '#ef4444');
+      ctx.fillStyle = grad;
+      ctx.fillRect(barX, barY, barW * hpRatio, barH);
+
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(barX - 1, barY - 1, barW + 2, barH + 2);
+    } else if (monster.hp < monster.maxHp) {
       const barW = tileSize * 0.7;
       const barH = 3;
       const barX = cx - barW / 2;
@@ -3171,6 +3246,9 @@ export class CanvasRenderer {
       TOXIC: { wall: '#581c87', floorVis: '#3b0764', floorDim: '#1e0538', waterVis: '#d8b4fe', waterDim: '#7e22ce' },
       MECHA: { wall: '#78350f', floorVis: '#451a03', floorDim: '#270e02', waterVis: '#fde68a', waterDim: '#b45309' },
       ISLAND: { wall: '#1e293b', floorVis: '#64748b', floorDim: '#334155', waterVis: '#67e8f9', waterDim: '#0891b2' },
+      MAGMA: { wall: '#7f1d1d', floorVis: '#450a0a', floorDim: '#200505', waterVis: '#f87171', waterDim: '#b91c1c' },
+      TEMPLE: { wall: '#3730a3', floorVis: '#1e1b4b', floorDim: '#0f0e26', waterVis: '#818cf8', waterDim: '#4338ca' },
+      ALTAR: { wall: '#4c0519', floorVis: '#2e0210', floorDim: '#150107', waterVis: '#c084fc', waterDim: '#581c87' },
     };
     const mp = minimapPalettes[biome] || minimapPalettes.STONE;
 

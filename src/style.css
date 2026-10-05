@@ -1606,4 +1606,309 @@ kbd {
   border-color: #93c5fd;
 }
 
+/* =========================================
+   Synthesis Pot Modal
+========================================= */
+.synthesis-dialog {
+  max-width: 600px;
+  width: 95%;
+  background: radial-gradient(circle at top, #1e1b4b 0%, #0f172a 100%);
+  border: 2px solid #818cf8;
+  box-shadow: 0 0 25px rgba(99, 102, 241, 0.35);
+}
+
+.synthesis-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+}
+
+.synthesis-pot-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.7);
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #4338ca;
+}
+
+.synthesis-desc {
+  font-size: 12px;
+  color: #cbd5e1;
+  margin: 0;
+}
+
+.synthesis-selection-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 540px) {
+  .synthesis-selection-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.synthesis-column {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.synthesis-col-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #38bdf8;
+  margin: 0 0 4px 0;
+  border-bottom: 1px solid #334155;
+  padding-bottom: 4px;
+}
+
+.synthesis-item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.synthesis-select-btn {
+  background: #1e293b;
+  border: 1px solid #475569;
+  color: #e2e8f0;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.synthesis-select-btn:hover {
+  background: #312e81;
+  border-color: #818cf8;
+}
+
+.synthesis-select-btn.selected {
+  background: #3730a3;
+  border-color: #a5b4fc;
+  box-shadow: 0 0 8px rgba(129, 140, 248, 0.5);
+}
+
+.synthesis-preview {
+  background: rgba(49, 46, 129, 0.3);
+  border: 1px solid #6366f1;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.preview-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #c7d2fe;
+  margin: 0 0 6px 0;
+}
+
+.preview-content {
+  font-size: 13px;
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.synthesis-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.synthesis-submit-btn {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: #ffffff;
+  border: 1px solid #a78bfa;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+  transition: all 0.15s ease;
+}
+
+.synthesis-submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.5);
+}
+
+.synthesis-submit-btn:disabled {
+  background: #334155;
+  border-color: #475569;
+  color: #64748b;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* =========================================
+   Story Monologue Modal
+========================================= */
+.story-dialog {
+  max-width: 500px;
+  width: 90%;
+  background: radial-gradient(circle at top, #18181b 0%, #09090b 100%);
+  border: 2px solid #d97706;
+  box-shadow: 0 0 35px rgba(217, 119, 6, 0.35);
+  text-align: center;
+  padding: 24px 20px;
+}
+
+.story-header-decor {
+  color: #f59e0b;
+  letter-spacing: 6px;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.story-title {
+  color: #fbbf24;
+  font-size: 18px;
+  font-weight: 800;
+  margin: 0 0 16px 0;
+  letter-spacing: 1px;
+}
+
+.story-body {
+  background: rgba(24, 24, 27, 0.8);
+  border: 1px solid #3f3f46;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.story-text {
+  color: #e4e4e7;
+  font-size: 13px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  margin: 0;
+  text-align: left;
+}
+
+.story-continue-btn {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  color: #ffffff;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.4);
+}
+
+.story-continue-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(217, 119, 6, 0.6);
+}
+
+/* =========================================
+   Game Clear (True Ending) Modal
+========================================= */
+.gameclear-dialog {
+  max-width: 520px;
+  width: 95%;
+  background: radial-gradient(circle at top, #1e1b4b 0%, #09090b 100%);
+  border: 2px solid #eab308;
+  box-shadow: 0 0 40px rgba(234, 179, 8, 0.45);
+  text-align: center;
+  padding: 24px 20px;
+}
+
+.gameclear-crown {
+  font-size: 40px;
+  margin-bottom: 4px;
+  animation: pulse-crown 2s infinite ease-in-out;
+}
+
+@keyframes pulse-crown {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 6px rgba(234, 179, 8, 0.5)); }
+  50% { transform: scale(1.15); filter: drop-shadow(0 0 16px rgba(234, 179, 8, 0.9)); }
+}
+
+.gameclear-title {
+  color: #fde047;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  margin: 0 0 4px 0;
+  text-shadow: 0 0 12px rgba(250, 204, 21, 0.6);
+}
+
+.gameclear-subtitle {
+  color: #cbd5e1;
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+}
+
+.gameclear-desc {
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.6;
+  margin: 0 0 16px 0;
+}
+
+.gameclear-stats {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid #4338ca;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  font-size: 13px;
+}
+
+.gameclear-credits {
+  border-top: 1px dashed #475569;
+  border-bottom: 1px dashed #475569;
+  padding: 10px 0;
+  margin-bottom: 16px;
+}
+
+.credits-role {
+  font-size: 10px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 1.5px;
+  margin: 4px 0 0 0;
+}
+
+.credits-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #cbd5e1;
+  margin: 0 0 6px 0;
+}
+
+.gameclear-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+
 

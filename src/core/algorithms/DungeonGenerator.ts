@@ -44,6 +44,11 @@ export class DungeonGenerator {
    * @returns 生成された完全なダンジョンマップデータ
    */
   public static generate(floor = 1, width = 50, height = 36): DungeonMap {
+    // 第50層は固定ボスフロア（奈落の祭壇）を生成
+    if (floor === 50) {
+      return this.generateBossFloor(width, height);
+    }
+
     // 1. すべて壁で初期化
     const tiles: TileType[][] = Array.from({ length: height }, () =>
       Array.from({ length: width }, () => TileType.Wall)
@@ -298,8 +303,8 @@ export class DungeonGenerator {
     }
 
     // 【レアキャラクター（特殊NPC / 癒やしモンスター）の確率配置】
-    // 2階以降、約28%の確率でフロア内に1体だけ出現
-    if (floor >= 2 && Math.random() < 0.28) {
+    // 2階以降49階まで、約8%の低確率でフロア内に1体だけ出現
+    if (floor >= 2 && floor < 50 && Math.random() < 0.08) {
       const candidateRooms = rooms.filter((r) => !r.isShop && (r.x !== startPos.x || r.y !== startPos.y));
       if (candidateRooms.length > 0) {
         const targetRoom = candidateRooms[Math.floor(Math.random() * candidateRooms.length)];
@@ -395,8 +400,84 @@ export class DungeonGenerator {
   }
 
   /**
+   * 第50層専用：最深部・奈落の祭壇（大ボスアリーナ）を生成します。
+   */
+  private static generateBossFloor(width: number, height: number): DungeonMap {
+    const tiles: TileType[][] = Array.from({ length: height }, () =>
+      Array.from({ length: width }, () => TileType.Wall)
+    );
+    const explored: boolean[][] = Array.from({ length: height }, () =>
+      Array.from({ length: width }, () => false)
+    );
+    const visible: boolean[][] = Array.from({ length: height }, () =>
+      Array.from({ length: width }, () => false)
+    );
+
+    // 大聖堂・祭壇大部屋（幅26×高20）をフロア中央に配置
+    const rw = 26;
+    const rh = 20;
+    const rx = Math.floor((width - rw) / 2);
+    const ry = Math.floor((height - rh) / 2);
+
+    for (let y = ry; y < ry + rh; y++) {
+      for (let x = rx; x < rx + rw; x++) {
+        tiles[y][x] = TileType.Floor;
+      }
+    }
+
+    const bossRoom: Room = { x: rx, y: ry, w: rw, h: rh };
+    const rooms: Room[] = [bossRoom];
+
+    // プレイヤー開始位置（部屋南側入口）
+    const startPos: Point = {
+      x: rx + Math.floor(rw / 2),
+      y: ry + rh - 3,
+    };
+
+    // ボスフロアには下り階段なし（ボス撃破でゲームクリア）
+    const stairsDown: Point = { x: -1, y: -1 };
+
+    const monsters: Monster[] = [];
+    const items: Item[] = [];
+    const obstacles: Obstacle[] = [];
+
+    // ボス『奈落の魔王アビス・ロード』を部屋北寄りの玉座に配置
+    const bossX = rx + Math.floor(rw / 2);
+    const bossY = ry + 4;
+    monsters.push(EntityFactory.createAbyssLord(bossX, bossY));
+
+    // 護衛モンスター2体（左右）
+    monsters.push(EntityFactory.createMonster(50, bossX - 5, bossY + 2, 'ALTAR'));
+    monsters.push(EntityFactory.createMonster(50, bossX + 5, bossY + 2, 'ALTAR'));
+
+    // ボス戦の補給アイテム
+    items.push(EntityFactory.createRandomItem(rx + 2, ry + rh - 2));
+    items.push(EntityFactory.createRandomItem(rx + rw - 3, ry + rh - 2));
+
+    // 遮蔽用の押せる大石
+    obstacles.push(EntityFactory.createObstacle('PUSH_ROCK', rx + 6, ry + 10));
+    obstacles.push(EntityFactory.createObstacle('PUSH_ROCK', rx + rw - 7, ry + 10));
+
+    return {
+      width,
+      height,
+      tiles,
+      explored,
+      visible,
+      rooms,
+      monsters,
+      items,
+      obstacles,
+      startPos,
+      stairsDown,
+      biome: 'ALTAR',
+      biomeName: '【最深部・第50層】奈落の祭壇',
+    };
+  }
+
+  /**
    * 階層番号に基づいてフロアのバイオーム分類および和名を動的に決定します。
-   * 階層の深さに応じて出現比率が変化し、毎回異なる多様なフロアが生成されます。
+   * 全50階層のロングレンジダンジョンに対応し、深度に応じた環境変化を演出します。
    *
    * @param floor - 階層番号
    * @returns バイオーム種別と和名のオブジェクト
@@ -405,6 +486,10 @@ export class DungeonGenerator {
     biome: BiomeType;
     name: string;
   } {
+    if (floor === 50) {
+      return { biome: 'ALTAR', name: '【最深部・第50層】奈落の祭壇' };
+    }
+
     let pool: { biome: BiomeType; name: string; weight: number }[] = [];
 
     if (floor === 1) {
@@ -413,34 +498,46 @@ export class DungeonGenerator {
         { biome: 'EARTH', name: '岩と赤土の洞窟', weight: 4 },
         { biome: 'FOREST', name: '草木が生い茂る旧遺跡', weight: 2 },
       ];
-    } else if (floor <= 3) {
+    } else if (floor <= 10) {
+      // 第2〜10層: 浅層（石造・赤土・旧遺跡・清流洞）
       pool = [
-        { biome: 'STONE', name: '石造りの地下迷宮', weight: 3 },
+        { biome: 'STONE', name: '石造りの地下迷宮', weight: 4 },
         { biome: 'EARTH', name: '岩と赤土の洞窟', weight: 3 },
         { biome: 'FOREST', name: '草木が生い茂る旧遺跡', weight: 3 },
         { biome: 'RIVER', name: '地下水流と木橋の清流洞', weight: 2 },
-        { biome: 'SNOW', name: '白銀の雪原回廊', weight: 2 },
-        { biome: 'SWAMP', name: '泥濘に足を取られる湿地帯', weight: 2 },
       ];
-    } else if (floor <= 6) {
+    } else if (floor <= 20) {
+      // 第11〜20層: 中層（氷雪・水脈・地下湖・湿地）
       pool = [
         { biome: 'RIVER', name: '地下水流と木橋の清流洞', weight: 2 },
-        { biome: 'LAKE', name: '水没せし蒼玉の地下湖', weight: 2 },
-        { biome: 'SNOW', name: '白銀の雪原回廊', weight: 2 },
-        { biome: 'ICE', name: '永久凍土と滑る蒼氷窟', weight: 3 },
+        { biome: 'LAKE', name: '水没せし蒼玉の地下湖', weight: 3 },
+        { biome: 'SNOW', name: '白銀の雪原回廊', weight: 3 },
+        { biome: 'ICE', name: '永久凍土と滑る蒼氷窟', weight: 4 },
+        { biome: 'SWAMP', name: '泥濘に足を取られる湿地帯', weight: 2 },
+      ];
+    } else if (floor <= 30) {
+      // 第21〜30層: 深層（毒沼・機巧回廊・孤島）
+      pool = [
         { biome: 'SWAMP', name: '泥濘に足を取られる湿地帯', weight: 3 },
-        { biome: 'TOXIC', name: '有毒ガス漂う腐蝕の毒沼窟', weight: 2 },
+        { biome: 'TOXIC', name: '有毒ガス漂う腐蝕の毒沼窟', weight: 4 },
+        { biome: 'MECHA', name: '古代真鍮の機巧回廊', weight: 3 },
         { biome: 'ISLAND', name: '果てなき大海原の孤島迷宮', weight: 2 },
-        { biome: 'MECHA', name: '古代真鍮の機巧回廊', weight: 2 },
+      ];
+    } else if (floor <= 40) {
+      // 第31〜40層: 極深層（灼熱溶岩・古代機械・猛毒・荒海孤島）
+      pool = [
+        { biome: 'MAGMA', name: '煮え滾る灼熱の溶岩洞窟', weight: 4 },
+        { biome: 'MECHA', name: '古代真鍮の機巧回廊', weight: 3 },
+        { biome: 'TOXIC', name: '有毒ガス漂う腐蝕の毒沼窟', weight: 3 },
+        { biome: 'ISLAND', name: '荒天の大海原の孤島迷宮', weight: 2 },
+        { biome: 'ICE', name: '永久凍土と滑る蒼氷窟', weight: 2 },
       ];
     } else {
+      // 第41〜49層: 最深試練（古代神殿・溶岩・猛毒・深淵古代石宮）
       pool = [
-        { biome: 'ICE', name: '永久凍土と滑る蒼氷窟', weight: 3 },
-        { biome: 'TOXIC', name: '有毒ガス漂う腐蝕の毒沼窟', weight: 4 },
-        { biome: 'MECHA', name: '古代真鍮の機巧回廊', weight: 4 },
-        { biome: 'ISLAND', name: '果てなき大海原の孤島迷宮', weight: 3 },
-        { biome: 'SWAMP', name: '泥濘に足を取られる湿地帯', weight: 2 },
-        { biome: 'LAKE', name: '水没せし蒼玉の地下湖', weight: 2 },
+        { biome: 'TEMPLE', name: '神聖なる深層古代神殿', weight: 4 },
+        { biome: 'MAGMA', name: '煮え滾る灼熱の溶岩洞窟', weight: 3 },
+        { biome: 'TOXIC', name: '有毒ガス漂う腐蝕の毒沼窟', weight: 2 },
         { biome: 'STONE', name: '深淵の古代石宮', weight: 2 },
       ];
     }
@@ -500,6 +597,15 @@ export class DungeonGenerator {
       case 'TOXIC':
         // 腐蝕の毒沼: 有毒な泥土塊（100% 土塊）
         return 'DIRT_BLOCK';
+
+      case 'MAGMA':
+        // 溶岩洞窟: 溶岩で硬化した大石（80%）と火山灰土塊（20%）
+        return roll < 0.8 ? 'PUSH_ROCK' : 'DIRT_BLOCK';
+
+      case 'TEMPLE':
+      case 'ALTAR':
+        // 古代神殿・祭壇: 神殿の礎石（100% 押せる石）
+        return 'PUSH_ROCK';
 
       case 'ISLAND':
         // 孤島群: ヤシの倒木（70%）と岩（30%）

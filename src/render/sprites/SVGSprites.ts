@@ -170,8 +170,12 @@ export type SpriteId =
   | 'healing_fairy_down'
   | 'traveling_blacksmith'
   | 'traveling_blacksmith_down'
+  // 第50層ボス
+  | 'abyss_lord'
+  | 'abyss_lord_down'
   // アイテムグラフィックスプライト
   | 'item_gold'
+  | 'item_pot_synthesis'
   | 'item_potion'
   | 'item_potion_high'
   | 'item_potion_str'
@@ -1041,9 +1045,12 @@ export class SVGSprites {
       healing_fairy_down: MonsterAndItemSprites.HEALING_FAIRY_DOWN_SVG,
       traveling_blacksmith: MonsterAndItemSprites.TRAVELING_BLACKSMITH_DOWN_SVG,
       traveling_blacksmith_down: MonsterAndItemSprites.TRAVELING_BLACKSMITH_DOWN_SVG,
+      abyss_lord: MonsterAndItemSprites.ABYSS_LORD_DOWN_SVG,
+      abyss_lord_down: MonsterAndItemSprites.ABYSS_LORD_DOWN_SVG,
 
       // アイテム
       item_gold: MonsterAndItemSprites.ITEM_GOLD_PILE_SVG,
+      item_pot_synthesis: MonsterAndItemSprites.ITEM_POT_SYNTHESIS_SVG,
       item_potion: `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="32" cy="58" rx="16" ry="4" fill="rgba(0,0,0,0.35)"/>
@@ -1285,6 +1292,8 @@ export class SVGSprites {
       if (name.includes('睡眠')) return 'item_scroll_sleep';
       if (name.includes('混乱')) return 'item_scroll_confuse';
       if (name.includes('ワープ') || name.includes('巻物')) return 'item_scroll';
+      // 壺
+      if (name.includes('壺')) return 'item_pot_synthesis';
     }
 
     switch (category) {
@@ -1304,6 +1313,8 @@ export class SVGSprites {
         return 'item_shield';
       case 'SCROLL':
         return 'item_scroll';
+      case 'POT':
+        return 'item_pot_synthesis';
       default:
         return 'item_potion';
     }

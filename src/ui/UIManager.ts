@@ -5,8 +5,9 @@
  */
 
 import { GameEngine } from '../core/GameEngine';
-import { Monster } from '../core/types';
+import { Item, Monster } from '../core/types';
 import { NpcSystem } from '../core/systems/NpcSystem';
+import { SynthesisSystem } from '../core/systems/SynthesisSystem';
 import { SVGSprites } from '../render/sprites/SVGSprites';
 import { RunStats, StorageManager } from '../storage/StorageManager';
 import { SoundSystem } from '../audio/SoundSystem';
@@ -108,6 +109,28 @@ export class UIManager {
   /** NPCアクションコンテナ要素 */
   private npcActionEl: HTMLElement;
 
+  /** 合成モーダル要素 */
+  private synthesisModalEl: HTMLElement;
+  private synthesisPotNameEl: HTMLElement;
+  private synthesisPotCapacityEl: HTMLElement;
+  private synthesisBaseListEl: HTMLElement;
+  private synthesisMaterialListEl: HTMLElement;
+  private synthesisPreviewBoxEl: HTMLElement;
+  private synthesisPreviewContentEl: HTMLElement;
+  private btnExecuteSynthesisEl: HTMLButtonElement;
+  private activeSynthesisPot: Item | null = null;
+  private selectedBaseItemId: string | null = null;
+  private selectedMaterialItemId: string | null = null;
+
+  /** ストーリーモノローグモーダル要素 */
+  private storyModalEl: HTMLElement;
+  private storyTitleEl: HTMLElement;
+  private storyTextEl: HTMLElement;
+
+  /** ゲームクリアモーダル要素 */
+  private gameClearModalEl: HTMLElement;
+  private gameClearStatsEl: HTMLElement;
+
   /** 直前に描画した階層番号（フロア変化の検知用） */
   private lastRenderedFloor = 1;
 
@@ -168,8 +191,36 @@ export class UIManager {
     this.npcMsgEl = document.getElementById('npc-modal-message')!;
     this.npcActionEl = document.getElementById('npc-action-container')!;
 
+    this.synthesisModalEl = document.getElementById('synthesis-modal')!;
+    this.synthesisPotNameEl = document.getElementById('synthesis-pot-name')!;
+    this.synthesisPotCapacityEl = document.getElementById('synthesis-pot-capacity')!;
+    this.synthesisBaseListEl = document.getElementById('synthesis-base-list')!;
+    this.synthesisMaterialListEl = document.getElementById('synthesis-material-list')!;
+    this.synthesisPreviewBoxEl = document.getElementById('synthesis-preview-box')!;
+    this.synthesisPreviewContentEl = document.getElementById('synthesis-preview-content')!;
+    this.btnExecuteSynthesisEl = document.getElementById('btn-execute-synthesis') as HTMLButtonElement;
+
+    this.storyModalEl = document.getElementById('story-modal')!;
+    this.storyTitleEl = document.getElementById('story-modal-title')!;
+    this.storyTextEl = document.getElementById('story-modal-text')!;
+
+    this.gameClearModalEl = document.getElementById('gameclear-modal')!;
+    this.gameClearStatsEl = document.getElementById('gameclear-stats')!;
+
     this.engine.onNpcInteract = (npc) => {
       this.showNpcModal(npc);
+    };
+
+    this.engine.onOpenSynthesis = (pot) => {
+      this.showSynthesisModal(pot);
+    };
+
+    this.engine.onStoryMonologue = (_floor, title, text) => {
+      this.showStoryMonologue(title, text);
+    };
+
+    this.engine.onGameClear = () => {
+      this.showGameClearModal();
     };
 
     this.bindModalEvents();
@@ -324,6 +375,49 @@ export class UIManager {
         this.closeNpcModal();
       }
     });
+
+    // 合成モーダルボタン
+    document.getElementById('btn-close-synthesis')?.addEventListener('click', () => {
+      this.closeSynthesisModal();
+    });
+    document.getElementById('btn-cancel-synthesis')?.addEventListener('click', () => {
+      this.closeSynthesisModal();
+    });
+    this.btnExecuteSynthesisEl?.addEventListener('click', () => {
+      this.executeSynthesis();
+    });
+    this.synthesisModalEl.addEventListener('click', (e) => {
+      const openedAt = this.modalOpenTimestamps.get('synthesis-modal') || 0;
+      if (Date.now() - openedAt < 350) return;
+      if (e.target === this.synthesisModalEl) {
+        this.closeSynthesisModal();
+      }
+    });
+
+    // ストーリーモノローグボタン
+    document.getElementById('btn-close-story')?.addEventListener('click', () => {
+      this.closeStoryMonologue();
+    });
+    this.storyModalEl.addEventListener('click', (e) => {
+      const openedAt = this.modalOpenTimestamps.get('story-modal') || 0;
+      if (Date.now() - openedAt < 350) return;
+      if (e.target === this.storyModalEl) {
+        this.closeStoryMonologue();
+      }
+    });
+
+    // ゲームクリアモーダルボタン
+    document.getElementById('btn-gameclear-restart')?.addEventListener('click', () => {
+      this.closeGameClearModal();
+      this.engine.executeAction({ type: 'RESTART' });
+    });
+    document.getElementById('btn-gameclear-scores')?.addEventListener('click', () => {
+      this.showScoresModal();
+    });
+    document.getElementById('btn-gameclear-title')?.addEventListener('click', () => {
+      this.closeGameClearModal();
+      this.showTitleScreen();
+    });
   }
 
   /**
@@ -334,7 +428,7 @@ export class UIManager {
   }
 
   /**
-   * いずれかのモーダル（インベントリ、ゲームオーバー、スコア、ヘルプ、NPC対話）が開いているかを判定します。
+   * いずれかのモーダル（インベントリ、ゲームオーバー、スコア、ヘルプ、NPC対話、合成、ストーリー、クリア）が開いているかを判定します。
    */
   public isAnyModalOpen(): boolean {
     return (
@@ -342,7 +436,10 @@ export class UIManager {
       !this.gameOverModalEl.classList.contains('hidden') ||
       !this.scoresModalEl.classList.contains('hidden') ||
       !this.helpModalEl.classList.contains('hidden') ||
-      !this.npcModalEl.classList.contains('hidden')
+      !this.npcModalEl.classList.contains('hidden') ||
+      !this.synthesisModalEl.classList.contains('hidden') ||
+      !this.storyModalEl.classList.contains('hidden') ||
+      !this.gameClearModalEl.classList.contains('hidden')
     );
   }
 
@@ -501,6 +598,237 @@ export class UIManager {
    */
   public closeNpcModal(): void {
     this.npcModalEl.classList.add('hidden');
+  }
+
+  /**
+   * 合成の壺モーダルを開きます。
+   */
+  public showSynthesisModal(pot: Item): void {
+    this.activeSynthesisPot = pot;
+    this.selectedBaseItemId = null;
+    this.selectedMaterialItemId = null;
+    this.modalOpenTimestamps.set('synthesis-modal', Date.now());
+
+    this.synthesisPotNameEl.textContent = pot.name;
+    this.synthesisPotCapacityEl.textContent = `残り容量: [${pot.potCapacity ?? 0}]`;
+
+    // インベントリモーダルが開いていれば閉じる
+    this.closeInventoryModal();
+
+    this.renderSynthesisLists();
+    this.updateSynthesisPreview();
+    this.synthesisModalEl.classList.remove('hidden');
+  }
+
+  /**
+   * 合成モーダル内のベース武具候補および素材武具候補一覧を描画します。
+   */
+  public renderSynthesisLists(): void {
+    if (!this.activeSynthesisPot) return;
+
+    this.synthesisBaseListEl.innerHTML = '';
+    this.synthesisMaterialListEl.innerHTML = '';
+
+    // 合成対象は WEAPON または SHIELD（壺自体は除く）
+    const validEquipments = this.engine.player.inventory.filter(
+      (it) => it.id !== this.activeSynthesisPot!.id && (it.category === 'WEAPON' || it.category === 'SHIELD')
+    );
+
+    if (validEquipments.length === 0) {
+      this.synthesisBaseListEl.innerHTML = '<div class="text-xs text-gray-400 p-2">※ 合成可能な武具がありません</div>';
+      this.synthesisMaterialListEl.innerHTML = '<div class="text-xs text-gray-400 p-2">※ 合成可能な武具がありません</div>';
+      return;
+    }
+
+    // ① ベース候補リスト
+    for (const item of validEquipments) {
+      const isSelected = item.id === this.selectedBaseItemId;
+      const btn = document.createElement('button');
+      btn.className = `synthesis-select-btn ${isSelected ? 'selected' : ''}`;
+      const decName = SynthesisSystem.getDecoratedName(item);
+      const isEquipped =
+        this.engine.player.equippedWeapon?.id === item.id ||
+        this.engine.player.equippedShield?.id === item.id;
+      btn.innerHTML = `<span>${isEquipped ? '★ ' : ''}${decName}</span><span class="text-xs text-gray-400">${item.category === 'WEAPON' ? '武器' : '盾'}</span>`;
+      btn.addEventListener('click', () => {
+        this.selectedBaseItemId = item.id;
+        if (this.selectedMaterialItemId === item.id) {
+          this.selectedMaterialItemId = null;
+        }
+        this.renderSynthesisLists();
+        this.updateSynthesisPreview();
+      });
+      this.synthesisBaseListEl.appendChild(btn);
+    }
+
+    // ② 素材候補リスト（ベースと同カテゴリの別武具）
+    const baseItem = validEquipments.find((it) => it.id === this.selectedBaseItemId);
+    const materialCandidates = validEquipments.filter(
+      (it) => it.id !== this.selectedBaseItemId && (!baseItem || it.category === baseItem.category)
+    );
+
+    if (materialCandidates.length === 0) {
+      this.synthesisMaterialListEl.innerHTML = `<div class="text-xs text-gray-400 p-2">${baseItem ? '※ 同種の素材武具がありません' : '※ まずベース武具を選択してください'}</div>`;
+    } else {
+      for (const item of materialCandidates) {
+        const isSelected = item.id === this.selectedMaterialItemId;
+        const btn = document.createElement('button');
+        btn.className = `synthesis-select-btn ${isSelected ? 'selected' : ''}`;
+        const decName = SynthesisSystem.getDecoratedName(item);
+        const isEquipped =
+          this.engine.player.equippedWeapon?.id === item.id ||
+          this.engine.player.equippedShield?.id === item.id;
+        btn.innerHTML = `<span>${isEquipped ? '★ ' : ''}${decName}</span><span class="text-xs text-emerald-400 font-bold">素材選択</span>`;
+        btn.addEventListener('click', () => {
+          this.selectedMaterialItemId = item.id;
+          this.renderSynthesisLists();
+          this.updateSynthesisPreview();
+        });
+        this.synthesisMaterialListEl.appendChild(btn);
+      }
+    }
+  }
+
+  /**
+   * 合成の壺による錬成結果プレビューを更新します。
+   */
+  public updateSynthesisPreview(): void {
+    if (!this.activeSynthesisPot || !this.selectedBaseItemId || !this.selectedMaterialItemId) {
+      this.synthesisPreviewBoxEl.classList.add('hidden');
+      this.btnExecuteSynthesisEl.disabled = true;
+      return;
+    }
+
+    const base = this.engine.player.inventory.find((it) => it.id === this.selectedBaseItemId);
+    const mat = this.engine.player.inventory.find((it) => it.id === this.selectedMaterialItemId);
+
+    if (!base || !mat) {
+      this.synthesisPreviewBoxEl.classList.add('hidden');
+      this.btnExecuteSynthesisEl.disabled = true;
+      return;
+    }
+
+    const canSyn = SynthesisSystem.canSynthesize(base, mat, this.activeSynthesisPot);
+    if (!canSyn.valid) {
+      this.synthesisPreviewBoxEl.classList.remove('hidden');
+      this.synthesisPreviewContentEl.innerHTML = `<span class="text-rose-400 font-bold">${canSyn.reason}</span>`;
+      this.btnExecuteSynthesisEl.disabled = true;
+      return;
+    }
+
+    const baseVal = base.value;
+    const baseUpgrade = base.upgradeLevel ?? 0;
+    const matUpgrade = mat.upgradeLevel ?? 0;
+    const newUpgrade = baseUpgrade + matUpgrade;
+    const combinedRunes = Array.from(new Set([...(base.runes ?? []), ...(mat.runes ?? [])]));
+
+    const runeLabels: Record<string, string> = {
+      DRAGON: '【竜】竜特効',
+      FIRE: '【炎】炎追加',
+      HOLY: '【聖】聖浄化',
+      DOUBLE: '【連】2回攻撃',
+      CRITICAL: '【会】会心率+25%',
+      DRAGON_RESIST: '【竜耐】火炎半減',
+      MAGIC_RESIST: '【魔】魔弾半減',
+      EVASION: '【見】完全回避15%',
+      DEFENSE_UP: '【防】被ダメ20%軽減',
+    };
+
+    const runeBadges = combinedRunes
+      .map((r) => `<span class="bg-indigo-900 border border-indigo-400 text-indigo-200 px-1 py-0.5 rounded text-xs">${runeLabels[r] ?? r}</span>`)
+      .join(' ');
+
+    this.synthesisPreviewBoxEl.classList.remove('hidden');
+    this.synthesisPreviewContentEl.innerHTML = `
+      <div><strong>${base.name}</strong> ${newUpgrade > 0 ? `<span class="text-emerald-400 font-bold">+${newUpgrade}</span>` : ''}</div>
+      <div class="text-xs text-slate-300">性能値: ${baseVal} (+${newUpgrade}) ➔ 合計 ${baseVal + newUpgrade}</div>
+      <div class="text-xs text-sky-300 mt-1">継承される特殊印: ${runeBadges || 'なし'}</div>
+    `;
+    this.btnExecuteSynthesisEl.disabled = false;
+  }
+
+  /**
+   * 合成を実行します。
+   */
+  public executeSynthesis(): void {
+    if (!this.activeSynthesisPot || !this.selectedBaseItemId || !this.selectedMaterialItemId) return;
+
+    this.engine.executeAction({
+      type: 'SYNTHESIZE',
+      potId: this.activeSynthesisPot.id,
+      baseItemId: this.selectedBaseItemId,
+      materialItemId: this.selectedMaterialItemId,
+    });
+
+    this.closeSynthesisModal();
+  }
+
+  /**
+   * 合成モーダルを閉じます。
+   */
+  public closeSynthesisModal(): void {
+    this.synthesisModalEl.classList.add('hidden');
+    this.activeSynthesisPot = null;
+    this.selectedBaseItemId = null;
+    this.selectedMaterialItemId = null;
+  }
+
+  /**
+   * ストーリーモノローグモーダルを表示します。
+   */
+  public showStoryMonologue(title: string, text: string): void {
+    this.modalOpenTimestamps.set('story-modal', Date.now());
+    this.storyTitleEl.textContent = title;
+    this.storyTextEl.textContent = text;
+    this.storyModalEl.classList.remove('hidden');
+  }
+
+  /**
+   * ストーリーモノローグモーダルを閉じます。
+   */
+  public closeStoryMonologue(): void {
+    this.storyModalEl.classList.add('hidden');
+  }
+
+  /**
+   * ゲームクリア（真のエンディング）モーダルを表示します。
+   */
+  public showGameClearModal(): void {
+    this.modalOpenTimestamps.set('gameclear-modal', Date.now());
+
+    // クリアスコア算出（第50層クリアボーナス+50,000点）
+    const baseScore = GameEngine.calculateScore(50, this.engine.player.level, this.engine.player.turn);
+    const clearBonus = 50000;
+    const finalScore = baseScore + clearBonus;
+
+    // ハイスコア永続化保存
+    const runStats: RunStats = {
+      score: finalScore,
+      floor: 50,
+      level: this.engine.player.level,
+      turn: this.engine.player.turn,
+      causeOfDeath: '★ 迷宮完全制覇（クリア！）★',
+      timestamp: Date.now(),
+    };
+    StorageManager.saveHighscore(runStats);
+
+    this.gameClearStatsEl.innerHTML = `
+      <div><strong>最終スコア:</strong> <span class="text-yellow-400 font-bold text-lg">${finalScore.toLocaleString()} 点</span></div>
+      <div class="text-xs text-amber-300">（基本点 ${baseScore.toLocaleString()} + クリアボーナス ${clearBonus.toLocaleString()}）</div>
+      <div><strong>到達階層:</strong> 地下 50 階（最深部）</div>
+      <div><strong>冒険者レベル:</strong> Lv.${this.engine.player.level}</div>
+      <div><strong>生存ターン数:</strong> ${this.engine.player.turn} ターン</div>
+      <div><strong>獲得ゴールド:</strong> ${this.engine.player.gold.toLocaleString()} G</div>
+    `;
+
+    this.gameClearModalEl.classList.remove('hidden');
+  }
+
+  /**
+   * ゲームクリアモーダルを閉じます。
+   */
+  public closeGameClearModal(): void {
+    this.gameClearModalEl.classList.add('hidden');
   }
 
   /**

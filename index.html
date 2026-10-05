@@ -179,6 +179,83 @@
       </div>
     </div>
 
+    <!-- Synthesis Pot Modal Dialog -->
+    <div id="synthesis-modal" class="modal-overlay hidden">
+      <div class="modal-dialog synthesis-dialog">
+        <div class="modal-header">
+          <h3 id="synthesis-modal-title" class="modal-title">🏺 合成の壺（武具錬成）</h3>
+          <button id="btn-close-synthesis" class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body synthesis-modal-body">
+          <div class="synthesis-pot-info">
+            <span id="synthesis-pot-name" class="font-bold text-amber-400">合成の壺</span>
+            <span id="synthesis-pot-capacity" class="text-sm text-gray-300">残り容量: [3]</span>
+          </div>
+          <p class="synthesis-desc">ベースとなる武具と、能力・強化値を合成する素材武具を選択してください。</p>
+
+          <div class="synthesis-selection-grid">
+            <div class="synthesis-column">
+              <h4 class="synthesis-col-title">① ベース武具（手元に残る）</h4>
+              <div id="synthesis-base-list" class="synthesis-item-list"></div>
+            </div>
+            <div class="synthesis-column">
+              <h4 class="synthesis-col-title">② 素材武具（消費される）</h4>
+              <div id="synthesis-material-list" class="synthesis-item-list"></div>
+            </div>
+          </div>
+
+          <!-- プレビュー領域 -->
+          <div id="synthesis-preview-box" class="synthesis-preview hidden">
+            <h5 class="preview-title">錬成結果プレビュー</h5>
+            <div id="synthesis-preview-content" class="preview-content"></div>
+          </div>
+        </div>
+        <div class="modal-footer synthesis-footer">
+          <button id="btn-execute-synthesis" class="synthesis-submit-btn" disabled>壺に入れて合成する</button>
+          <button id="btn-cancel-synthesis" class="hud-btn">やめる</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Story Monologue Modal Dialog -->
+    <div id="story-modal" class="modal-overlay hidden">
+      <div class="modal-dialog story-dialog">
+        <div class="story-header-decor">✦ ✦ ✦</div>
+        <h3 id="story-modal-title" class="story-title">【第1層】深淵迷宮への第一歩</h3>
+        <div class="story-body">
+          <p id="story-modal-text" class="story-text"></p>
+        </div>
+        <div class="story-footer">
+          <button id="btn-close-story" class="story-continue-btn">迷宮の深部へ進む ➔</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Clear (True Ending) Modal Dialog -->
+    <div id="gameclear-modal" class="modal-overlay hidden">
+      <div class="modal-dialog gameclear-dialog">
+        <div class="gameclear-crown">👑</div>
+        <h2 class="gameclear-title">ALL FLOORS CLEARED!!</h2>
+        <p class="gameclear-subtitle">深淵迷宮『ラビリンス』完全制覇！</p>
+        <p class="gameclear-desc">奈落の魔王アビス・ロードを討伐し、伝説の秘宝『アビス・オーブ』を手に入れた！<br/>あなたの名は迷宮の英雄として永遠に刻まれるだろう。</p>
+
+        <div id="gameclear-stats" class="gameclear-stats"></div>
+
+        <div class="gameclear-credits">
+          <p class="credits-role">PRODUCTION</p>
+          <p class="credits-name">Google DeepMind Pair Programming</p>
+          <p class="credits-role">SOUND & GRAPHICS</p>
+          <p class="credits-name">Web Audio Synthesizer & Procedural Vector SVG</p>
+        </div>
+
+        <div class="gameclear-actions">
+          <button id="btn-gameclear-restart" class="restart-btn">新たな冒険へ旅立つ</button>
+          <button id="btn-gameclear-scores" class="secondary-modal-btn">冒険の記録を見る</button>
+          <button id="btn-gameclear-title" class="secondary-modal-btn">タイトル画面へ</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Scores History Modal -->
     <div id="scores-modal" class="modal-overlay hidden">
       <div class="modal-dialog scores-dialog">

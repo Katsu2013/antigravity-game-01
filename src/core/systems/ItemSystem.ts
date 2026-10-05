@@ -1005,8 +1005,9 @@ export class ItemSystem {
       TALISMAN: 4,
       POTION: 5,
       FOOD: 6,
-      SCROLL: 7,
-      GOLD: 8,
+      POT: 7,
+      SCROLL: 8,
+      GOLD: 9,
     };
 
     player.inventory.sort((a, b) => {

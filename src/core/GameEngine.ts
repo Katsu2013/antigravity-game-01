@@ -12,6 +12,7 @@ import { CombatSystem } from './systems/CombatSystem';
 import { ItemSystem } from './systems/ItemSystem';
 import { ShopSystem } from './systems/ShopSystem';
 import { NpcSystem } from './systems/NpcSystem';
+import { SynthesisSystem } from './systems/SynthesisSystem';
 import { StorageManager } from '../storage/StorageManager';
 import { SoundSystem } from '../audio/SoundSystem';
 import {
@@ -20,6 +21,7 @@ import {
   Direction8,
   DungeonMap,
   GameLogEntry,
+  Item,
   Monster,
   Obstacle,
   PlayerState,
@@ -61,6 +63,18 @@ export class GameEngine {
 
   /** レアNPCとの対話イベント発生時コールバック */
   public onNpcInteract?: (npc: Monster) => void;
+
+  /** 合成の壺使用時の鍛冶錬成モーダル呼び出しコールバック */
+  public onOpenSynthesis?: (potItem: Item) => void;
+
+  /** 第50層ボス撃破時のゲームクリア（完全制覇）コールバック */
+  public onGameClear?: () => void;
+
+  /** 節目階層到達時のストーリーモノローグ通知コールバック */
+  public onStoryMonologue?: (floor: number, title: string, text: string) => void;
+
+  /** モノローグを既に表示した階層の記録セット */
+  private shownMonologueFloors = new Set<number>();
 
   /** 障害物を押して移動した際のコールバック */
   public onObstaclePush?: (obstacle: Obstacle, dx: number, dy: number) => void;
@@ -319,10 +333,53 @@ export class GameEngine {
     // 視界の初期計算
     FOV.compute(this.map, { x: this.player.x, y: this.player.y });
 
+    // 節目階層ストーリーモノローグ演出
+    this.checkAndTriggerStoryMonologue(floorNum);
+
     if (shouldSave) {
       this.saveGame();
     }
     this.notify();
+  }
+
+  /**
+   * 節目階層（1F, 10F, 20F, 30F, 40F, 50F）に初回到達した際、ストーリーモノローグを発火します。
+   */
+  private checkAndTriggerStoryMonologue(floor: number): void {
+    if (this.shownMonologueFloors.has(floor)) return;
+
+    const monologues: Record<number, { title: string; text: string }> = {
+      1: {
+        title: '【第1層】深淵迷宮への第一歩',
+        text: 'かつて多くの歴戦の勇者が挑み、誰一人として戻らなかったという地下50層の深淵迷宮『ラビリンス』。\n最深部に眠る伝説の秘宝『アビス・オーブ』を求めて、あなたの壮大な冒険が今始まる……！',
+      },
+      10: {
+        title: '【第10層】過酷なる中層への境',
+        text: '冷気が肌を刺す。浅層を抜け、迷宮はその過酷な深部へと姿を変え始めた。\nここからは水脈と氷雪、そして凶悪な魔獣たちが待ち受ける……油断は命取りだ！',
+      },
+      20: {
+        title: '【第20層】腐蝕と有毒の魔境',
+        text: '鼻をつく腐臭と紫の瘴気。足元は泥濘と有毒沼に覆われ、引き返す道は既に閉ざされている。\n研ぎ澄まされた集中力と武具の強化だけが、生還への唯一の道だ……。',
+      },
+      30: {
+        title: '【第30層】煮え滾る灼熱の地鳴り',
+        text: '足の裏から激しい熱気が伝わる。煮え滾るマグマと古代機械の重低音が響き渡る。\n深淵の支配者が潜む最深部は、確実に近づいている……！',
+      },
+      40: {
+        title: '【第40層】深層古代神殿の静寂',
+        text: '荘厳にして禍々しい古代神殿の回廊。\n第50層を守護する魔王の強大なプレッシャーが、空間そのものを歪ませている……覚悟を決めよ！',
+      },
+      50: {
+        title: '【第50層：最終決戦】奈落の祭壇',
+        text: 'ついに地下50層、深淵の最奥『奈落の祭壇』へ到達した！\n紫黒の闇の中、玉座から『奈落の魔王アビス・ロード』が立ち上がる！\nすべての武具と知恵を尽くし、迷宮の支配者を討ち果たせ！！',
+      },
+    };
+
+    const mono = monologues[floor];
+    if (mono) {
+      this.shownMonologueFloors.add(floor);
+      this.onStoryMonologue?.(floor, mono.title, mono.text);
+    }
   }
 
   /**
@@ -659,6 +716,18 @@ export class GameEngine {
       }
 
       case 'USE_ITEM': {
+        const targetItem = this.player.inventory.find((it) => it.id === action.itemId);
+        if (targetItem && targetItem.category === 'POT') {
+          if ((targetItem.potCapacity ?? 0) <= 0) {
+            this.addLog(`${targetItem.name} は満杯でこれ以上合成できない。`, 'warning');
+            this.notify();
+            return false;
+          }
+          this.onOpenSynthesis?.(targetItem);
+          this.notify();
+          return false;
+        }
+
         const result = ItemSystem.useItem(this.player, this.map, action.itemId);
         if (result.success) {
           SoundSystem.getInstance().playHeal();
@@ -827,6 +896,49 @@ export class GameEngine {
           this.notify();
           return false;
         }
+        break;
+      }
+
+      case 'SYNTHESIZE': {
+        const pId = action.potId || action.potItemId;
+        const pot = this.player.inventory.find((it) => it.id === pId);
+        const baseItem = this.player.inventory.find((it) => it.id === action.baseItemId);
+        const materialItem = this.player.inventory.find((it) => it.id === action.materialItemId);
+
+        if (!pot || !baseItem || !materialItem) {
+          this.addLog('合成の対象アイテムが見つかりません。', 'warning');
+          this.notify();
+          return false;
+        }
+
+        const synResult = SynthesisSystem.synthesize(baseItem, materialItem, pot);
+        if (!synResult.success) {
+          this.addLog(synResult.message, 'warning');
+          this.notify();
+          return false;
+        }
+
+        // 素材アイテムをインベントリから消費・除外（装備中だった場合は装備解除）
+        if (this.player.equippedWeapon?.id === materialItem.id) this.player.equippedWeapon = null;
+        if (this.player.equippedShield?.id === materialItem.id) this.player.equippedShield = null;
+        this.player.inventory = this.player.inventory.filter((it) => it.id !== materialItem.id);
+
+        // 壺の容量を1消費
+        pot.potCapacity = (pot.potCapacity ?? 1) - 1;
+
+        // プレイヤー戦闘ステータス再計算（ベース装備を装備中なら更新）
+        CombatSystem.updatePlayerStats(this.player);
+
+        SoundSystem.getInstance().playHeal();
+        this.addLog(synResult.message, 'turn-header');
+        if (pot.potCapacity <= 0) {
+          this.addLog(`${pot.name} は役目を終え、光の粒子となって砕け散った！`, 'warning');
+          this.player.inventory = this.player.inventory.filter((it) => it.id !== pot.id);
+        } else {
+          this.addLog(`${pot.name} の残り容量は [${pot.potCapacity}] だ。`, 'info');
+        }
+
+        turnPassed = true;
         break;
       }
     }
@@ -1481,6 +1593,13 @@ export class GameEngine {
 
     const result = CombatSystem.playerAttack(this.player, monster, isBack);
 
+    // 武器に刻まれた印の効果ログ出力
+    if (result.runeEffects && result.runeEffects.length > 0) {
+      for (const runeMsg of result.runeEffects) {
+        this.addLog(runeMsg, 'turn-header');
+      }
+    }
+
     if (result.isBackstab) {
       this.addLog(
         `背後から不意打ち！ 会心の一撃！ ${monster.name} に ${result.damage} の大ダメージ！`,
@@ -1499,6 +1618,15 @@ export class GameEngine {
         'info'
       );
       this.map.monsters = this.map.monsters.filter((m) => m.id !== monster.id);
+
+      if (monster.type === 'ABYSS_LORD') {
+        this.player.isGameCleared = true;
+        this.addLog('★☆★ 地下50層 迷宮の支配者【奈落の魔王アビス・ロード】を討ち果たした！！ ★☆★', 'turn-header');
+        this.addLog('深淵の迷宮に満ちていた瘴気が晴れ渡り、聖なる光が天より降り注ぐ……！', 'info');
+        SoundSystem.getInstance().playLevelUp();
+        this.saveGame();
+        this.onGameClear?.();
+      }
 
       if (result.didLevelUp) {
         SoundSystem.getInstance().playLevelUp();
@@ -1716,9 +1844,27 @@ export class GameEngine {
         monster.direction = this.calcDirection(dx, dy);
 
         this.onAttack?.(monster.id, dx, dy, 'player');
+        const combat = CombatSystem.monsterAttack(monster, this.player);
+
+        if (combat.isEvaded) {
+          SoundSystem.getInstance().playMiss();
+          this.addLog(
+            `${monster.name} の攻撃！ だが【見】見切りの盾が直撃を完全に見切って躱した！`,
+            'info'
+          );
+          continue;
+        }
+
         this.onDamage?.('player');
         SoundSystem.getInstance().playPlayerHit();
-        const combat = CombatSystem.monsterAttack(monster, this.player);
+
+        // 盾の印（竜耐性・絶対防壁等）の効果ログ
+        if (combat.runeEffects && combat.runeEffects.length > 0) {
+          for (const runeMsg of combat.runeEffects) {
+            this.addLog(runeMsg, 'info');
+          }
+        }
+
         this.addLog(
           `${monster.name} の攻撃！ あなたは ${combat.damage} のダメージを受けた！`,
           'damage'
@@ -1765,10 +1911,21 @@ export class GameEngine {
           this.onDamage?.('player');
           SoundSystem.getInstance().playPlayerHit();
 
-          const rangedDamage = Math.max(
+          let rangedDamage = Math.max(
             2,
             Math.round(monster.atk * 0.85 + Math.random() * 3)
           );
+
+          // 盾の印による属性軽減判定
+          const shieldRunes = this.player.equippedShield?.runes ?? [];
+          if (monster.rangedAttackType === 'fire' && shieldRunes.includes('DRAGON_RESIST')) {
+            rangedDamage = Math.max(1, Math.floor(rangedDamage * 0.5));
+            this.addLog('【竜耐】竜鱗の盾が灼熱の火炎を半減した！', 'info');
+          } else if (shieldRunes.includes('MAGIC_RESIST')) {
+            rangedDamage = Math.max(1, Math.floor(rangedDamage * 0.5));
+            this.addLog('【魔】魔法の盾が魔弾を半減した！', 'info');
+          }
+
           this.player.hp = Math.max(0, this.player.hp - rangedDamage);
 
           if (monster.rangedAttackType === 'fire') {

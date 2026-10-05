@@ -63,6 +63,9 @@ export class EntityFactory {
       case 'TRAVELING_BLACKSMITH':
         return this.createTravelingBlacksmith(x, y);
 
+      case 'ABYSS_LORD':
+        return this.createAbyssLord(x, y);
+
       case 'SLIME':
         return {
           id,
@@ -428,12 +431,23 @@ export class EntityFactory {
       }
     }
 
-    // 7階以上: 深層（強力な魔導士、岩石ゴーレム、古代ミイラ、そして8階以上でドラゴン降臨！）
-    const dragonChance = floor >= 8 ? 0.22 : 0;
+    // 7階以上: 深層（強力な魔導士、岩石ゴーレム、古代ミイラ、そしてドラゴン降臨！）
+    const dragonChance = floor >= 35 ? 0.38 : floor >= 20 ? 0.30 : floor >= 8 ? 0.22 : 0;
     if (roll < dragonChance) return 'DRAGON';
 
     const subRoll = dragonChance > 0 ? (roll - dragonChance) / (1 - dragonChance) : roll;
     switch (biome) {
+      case 'MAGMA':
+        if (subRoll < 0.4) return 'GOLEM';
+        if (subRoll < 0.7) return 'MAGE';
+        if (subRoll < 0.85) return 'MUMMY';
+        return 'DRAGON';
+      case 'TEMPLE':
+      case 'ALTAR':
+        if (subRoll < 0.35) return 'MAGE';
+        if (subRoll < 0.65) return 'MUMMY';
+        if (subRoll < 0.85) return 'GHOST';
+        return 'GOLEM';
       case 'EARTH':
         if (subRoll < 0.35) return 'GOLEM';
         if (subRoll < 0.6) return 'MUMMY';
@@ -492,7 +506,8 @@ export class EntityFactory {
    * ショップ（店）に並ぶ高品質な商品アイテムを生成します。
    */
   public static createShopItem(x: number, y: number): Item {
-    const item = this.assignItemPrices(this.createRawRandomItem(x, y));
+    const raw = Math.random() < 0.20 ? this.createSynthesisPot(x, y) : this.createRawRandomItem(x, y);
+    const item = this.assignItemPrices(raw);
     item.isShopItem = true;
     return item;
   }
@@ -914,6 +929,7 @@ export class EntityFactory {
         category: 'WEAPON',
         description: '龍の堅い鱗を断ち切る特効大剣。ドラゴン種族に対して2倍の破滅的ダメージを与える。',
         value: 9,
+        runes: ['DRAGON'],
         x,
         y,
         symbol: '/',
@@ -927,6 +943,7 @@ export class EntityFactory {
         category: 'WEAPON',
         description: '燃え盛る紅蓮の業火を纏う名剣。装備すると攻撃力が10急上昇する。',
         value: 10,
+        runes: ['FIRE'],
         x,
         y,
         symbol: '/',
@@ -940,6 +957,7 @@ export class EntityFactory {
         category: 'WEAPON',
         description: '聖なる天光を宿した聖槍。装備すると攻撃力が11大幅上昇する。',
         value: 11,
+        runes: ['HOLY'],
         x,
         y,
         symbol: '/',
@@ -953,6 +971,7 @@ export class EntityFactory {
         category: 'WEAPON',
         description: '古代の呪文が刻まれた伝説の魔剣。装備すると攻撃力が12圧倒的上昇する。',
         value: 12,
+        runes: ['DOUBLE'],
         x,
         y,
         symbol: '/',
@@ -966,6 +985,7 @@ export class EntityFactory {
         category: 'WEAPON',
         description: '血を求めて怪しい紅光を放つ伝説の妖刀。装備すると攻撃力が15究極上昇する。',
         value: 15,
+        runes: ['CRITICAL'],
         x,
         y,
         symbol: '/',
@@ -1008,6 +1028,7 @@ export class EntityFactory {
         category: 'SHIELD',
         description: '翠嵐の風を纏った軽装盾。装備すると防御力が3上昇する。',
         value: 3,
+        runes: ['EVASION'],
         x,
         y,
         symbol: ')',
@@ -1049,6 +1070,7 @@ export class EntityFactory {
         category: 'SHIELD',
         description: '蒼い魔導障壁を張る神秘の盾。装備すると防御力が6大幅上昇する。',
         value: 6,
+        runes: ['MAGIC_RESIST'],
         x,
         y,
         symbol: ')',
@@ -1062,6 +1084,7 @@ export class EntityFactory {
         category: 'SHIELD',
         description: '紅蓮の龍鱗で補強された大盾。装備すると防御力が8圧倒的上昇する。',
         value: 8,
+        runes: ['DRAGON_RESIST'],
         x,
         y,
         symbol: ')',
@@ -1075,6 +1098,7 @@ export class EntityFactory {
         category: 'SHIELD',
         description: 'あらゆる厄災を退ける神話の神盾。装備すると防御力が10究極上昇する。',
         value: 10,
+        runes: ['DEFENSE_UP'],
         x,
         y,
         symbol: ')',
@@ -1161,7 +1185,7 @@ export class EntityFactory {
         symbol: '?',
         color: '#818cf8',
       };
-    } else if (roll < 0.993) {
+    } else if (roll < 0.990) {
       // 混乱の巻物
       return {
         id,
@@ -1174,7 +1198,7 @@ export class EntityFactory {
         symbol: '?',
         color: '#f43f5e',
       };
-    } else {
+    } else if (roll < 0.996) {
       // あかりの巻物
       return {
         id,
@@ -1187,6 +1211,9 @@ export class EntityFactory {
         symbol: '?',
         color: '#38bdf8',
       };
+    } else {
+      // 合成の壺（武具の合算強化・印継承）
+      return this.createSynthesisPot(x, y);
     }
   }
 
@@ -1259,6 +1286,8 @@ export class EntityFactory {
       else if (name.includes('混乱') || name.includes('睡眠')) basePrice = 250;
       else if (name.includes('あかり')) basePrice = 150;
       else basePrice = 100; // ワープ
+    } else if (item.category === 'POT') {
+      basePrice = 2500;
     }
 
     item.price = basePrice;
@@ -1448,6 +1477,50 @@ export class EntityFactory {
       },
       symbol: 'B',
       color: '#f97316',
+    };
+  }
+
+  /**
+   * 第50層最深部ボス『奈落の魔王アビス・ロード』を生成します。
+   */
+  public static createAbyssLord(x: number, y: number): Monster {
+    const id = `boss_abyss_${++this.idCounter}`;
+    return {
+      id,
+      name: '奈落の魔王アビス・ロード',
+      type: 'ABYSS_LORD',
+      x,
+      y,
+      hp: 450,
+      maxHp: 450,
+      atk: 36,
+      def: 18,
+      expValue: 10000,
+      hasRangedAttack: true,
+      rangedAttackType: 'fire',
+      symbol: 'Ω',
+      color: '#c084fc',
+    };
+  }
+
+  /**
+   * 神秘の『合成の壺』（武器・盾の合成・強化値合算・印継承）を生成します。
+   */
+  public static createSynthesisPot(x: number, y: number): Item {
+    const id = `pot_${++this.idCounter}`;
+    return {
+      id,
+      name: '合成の壺',
+      category: 'POT',
+      description: '武具同士を融合させる神秘の壺。使うと2つの武器または盾を合成し、強化値を合算して特殊能力（印）を引き継ぐ。',
+      value: 3,
+      potCapacity: 3,
+      x,
+      y,
+      symbol: 'U',
+      color: '#06b6d4',
+      price: 2500,
+      sellPrice: 1200,
     };
   }
 

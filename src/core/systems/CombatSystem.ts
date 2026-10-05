@@ -23,6 +23,10 @@ export interface CombatResult {
   expGained?: number;
   /** 背後からの不意打ちクリティカルヒットかどうか */
   isBackstab?: boolean;
+  /** 発動した特殊印の効果メッセージ */
+  runeEffects?: string[];
+  /** 攻撃を完全回避したかどうか */
+  isEvaded?: boolean;
 }
 
 /**
@@ -81,12 +85,41 @@ export class CombatSystem {
     const variance = 0.85 + Math.random() * 0.3;
     let baseDamage = player.atk * variance - monster.def;
 
-    // 特効武器判定（ドラゴンキラー等）
-    if (player.equippedWeapon?.specialEffect === 'DRAGON_SLAYER' && monster.type === 'DRAGON') {
-      baseDamage *= 1.8;
+    const runes = player.equippedWeapon?.runes || [];
+    const runeEffects: string[] = [];
+
+    // 印効果: DRAGON（ドラゴン特効）
+    if (runes.includes('DRAGON') && (monster.type === 'DRAGON' || monster.type === 'ABYSS_LORD')) {
+      baseDamage *= 1.5;
+      runeEffects.push('【竜】ドラゴン特効が炸裂！');
+    }
+
+    // 印効果: HOLY（アンデッド特効）
+    const isUndead = ['SKELETON', 'ZOMBIE', 'GHOST', 'MUMMY'].includes(monster.type);
+    if (runes.includes('HOLY') && isUndead) {
+      baseDamage *= 1.5;
+      runeEffects.push('【聖】退魔の聖光がアンデッドを浄化！');
+    }
+
+    // 印効果: FIRE（紅蓮追加ダメージ）
+    if (runes.includes('FIRE')) {
+      baseDamage += 4;
+      runeEffects.push('【炎】紅蓮の火炎爆発！');
+    }
+
+    // 印効果: CRITICAL（会心）
+    if (runes.includes('CRITICAL') && Math.random() < 0.35) {
+      baseDamage *= 1.5;
+      runeEffects.push('【会】必殺の会心の一撃！');
     }
 
     let damage = Math.max(1, Math.round(baseDamage));
+
+    // 印効果: DOUBLE（2回連続攻撃）
+    if (runes.includes('DOUBLE') && Math.random() < 0.30) {
+      damage = Math.round(damage * 1.8);
+      runeEffects.push('【連】電光石火の2回連続攻撃！');
+    }
 
     if (isBackstab) {
       damage = Math.max(2, Math.round(damage * 1.6));
@@ -100,8 +133,6 @@ export class CombatSystem {
     if (isDefeated) {
       expGained = monster.expValue;
       player.exp += expGained;
-
-      // レベルアップ判定
       didLevelUp = this.checkLevelUp(player);
     }
 
@@ -113,6 +144,7 @@ export class CombatSystem {
       didLevelUp,
       expGained,
       isBackstab,
+      runeEffects,
     };
   }
 
@@ -171,8 +203,37 @@ export class CombatSystem {
    * @returns 戦闘結果オブジェクト
    */
   public static monsterAttack(monster: Monster, player: PlayerState): CombatResult {
+    const shieldRunes = player.equippedShield?.runes || [];
+    const runeEffects: string[] = [];
+
+    // 印効果: EVASION（見切り回避）
+    if (shieldRunes.includes('EVASION') && Math.random() < 0.15) {
+      runeEffects.push('【避】見切りの極意で攻撃を完全回避！');
+      return {
+        attackerName: monster.name,
+        defenderName: 'あなた',
+        damage: 0,
+        isDefeated: false,
+        isEvaded: true,
+        runeEffects,
+      };
+    }
+
     const variance = 0.85 + Math.random() * 0.3;
-    const rawDamage = monster.atk * variance - player.def;
+    let rawDamage = monster.atk * variance - player.def;
+
+    // 印効果: DEFENSE_UP（絶対防壁 - 物理ダメージ20%カット）
+    if (shieldRunes.includes('DEFENSE_UP')) {
+      rawDamage *= 0.80;
+      runeEffects.push('【守】絶対防壁が衝撃を20%カット！');
+    }
+
+    // 印効果: DRAGON_RESIST（竜耐性 - ダメージ50%カット）
+    if (shieldRunes.includes('DRAGON_RESIST') && (monster.type === 'DRAGON' || monster.type === 'ABYSS_LORD')) {
+      rawDamage *= 0.50;
+      runeEffects.push('【竜防】竜耐性がダメージを半減！');
+    }
+
     const damage = Math.max(1, Math.round(rawDamage));
 
     player.hp = Math.max(0, player.hp - damage);
@@ -187,6 +248,7 @@ export class CombatSystem {
       defenderName: 'あなた',
       damage,
       isDefeated,
+      runeEffects,
     };
   }
 

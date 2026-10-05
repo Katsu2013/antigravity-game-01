@@ -1737,4 +1737,65 @@ export class MonsterAndItemSprites {
   <circle cx="43" cy="38" r="3.5" fill="#fed7aa"/>
   <circle cx="21" cy="38" r="3.5" fill="#fed7aa"/>
 </svg>`.trim();
+
+  /** 合成の壺 (POT_OF_SYNTHESIS: 蒼碧の神秘陶器・金装飾の口縁・回転する錬成魔導ルーン) */
+  public static readonly ITEM_POT_SYNTHESIS_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="16" ry="4" fill="rgba(0,0,0,0.35)"/>
+  <!-- 壺の台座 -->
+  <ellipse cx="32" cy="54" rx="12" ry="3.5" fill="#0e7490" stroke="#155e75" stroke-width="1.5"/>
+  <!-- 壺の膨らみ本体 -->
+  <path d="M14 36 Q12 48 20 54 Q32 58 44 54 Q52 48 50 36 Q48 26 38 22 L26 22 Q16 26 14 36 Z" fill="#06b6d4" stroke="#0891b2" stroke-width="2"/>
+  <!-- 壺のハイライト・陶器の艶 -->
+  <path d="M18 32 Q16 42 22 48" stroke="#a5f3fc" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- 壺の金装飾帯 -->
+  <path d="M16 38 Q32 44 48 38" stroke="#fbbf24" stroke-width="2.5" fill="none"/>
+  <circle cx="32" cy="41" r="3" fill="#f59e0b" stroke="#78350f" stroke-width="1"/>
+  <!-- 壺の首部 -->
+  <rect x="24" y="16" width="16" height="8" fill="#0891b2" stroke="#155e75" stroke-width="1.5"/>
+  <!-- 金装飾の口縁 -->
+  <ellipse cx="32" cy="16" rx="11" ry="3.5" fill="#facc15" stroke="#b45309" stroke-width="1.5"/>
+  <ellipse cx="32" cy="16" rx="8" ry="2" fill="#164e63"/>
+  <!-- 錬成の魔導粒子 -->
+  <circle cx="20" cy="20" r="1.5" fill="#67e8f9"/>
+  <circle cx="44" cy="22" r="2" fill="#fef08a"/>
+  <polygon points="32,8 33,11 36,12 33,13 32,16 31,13 28,12 31,11" fill="#38bdf8"/>
+</svg>`.trim();
+
+  /** 奈落の魔王アビス・ロード (ABYSS_LORD: 巨大な漆黒の双角・真紅の瞳・魔界甲冑・紫黒マント・破滅の大剣) */
+  public static readonly ABYSS_LORD_DOWN_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="60" rx="22" ry="4" fill="rgba(0,0,0,0.5)"/>
+  <!-- 背後の巨大な紫黒の魔王マント -->
+  <path d="M12 24 L6 58 Q32 63 58 58 L52 24 Z" fill="#3b0764" stroke="#1e1b4b" stroke-width="2"/>
+  <path d="M16 26 L12 56 Q32 60 52 56 L48 26 Z" fill="#581c87"/>
+  <!-- 重厚な魔界甲冑の胴体 -->
+  <rect x="20" y="24" width="24" height="28" rx="4" fill="#0f172a" stroke="#6b21a8" stroke-width="2"/>
+  <!-- 胸当ての紅蓮コアジュエル -->
+  <polygon points="32,28 38,36 32,44 26,36" fill="#dc2626" stroke="#fbbf24" stroke-width="1.5"/>
+  <circle cx="32" cy="36" r="2" fill="#fef08a"/>
+  <!-- 巨大な肩当て（ショルダーアーマー） -->
+  <polygon points="10,20 22,22 18,34 8,30" fill="#1e1b4b" stroke="#7e22ce" stroke-width="1.8"/>
+  <polygon points="54,20 42,22 46,34 56,30" fill="#1e1b4b" stroke="#7e22ce" stroke-width="1.8"/>
+  <!-- 兜・頭部 -->
+  <rect x="24" y="12" width="16" height="14" rx="3" fill="#0f172a" stroke="#6b21a8" stroke-width="2"/>
+  <!-- 巨大な漆黒の双角 -->
+  <path d="M24 14 Q14 6 10 0 Q18 8 26 12 Z" fill="#4c1d95" stroke="#1e1b4b" stroke-width="1.5"/>
+  <path d="M40 14 Q50 6 54 0 Q46 8 38 12 Z" fill="#4c1d95" stroke="#1e1b4b" stroke-width="1.5"/>
+  <!-- 兜のスリット・光る真紅の邪眼 -->
+  <line x1="26" y1="18" x2="38" y2="18" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="28" cy="18" r="1.5" fill="#fef08a"/>
+  <circle cx="36" cy="18" r="1.5" fill="#fef08a"/>
+  <!-- 漆黒の脚部・鉄甲冑 -->
+  <rect x="22" y="52" width="8" height="8" rx="2" fill="#0f172a" stroke="#6b21a8" stroke-width="1.2"/>
+  <rect x="34" y="52" width="8" height="8" rx="2" fill="#0f172a" stroke="#6b21a8" stroke-width="1.2"/>
+  <!-- 右手: 破滅の魔導大剣（アビス・ブレード） -->
+  <line x1="46" y1="36" x2="58" y2="12" stroke="#a855f7" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="46" y1="36" x2="58" y2="12" stroke="#f43f5e" stroke-width="1.5"/>
+  <circle cx="46" cy="36" r="3" fill="#fbbf24"/>
+  <!-- 立ち昇る暗黒の瘴気オーラ -->
+  <circle cx="16" cy="12" r="1.5" fill="#c084fc" opacity="0.6"/>
+  <circle cx="48" cy="10" r="1.5" fill="#c084fc" opacity="0.6"/>
+  <circle cx="32" cy="4" r="2" fill="#ef4444" opacity="0.7"/>
+</svg>`.trim();
 }

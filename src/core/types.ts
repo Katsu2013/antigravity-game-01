@@ -42,7 +42,10 @@ export type BiomeType =
   | 'SWAMP'   // 深緑の泥濘と沼地 (Murky Swamp - 泥沼足枷)
   | 'TOXIC'   // 有毒瘴気と毒沼の魔境 (Toxic Mire - 毒沼ダメージ)
   | 'MECHA'   // 歯車と真鍮の機巧回廊 (Clockwork Labyrinth - 古代機械)
-  | 'ISLAND'; // 外洋に浮かぶ孤島群 (Endless Ocean Islands - 壁なし外洋)
+  | 'ISLAND'  // 外洋に浮かぶ孤島群 (Endless Ocean Islands - 壁なし外洋)
+  | 'MAGMA'   // 灼熱の溶岩洞窟 (Magma Caves - 灼熱地獄)
+  | 'TEMPLE'  // 深層古代神殿・試練の回廊 (Ancient Temple)
+  | 'ALTAR';  // 最深部・奈落の祭壇 (Abyss Altar - 第50層ボスフロア)
 
 /**
  * 2次元グリッド上の整数座標を表すインターフェース。
@@ -95,6 +98,7 @@ export type ItemCategory =
   | 'ARROW'   // 矢・飛び道具（遠距離直線攻撃）
   | 'STAFF'   // 魔法の杖（回数制の遠距離特殊効果）
   | 'TALISMAN' // 腕輪・装飾品（パッシブ能力）
+  | 'POT'      // 壺（合成の壺など）
   | 'GOLD';   // ゴールド通貨（床落ち金貨・所持金）
 
 /**
@@ -117,6 +121,10 @@ export interface Item {
   charges?: number;
   /** 装備品の強化値（+1, +2等） */
   upgradeLevel?: number;
+  /** 武器・盾に宿る特殊能力（印・ルーン群） */
+  runes?: string[];
+  /** 壺の容量・残り使用可能回数 */
+  potCapacity?: number;
   /** 特殊効果識別子（例: 'KNOCKBACK', 'SWITCH', 'PARALYZE', 'REVIVE'等） */
   specialEffect?: string;
   /** 購入価格（ショップ販売時の定価ゴールド） */
@@ -160,7 +168,8 @@ export type MonsterType =
   | 'WANDERING_ADVENTURER'  // さすらいの冒険者レオン（物々交換の旅人）
   | 'GAMBLER_SAGE'          // 賭博仙人ガンジ（じゃんけん大勝負で所持枠拡張/ペナルティ）
   | 'HEALING_FAIRY'         // 慈愛の妖精ピクシー（敵なのにプレイヤーを回復してくれる）
-  | 'TRAVELING_BLACKSMITH'; // さすらいの鍛冶職人バルカン（装備品の無料鍛錬）
+  | 'TRAVELING_BLACKSMITH' // さすらいの鍛冶職人バルカン（装備品の無料鍛錬）
+  | 'ABYSS_LORD';          // 奈落の魔王アビス・ロード（第50層 最深部の支配者・大ボス）
 
 /**
  * フロア上に配置される障害物・ギミックオブジェクトの分類型。
@@ -379,6 +388,16 @@ export type ActionType =
       action: 'TALK' | 'TRADE_ACCEPT' | 'RPS_PLAY' | 'FORGE_WEAPON' | 'FORGE_SHIELD';
       rpsChoice?: 'ROCK' | 'SCISSORS' | 'PAPER';
       tradePlayerItemId?: string;
+    }
+  /**
+   * 武器・盾の合成・鍛冶錬成アクション（合成の壺による強化値加算・印継承）。
+   */
+  | {
+      type: 'SYNTHESIZE';
+      baseItemId: string;
+      materialItemId: string;
+      potId?: string;
+      potItemId?: string;
     };
 
 /**
@@ -437,6 +456,8 @@ export interface PlayerState {
   speedTurns?: number;
   /** 生存フラグ（falseの場合はゲームオーバー） */
   isAlive: boolean;
+  /** 第50層ボス撃破によるゲーム完全制覇（クリア）フラグ */
+  isGameCleared?: boolean;
 }
 
 /**
