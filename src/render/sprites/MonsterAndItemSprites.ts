@@ -1593,4 +1593,148 @@ export class MonsterAndItemSprites {
   <polygon points="18,33 19,35 21,36 19,37 18,39 17,37 15,36 17,35" fill="#fef08a"/>
   <polygon points="32,20 33,22 35,23 33,24 32,26 31,24 29,23 31,22" fill="#ffffff"/>
 </svg>`.trim();
+
+  // =========================================================================
+  // 7. レアキャラ4種（冒険者レオン、賭博仙人ガンジ、妖精ピクシー、鍛冶職人バルカン）
+  // =========================================================================
+
+  /** さすらいの冒険者レオン (物々交換の旅人: 緑の羽帽子・青マント・バックパック・親しみやすい笑顔) */
+  public static readonly WANDERING_ADVENTURER_DOWN_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="15" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <!-- 巨大バックパック（背後） -->
+  <rect x="18" y="22" width="28" height="24" rx="4" fill="#78350f" stroke="#451a03" stroke-width="1.5"/>
+  <rect x="20" y="24" width="24" height="6" fill="#92400e"/>
+  <line x1="24" y1="30" x2="24" y2="44" stroke="#451a03" stroke-width="1.2"/>
+  <line x1="40" y1="30" x2="40" y2="44" stroke="#451a03" stroke-width="1.2"/>
+  <!-- 丸めた寝袋（バックパック上） -->
+  <rect x="20" y="17" width="24" height="6" rx="3" fill="#15803d" stroke="#14532d" stroke-width="1.2"/>
+  <!-- 青いマント -->
+  <path d="M22 26 L16 52 L26 50 L32 52 L38 50 L48 52 L42 26 Z" fill="#2563eb" stroke="#1d4ed8" stroke-width="1.5"/>
+  <!-- 体（旅人の服・革ベルト） -->
+  <ellipse cx="32" cy="38" rx="9" ry="11" fill="#3b82f6"/>
+  <rect x="26" y="36" width="12" height="4" fill="#854d0e"/>
+  <circle cx="32" cy="38" r="2" fill="#fbbf24"/>
+  <!-- 足・ブーツ -->
+  <rect x="25" y="48" width="5" height="9" rx="2" fill="#78350f"/>
+  <rect x="34" y="48" width="5" height="9" rx="2" fill="#78350f"/>
+  <!-- 頭部・顔 -->
+  <ellipse cx="32" cy="22" rx="7.5" ry="7" fill="#fde047"/>
+  <ellipse cx="32" cy="22" rx="7" ry="6.5" fill="#fed7aa"/>
+  <!-- 茶髪 -->
+  <path d="M25 19 Q32 15 39 19 Q36 24 25 19 Z" fill="#78350f"/>
+  <!-- 冒険者の羽帽子 -->
+  <ellipse cx="32" cy="16" rx="10" ry="3.5" fill="#16a34a" stroke="#15803d" stroke-width="1"/>
+  <path d="M25 15 Q32 9 39 15 Z" fill="#15803d"/>
+  <!-- 帽子に差した白い羽根 -->
+  <path d="M37 14 Q44 6 46 4 Q43 11 39 15 Z" fill="#f8fafc" stroke="#94a3b8" stroke-width="0.8"/>
+  <!-- 瞳・笑顔 -->
+  <ellipse cx="29" cy="21" rx="1" ry="1.2" fill="#1e293b"/>
+  <ellipse cx="35" cy="21" rx="1" ry="1.2" fill="#1e293b"/>
+  <path d="M30 25 Q32 27 34 25" stroke="#9a3412" stroke-width="1" fill="none"/>
+  <!-- 手を振るポーズ -->
+  <circle cx="19" cy="35" r="3" fill="#fed7aa"/>
+  <circle cx="45" cy="35" r="3" fill="#fed7aa"/>
+</svg>`.trim();
+
+  /** 賭博仙人ガンジ (じゃんけん勝負の老人: 長い白髭・紫道着・サイコロ・金の扇子) */
+  public static readonly GAMBLER_SAGE_DOWN_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="16" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <!-- 紫の道着（広がる裾） -->
+  <path d="M22 30 L14 54 L50 54 L42 30 Z" fill="#6b21a8" stroke="#3b0764" stroke-width="1.5"/>
+  <path d="M27 30 L32 46 L37 30 Z" fill="#a855f7"/>
+  <rect x="24" y="44" width="16" height="4" fill="#fbbf24"/>
+  <!-- 仙人の頭部 -->
+  <ellipse cx="32" cy="20" rx="8" ry="7" fill="#fed7aa"/>
+  <!-- 白い長眉 -->
+  <path d="M25 16 Q28 13 30 17" stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <path d="M39 16 Q36 13 34 17" stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <!-- 細めた笑い目 -->
+  <path d="M27 19 Q29 21 31 19" stroke="#1e293b" stroke-width="1.2" fill="none"/>
+  <path d="M33 19 Q35 21 37 19" stroke="#1e293b" stroke-width="1.2" fill="none"/>
+  <!-- 頭頂の白髪お団子・かんざし -->
+  <circle cx="32" cy="11" r="4.5" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+  <line x1="26" y1="10" x2="38" y2="12" stroke="#d97706" stroke-width="1.8" stroke-linecap="round"/>
+  <!-- 胸まで伸びる立派な長い白髭 -->
+  <path d="M27 24 Q32 42 32 45 Q32 42 37 24 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+  <!-- 左手: 赤いサイコロ（ダイス）を宙に浮かす -->
+  <rect x="13" y="32" width="9" height="9" rx="1.5" fill="#dc2626" stroke="#991b1b" stroke-width="1" transform="rotate(12 17 36)"/>
+  <circle cx="17.5" cy="36.5" r="1.5" fill="#ffffff"/>
+  <!-- 右手: 金の扇子 -->
+  <path d="M42 36 L52 26 Q56 34 50 42 Z" fill="#fbbf24" stroke="#d97706" stroke-width="1.2"/>
+  <line x1="42" y1="36" x2="52" y2="28" stroke="#b45309" stroke-width="0.8"/>
+  <line x1="42" y1="36" x2="52" y2="34" stroke="#b45309" stroke-width="0.8"/>
+  <line x1="42" y1="36" x2="50" y2="40" stroke="#b45309" stroke-width="0.8"/>
+</svg>`.trim();
+
+  /** 慈愛の妖精ピクシー (敵なのに回復してくれる: 透明な羽・ハートステッキ・キラキラ星粉) */
+  public static readonly HEALING_FAIRY_DOWN_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- 接地浮遊影（ふわふわ浮遊） -->
+  <ellipse cx="32" cy="58" rx="11" ry="3" fill="rgba(16,185,129,0.25)"/>
+  <!-- 背中の透明な妖精の羽（4枚） -->
+  <path d="M30 28 Q10 10 12 24 Q14 36 30 32 Z" fill="rgba(110,231,183,0.65)" stroke="#34d399" stroke-width="1.2"/>
+  <path d="M30 32 Q14 36 18 46 Q24 48 30 36 Z" fill="rgba(167,243,208,0.55)" stroke="#34d399" stroke-width="1"/>
+  <path d="M34 28 Q54 10 52 24 Q50 36 34 32 Z" fill="rgba(110,231,183,0.65)" stroke="#34d399" stroke-width="1.2"/>
+  <path d="M34 32 Q50 36 46 46 Q40 48 34 36 Z" fill="rgba(167,243,208,0.55)" stroke="#34d399" stroke-width="1"/>
+  <!-- エメラルドのワンピース -->
+  <path d="M26 30 L22 47 Q32 50 42 47 L38 30 Z" fill="#10b981" stroke="#047857" stroke-width="1.2"/>
+  <path d="M25 43 Q32 46 39 43" stroke="#a7f3d0" stroke-width="1.5" fill="none"/>
+  <!-- 小さな足 -->
+  <circle cx="28" cy="49" r="2" fill="#fed7aa"/>
+  <circle cx="36" cy="49" r="2" fill="#fed7aa"/>
+  <!-- 顔・ピンク髪 -->
+  <ellipse cx="32" cy="22" rx="7" ry="6.5" fill="#fed7aa"/>
+  <path d="M24 20 Q32 12 40 20 Q42 28 40 30 Q38 23 32 23 Q26 23 24 30 Z" fill="#f43f5e"/>
+  <!-- 金のティアラ -->
+  <polygon points="28,14 30,17 32,13 34,17 36,14 35,18 29,18" fill="#fbbf24" stroke="#d97706" stroke-width="0.8"/>
+  <!-- きらめく瞳・微笑み -->
+  <ellipse cx="29" cy="21" rx="1.5" ry="2" fill="#047857"/>
+  <circle cx="29.5" cy="20.5" r="0.6" fill="#ffffff"/>
+  <ellipse cx="35" cy="21" rx="1.5" ry="2" fill="#047857"/>
+  <circle cx="35.5" cy="20.5" r="0.6" fill="#ffffff"/>
+  <ellipse cx="27" cy="24" rx="1.5" ry="0.8" fill="#fda4af" opacity="0.8"/>
+  <ellipse cx="37" cy="24" rx="1.5" ry="0.8" fill="#fda4af" opacity="0.8"/>
+  <path d="M30.5 25 Q32 26.5 33.5 25" stroke="#e11d48" stroke-width="1" fill="none"/>
+  <!-- 右手: ハートの回復ステッキ -->
+  <line x1="40" y1="32" x2="48" y2="20" stroke="#f59e0b" stroke-width="1.5"/>
+  <path d="M47 18 Q45 15 48 13 Q51 15 49 18 L48 20 Z" fill="#ec4899"/>
+  <!-- 周囲の回復キラキラ星 -->
+  <polygon points="16,16 17,18 19,19 17,20 16,22 15,20 13,19 15,18" fill="#34d399"/>
+  <polygon points="48,38 49,40 51,41 49,42 48,44 47,42 45,41 47,40" fill="#fef08a"/>
+</svg>`.trim();
+
+  /** さすらいの鍛冶職人バルカン (武具無料鍛錬: 赤髭ドワーフ・革エプロン・大金槌) */
+  public static readonly TRAVELING_BLACKSMITH_DOWN_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="16" ry="4" fill="rgba(0,0,0,0.3)"/>
+  <!-- がっしりした体格 -->
+  <rect x="20" y="28" width="24" height="24" rx="3" fill="#475569" stroke="#1e293b" stroke-width="1.5"/>
+  <!-- 革の鍛冶エプロン -->
+  <path d="M25 28 L23 52 L41 52 L39 28 Z" fill="#92400e" stroke="#78350f" stroke-width="1.2"/>
+  <line x1="25" y1="28" x2="29" y2="22" stroke="#78350f" stroke-width="2"/>
+  <line x1="39" y1="28" x2="35" y2="22" stroke="#78350f" stroke-width="2"/>
+  <rect x="23" y="40" width="18" height="4" fill="#451a03"/>
+  <rect x="30" y="39" width="4" height="6" fill="#fbbf24"/>
+  <!-- がっしりした鉄靴 -->
+  <rect x="21" y="52" width="9" height="6" rx="2" fill="#334155" stroke="#1e293b" stroke-width="1"/>
+  <rect x="34" y="52" width="9" height="6" rx="2" fill="#334155" stroke="#1e293b" stroke-width="1"/>
+  <!-- 頭部・豪快な赤髭 -->
+  <circle cx="32" cy="18" r="8" fill="#fed7aa"/>
+  <path d="M22 17 Q32 36 32 39 Q32 36 42 17 Z" fill="#b91c1c" stroke="#991b1b" stroke-width="1.5"/>
+  <!-- 頑固そうな目元・太眉 -->
+  <path d="M25 14 L30 16" stroke="#991b1b" stroke-width="2" stroke-linecap="round"/>
+  <path d="M39 14 L34 16" stroke="#991b1b" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="28" cy="17" r="1.3" fill="#1e293b"/>
+  <circle cx="36" cy="17" r="1.3" fill="#1e293b"/>
+  <!-- バンダナ（頭頂） -->
+  <path d="M24 13 Q32 8 40 13 L39 16 Q32 12 25 16 Z" fill="#ea580c"/>
+  <!-- 巨大な鍛冶金槌（右手に担ぐ） -->
+  <line x1="44" y1="44" x2="56" y2="16" stroke="#78350f" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- 金槌の鉄頭 -->
+  <rect x="49" y="14" width="14" height="8" rx="2" fill="#64748b" stroke="#334155" stroke-width="1.5" transform="rotate(-25 56 18)"/>
+  <circle cx="43" cy="38" r="3.5" fill="#fed7aa"/>
+  <circle cx="21" cy="38" r="3.5" fill="#fed7aa"/>
+</svg>`.trim();
 }

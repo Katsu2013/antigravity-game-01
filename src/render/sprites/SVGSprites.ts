@@ -161,6 +161,15 @@ export type SpriteId =
   | 'guard_dog_side'
   | 'guard_dog_diag_down'
   | 'guard_dog_diag_up'
+  // レアキャラ4種
+  | 'wandering_adventurer'
+  | 'wandering_adventurer_down'
+  | 'gambler_sage'
+  | 'gambler_sage_down'
+  | 'healing_fairy'
+  | 'healing_fairy_down'
+  | 'traveling_blacksmith'
+  | 'traveling_blacksmith_down'
   // アイテムグラフィックスプライト
   | 'item_gold'
   | 'item_potion'
@@ -1022,6 +1031,16 @@ export class SVGSprites {
       guard_dog_side: MonsterAndItemSprites.GUARD_DOG_DOWN_SVG,
       guard_dog_diag_down: MonsterAndItemSprites.GUARD_DOG_DOWN_SVG,
       guard_dog_diag_up: MonsterAndItemSprites.GUARD_DOG_DOWN_SVG,
+
+      // レアキャラクター4種
+      wandering_adventurer: MonsterAndItemSprites.WANDERING_ADVENTURER_DOWN_SVG,
+      wandering_adventurer_down: MonsterAndItemSprites.WANDERING_ADVENTURER_DOWN_SVG,
+      gambler_sage: MonsterAndItemSprites.GAMBLER_SAGE_DOWN_SVG,
+      gambler_sage_down: MonsterAndItemSprites.GAMBLER_SAGE_DOWN_SVG,
+      healing_fairy: MonsterAndItemSprites.HEALING_FAIRY_DOWN_SVG,
+      healing_fairy_down: MonsterAndItemSprites.HEALING_FAIRY_DOWN_SVG,
+      traveling_blacksmith: MonsterAndItemSprites.TRAVELING_BLACKSMITH_DOWN_SVG,
+      traveling_blacksmith_down: MonsterAndItemSprites.TRAVELING_BLACKSMITH_DOWN_SVG,
 
       // アイテム
       item_gold: MonsterAndItemSprites.ITEM_GOLD_PILE_SVG,

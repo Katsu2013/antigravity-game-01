@@ -63,10 +63,11 @@ export class ItemSystem {
     }
 
     // 2. 通常アイテムのインベントリ空き容量チェック
-    if (player.inventory.length >= this.MAX_INVENTORY_SIZE) {
+    const maxCapacity = player.inventoryCapacity ?? this.MAX_INVENTORY_SIZE;
+    if (player.inventory.length >= maxCapacity) {
       return {
         success: false,
-        message: '持ち物がいっぱいで拾えない！(最大12個)',
+        message: `持ち物がいっぱいで拾えない！(最大${maxCapacity}個)`,
       };
     }
 

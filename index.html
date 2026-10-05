@@ -159,6 +159,26 @@
       </div>
     </div>
 
+    <!-- Rare NPC Interaction Modal Dialog -->
+    <div id="npc-modal" class="modal-overlay hidden">
+      <div class="modal-dialog npc-dialog">
+        <div class="modal-header">
+          <h3 id="npc-modal-title" class="modal-title">🤝 NPCとの対話</h3>
+          <button id="btn-close-npc" class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body npc-modal-body">
+          <div class="npc-dialog-bubble">
+            <p id="npc-modal-message" class="npc-speech-text"></p>
+          </div>
+          <!-- イベント別アクション領域 -->
+          <div id="npc-action-container" class="npc-action-container"></div>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-npc-cancel" class="hud-btn">会話を終える</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Scores History Modal -->
     <div id="scores-modal" class="modal-overlay hidden">
       <div class="modal-dialog scores-dialog">

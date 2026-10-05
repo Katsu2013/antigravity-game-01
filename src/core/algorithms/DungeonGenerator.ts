@@ -297,6 +297,43 @@ export class DungeonGenerator {
       }
     }
 
+    // 【レアキャラクター（特殊NPC / 癒やしモンスター）の確率配置】
+    // 2階以降、約28%の確率でフロア内に1体だけ出現
+    if (floor >= 2 && Math.random() < 0.28) {
+      const candidateRooms = rooms.filter((r) => !r.isShop && (r.x !== startPos.x || r.y !== startPos.y));
+      if (candidateRooms.length > 0) {
+        const targetRoom = candidateRooms[Math.floor(Math.random() * candidateRooms.length)];
+        const rx = targetRoom.x + Math.max(0, Math.floor(Math.random() * targetRoom.w));
+        const ry = targetRoom.y + Math.max(0, Math.floor(Math.random() * targetRoom.h));
+
+        const isStairs = rx === stairsDown.x && ry === stairsDown.y;
+        const isStart = rx === startPos.x && ry === startPos.y;
+        const isOccupied =
+          monsters.some((m) => m.x === rx && m.y === ry) ||
+          obstacles.some((o) => o.x === rx && o.y === ry) ||
+          items.some((it) => it.x === rx && it.y === ry);
+
+        if (!isStairs && !isStart && !isOccupied && ry < height && rx < width && isWalkableTile(tiles[ry][rx])) {
+          const rareTypes = [
+            'WANDERING_ADVENTURER',
+            'GAMBLER_SAGE',
+            'HEALING_FAIRY',
+            'TRAVELING_BLACKSMITH',
+          ] as const;
+          const chosenType = rareTypes[Math.floor(Math.random() * rareTypes.length)];
+          if (chosenType === 'WANDERING_ADVENTURER') {
+            monsters.push(EntityFactory.createWanderingAdventurer(rx, ry, floor));
+          } else if (chosenType === 'GAMBLER_SAGE') {
+            monsters.push(EntityFactory.createGamblerSage(rx, ry));
+          } else if (chosenType === 'HEALING_FAIRY') {
+            monsters.push(EntityFactory.createHealingFairy(rx, ry));
+          } else if (chosenType === 'TRAVELING_BLACKSMITH') {
+            monsters.push(EntityFactory.createTravelingBlacksmith(rx, ry));
+          }
+        }
+      }
+    }
+
     return {
       width,
       height,

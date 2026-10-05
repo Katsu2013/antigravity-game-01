@@ -11,6 +11,7 @@ import { EntityFactory } from './entities/EntityFactory';
 import { CombatSystem } from './systems/CombatSystem';
 import { ItemSystem } from './systems/ItemSystem';
 import { ShopSystem } from './systems/ShopSystem';
+import { NpcSystem } from './systems/NpcSystem';
 import { StorageManager } from '../storage/StorageManager';
 import { SoundSystem } from '../audio/SoundSystem';
 import {
@@ -57,6 +58,9 @@ export class GameEngine {
 
   /** 被ダメージアニメーション発生時コールバック */
   public onDamage?: (targetId: string) => void;
+
+  /** レアNPCとの対話イベント発生時コールバック */
+  public onNpcInteract?: (npc: Monster) => void;
 
   /** 障害物を押して移動した際のコールバック */
   public onObstaclePush?: (obstacle: Obstacle, dx: number, dy: number) => void;
@@ -160,6 +164,9 @@ export class GameEngine {
       if (typeof this.player.gold !== 'number') {
         this.player.gold = 0;
       }
+      if (typeof this.player.inventoryCapacity !== 'number') {
+        this.player.inventoryCapacity = 12;
+      }
       this.map = saved.map;
       if (!this.map.obstacles) {
         this.map.obstacles = [];
@@ -261,6 +268,7 @@ export class GameEngine {
       inventory: [
         EntityFactory.createRandomItem(0, 0),
       ],
+      inventoryCapacity: 12,
       equippedWeapon: null,
       equippedShield: null,
       equippedTalisman: null,
@@ -380,6 +388,13 @@ export class GameEngine {
           if (targetMonster.isFriendly && targetMonster.isShopkeeper) {
             const checkoutRes = ShopSystem.checkout(this.player, this.map);
             this.addLog(checkoutRes.message, checkoutRes.success ? 'turn-header' : 'warning');
+            this.notify();
+            return false;
+          }
+
+          // レア中立NPCなら、攻撃ではなく対話イベントを開く
+          if (targetMonster.isRareNpc) {
+            this.onNpcInteract?.(targetMonster);
             this.notify();
             return false;
           }
@@ -614,6 +629,13 @@ export class GameEngine {
             return false;
           }
 
+          // レア中立NPCなら、攻撃ではなく対話イベントを開く
+          if (facingMonster.isRareNpc) {
+            this.onNpcInteract?.(facingMonster);
+            this.notify();
+            return false;
+          }
+
           this.executePlayerAttack(facingMonster, fdx, fdy);
           turnPassed = true;
           break;
@@ -768,6 +790,44 @@ export class GameEngine {
         this.addLog('フロアを再生成した。', 'info');
         this.generateFloor(this.player.floor);
         return true;
+      }
+
+      case 'NPC_INTERACT': {
+        const npc = this.map.monsters.find((m) => m.id === action.monsterId);
+        if (!npc) {
+          this.notify();
+          return false;
+        }
+
+        if (action.action === 'TALK') {
+          this.onNpcInteract?.(npc);
+          this.notify();
+          return false;
+        } else if (action.action === 'TRADE_ACCEPT' && action.tradePlayerItemId) {
+          const res = NpcSystem.executeTrade(this.player, npc, action.tradePlayerItemId);
+          this.addLog(res.message, res.success ? 'turn-header' : 'warning');
+          this.notify();
+          return false;
+        } else if (action.action === 'RPS_PLAY' && action.rpsChoice) {
+          const res = NpcSystem.playRPS(this.player, action.rpsChoice);
+          this.addLog(
+            res.message,
+            res.result === 'WIN' ? 'turn-header' : res.result === 'DRAW' ? 'normal' : 'damage'
+          );
+          this.notify();
+          return false;
+        } else if (action.action === 'FORGE_WEAPON') {
+          const res = NpcSystem.forgeEquipment(this.player, npc, 'WEAPON');
+          this.addLog(res.message, res.success ? 'turn-header' : 'warning');
+          this.notify();
+          return false;
+        } else if (action.action === 'FORGE_SHIELD') {
+          const res = NpcSystem.forgeEquipment(this.player, npc, 'SHIELD');
+          this.addLog(res.message, res.success ? 'turn-header' : 'warning');
+          this.notify();
+          return false;
+        }
+        break;
       }
     }
 
@@ -1597,6 +1657,44 @@ export class GameEngine {
 
       // 1.5. 平時の中立店主NPCはプレイヤーを攻撃せず待機
       if (monster.isFriendly && monster.isShopkeeper) {
+        continue;
+      }
+
+      // 1.6. レア中立NPC（レオン、ガンジ、バルカン）はプレイヤーを攻撃しない
+      if (monster.isRareNpc) {
+        continue;
+      }
+
+      // 1.7. 慈愛の妖精ピクシー（敵なのに回復してくれる）のおせっかいAI
+      if (monster.type === 'HEALING_FAIRY') {
+        const fairyMsg = NpcSystem.processHealingFairyTurn(
+          monster,
+          this.player,
+          this.map.monsters
+        );
+        if (fairyMsg) {
+          this.addLog(fairyMsg, 'info');
+        }
+        // ピクシーはプレイヤーにふわりと近寄るが攻撃はしない
+        const distToPlayer = Math.max(
+          Math.abs(monster.x - playerPos.x),
+          Math.abs(monster.y - playerPos.y)
+        );
+        if (distToPlayer > 1) {
+          const nextStep = Pathfinding.getNextStep(
+            this.map,
+            { x: monster.x, y: monster.y },
+            playerPos
+          );
+          if (
+            nextStep &&
+            !this.map.monsters.some((m) => m !== monster && m.x === nextStep.x && m.y === nextStep.y) &&
+            !(nextStep.x === playerPos.x && nextStep.y === playerPos.y)
+          ) {
+            monster.x = nextStep.x;
+            monster.y = nextStep.y;
+          }
+        }
         continue;
       }
 

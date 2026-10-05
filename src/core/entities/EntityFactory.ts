@@ -51,6 +51,18 @@ export class EntityFactory {
       case 'GUARD_DOG':
         return this.createGuardDog(x, y);
 
+      case 'WANDERING_ADVENTURER':
+        return this.createWanderingAdventurer(x, y, floor);
+
+      case 'GAMBLER_SAGE':
+        return this.createGamblerSage(x, y);
+
+      case 'HEALING_FAIRY':
+        return this.createHealingFairy(x, y);
+
+      case 'TRAVELING_BLACKSMITH':
+        return this.createTravelingBlacksmith(x, y);
+
       case 'SLIME':
         return {
           id,
@@ -1317,6 +1329,125 @@ export class EntityFactory {
       isGuardDog: true,
       symbol: 'd',
       color: '#dc2626',
+    };
+  }
+
+  /**
+   * さすらいの冒険者レオン（物々交換の旅人）を生成します。
+   */
+  public static createWanderingAdventurer(x: number, y: number, floor: number): Monster {
+    const id = `adventurer_${++this.idCounter}`;
+    const categories: { cat: import('../types').ItemCategory; label: string }[] = [
+      { cat: 'WEAPON', label: '剣・武器' },
+      { cat: 'SHIELD', label: '盾・防具' },
+      { cat: 'POTION', label: '薬草・ポーション' },
+      { cat: 'SCROLL', label: '巻物' },
+      { cat: 'FOOD', label: '食料・おにぎり' },
+    ];
+    const picked = categories[Math.floor(Math.random() * categories.length)];
+
+    // 提供するレアアイテム（階層に応じて強化値付与）
+    const offered = this.createRandomItem(x, y);
+    if (offered.category === 'WEAPON' || offered.category === 'SHIELD') {
+      const bonus = floor >= 20 ? 3 : floor >= 10 ? 2 : 1;
+      offered.upgradeLevel = (offered.upgradeLevel ?? 0) + bonus;
+    }
+
+    return {
+      id,
+      name: '冒険者レオン',
+      type: 'WANDERING_ADVENTURER',
+      x,
+      y,
+      hp: 150,
+      maxHp: 150,
+      atk: 28,
+      def: 15,
+      expValue: 200,
+      isFriendly: true,
+      isRareNpc: true,
+      npcData: {
+        tradeWantCategory: picked.cat,
+        tradeWantCategoryName: picked.label,
+        tradeOfferedItem: offered,
+        tradeCompleted: false,
+      },
+      symbol: 'A',
+      color: '#3b82f6',
+    };
+  }
+
+  /**
+   * 賭博仙人ガンジ（じゃんけん大勝負）を生成します。
+   */
+  public static createGamblerSage(x: number, y: number): Monster {
+    const id = `gambler_${++this.idCounter}`;
+    return {
+      id,
+      name: '賭博仙人ガンジ',
+      type: 'GAMBLER_SAGE',
+      x,
+      y,
+      hp: 200,
+      maxHp: 200,
+      atk: 35,
+      def: 20,
+      expValue: 300,
+      isFriendly: true,
+      isRareNpc: true,
+      npcData: {
+        rpsStreak: 0,
+      },
+      symbol: 'G',
+      color: '#a855f7',
+    };
+  }
+
+  /**
+   * 慈愛の妖精ピクシー（敵なのに回復してくれるおせっかいモンスター）を生成します。
+   */
+  public static createHealingFairy(x: number, y: number): Monster {
+    const id = `fairy_${++this.idCounter}`;
+    return {
+      id,
+      name: '妖精ピクシー',
+      type: 'HEALING_FAIRY',
+      x,
+      y,
+      hp: 30,
+      maxHp: 30,
+      atk: 1,
+      def: 5,
+      expValue: 50,
+      isFriendly: true, // プレイヤーを攻撃しない
+      symbol: 'f',
+      color: '#10b981',
+    };
+  }
+
+  /**
+   * さすらいの鍛冶職人バルカン（武具の無料鍛錬）を生成します。
+   */
+  public static createTravelingBlacksmith(x: number, y: number): Monster {
+    const id = `blacksmith_${++this.idCounter}`;
+    return {
+      id,
+      name: '鍛冶屋バルカン',
+      type: 'TRAVELING_BLACKSMITH',
+      x,
+      y,
+      hp: 250,
+      maxHp: 250,
+      atk: 40,
+      def: 30,
+      expValue: 400,
+      isFriendly: true,
+      isRareNpc: true,
+      npcData: {
+        hasForged: false,
+      },
+      symbol: 'B',
+      color: '#f97316',
     };
   }
 

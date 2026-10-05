@@ -156,7 +156,11 @@ export type MonsterType =
   | 'IMP'         // インプ（狡猾な小悪魔: 高速・トリッキー）
   | 'MUMMY'       // ミイラ男（古代の呪術を纏う高防御怪人）
   | 'MERCHANT'    // 店主・商人（平時は中立NPC、泥棒発覚で最強の追撃者に変貌）
-  | 'GUARD_DOG';  // 番犬・警備隊（泥棒時に召喚される倍速・高索敵の追跡犬）
+  | 'GUARD_DOG'   // 番犬・警備隊（泥棒時に召喚される倍速・高索敵の追跡犬）
+  | 'WANDERING_ADVENTURER'  // さすらいの冒険者レオン（物々交換の旅人）
+  | 'GAMBLER_SAGE'          // 賭博仙人ガンジ（じゃんけん大勝負で所持枠拡張/ペナルティ）
+  | 'HEALING_FAIRY'         // 慈愛の妖精ピクシー（敵なのにプレイヤーを回復してくれる）
+  | 'TRAVELING_BLACKSMITH'; // さすらいの鍛冶職人バルカン（装備品の無料鍛錬）
 
 /**
  * フロア上に配置される障害物・ギミックオブジェクトの分類型。
@@ -254,6 +258,17 @@ export interface Monster {
   isGuardDog?: boolean;
   /** 激怒モードの店主フラグ（泥棒追撃中） */
   isAngryMerchant?: boolean;
+  /** レア中立NPCキャラクターフラグ（会話・イベント可能） */
+  isRareNpc?: boolean;
+  /** NPC専用イベントデータ（物々交換オファー、鍛錬フラグ等） */
+  npcData?: {
+    tradeWantCategory?: ItemCategory;
+    tradeWantCategoryName?: string;
+    tradeOfferedItem?: Item;
+    tradeCompleted?: boolean;
+    hasForged?: boolean;
+    rpsStreak?: number;
+  };
   /** 画面描画用シンボル文字（例: 's', 'g', 'k'） */
   symbol: string;
   /** 画面描画用カラーコード */
@@ -354,6 +369,16 @@ export type ActionType =
    */
   | {
       type: 'REGEN';
+    }
+  /**
+   * レアNPCとの会話・イベントアクション。
+   */
+  | {
+      type: 'NPC_INTERACT';
+      monsterId: string;
+      action: 'TALK' | 'TRADE_ACCEPT' | 'RPS_PLAY' | 'FORGE_WEAPON' | 'FORGE_SHIELD';
+      rpsChoice?: 'ROCK' | 'SCISSORS' | 'PAPER';
+      tradePlayerItemId?: string;
     };
 
 /**
@@ -394,8 +419,10 @@ export interface PlayerState {
   floor: number;
   /** 冒険開始からの総経過ターン数 */
   turn: number;
-  /** 所持品アイテムのリスト（最大12枠） */
+  /** 所持品アイテムのリスト */
   inventory: Item[];
+  /** 所持できる最大アイテム数枠（初期値12、仙人とのじゃんけんで拡張可能） */
+  inventoryCapacity?: number;
   /** 現在装備している右手武器（未装備時は null） */
   equippedWeapon: Item | null;
   /** 現在装備している左手盾（未装備時は null） */

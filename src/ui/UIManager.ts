@@ -5,6 +5,8 @@
  */
 
 import { GameEngine } from '../core/GameEngine';
+import { Monster } from '../core/types';
+import { NpcSystem } from '../core/systems/NpcSystem';
 import { SVGSprites } from '../render/sprites/SVGSprites';
 import { RunStats, StorageManager } from '../storage/StorageManager';
 import { SoundSystem } from '../audio/SoundSystem';
@@ -94,6 +96,18 @@ export class UIManager {
   /** 遊び方モーダル要素 */
   private helpModalEl: HTMLElement;
 
+  /** レアNPC対話モーダル要素 */
+  private npcModalEl: HTMLElement;
+
+  /** NPC名タイトル要素 */
+  private npcTitleEl: HTMLElement;
+
+  /** NPCセリフ表示要素 */
+  private npcMsgEl: HTMLElement;
+
+  /** NPCアクションコンテナ要素 */
+  private npcActionEl: HTMLElement;
+
   /** 直前に描画した階層番号（フロア変化の検知用） */
   private lastRenderedFloor = 1;
 
@@ -148,6 +162,15 @@ export class UIManager {
     this.scoresModalEl = document.getElementById('scores-modal')!;
     this.scoresListEl = document.getElementById('scores-list')!;
     this.helpModalEl = document.getElementById('help-modal')!;
+
+    this.npcModalEl = document.getElementById('npc-modal')!;
+    this.npcTitleEl = document.getElementById('npc-modal-title')!;
+    this.npcMsgEl = document.getElementById('npc-modal-message')!;
+    this.npcActionEl = document.getElementById('npc-action-container')!;
+
+    this.engine.onNpcInteract = (npc) => {
+      this.showNpcModal(npc);
+    };
 
     this.bindModalEvents();
     this.update();
@@ -286,6 +309,21 @@ export class UIManager {
         this.hideHelpModal();
       }
     });
+
+    // レアNPCモーダル閉じる
+    document.getElementById('btn-close-npc')?.addEventListener('click', () => {
+      this.closeNpcModal();
+    });
+    document.getElementById('btn-npc-cancel')?.addEventListener('click', () => {
+      this.closeNpcModal();
+    });
+    this.npcModalEl.addEventListener('click', (e) => {
+      const openedAt = this.modalOpenTimestamps.get('npc-modal') || 0;
+      if (Date.now() - openedAt < 350) return;
+      if (e.target === this.npcModalEl) {
+        this.closeNpcModal();
+      }
+    });
   }
 
   /**
@@ -296,14 +334,15 @@ export class UIManager {
   }
 
   /**
-   * いずれかのモーダル（インベントリ、ゲームオーバー、スコア、ヘルプ）が開いているかを判定します。
+   * いずれかのモーダル（インベントリ、ゲームオーバー、スコア、ヘルプ、NPC対話）が開いているかを判定します。
    */
   public isAnyModalOpen(): boolean {
     return (
       this.isInventoryOpen() ||
       !this.gameOverModalEl.classList.contains('hidden') ||
       !this.scoresModalEl.classList.contains('hidden') ||
-      !this.helpModalEl.classList.contains('hidden')
+      !this.helpModalEl.classList.contains('hidden') ||
+      !this.npcModalEl.classList.contains('hidden')
     );
   }
 
@@ -341,6 +380,127 @@ export class UIManager {
   public closeInventoryModal(): void {
     this.inventoryModalEl.classList.add('hidden');
     this.updateGamepadLabels(false);
+  }
+
+  /**
+   * レアNPCとの対話モーダルを表示します。
+   */
+  public showNpcModal(npc: Monster): void {
+    const dialogData = NpcSystem.startInteraction(this.engine.player, npc);
+    if (!dialogData) return;
+
+    this.modalOpenTimestamps.set('npc-modal', Date.now());
+    this.npcTitleEl.textContent = dialogData.title;
+    this.npcMsgEl.textContent = dialogData.message;
+    this.npcActionEl.innerHTML = '';
+
+    // イベント別アクション領域の構築
+    if (dialogData.eventType === 'ADVENTURER_TRADE') {
+      if (!dialogData.alreadyDone && dialogData.playerMatchingItems && dialogData.playerMatchingItems.length > 0) {
+        const desc = document.createElement('div');
+        desc.className = 'text-xs text-sky-300 font-bold mb-1';
+        desc.textContent = `渡す【${dialogData.tradeWantCategoryName}】を選択:`;
+        this.npcActionEl.appendChild(desc);
+
+        const list = document.createElement('div');
+        list.className = 'npc-item-trade-list';
+
+        for (const item of dialogData.playerMatchingItems) {
+          const btn = document.createElement('button');
+          btn.className = 'npc-trade-item-btn';
+          btn.innerHTML = `<span>${item.name}${item.upgradeLevel ? `+${item.upgradeLevel}` : ''}</span><span class="text-xs text-emerald-400 font-bold">渡して交換 ➔</span>`;
+          btn.addEventListener('click', () => {
+            this.engine.executeAction({
+              type: 'NPC_INTERACT',
+              monsterId: npc.id,
+              action: 'TRADE_ACCEPT',
+              tradePlayerItemId: item.id,
+            });
+            this.closeNpcModal();
+          });
+          list.appendChild(btn);
+        }
+        this.npcActionEl.appendChild(list);
+      } else if (!dialogData.alreadyDone) {
+        const emptyNotice = document.createElement('div');
+        emptyNotice.className = 'text-xs text-rose-300 p-2 bg-slate-900 rounded border border-rose-800';
+        emptyNotice.textContent = `※ 手持ちに渡せる【${dialogData.tradeWantCategoryName}】がありません。`;
+        this.npcActionEl.appendChild(emptyNotice);
+      }
+    } else if (dialogData.eventType === 'GAMBLER_RPS') {
+      const btnGroup = document.createElement('div');
+      btnGroup.className = 'npc-action-btn-group';
+
+      const hands: { choice: 'ROCK' | 'SCISSORS' | 'PAPER'; icon: string; name: string }[] = [
+        { choice: 'ROCK', icon: '✊', name: 'グー' },
+        { choice: 'SCISSORS', icon: '✌', name: 'チョキ' },
+        { choice: 'PAPER', icon: '🖐', name: 'パー' },
+      ];
+
+      for (const h of hands) {
+        const btn = document.createElement('button');
+        btn.className = 'npc-choice-btn rps-btn';
+        btn.innerHTML = `<span>${h.icon}</span><span>${h.name}</span>`;
+        btn.addEventListener('click', () => {
+          this.engine.executeAction({
+            type: 'NPC_INTERACT',
+            monsterId: npc.id,
+            action: 'RPS_PLAY',
+            rpsChoice: h.choice,
+          });
+          // 最新のメッセージに更新
+          this.npcMsgEl.textContent = this.engine.logs[0]?.text || 'じゃんけん勝負完了！';
+        });
+        btnGroup.appendChild(btn);
+      }
+      this.npcActionEl.appendChild(btnGroup);
+    } else if (dialogData.eventType === 'BLACKSMITH_FORGE') {
+      if (!dialogData.alreadyDone && (dialogData.equippedWeapon || dialogData.equippedShield)) {
+        const btnGroup = document.createElement('div');
+        btnGroup.className = 'npc-action-btn-group';
+
+        if (dialogData.equippedWeapon) {
+          const wBtn = document.createElement('button');
+          wBtn.className = 'npc-choice-btn';
+          wBtn.innerHTML = `<span>🗡 武器を鍛える</span><span class="text-xs text-amber-300 font-normal">${dialogData.equippedWeapon.name}${dialogData.equippedWeapon.upgradeLevel ? `+${dialogData.equippedWeapon.upgradeLevel}` : ''}</span>`;
+          wBtn.addEventListener('click', () => {
+            this.engine.executeAction({
+              type: 'NPC_INTERACT',
+              monsterId: npc.id,
+              action: 'FORGE_WEAPON',
+            });
+            this.closeNpcModal();
+          });
+          btnGroup.appendChild(wBtn);
+        }
+
+        if (dialogData.equippedShield) {
+          const sBtn = document.createElement('button');
+          sBtn.className = 'npc-choice-btn';
+          sBtn.innerHTML = `<span>🛡 盾を鍛える</span><span class="text-xs text-sky-300 font-normal">${dialogData.equippedShield.name}${dialogData.equippedShield.upgradeLevel ? `+${dialogData.equippedShield.upgradeLevel}` : ''}</span>`;
+          sBtn.addEventListener('click', () => {
+            this.engine.executeAction({
+              type: 'NPC_INTERACT',
+              monsterId: npc.id,
+              action: 'FORGE_SHIELD',
+            });
+            this.closeNpcModal();
+          });
+          btnGroup.appendChild(sBtn);
+        }
+
+        this.npcActionEl.appendChild(btnGroup);
+      }
+    }
+
+    this.npcModalEl.classList.remove('hidden');
+  }
+
+  /**
+   * レアNPCとの対話モーダルを閉じます。
+   */
+  public closeNpcModal(): void {
+    this.npcModalEl.classList.add('hidden');
   }
 
   /**
@@ -590,7 +750,8 @@ export class UIManager {
     }
 
     // 3. インベントリのレンダリング
-    this.inventoryCapacityEl.textContent = `${player.inventory.length}/12`;
+    const maxCap = player.inventoryCapacity ?? 12;
+    this.inventoryCapacityEl.textContent = `${player.inventory.length}/${maxCap}`;
     this.renderInventoryList(this.desktopInventoryListEl);
     this.renderInventoryList(this.modalInventoryListEl);
 

@@ -2461,6 +2461,14 @@ export class CanvasRenderer {
       statusBadges.push({ icon: '💢', bg: '#991b1b', color: '#fef2f2' }); // 怒れる店主
     } else if (monster.isGuardDog) {
       statusBadges.push({ icon: '🚨', bg: '#b91c1c', color: '#fee2e2' }); // 番犬警備
+    } else if (monster.type === 'WANDERING_ADVENTURER') {
+      statusBadges.push({ icon: '🎒', bg: '#1d4ed8', color: '#93c5fd' }); // 冒険者レオン（物々交換）
+    } else if (monster.type === 'GAMBLER_SAGE') {
+      statusBadges.push({ icon: '🎲', bg: '#6b21a8', color: '#f0abfc' }); // 賭博仙人ガンジ（じゃんけん）
+    } else if (monster.type === 'HEALING_FAIRY') {
+      statusBadges.push({ icon: '💖', bg: '#047857', color: '#6ee7b7' }); // 慈愛の妖精ピクシー（回復）
+    } else if (monster.type === 'TRAVELING_BLACKSMITH') {
+      statusBadges.push({ icon: '🔨', bg: '#9a3412', color: '#fed7aa' }); // 鍛冶屋バルカン（武具強化）
     }
 
     if (statusBadges.length > 0) {
