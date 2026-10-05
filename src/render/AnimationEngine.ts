@@ -47,6 +47,10 @@ export interface EntityAnimState {
   targetY: number;
   /** 現在向いている主方位（'down': 正面, 'up': 背面, 'left': 左, 'right': 右） */
   direction: CardinalDirection;
+  /** エンティティID */
+  id?: string;
+  /** 滑走（スライド）完了時に呼び出されるコールバック */
+  onSlideComplete?: () => void;
   /** 現在向いている水平方向（1: 右向き, -1: 左向き） */
   facingDir: number;
   /** 現在マス間を移動中（歩行中）かどうかの真偽値 */
@@ -193,6 +197,7 @@ export class AnimationEngine {
     let state = this.states.get(id);
     if (!state) {
       state = {
+        id,
         renderX: initialX,
         renderY: initialY,
         targetX: initialX,
@@ -416,6 +421,32 @@ export class AnimationEngine {
   }
 
   /**
+   * 滑走中の足元から継続的に発生するフロスト軌跡パーティクル（冷気・微細な氷結晶）。
+   *
+   * @param x - 発生グリッドX
+   * @param y - 発生グリッドY
+   */
+  public triggerFrostTrailParticles(x: number, y: number): void {
+    const frostColors = ['#ffffff', '#f0f9ff', '#e0f2fe', '#bae6fd', '#7dd3fc'];
+    for (let i = 0; i < 2; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 0.2 + Math.random() * 0.7;
+      this.particles.push({
+        x: x + 0.5 + (Math.random() - 0.5) * 0.35,
+        y: y + 0.75 + (Math.random() - 0.5) * 0.15,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 0.25,
+        color: frostColors[Math.floor(Math.random() * frostColors.length)],
+        size: 2 + Math.random() * 2.8,
+        life: 0,
+        maxLife: 0.35 + Math.random() * 0.2,
+        gravity: 0.3,
+        alpha: 0.85,
+      });
+    }
+  }
+
+  /**
    * 泥濘から足を引き抜いた瞬間の大きな泥塊跳ね上がりパーティクルを発生させます。
    */
   public triggerMudEscapeParticles(
@@ -511,7 +542,7 @@ export class AnimationEngine {
     // 氷スリップ傾きの更新
     if (this.iceSlideTime > 0) {
       this.iceSlideTime -= dt;
-      this.playerSlipTilt = Math.sin(this.globalTime * 16) * 0.22; // 約12度左右に傾く
+      this.playerSlipTilt = Math.sin(this.globalTime * 8) * 0.18; // バランスを取りながらゆったり左右に傾く
     } else {
       this.playerSlipTilt = 0;
     }
@@ -543,9 +574,36 @@ export class AnimationEngine {
           state.isWalking = false;
           state.isSliding = false;
         }
+      } else if (state.isSliding) {
+        // 氷の滑走演出:
+        // 急激なLerpではなく、等速でスーッと滑らかに滑走！
+        // 「３倍以上ゆっくりが良い」に基づき、秒速1.5マス（1マス進むのに約0.67秒。通常歩行の4倍以上ゆっくり！）
+        // 氷の塊（ICE_BLOCK）は秒速2.0マス
+        const slideSpeed =
+          (state.id === 'player' ? 1.5 : 2.0) * (state.moveSpeedMultiplier || 1.0);
+        const maxStep = slideSpeed * dt;
+
+        if (dist > 0.01) {
+          state.isWalking = false; // 滑走中は足踏み歩行モーションは出さず、スーッと滑走姿勢
+          const ratio = Math.min(1.0, maxStep / dist);
+          state.renderX += dx * ratio;
+          state.renderY += dy * ratio;
+
+          // 滑走中の冷気・霜の軌跡パーティクルを継続発生
+          this.triggerFrostTrailParticles(state.renderX, state.renderY);
+        } else {
+          state.renderX = state.targetX;
+          state.renderY = state.targetY;
+          state.isWalking = false;
+          state.isSliding = false;
+
+          if (state.onSlideComplete) {
+            state.onSlideComplete();
+            state.onSlideComplete = undefined;
+          }
+        }
       } else {
-        const moveLerpSpeed =
-          16.0 * (state.moveSpeedMultiplier || 1.0) * (state.isSliding ? 1.5 : 1.0);
+        const moveLerpSpeed = 16.0 * (state.moveSpeedMultiplier || 1.0);
 
         if (dist > 0.01) {
           state.isWalking = true;
@@ -598,8 +656,12 @@ export class AnimationEngine {
    * @param validIds - 現在生存している全エンティティIDのセット
    */
   public pruneInactive(validIds: Set<string>): void {
-    for (const id of this.states.keys()) {
+    for (const [id, state] of this.states.entries()) {
       if (!validIds.has(id)) {
+        // スライド移動中または押し出し移動中は完了するまで破棄を保留
+        if (state.isSliding || state.isPushable) {
+          continue;
+        }
         this.states.delete(id);
       }
     }

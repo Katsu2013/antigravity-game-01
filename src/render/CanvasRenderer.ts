@@ -127,16 +127,28 @@ export class CanvasRenderer {
       this.anim.triggerSwampEscapeMotion();
     };
 
-    this.engine.onIceSlide = (fromX, fromY, toX, toY, hitWall) => {
+    this.engine.onIceSlide = (fromX, fromY, toX, toY, hitWall, durationSec) => {
       const dx = Math.sign(toX - fromX);
       const dy = Math.sign(toY - fromY);
       const dist = Math.hypot(toX - fromX, toY - fromY);
-      this.anim.triggerFrostParticles(toX, toY, dx, dy);
-      this.anim.triggerIceSlideMotion(Math.max(0.8, dist * 0.45));
-      if (hitWall) {
-        this.anim.triggerScreenShake(0.3, 4.0);
-        this.anim.triggerBreakParticles(toX, toY, '#bae6fd', 12);
-      }
+      const slideDuration = durationSec || Math.max(1.0, (dist / 1.5) + 0.3);
+
+      // プレイヤーの等速滑走アニメーション状態を設定（滑走完了時に壁激突ならエフェクト発動）
+      const pState = this.anim.getState('player', fromX, fromY);
+      pState.renderX = fromX;
+      pState.renderY = fromY;
+      pState.targetX = toX;
+      pState.targetY = toY;
+      pState.isSliding = true;
+      pState.onSlideComplete = () => {
+        if (hitWall) {
+          this.anim.triggerScreenShake(0.35, 5.0);
+          this.anim.triggerBreakParticles(toX, toY, '#bae6fd', 14);
+        }
+      };
+
+      this.anim.triggerFrostParticles(fromX, fromY, dx, dy);
+      this.anim.triggerIceSlideMotion(slideDuration);
     };
   }
 
@@ -186,7 +198,10 @@ export class CanvasRenderer {
     this.anim.playerSinkOffsetY = isSwamp ? 4.5 : 0;
     const playerSpeedMult = isSwamp ? 0.35 : 1.0;
 
-    this.anim.syncPosition('player', player.x, player.y, false, playerSpeedMult);
+    const pState = this.anim.getState('player', player.x, player.y);
+    const isPlayerSliding = pState.isSliding;
+
+    this.anim.syncPosition('player', player.x, player.y, isPlayerSliding, playerSpeedMult);
     this.anim.setDirection('player', player.direction || 'down');
 
     const validIds = new Set<string>(['player']);
@@ -201,7 +216,7 @@ export class CanvasRenderer {
     if (this.engine.map.obstacles) {
       for (const obstacle of this.engine.map.obstacles) {
         validIds.add(obstacle.id);
-        const speedMult = obstacle.isSliding ? 2.5 : obstacle.isPushable ? 0.2 : 1.0;
+        const speedMult = obstacle.isSliding ? 1.0 : obstacle.isPushable ? 0.2 : 1.0;
         this.anim.syncPosition(
           obstacle.id,
           obstacle.x,

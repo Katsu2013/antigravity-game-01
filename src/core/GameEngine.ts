@@ -69,7 +69,14 @@ export class GameEngine {
   public onSwampEscape?: (fromX: number, fromY: number, toX: number, toY: number) => void;
 
   /** 氷の床で滑走した際のコールバック */
-  public onIceSlide?: (fromX: number, fromY: number, toX: number, toY: number, hitWall: boolean) => void;
+  public onIceSlide?: (
+    fromX: number,
+    fromY: number,
+    toX: number,
+    toY: number,
+    hitWall: boolean,
+    durationSec?: number
+  ) => void;
 
   /** 演出アニメーション中（岩押し・氷滑走・沼脱出など）に次の操作を遮断するミリ秒タイムスタンプ */
   public actionLockUntil = 0;
@@ -675,6 +682,8 @@ export class GameEngine {
       this.addLog(`${obstacle.name} を力いっぱい蹴り出した！`, 'normal');
       this.onAttack?.('player', dx, dy, obstacle.id);
 
+      const startX = obstacle.x;
+      const startY = obstacle.y;
       let curX = obstacle.x;
       let curY = obstacle.y;
       let hitMonster: Monster | undefined;
@@ -723,11 +732,15 @@ export class GameEngine {
         curY = nextY;
       }
 
+      // 氷塊の滑走距離に応じた演出ロック時間を設定（秒速2.0マスで算出）
+      const slideDist = Math.hypot(curX - startX, curY - startY);
+      const slideDurationMs = Math.max(900, Math.round((slideDist / 2.0) * 1000) + 250);
+      this.actionLockUntil = Date.now() + slideDurationMs;
+
       if (hitMonster) {
         // 衝突位置に座標を更新（破砕パーティクルが激突マスで発生するようにする）
         obstacle.x = hitMonster.x;
         obstacle.y = hitMonster.y;
-        this.actionLockUntil = Date.now() + 650; // 滑走・激突演出ロック
 
         // 直撃を受けたモンスターはスタン（気絶・怯み・手前に歩いてこない）
         hitMonster.isStunned = true;
@@ -1088,9 +1101,11 @@ export class GameEngine {
 
       if (slid) {
         const slideSteps = Math.hypot(curX - this.player.x, curY - this.player.y);
-        // 滑走にかかる時間（約0.9秒〜1.4秒）をロックして、ツーーーッと滑る演出を見せる
-        this.actionLockUntil = Date.now() + Math.max(900, slideSteps * 450);
-        this.onIceSlide?.(this.player.x, this.player.y, curX, curY, hitWall);
+        // 滑走にかかる時間: ユーザー要望「３倍以上ゆっくりが良い」に基づき秒速1.5マスで算出
+        // 例: 1マス -> 約950ms, 2マス -> 約1600ms, 3マス -> 約2300ms, 4マス -> 約2950ms
+        const slideDurationMs = Math.max(1000, Math.round((slideSteps / 1.5) * 1000) + 300);
+        this.actionLockUntil = Date.now() + slideDurationMs;
+        this.onIceSlide?.(this.player.x, this.player.y, curX, curY, hitWall, slideDurationMs / 1000);
         this.player.x = curX;
         this.player.y = curY;
         this.addLog('氷の床で足を取られ、ツーーーーッと滑走した！', 'normal');
