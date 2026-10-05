@@ -117,11 +117,18 @@ export class AnimationEngine {
   /** プレイヤーの氷上スリップ傾き角度（ラジアン） */
   public playerSlipTilt = 0;
 
+  /** プレイヤーの氷上スリップ焦りワタワタ変位Y（ピクセル） */
+  public playerSlipWobbleY = 0;
+
   /** 泥脱出ジャンプ経過時間（秒、未発生時は -1） */
   private escapeJumpTime = -1;
 
   /** 氷スリップ経過時間（秒、未発生時は -1） */
   private iceSlideTime = -1;
+
+  /** 氷スリップ転倒ダウン経過時間（秒、未発生時は -1） */
+  private playerSlipFallTime = -1;
+  private playerSlipFallDuration = 0.75;
 
   /**
    * 画面全体の地響きスクリーンシェイクをトリガーします。
@@ -140,10 +147,55 @@ export class AnimationEngine {
   }
 
   /**
-   * 氷上スリップ（傾き・バランス喪失）アニメーションを開始します。
+   * 氷上スリップ（傾き・バランス喪失・焦り揺れ）アニメーションを開始します。
    */
   public triggerIceSlideMotion(durationSec: number): void {
     this.iceSlideTime = durationSec;
+  }
+
+  /**
+   * 氷上で足を滑らせて転倒したダウンアニメーションを開始します。
+   */
+  public triggerPlayerSlipFall(durationSec = 0.75): void {
+    this.playerSlipFallTime = durationSec;
+    this.playerSlipFallDuration = durationSec;
+  }
+
+  /**
+   * プレイヤーが氷上で転倒中かどうかを取得します。
+   */
+  public isPlayerSlipFallen(): boolean {
+    return this.playerSlipFallTime > 0;
+  }
+
+  /**
+   * 氷上転倒による尻もちスクワッシュ（平たく潰れる）変形パラメータを取得します。
+   */
+  public getPlayerFallSquash(): { scaleX: number; scaleY: number; offsetY: number } {
+    if (this.playerSlipFallTime <= 0) {
+      return { scaleX: 1.0, scaleY: 1.0, offsetY: 0 };
+    }
+    const progress = 1.0 - this.playerSlipFallTime / this.playerSlipFallDuration; // 0.0 -> 1.0
+    if (progress < 0.45) {
+      // 激突・尻もちでペタンと潰れる
+      const t = progress / 0.45;
+      const sX = 1.0 + 0.35 * Math.sin(t * Math.PI * 0.5);
+      const sY = 1.0 - 0.55 * Math.sin(t * Math.PI * 0.5);
+      return { scaleX: sX, scaleY: sY, offsetY: 7 * Math.sin(t * Math.PI * 0.5) };
+    } else {
+      // よっこらしょと起き上がる
+      const t = (progress - 0.45) / 0.55;
+      const sX = 1.35 - 0.35 * t;
+      const sY = 0.45 + 0.55 * t;
+      return { scaleX: sX, scaleY: sY, offsetY: 7 * (1.0 - t) };
+    }
+  }
+
+  /**
+   * 現在氷上を滑走中（焦り演出中）かどうかを取得します。
+   */
+  public isIceSliding(): boolean {
+    return this.iceSlideTime > 0;
   }
 
   /**
@@ -447,6 +499,58 @@ export class AnimationEngine {
   }
 
   /**
+   * 氷上滑走で焦っている際の飛び散る冷や汗パーティクル（青白い汗滴）。
+   *
+   * @param x - 発生グリッドX
+   * @param y - 発生グリッドY
+   */
+  public triggerSweatParticles(x: number, y: number): void {
+    const sweatColors = ['#38bdf8', '#7dd3fc', '#bae6fd', '#e0f2fe'];
+    for (let i = 0; i < 2; i++) {
+      const side = Math.random() < 0.5 ? -1 : 1;
+      const speed = 0.5 + Math.random() * 1.1;
+      this.particles.push({
+        x: x + 0.5 + side * 0.28,
+        y: y + 0.25 + (Math.random() - 0.5) * 0.1, // 頭上付近
+        vx: side * speed,
+        vy: -0.9 - Math.random() * 0.7, // 上にピュッと吹き出す
+        color: sweatColors[Math.floor(Math.random() * sweatColors.length)],
+        size: 2.5 + Math.random() * 2.5,
+        life: 0,
+        maxLife: 0.35 + Math.random() * 0.2,
+        gravity: 4.8, // 汗の放物線落下
+        alpha: 0.95,
+      });
+    }
+  }
+
+  /**
+   * 氷上で転倒した際のピヨピヨ星・衝撃火花パーティクル（黄色・ゴールドの星が頭上を旋回・拡散）。
+   *
+   * @param x - 発生グリッドX
+   * @param y - 発生グリッドY
+   */
+  public triggerDizzyStars(x: number, y: number): void {
+    const starColors = ['#facc15', '#fde047', '#fef08a', '#fbbf24', '#ffffff'];
+    for (let i = 0; i < 16; i++) {
+      const angle = (i / 16) * Math.PI * 2 + Math.random() * 0.2;
+      const speed = 0.8 + Math.random() * 1.6;
+      this.particles.push({
+        x: x + 0.5 + (Math.random() - 0.5) * 0.2,
+        y: y + 0.4 + (Math.random() - 0.5) * 0.15,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed * 0.6 - 0.7,
+        color: starColors[Math.floor(Math.random() * starColors.length)],
+        size: 3.5 + Math.random() * 3.5,
+        life: 0,
+        maxLife: 0.55 + Math.random() * 0.25,
+        gravity: 1.2,
+        alpha: 1.0,
+      });
+    }
+  }
+
+  /**
    * 泥濘から足を引き抜いた瞬間の大きな泥塊跳ね上がりパーティクルを発生させます。
    */
   public triggerMudEscapeParticles(
@@ -539,12 +643,21 @@ export class AnimationEngine {
       this.playerEscapeJumpY = 0;
     }
 
-    // 氷スリップ傾きの更新
+    // 氷スリップ傾き＆焦りワタワタ揺れの更新
     if (this.iceSlideTime > 0) {
       this.iceSlideTime -= dt;
-      this.playerSlipTilt = Math.sin(this.globalTime * 8) * 0.18; // バランスを取りながらゆったり左右に傾く
+      this.playerSlipTilt = Math.sin(this.globalTime * 14) * 0.26; // 慌てて左右にバランスを取るバタバタ揺れ（約15度）
+      this.playerSlipWobbleY = Math.sin(this.globalTime * 22) * 2.5; // 足が滑ってよろめく上下ワタワタ
     } else {
       this.playerSlipTilt = 0;
+      this.playerSlipWobbleY = 0;
+    }
+
+    // 氷スリップ転倒ダウン時間の更新
+    if (this.playerSlipFallTime > 0) {
+      this.playerSlipFallTime -= dt;
+    } else {
+      this.playerSlipFallTime = -1;
     }
 
     // 1. 各エンティティの状態補間
@@ -591,6 +704,9 @@ export class AnimationEngine {
 
           // 滑走中の冷気・霜の軌跡パーティクルを継続発生
           this.triggerFrostTrailParticles(state.renderX, state.renderY);
+          if (state.id === 'player') {
+            this.triggerSweatParticles(state.renderX, state.renderY);
+          }
         } else {
           state.renderX = state.targetX;
           state.renderY = state.targetY;

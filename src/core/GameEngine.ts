@@ -75,7 +75,9 @@ export class GameEngine {
     toX: number,
     toY: number,
     hitWall: boolean,
-    durationSec?: number
+    durationSec?: number,
+    didFall?: boolean,
+    damage?: number
   ) => void;
 
   /** 演出アニメーション中（岩押し・氷滑走・沼脱出など）に次の操作を遮断するミリ秒タイムスタンプ */
@@ -1102,13 +1104,47 @@ export class GameEngine {
       if (slid) {
         const slideSteps = Math.hypot(curX - this.player.x, curY - this.player.y);
         // 滑走にかかる時間: ユーザー要望「３倍以上ゆっくりが良い」に基づき秒速1.5マスで算出
-        // 例: 1マス -> 約950ms, 2マス -> 約1600ms, 3マス -> 約2300ms, 4マス -> 約2950ms
-        const slideDurationMs = Math.max(1000, Math.round((slideSteps / 1.5) * 1000) + 300);
+        let slideDurationMs = Math.max(1000, Math.round((slideSteps / 1.5) * 1000) + 300);
+
+        // まれに滑って転んで軽度ダメージを受ける（約18%の確率）
+        const didFall = Math.random() < 0.18;
+        let slipDamage = 0;
+        if (didFall) {
+          slipDamage = Math.floor(Math.random() * 3) + 2; // 2〜4ダメージ
+          this.player.hp = Math.max(0, this.player.hp - slipDamage);
+          slideDurationMs += 700; // 尻もちをついて立ち上がるまでのダウン時間
+
+          if (this.player.hp <= 0) {
+            this.player.isAlive = false;
+            this.lastDefeatCause = '氷の床で派手に滑って転んで力尽きた';
+          }
+        }
+
         this.actionLockUntil = Date.now() + slideDurationMs;
-        this.onIceSlide?.(this.player.x, this.player.y, curX, curY, hitWall, slideDurationMs / 1000);
+        this.onIceSlide?.(
+          this.player.x,
+          this.player.y,
+          curX,
+          curY,
+          hitWall,
+          slideDurationMs / 1000,
+          didFall,
+          slipDamage
+        );
         this.player.x = curX;
         this.player.y = curY;
-        this.addLog('氷の床で足を取られ、ツーーーーッと滑走した！', 'normal');
+
+        if (didFall) {
+          this.addLog(
+            `おっとっと……！？ 氷で足を取られツーーーーッと滑走した！ ……ドテッ！！ 派手に尻もちをついて転んでしまった！ (${slipDamage} ダメージ)`,
+            'warning'
+          );
+        } else {
+          this.addLog(
+            'おっとっと……！？ 氷で足を取られ、両手を激しくバタつかせながらツーーーーッと滑走した！',
+            'normal'
+          );
+        }
       }
     }
 

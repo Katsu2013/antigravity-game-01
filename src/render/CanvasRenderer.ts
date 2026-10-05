@@ -127,7 +127,16 @@ export class CanvasRenderer {
       this.anim.triggerSwampEscapeMotion();
     };
 
-    this.engine.onIceSlide = (fromX, fromY, toX, toY, hitWall, durationSec) => {
+    this.engine.onIceSlide = (
+      fromX,
+      fromY,
+      toX,
+      toY,
+      hitWall,
+      durationSec,
+      didFall,
+      _slipDamage
+    ) => {
       const dx = Math.sign(toX - fromX);
       const dy = Math.sign(toY - fromY);
       const dist = Math.hypot(toX - fromX, toY - fromY);
@@ -144,6 +153,13 @@ export class CanvasRenderer {
         if (hitWall) {
           this.anim.triggerScreenShake(0.35, 5.0);
           this.anim.triggerBreakParticles(toX, toY, '#bae6fd', 14);
+        }
+        if (didFall) {
+          // 転倒演出: 尻もちスクワッシュ＆星パーティクル＆被弾フラッシュ＆シェイク
+          this.anim.triggerPlayerSlipFall(0.75);
+          this.anim.triggerDamage('player');
+          this.anim.triggerScreenShake(0.3, 4.0);
+          this.anim.triggerDizzyStars(toX, toY);
         }
       };
 
@@ -2383,14 +2399,19 @@ export class CanvasRenderer {
       }
 
       // 3. プレイヤー本体の描画（進行方向に合わせた水平反転 scale(scaleX, 1.0) を適用）
-      // 泥濘沈み込み(sinkOffsetY)・脱出跳躍(escapeJumpY)・氷上スリップ傾き(slipTilt)を合成
+      // 泥濘沈み込み(sinkOffsetY)・脱出跳躍(escapeJumpY)・氷上スリップ傾き(slipTilt)・ワタワタ揺れ(playerSlipWobbleY)・転倒スクワッシュ変形を合成
+      const fallSquash = this.anim.getPlayerFallSquash();
       const totalYOffset =
-        bobY + this.anim.playerSinkOffsetY + this.anim.playerEscapeJumpY;
+        bobY +
+        this.anim.playerSinkOffsetY +
+        this.anim.playerEscapeJumpY +
+        this.anim.playerSlipWobbleY +
+        fallSquash.offsetY;
       const totalRotation = rotation + this.anim.playerSlipTilt;
       ctx.save();
       ctx.translate(cx, cy + totalYOffset);
       ctx.rotate(totalRotation);
-      ctx.scale(scaleX, 1.0);
+      ctx.scale(scaleX * fallSquash.scaleX, 1.0 * fallSquash.scaleY);
 
       // 被弾赤フラッシュ演出
       if (anim.damageFlash > 0) {
@@ -2585,6 +2606,60 @@ export class CanvasRenderer {
       }
       ctx.fillStyle = barColor;
       ctx.fillRect(barX, barY, barW * hpRatio, barH);
+
+      // 5. 氷上スリップ焦り（冷や汗漫符 💦）および転倒（ピヨピヨ星 💫）演出描画
+      if (this.anim.isIceSliding()) {
+        // --- 焦り冷や汗漫符 💦 ---
+        // 頭上右上にコミカルな冷や汗アイコン
+        const sweatX = cx + size * 0.28;
+        const sweatY = barY - 14 + Math.sin(this.anim.globalTime * 12) * 2;
+        ctx.save();
+        ctx.translate(sweatX, sweatY);
+        ctx.fillStyle = '#38bdf8';
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1;
+        // 汗しずく描画
+        ctx.beginPath();
+        ctx.moveTo(0, -6);
+        ctx.quadraticCurveTo(5, -1, 4, 3);
+        ctx.arc(0, 3, 4, 0, Math.PI);
+        ctx.quadraticCurveTo(-5, -1, 0, -6);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        // 汗のハイライト光沢
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+        ctx.beginPath();
+        ctx.arc(1.5, 2, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      } else if (this.anim.isPlayerSlipFallen()) {
+        // --- 転倒ピヨピヨ星 💫 ---
+        // 頭上をくるくる旋回する黄色い星
+        const starCenterY = barY - 12;
+        ctx.save();
+        for (let s = 0; s < 3; s++) {
+          const angle = this.anim.globalTime * 7 + (s * Math.PI * 2) / 3;
+          const starRadiusX = size * 0.32;
+          const starRadiusY = 6;
+          const starX = cx + Math.cos(angle) * starRadiusX;
+          const starY = starCenterY + Math.sin(angle) * starRadiusY;
+
+          ctx.fillStyle = '#fde047';
+          ctx.strokeStyle = '#eab308';
+          ctx.lineWidth = 1;
+          // 小さな四角星/ひし形
+          ctx.beginPath();
+          ctx.moveTo(starX, starY - 4);
+          ctx.lineTo(starX + 3, starY);
+          ctx.lineTo(starX, starY + 4);
+          ctx.lineTo(starX - 3, starY);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
     } else {
       // 死亡時: ドラマチックな倒れ込みダウンモーション & 倒れ伏しスプライト描画
       this.anim.triggerPlayerDeath();
