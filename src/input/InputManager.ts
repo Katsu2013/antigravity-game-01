@@ -160,7 +160,12 @@ export class InputManager {
             this.ui.useSelectedInventoryItem();
             return;
           }
-          if (['x', 'k', 'c', 'i', 'tab'].includes(keyLower)) {
+          if (['t', 'x'].includes(keyLower)) {
+            e.preventDefault();
+            this.ui.throwSelectedInventoryItem();
+            return;
+          }
+          if (['b', 'k', 'c', 'i', 'tab'].includes(keyLower)) {
             e.preventDefault();
             this.ui.closeInventoryModal();
             return;
@@ -189,7 +194,19 @@ export class InputManager {
         this.dispatchAction({ type: 'INTERACT' });
         return;
       }
-      if (['x', 'k', ' ', '5'].includes(keyLower)) {
+      if (keyLower === 'f') {
+        // [Fキー] 矢を撃つ（クイック射撃）
+        e.preventDefault();
+        this.quickShootArrow();
+        return;
+      }
+      if (keyLower === 't') {
+        // [Tキー] 杖を振る（クイック杖照射）
+        e.preventDefault();
+        this.quickZapStaff();
+        return;
+      }
+      if ([' ', '5', '.'].includes(keyLower)) {
         e.preventDefault();
         this.dispatchAction({ type: 'WAIT' });
         return;
@@ -559,7 +576,7 @@ export class InputManager {
       btn.addEventListener('pointerleave', () => this.stopButtonRepeat());
     });
 
-    // [Aボタン] 決定 / 拾う / 階段（所持品モーダル中はアイテム使用/装備）
+    // [Aボタン] 攻撃/決定/拾う/階段（所持品モーダル中はアイテム使用/装備）
     document.getElementById('btn-pad-a')?.addEventListener('pointerdown', (e) => {
       e.preventDefault();
       if (!this.engine.player.isAlive || (this.ui.isAnyModalOpen() && !this.ui.isInventoryOpen())) {
@@ -572,7 +589,7 @@ export class InputManager {
       this.dispatchAction({ type: 'INTERACT' });
     });
 
-    // [Bボタン] 足踏み（所持品モーダル中はモーダルを閉じる）
+    // [Bボタン] 矢を撃つ（所持品モーダル中はモーダルを閉じる）
     const btnB = document.getElementById('btn-pad-b');
     if (btnB) {
       btnB.addEventListener('pointerdown', (e) => {
@@ -584,28 +601,22 @@ export class InputManager {
           this.ui.closeInventoryModal();
           return;
         }
-        this.stopButtonRepeat();
-        this.dispatchAction({ type: 'WAIT' });
-
-        this.repeatDelayTimer = window.setTimeout(() => {
-          this.repeatIntervalTimer = window.setInterval(() => {
-            this.dispatchAction({ type: 'WAIT' });
-          }, 110);
-        }, 230);
+        this.quickShootArrow();
       });
-      btnB.addEventListener('pointerup', () => this.stopButtonRepeat());
-      btnB.addEventListener('pointercancel', () => this.stopButtonRepeat());
-      btnB.addEventListener('pointerleave', () => this.stopButtonRepeat());
     }
 
-    // [Xボタン] 持ち物開閉
+    // [Xボタン] 持ち物開閉（所持品モーダル中は選択中アイテムを投げる）
     const btnX = document.getElementById('btn-pad-x');
     if (btnX) {
       btnX.addEventListener('pointerdown', (e) => {
         e.preventDefault();
         e.stopPropagation();
         if (!this.engine.player.isAlive) return;
-        this.ui.toggleInventoryModal();
+        if (this.ui.isInventoryOpen()) {
+          this.ui.throwSelectedInventoryItem();
+          return;
+        }
+        this.ui.openInventoryModal();
       });
       btnX.addEventListener('click', (e) => {
         e.preventDefault();
@@ -613,7 +624,7 @@ export class InputManager {
       });
     }
 
-    // [Yボタン] ミニマップ切替（所持品モーダル中は持ち物整理整頓）
+    // [Yボタン] 魔法の杖を振る（所持品モーダル中は持ち物整理整頓）
     document.getElementById('btn-pad-y')?.addEventListener('pointerdown', (e) => {
       e.preventDefault();
       if (!this.engine.player.isAlive || (this.ui.isAnyModalOpen() && !this.ui.isInventoryOpen())) {
@@ -623,7 +634,7 @@ export class InputManager {
         this.ui.sortInventoryFromUI();
         return;
       }
-      this.toggleMinimap();
+      this.quickZapStaff();
     });
 
     // HUDのミニマップ切替ボタン
@@ -643,5 +654,39 @@ export class InputManager {
       }
       this.dispatchAction({ type: 'REGEN' });
     });
+  }
+
+  /**
+   * 所持品内の矢（木の矢・鉄の矢・銀の矢）を向いている方向へクイック射出します。
+   */
+  private quickShootArrow(): void {
+    if (!this.engine.player.isAlive || (this.ui.isAnyModalOpen() && !this.ui.isInventoryOpen())) {
+      return;
+    }
+    const inventory = this.engine.player.inventory;
+    const arrow = inventory.find((item) => item.category === 'ARROW');
+    if (arrow) {
+      this.engine.shoot(arrow.id);
+    } else {
+      this.engine.addLog('矢を持っていません！', 'warning');
+    }
+  }
+
+  /**
+   * 所持品内の魔法の杖を向いている方向へクイック照射します。
+   */
+  private quickZapStaff(): void {
+    if (!this.engine.player.isAlive || (this.ui.isAnyModalOpen() && !this.ui.isInventoryOpen())) {
+      return;
+    }
+    const inventory = this.engine.player.inventory;
+    const staff =
+      inventory.find((item) => item.category === 'STAFF' && (item.charges ?? 0) > 0) ??
+      inventory.find((item) => item.category === 'STAFF');
+    if (staff) {
+      this.engine.zapStaff(staff.id);
+    } else {
+      this.engine.addLog('魔法の杖を持っていません！', 'warning');
+    }
   }
 }

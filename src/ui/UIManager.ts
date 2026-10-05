@@ -332,10 +332,10 @@ export class UIManager {
     const subX = document.querySelector('#btn-pad-x .btn-sub');
     const subY = document.querySelector('#btn-pad-y .btn-sub');
 
-    if (subA) subA.textContent = isInventoryMode ? '使う' : '決定';
-    if (subB) subB.textContent = isInventoryMode ? '閉じる' : '足踏';
-    if (subX) subX.textContent = isInventoryMode ? '閉じる' : '持物';
-    if (subY) subY.textContent = isInventoryMode ? '整理' : 'MAP';
+    if (subA) subA.textContent = isInventoryMode ? '使う' : '攻撃';
+    if (subB) subB.textContent = isInventoryMode ? '閉じる' : '撃つ';
+    if (subX) subX.textContent = isInventoryMode ? '投げる' : '持物';
+    if (subY) subY.textContent = isInventoryMode ? '整理' : '振る';
   }
 
   /**
@@ -370,6 +370,8 @@ export class UIManager {
 
   /**
    * 現在選択中のアイテムを使用（消費・装備・外す・撃つ・振る）します。
+   * 武器・防具・腕輪の着脱時はインベントリを開いたまま維持し、
+   * 薬草・食料・巻物・飛び道具・杖等の消費アクション時は結果メッセージを見せるため自動で閉じます。
    */
   public useSelectedInventoryItem(): void {
     const items = this.engine.player.inventory;
@@ -377,12 +379,23 @@ export class UIManager {
     const item = items[this.selectedInventoryIndex];
     if (!item) return;
 
+    const isEquipment =
+      item.category === 'WEAPON' ||
+      item.category === 'SHIELD' ||
+      item.category === 'TALISMAN';
+
     if (item.category === 'ARROW') {
       this.engine.shoot(item.id);
     } else if (item.category === 'STAFF') {
       this.engine.zapStaff(item.id);
     } else {
       this.engine.executeAction({ type: 'USE_ITEM', itemId: item.id });
+    }
+
+    // 装備品以外の消費アイテム・遠距離アクション時は結果メッセージを見るためにインベントリを閉じる
+    if (!isEquipment) {
+      this.closeInventoryModal();
+      return;
     }
 
     const nextLen = this.engine.player.inventory.length;
@@ -394,6 +407,7 @@ export class UIManager {
 
   /**
    * 現在選択中のアイテムを向いている方向に投げます。
+   * 投擲演出と命中メッセージを見せるためにインベントリを閉じます。
    */
   public throwSelectedInventoryItem(): void {
     const items = this.engine.player.inventory;
@@ -402,12 +416,7 @@ export class UIManager {
     if (!item) return;
 
     this.engine.throwItem(item.id);
-
-    const nextLen = this.engine.player.inventory.length;
-    if (this.selectedInventoryIndex >= nextLen) {
-      this.selectedInventoryIndex = Math.max(0, nextLen - 1);
-    }
-    this.highlightSelectedInventoryItem();
+    this.closeInventoryModal();
   }
 
   /**
@@ -633,12 +642,14 @@ export class UIManager {
         useBtn.addEventListener('click', (e) => {
           e.stopPropagation();
           this.engine.shoot(item.id);
+          this.closeInventoryModal();
         });
       } else if (item.category === 'STAFF') {
         useBtn.textContent = '振る';
         useBtn.addEventListener('click', (e) => {
           e.stopPropagation();
           this.engine.zapStaff(item.id);
+          this.closeInventoryModal();
         });
       } else if (
         item.category === 'WEAPON' ||
@@ -649,12 +660,14 @@ export class UIManager {
         useBtn.addEventListener('click', (e) => {
           e.stopPropagation();
           this.engine.executeAction({ type: 'USE_ITEM', itemId: item.id });
+          // 装備品の着脱時はインベントリを開いたまま維持
         });
       } else {
         useBtn.textContent = '使う';
         useBtn.addEventListener('click', (e) => {
           e.stopPropagation();
           this.engine.executeAction({ type: 'USE_ITEM', itemId: item.id });
+          this.closeInventoryModal();
         });
       }
 
@@ -665,6 +678,7 @@ export class UIManager {
       throwBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         this.engine.throwItem(item.id);
+        this.closeInventoryModal();
       });
 
       // 置くボタン
