@@ -1,12 +1,14 @@
 # RogueLabyrinth（ローグラビリンス）
 
-Webブラウザ上で動作する、PC・スマートフォン（縦/横）両対応の**完全オフラインSPA ターン制ローグライクRPG**です。
+Webブラウザ上で動作する、PC・スマートフォン（縦/横）両対応の**完全オフラインSPA ターン制ローグライクRPG**です。  
+本プロジェクトは、AIエージェント統合開発環境 **Google Antigravity** 上で、**Gemini 3.8 Flash** を活用して設計・実装されています。
 
 ---
 
 ## プロジェクト概要
 
 - **ジャンル**: 王道ターン制ダンジョン探索型ローグライク（不思議のダンジョン系）
+- **開発環境 / AI**: **Google Antigravity**（モデル: **Gemini 3.8 Flash**）
 - **対応環境**: PC（キーボード/マウス）、スマートフォン・タブレット（タッチ/仮想パッド）
 - **アーキテクチャ**: 完全オフラインSPA / PWA（Service Worker + IndexedDB）
 - **技術スタック**: TypeScript + Vite + HTML5 2D Canvas (HiDPI対応) + Tailwind CSS
