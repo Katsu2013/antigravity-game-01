@@ -449,53 +449,34 @@ export class AnimationEngine {
   }
 
   /**
-   * 氷上滑走時のフロストスプレーパーティクル（スケートのエッジのように吹き飛ぶ氷晶粉塵）を発生させます。
+   * 氷上滑走時のフロストスプレーパーティクル（煙に見えないよう極小の鋭い氷晶キラキラ光条のみ）。
    */
   public triggerFrostParticles(x: number, y: number, dx: number, dy: number): void {
-    const frostColors = ['#ffffff', '#f0f9ff', '#e0f2fe', '#bae6fd', '#7dd3fc'];
+    const frostColors = ['#bae6fd', '#7dd3fc', '#38bdf8'];
     const baseAngle = Math.atan2(dy, dx) + Math.PI; // 進行逆方向
-    for (let i = 0; i < 14; i++) {
-      const spreadAngle = baseAngle + (Math.random() - 0.5) * 1.8;
-      const speed = 1.0 + Math.random() * 3.0;
+    for (let i = 0; i < 3; i++) {
+      const spreadAngle = baseAngle + (Math.random() - 0.5) * 0.8;
+      const speed = 0.8 + Math.random() * 1.5;
       this.particles.push({
-        x: x + 0.5 + (Math.random() - 0.5) * 0.3,
-        y: y + 0.75 + (Math.random() - 0.5) * 0.2,
+        x: x + 0.5 + (Math.random() - 0.5) * 0.2,
+        y: y + 0.75,
         vx: Math.cos(spreadAngle) * speed,
-        vy: Math.sin(spreadAngle) * speed - 0.6,
+        vy: Math.sin(spreadAngle) * speed - 0.3,
         color: frostColors[Math.floor(Math.random() * frostColors.length)],
-        size: 2.5 + Math.random() * 3.5,
+        size: 1.2 + Math.random() * 1.2, // 極小の鋭利な結晶光
         life: 0,
-        maxLife: 0.4 + Math.random() * 0.25,
-        gravity: 2.5,
-        alpha: 0.95,
+        maxLife: 0.25 + Math.random() * 0.15,
+        gravity: 2.0,
+        alpha: 0.8,
       });
     }
   }
 
   /**
-   * 滑走中の足元から継続的に発生するフロスト軌跡パーティクル（冷気・微細な氷結晶）。
-   *
-   * @param x - 発生グリッドX
-   * @param y - 発生グリッドY
+   * 滑走中の足元パーティクル（※白い丸粒子は煙に見えるため発生させずクリーンな氷面を維持）。
    */
-  public triggerFrostTrailParticles(x: number, y: number): void {
-    const frostColors = ['#ffffff', '#f0f9ff', '#e0f2fe', '#bae6fd', '#7dd3fc'];
-    for (let i = 0; i < 2; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const speed = 0.2 + Math.random() * 0.7;
-      this.particles.push({
-        x: x + 0.5 + (Math.random() - 0.5) * 0.35,
-        y: y + 0.75 + (Math.random() - 0.5) * 0.15,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - 0.25,
-        color: frostColors[Math.floor(Math.random() * frostColors.length)],
-        size: 2 + Math.random() * 2.8,
-        life: 0,
-        maxLife: 0.35 + Math.random() * 0.2,
-        gravity: 0.3,
-        alpha: 0.85,
-      });
-    }
+  public triggerFrostTrailParticles(_x: number, _y: number): void {
+    // 煙状のパーティクルを発生させないため意図的に空にしています
   }
 
   /**

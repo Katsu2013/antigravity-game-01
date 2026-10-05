@@ -6,7 +6,7 @@
  */
 
 import { GameEngine } from '../core/GameEngine';
-import { BiomeType, Item, Monster, Obstacle, TileType } from '../core/types';
+import { BiomeType, Direction8, Item, Monster, Obstacle, TileType } from '../core/types';
 import { AnimationEngine } from './AnimationEngine';
 import { SVGSprites, SpriteId } from './sprites/SVGSprites';
 import { TileSprites } from './sprites/TileSprites';
@@ -2282,6 +2282,7 @@ export class CanvasRenderer {
       let spriteKey: SpriteId = 'player_down';
       let scaleX = 1.0;
       const dir = anim.direction; // Direction8
+      let effectiveDir: Direction8 = dir;
 
       switch (dir) {
         case 'up': {
@@ -2372,6 +2373,24 @@ export class CanvasRenderer {
         }
       }
 
+      // 氷上滑走中演出: ユーザー要望に基づき体を斜め上方に向け、上体を反らしながら滑っていく
+      const isSlidingOnIce = this.anim.isIceSliding() || anim.isSliding;
+      if (isSlidingOnIce) {
+        spriteKey = 'player_diag_up'; // 斜め上方を向くスプライト
+        bobY = 0; // 滑走中は足踏み上下動なし
+
+        // 移動方位（X成分）に合わせて右斜め上 or 左斜め上を向く
+        if (anim.facingDir === -1 || dir.includes('left')) {
+          scaleX = -1.0; // 左斜め上
+          effectiveDir = 'up_left';
+          rotation = 0.26 + this.anim.playerSlipTilt; // 上体を反らし仰天ポーズ
+        } else {
+          scaleX = 1.0; // 右斜め上
+          effectiveDir = 'up_right';
+          rotation = -0.26 + this.anim.playerSlipTilt; // 上体を反らし仰天ポーズ
+        }
+      }
+
       // 移動時の足元ステップダスト演出
       if (anim.isWalking) {
         const dustAlpha = Math.abs(Math.sin(anim.walkTime)) * 0.4;
@@ -2396,6 +2415,27 @@ export class CanvasRenderer {
           );
           ctx.fill();
         }
+      }
+
+      // 氷上滑走時の足元シャープ切削ライン（※煙状の粉塵ではなくスケート刃の鋭い光跡）
+      if (isSlidingOnIce) {
+        ctx.save();
+        ctx.strokeStyle = 'rgba(186, 230, 253, 0.85)';
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        const slideLineDir = scaleX;
+        ctx.moveTo(cx - slideLineDir * size * 0.28, cy + size * 0.38);
+        ctx.lineTo(cx + slideLineDir * size * 0.28, cy + size * 0.38);
+        ctx.stroke();
+
+        // 鋭くキラッと光る氷の微細な結晶スパークル（1〜2個のシャープな輝き）
+        ctx.fillStyle = '#f0f9ff';
+        const sparkleX = cx + (Math.random() - 0.5) * size * 0.3;
+        const sparkleY = cy + size * 0.37;
+        ctx.beginPath();
+        ctx.arc(sparkleX, sparkleY, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
       }
 
       // 3. プレイヤー本体の描画（進行方向に合わせた水平反転 scale(scaleX, 1.0) を適用）
@@ -2436,7 +2476,7 @@ export class CanvasRenderer {
       if (playerState.equippedShield) {
         const shieldImg = EquipmentSprites.getShieldSprite(
           playerState.equippedShield.name,
-          dir
+          effectiveDir
         );
         if (shieldImg) {
           ctx.drawImage(shieldImg, -size / 2, -size / 2, size, size);
@@ -2447,7 +2487,7 @@ export class CanvasRenderer {
       if (playerState.equippedWeapon) {
         const weaponImg = EquipmentSprites.getWeaponSprite(
           playerState.equippedWeapon.name,
-          dir
+          effectiveDir
         );
         if (weaponImg) {
           ctx.drawImage(weaponImg, -size / 2, -size / 2, size, size);
