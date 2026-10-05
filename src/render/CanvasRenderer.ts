@@ -736,12 +736,60 @@ export class CanvasRenderer {
     gridY: number
   ): void {
     const map = this.engine.map;
-    const floorSprite = TileSprites.getFloorSprite(biome, gridX, gridY);
-    if (floorSprite) {
-      ctx.drawImage(floorSprite, x, y, s, s);
-    } else {
-      ctx.fillStyle = '#253346';
+    const shop = map.shopRoom;
+    const isShopTile =
+      shop &&
+      gridX >= shop.x &&
+      gridX < shop.x + shop.w &&
+      gridY >= shop.y &&
+      gridY < shop.y + shop.h;
+
+    if (isShopTile) {
+      // ショップ（店部屋）の高級深紅絨毯（カーペット）
+      ctx.fillStyle = '#831843';
       ctx.fillRect(x, y, s, s);
+
+      // 内側の織物テクスチャ（市松・格子ハイライト）
+      if ((gridX + gridY) % 2 === 0) {
+        ctx.fillStyle = 'rgba(157, 23, 77, 0.45)';
+        ctx.fillRect(x + 2, y + 2, s - 4, s - 4);
+      }
+
+      // 部屋の外周境界なら金糸の飾りステッチ縁取りライン
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1.5;
+      if (gridY === shop.y) {
+        ctx.beginPath();
+        ctx.moveTo(x, y + 1.5);
+        ctx.lineTo(x + s, y + 1.5);
+        ctx.stroke();
+      }
+      if (gridY === shop.y + shop.h - 1) {
+        ctx.beginPath();
+        ctx.moveTo(x, y + s - 1.5);
+        ctx.lineTo(x + s, y + s - 1.5);
+        ctx.stroke();
+      }
+      if (gridX === shop.x) {
+        ctx.beginPath();
+        ctx.moveTo(x + 1.5, y);
+        ctx.lineTo(x + 1.5, y + s);
+        ctx.stroke();
+      }
+      if (gridX === shop.x + shop.w - 1) {
+        ctx.beginPath();
+        ctx.moveTo(x + s - 1.5, y);
+        ctx.lineTo(x + s - 1.5, y + s);
+        ctx.stroke();
+      }
+    } else {
+      const floorSprite = TileSprites.getFloorSprite(biome, gridX, gridY);
+      if (floorSprite) {
+        ctx.drawImage(floorSprite, x, y, s, s);
+      } else {
+        ctx.fillStyle = '#253346';
+        ctx.fillRect(x, y, s, s);
+      }
     }
 
     const isWall = (gx: number, gy: number): boolean => {
@@ -2036,6 +2084,36 @@ export class CanvasRenderer {
 
         ctx.restore();
       }
+
+      // 4. ショップ未会計商品または売却待ちアイテムの値札タグ描画
+      if (item.isShopItem || item.isSoldToShop) {
+        const isShopSale = item.isShopItem;
+        const price = isShopSale ? item.price ?? item.value : item.sellPrice ?? Math.floor((item.value ?? 100) * 0.5);
+        const tagText = isShopSale ? `${price}G` : `売${price}G`;
+
+        ctx.font = `bold ${Math.max(8, Math.floor(s * 0.24))}px monospace`;
+        const textWidth = ctx.measureText(tagText).width;
+        const badgeW = textWidth + 8;
+        const badgeH = Math.max(12, Math.floor(s * 0.28));
+        const badgeX = cx - badgeW / 2;
+        const badgeY = cy + s * 0.22;
+
+        ctx.save();
+        ctx.fillStyle = isShopSale ? 'rgba(15, 23, 42, 0.9)' : 'rgba(20, 83, 45, 0.9)';
+        ctx.beginPath();
+        ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 3);
+        ctx.fill();
+
+        ctx.strokeStyle = isShopSale ? '#f59e0b' : '#22c55e';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.fillStyle = isShopSale ? '#fef08a' : '#bbf7d0';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(tagText, cx, badgeY + badgeH / 2);
+        ctx.restore();
+      }
     } else {
       // 記憶タイル内（未視界）の薄暗いシルエット
       const itemSize = s * 0.8;
@@ -2274,7 +2352,10 @@ export class CanvasRenderer {
     }
 
     // 8方向スプライトIDおよび水平反転の決定
-    const monsterBase = monster.type.toLowerCase();
+    const monsterBase =
+      monster.type === 'MERCHANT' && monster.isAngryMerchant
+        ? 'angry_merchant'
+        : monster.type.toLowerCase();
     let dirSuffix = 'down';
 
     switch (anim.direction) {
@@ -2370,6 +2451,13 @@ export class CanvasRenderer {
     }
     if (monster.isSealed) {
       statusBadges.push({ icon: '🔒', bg: '#991b1b', color: '#fee2e2' }); // 封印
+    }
+    if (monster.isFriendly && monster.isShopkeeper) {
+      statusBadges.push({ icon: '🏪', bg: '#ca8a04', color: '#fef08a' }); // 店主
+    } else if (monster.isAngryMerchant) {
+      statusBadges.push({ icon: '💢', bg: '#991b1b', color: '#fef2f2' }); // 怒れる店主
+    } else if (monster.isGuardDog) {
+      statusBadges.push({ icon: '🚨', bg: '#b91c1c', color: '#fee2e2' }); // 番犬警備
     }
 
     if (statusBadges.length > 0) {

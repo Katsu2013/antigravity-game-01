@@ -10,6 +10,7 @@ import { Pathfinding } from './algorithms/Pathfinding';
 import { EntityFactory } from './entities/EntityFactory';
 import { CombatSystem } from './systems/CombatSystem';
 import { ItemSystem } from './systems/ItemSystem';
+import { ShopSystem } from './systems/ShopSystem';
 import { StorageManager } from '../storage/StorageManager';
 import {
   ActionType,
@@ -155,6 +156,9 @@ export class GameEngine {
     const saved = await StorageManager.loadCurrentRun();
     if (saved && saved.player && saved.player.isAlive && saved.map) {
       this.player = saved.player;
+      if (typeof this.player.gold !== 'number') {
+        this.player.gold = 0;
+      }
       this.map = saved.map;
       if (!this.map.obstacles) {
         this.map.obstacles = [];
@@ -250,6 +254,7 @@ export class GameEngine {
       nextExp: 10,
       hunger: 100,
       maxHunger: 100,
+      gold: 0,
       floor: 1,
       turn: 1,
       inventory: [
@@ -370,6 +375,14 @@ export class GameEngine {
         );
 
         if (targetMonster) {
+          // 平時の中立店主NPCなら、攻撃ではなく話しかけ・会計を行う
+          if (targetMonster.isFriendly && targetMonster.isShopkeeper) {
+            const checkoutRes = ShopSystem.checkout(this.player, this.map);
+            this.addLog(checkoutRes.message, checkoutRes.success ? 'turn-header' : 'warning');
+            this.notify();
+            return false;
+          }
+
           this.executePlayerAttack(targetMonster, action.dx, action.dy);
           turnPassed = true;
           break;
@@ -410,6 +423,27 @@ export class GameEngine {
             this.addLog('ぬかるみから力いっぱい足を引き抜いて進んだ！', 'normal');
             this.onSwampEscape?.(this.player.x, this.player.y, targetX, targetY);
             this.actionLockUntil = Date.now() + 1000; // 約1.0秒脱出ジャンプ演出ロック
+          }
+        }
+
+        // 3.8 ショップ退出判定（店部屋から外へ出ようとした場合）
+        if (ShopSystem.isLeavingShop(this.player.x, this.player.y, targetX, targetY, this.map.shopRoom)) {
+          const bill = ShopSystem.calculateBill(this.player, this.map);
+          if (bill.unpaidItems.length > 0) {
+            if (bill.canAfford) {
+              const res = ShopSystem.checkout(this.player, this.map);
+              this.addLog(res.message, 'turn-header');
+            } else {
+              this.addLog(
+                `店主ネロ「おっとお客さん！まだお代(${bill.balance}G)をいただいてないよ！品物を返しておくれ！」`,
+                'warning'
+              );
+              this.notify();
+              return false;
+            }
+          } else if (bill.sellItems.length > 0) {
+            const res = ShopSystem.checkout(this.player, this.map);
+            this.addLog(res.message, 'turn-header');
           }
         }
 
@@ -490,6 +524,15 @@ export class GameEngine {
         // 2. 階段マス判定（足元）
         const currentTile = this.map.tiles[this.player.y][this.player.x];
         if (currentTile === TileType.StairsDown) {
+          if (this.map.isThiefMode) {
+            this.addLog(
+              '泥棒大成功！！ 店主と番犬の猛追撃を振り切り、商品を無事に手に入れた！',
+              'turn-header'
+            );
+            for (const item of this.player.inventory) {
+              delete item.isShopItem;
+            }
+          }
           this.player.floor += 1;
           this.player.turn += 1;
           const nextBiome = DungeonGenerator.getBiomeForFloor(this.player.floor);
@@ -542,12 +585,19 @@ export class GameEngine {
         const targetX = this.player.x + fdx;
         const targetY = this.player.y + fdy;
 
-        // 正面マスにモンスターがいる場合は直接近接攻撃！
+        // 正面マスにモンスターがいる場合は直接近接攻撃（店主なら会話・会計）！
         const facingMonster = this.map.monsters.find(
           (m) => m.x === targetX && m.y === targetY
         );
 
         if (facingMonster) {
+          if (facingMonster.isFriendly && facingMonster.isShopkeeper) {
+            const checkoutRes = ShopSystem.checkout(this.player, this.map);
+            this.addLog(checkoutRes.message, checkoutRes.success ? 'turn-header' : 'warning');
+            this.notify();
+            return false;
+          }
+
           this.executePlayerAttack(facingMonster, fdx, fdy);
           turnPassed = true;
           break;
@@ -658,6 +708,15 @@ export class GameEngine {
       case 'DESCEND': {
         const currentTile = this.map.tiles[this.player.y][this.player.x];
         if (currentTile === TileType.StairsDown) {
+          if (this.map.isThiefMode) {
+            this.addLog(
+              '泥棒大成功！！ 店主と番犬の猛追撃を振り切り、商品を無事に手に入れた！',
+              'turn-header'
+            );
+            for (const item of this.player.inventory) {
+              delete item.isShopItem;
+            }
+          }
           this.player.floor += 1;
           this.player.turn += 1;
           this.addLog(`階段を降り、地下 ${this.player.floor} 階へ進んだ。`, 'info');
@@ -696,6 +755,19 @@ export class GameEngine {
    * および IndexedDB へのオートセーブ（死亡時はデータ削除＆ハイスコア記録）を行います。
    */
   private endTurn(): void {
+    // 0. 未会計アイテムの泥棒チェック（店外にいるのに未会計品を所持している場合）
+    if (
+      !this.map.isThiefMode &&
+      !ShopSystem.isInsideShop(this.player.x, this.player.y, this.map.shopRoom)
+    ) {
+      const bill = ShopSystem.calculateBill(this.player, this.map);
+      if (bill.unpaidItems.length > 0) {
+        const theftRes = ShopSystem.triggerTheft(this.player, this.map);
+        this.addLog(theftRes.message, 'damage');
+        this.onDamage?.('player');
+      }
+    }
+
     // 1. 敵モンスターの自律AI処理
     this.updateMonsters();
 
@@ -1483,6 +1555,11 @@ export class GameEngine {
         continue;
       }
 
+      // 1.5. 平時の中立店主NPCはプレイヤーを攻撃せず待機
+      if (monster.isFriendly && monster.isShopkeeper) {
+        continue;
+      }
+
       // 2. 鈍重モンスター（isSlow）は2ターンに1回しか行動しない
       if (monster.isSlow && this.player.turn % 2 !== 0) {
         continue;
@@ -1619,6 +1696,14 @@ export class GameEngine {
           monster.x = nextStep.x;
           monster.y = nextStep.y;
         }
+      }
+    }
+
+    // 6. 泥棒モード中の番犬追加召喚処理
+    if (this.map.isThiefMode) {
+      const newDog = ShopSystem.processThiefTurn(this.map, this.player.turn);
+      if (newDog) {
+        this.addLog('「ウォォン……！」 泥棒を追って増援の番犬が駆けつけた！', 'warning');
       }
     }
   }

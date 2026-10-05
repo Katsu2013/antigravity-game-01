@@ -49,6 +49,20 @@ export class ItemSystem {
       return { success: false, message: '足元には何も落ちていない。' };
     }
 
+    const item = map.items[itemIndex];
+
+    // 1. ゴールド（通貨）の拾得: インベントリ枠を消費せず直接所持金に加算
+    if (item.category === 'GOLD') {
+      map.items.splice(itemIndex, 1);
+      const amount = item.value;
+      player.gold = (player.gold ?? 0) + amount;
+      return {
+        success: true,
+        message: `🪙 ${item.name} を手に入れた！(現在の所持金: ${player.gold}G)`,
+      };
+    }
+
+    // 2. 通常アイテムのインベントリ空き容量チェック
     if (player.inventory.length >= this.MAX_INVENTORY_SIZE) {
       return {
         success: false,
@@ -56,8 +70,17 @@ export class ItemSystem {
       };
     }
 
-    const item = map.items.splice(itemIndex, 1)[0];
+    map.items.splice(itemIndex, 1);
     player.inventory.push(item);
+
+    // 3. ショップ商品拾得時の案内
+    if (item.isShopItem) {
+      const price = item.price ?? item.value ?? 100;
+      return {
+        success: true,
+        message: `${item.name} (${price}G) を手に取った。出入口で店主に代金を払おう。`,
+      };
+    }
 
     return {
       success: true,
@@ -445,6 +468,18 @@ export class ItemSystem {
           message: `${item.name} を読んだ！不思議な光に包まれて別の場所へワープした！`,
         };
       }
+
+      case 'GOLD':
+        return {
+          success: false,
+          message: 'ゴールドは買い物や取引に使う通貨です。',
+        };
+
+      default:
+        return {
+          success: false,
+          message: 'このアイテムは使用できません。',
+        };
     }
   }
 
@@ -928,6 +963,25 @@ export class ItemSystem {
 
     item.x = player.x;
     item.y = player.y;
+
+    // ショップ（店部屋）の中に置いた場合、売却待ち状態に設定
+    const isInsideShop =
+      map.shopRoom &&
+      player.x >= map.shopRoom.x &&
+      player.x < map.shopRoom.x + map.shopRoom.w &&
+      player.y >= map.shopRoom.y &&
+      player.y < map.shopRoom.y + map.shopRoom.h;
+
+    if (isInsideShop) {
+      item.isSoldToShop = true;
+      const sellPrice = item.sellPrice ?? Math.floor((item.value ?? 100) * 0.5);
+      map.items.push(item);
+      return {
+        success: true,
+        message: `${item.name} を店の床に置いた。店主ネロ「その ${item.name} は ${sellPrice}G で買い取らせてもらおう！」`,
+      };
+    }
+
     map.items.push(item);
 
     return {
@@ -951,6 +1005,7 @@ export class ItemSystem {
       POTION: 5,
       FOOD: 6,
       SCROLL: 7,
+      GOLD: 8,
     };
 
     player.inventory.sort((a, b) => {

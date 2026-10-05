@@ -165,7 +165,18 @@ export class DungeonGenerator {
     this.applyBiomeWater(tiles, biomeInfo.biome, rooms, startPos, stairsDown);
     this.applyBiomeSpecialTiles(tiles, biomeInfo.biome, rooms, startPos, stairsDown);
 
-    // 8. モンスター、アイテム、障害物の配置
+    // 8. ショップ（店部屋）の選定
+    // 2階以上、かつ部屋が3つ以上ある場合、約30%の確率でスタート・階段以外の部屋をショップに選定
+    let shopRoom: Room | null = null;
+    if (floor >= 2 && rooms.length >= 3 && Math.random() < 0.32) {
+      const candidates = rooms.filter((_, idx) => idx !== 0 && idx !== stairRoomIndex);
+      if (candidates.length > 0) {
+        shopRoom = candidates[Math.floor(Math.random() * candidates.length)];
+        shopRoom.isShop = true;
+      }
+    }
+
+    // 9. モンスター、アイテム、障害物の配置
     const monsters: Monster[] = [];
     const items: Item[] = [];
     const obstacles: Obstacle[] = [];
@@ -182,6 +193,43 @@ export class DungeonGenerator {
     for (let i = 0; i < rooms.length; i++) {
       const room = rooms[i];
 
+      // 【ショップ部屋の特別な配置処理】
+      if (room.isShop) {
+        // 1. 店主（商人ネロ）を部屋中央に配置
+        const merchantX = room.x + Math.floor(room.w / 2);
+        const merchantY = room.y + Math.floor(room.h / 2);
+        const merchant = EntityFactory.createMerchant(merchantX, merchantY);
+        room.shopkeeperId = merchant.id;
+        monsters.push(merchant);
+
+        // 2. 部屋の床に整然と商品アイテムを4〜6個配置
+        const shopItemCount = Math.min(
+          Math.floor(Math.random() * 3) + 4,
+          (room.w - 2) * (room.h - 2)
+        );
+        let placedCount = 0;
+        let attempts = 0;
+
+        while (placedCount < shopItemCount && attempts < 40) {
+          attempts++;
+          const sx = room.x + 1 + Math.floor(Math.random() * (room.w - 2));
+          const sy = room.y + 1 + Math.floor(Math.random() * (room.h - 2));
+
+          const isMerchant = sx === merchantX && sy === merchantY;
+          const isStairs = sx === stairsDown.x && sy === stairsDown.y;
+          const isOccupied = items.some((it) => it.x === sx && it.y === sy);
+
+          if (!isMerchant && !isStairs && !isOccupied && isWalkableTile(tiles[sy][sx])) {
+            items.push(EntityFactory.createShopItem(sx, sy));
+            placedCount++;
+          }
+        }
+
+        // ショップ内には通常の敵や障害物は配置しない
+        continue;
+      }
+
+      // 【通常部屋の配置処理】
       // 部屋1以降（スタート部屋以外）に敵モンスターを配置
       if (i > 0) {
         const monsterCount = Math.floor(Math.random() * 2) + 1;
@@ -210,6 +258,19 @@ export class DungeonGenerator {
 
         if (!isStairs && !isStart && !isItemOccupied && isWalkableTile(tiles[iy][ix])) {
           items.push(EntityFactory.createRandomItem(ix, iy));
+        }
+      }
+
+      // 約35%の確率で床落ちゴールド（金貨の山）を配置
+      if (Math.random() < 0.35) {
+        const gx = room.x + Math.floor(Math.random() * room.w);
+        const gy = room.y + Math.floor(Math.random() * room.h);
+        const isStairs = gx === stairsDown.x && gy === stairsDown.y;
+        const isStart = gx === startPos.x && gy === startPos.y;
+        const isItemOccupied = items.some((it) => it.x === gx && it.y === gy);
+
+        if (!isStairs && !isStart && !isItemOccupied && isWalkableTile(tiles[gy][gx])) {
+          items.push(EntityFactory.createGoldPile(floor, gx, gy));
         }
       }
 
@@ -245,6 +306,7 @@ export class DungeonGenerator {
       stairsDown,
       startPos,
       rooms,
+      shopRoom,
       monsters,
       items,
       obstacles,

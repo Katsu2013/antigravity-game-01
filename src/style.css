@@ -1446,3 +1446,62 @@ kbd {
 .help-rule-list li strong {
   color: #fbbf24;
 }
+
+/* =========================================
+   Shop & Gold & Thief Styles
+========================================= */
+.shop-item-tag {
+  display: inline-block;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fbbf24;
+  background-color: rgba(180, 83, 9, 0.4);
+  border: 1px solid #f59e0b;
+  border-radius: 4px;
+  letter-spacing: 0.02em;
+}
+
+.item-price-row {
+  margin-top: 4px;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.price-buy {
+  color: #fde047;
+  font-weight: 600;
+  background-color: rgba(15, 23, 42, 0.6);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.price-sell {
+  color: #6ee7b7;
+  font-weight: 600;
+  background-color: rgba(6, 78, 59, 0.35);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.thief-badge {
+  background: rgba(225, 29, 72, 0.25);
+  border: 1px solid #f43f5e;
+  border-radius: 6px;
+  padding: 2px 8px;
+  animation: thiefPulse 1s infinite alternate;
+}
+
+@keyframes thiefPulse {
+  from {
+    box-shadow: 0 0 4px rgba(244, 63, 94, 0.4);
+  }
+  to {
+    box-shadow: 0 0 12px rgba(244, 63, 94, 0.85);
+  }
+}
+

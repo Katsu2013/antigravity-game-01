@@ -94,7 +94,8 @@ export type ItemCategory =
   | 'SCROLL'  // 巻物（ワープ・広域効果）
   | 'ARROW'   // 矢・飛び道具（遠距離直線攻撃）
   | 'STAFF'   // 魔法の杖（回数制の遠距離特殊効果）
-  | 'TALISMAN'; // 腕輪・装飾品（パッシブ能力）
+  | 'TALISMAN' // 腕輪・装飾品（パッシブ能力）
+  | 'GOLD';   // ゴールド通貨（床落ち金貨・所持金）
 
 /**
  * ゲーム内に登場するアイテムの完全な情報を表すインターフェース。
@@ -118,6 +119,14 @@ export interface Item {
   upgradeLevel?: number;
   /** 特殊効果識別子（例: 'KNOCKBACK', 'SWITCH', 'PARALYZE', 'REVIVE'等） */
   specialEffect?: string;
+  /** 購入価格（ショップ販売時の定価ゴールド） */
+  price?: number;
+  /** 売却価格（プレイヤーが売却した際の換金ゴールド） */
+  sellPrice?: number;
+  /** ショップの未会計商品フラグ（trueの場合は未会計で持ち出し不可） */
+  isShopItem?: boolean;
+  /** プレイヤーがショップの床に置いて売却待ちのアイテムフラグ */
+  isSoldToShop?: boolean;
   /** 床に落ちている場合のX座標 */
   x: number;
   /** 床に落ちている場合のY座標 */
@@ -145,7 +154,9 @@ export type MonsterType =
   | 'MIMIC'       // ミミック（宝箱に擬態する奇襲モンスター）
   | 'ZOMBIE'      // ゾンビ（腐肉のアンデッド: 高HPタフ）
   | 'IMP'         // インプ（狡猾な小悪魔: 高速・トリッキー）
-  | 'MUMMY';      // ミイラ男（古代の呪術を纏う高防御怪人）
+  | 'MUMMY'       // ミイラ男（古代の呪術を纏う高防御怪人）
+  | 'MERCHANT'    // 店主・商人（平時は中立NPC、泥棒発覚で最強の追撃者に変貌）
+  | 'GUARD_DOG';  // 番犬・警備隊（泥棒時に召喚される倍速・高索敵の追跡犬）
 
 /**
  * フロア上に配置される障害物・ギミックオブジェクトの分類型。
@@ -235,6 +246,14 @@ export interface Monster {
   confuseTurns?: number;
   /** 特殊能力が封印されているかどうか */
   isSealed?: boolean;
+  /** 平時の中立・友好的NPCフラグ（プレイヤーから攻撃されるか泥棒発覚まで反撃・攻撃しない） */
+  isFriendly?: boolean;
+  /** ショップの店主フラグ */
+  isShopkeeper?: boolean;
+  /** 泥棒追撃用の番犬・警備隊フラグ */
+  isGuardDog?: boolean;
+  /** 激怒モードの店主フラグ（泥棒追撃中） */
+  isAngryMerchant?: boolean;
   /** 画面描画用シンボル文字（例: 's', 'g', 'k'） */
   symbol: string;
   /** 画面描画用カラーコード */
@@ -369,6 +388,8 @@ export interface PlayerState {
   hunger: number;
   /** 最大満腹度 */
   maxHunger: number;
+  /** 所持ゴールド数（通貨） */
+  gold: number;
   /** 現在到達している地下階層番号（例: 1 = 地下1階） */
   floor: number;
   /** 冒険開始からの総経過ターン数 */
@@ -403,6 +424,10 @@ export interface Room {
   w: number;
   /** 部屋の縦幅（セル数） */
   h: number;
+  /** ショップ（店部屋）かどうか */
+  isShop?: boolean;
+  /** 店主モンスターのID */
+  shopkeeperId?: string;
 }
 
 /**
@@ -425,6 +450,10 @@ export interface DungeonMap {
   startPos: Point;
   /** フロア内に存在する部屋のリスト */
   rooms: Room[];
+  /** フロア内に存在するショップ部屋（存在しないフロアは undefined/null） */
+  shopRoom?: Room | null;
+  /** 泥棒発覚中モードフラグ（BGMや店主・番犬の追撃がアクティブ） */
+  isThiefMode?: boolean;
   /** フロア内に生存している敵モンスターのリスト */
   monsters: Monster[];
   /** フロアの床に配置されているアイテムのリスト */

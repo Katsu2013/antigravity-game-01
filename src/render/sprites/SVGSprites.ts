@@ -140,7 +140,29 @@ export type SpriteId =
   | 'mummy_side'
   | 'mummy_diag_down'
   | 'mummy_diag_up'
+  // 店主・商人
+  | 'merchant'
+  | 'merchant_down'
+  | 'merchant_up'
+  | 'merchant_side'
+  | 'merchant_diag_down'
+  | 'merchant_diag_up'
+  // 怒りの店主
+  | 'angry_merchant'
+  | 'angry_merchant_down'
+  | 'angry_merchant_up'
+  | 'angry_merchant_side'
+  | 'angry_merchant_diag_down'
+  | 'angry_merchant_diag_up'
+  // 番犬・警備犬
+  | 'guard_dog'
+  | 'guard_dog_down'
+  | 'guard_dog_up'
+  | 'guard_dog_side'
+  | 'guard_dog_diag_down'
+  | 'guard_dog_diag_up'
   // アイテムグラフィックスプライト
+  | 'item_gold'
   | 'item_potion'
   | 'item_potion_high'
   | 'item_potion_str'
@@ -979,7 +1001,30 @@ export class SVGSprites {
       dragon_diag_down: MonsterAndItemSprites.DRAGON_DIAG_DOWN_SVG,
       dragon_diag_up: MonsterAndItemSprites.DRAGON_DIAG_UP_SVG,
 
+      // 商人・怒りの店主・番犬
+      merchant: MonsterAndItemSprites.MERCHANT_DOWN_SVG,
+      merchant_down: MonsterAndItemSprites.MERCHANT_DOWN_SVG,
+      merchant_up: MonsterAndItemSprites.MERCHANT_UP_SVG,
+      merchant_side: MonsterAndItemSprites.MERCHANT_SIDE_SVG,
+      merchant_diag_down: MonsterAndItemSprites.MERCHANT_DIAG_DOWN_SVG,
+      merchant_diag_up: MonsterAndItemSprites.MERCHANT_DIAG_UP_SVG,
+
+      angry_merchant: MonsterAndItemSprites.ANGRY_MERCHANT_DOWN_SVG,
+      angry_merchant_down: MonsterAndItemSprites.ANGRY_MERCHANT_DOWN_SVG,
+      angry_merchant_up: MonsterAndItemSprites.ANGRY_MERCHANT_DOWN_SVG,
+      angry_merchant_side: MonsterAndItemSprites.ANGRY_MERCHANT_DOWN_SVG,
+      angry_merchant_diag_down: MonsterAndItemSprites.ANGRY_MERCHANT_DOWN_SVG,
+      angry_merchant_diag_up: MonsterAndItemSprites.ANGRY_MERCHANT_DOWN_SVG,
+
+      guard_dog: MonsterAndItemSprites.GUARD_DOG_DOWN_SVG,
+      guard_dog_down: MonsterAndItemSprites.GUARD_DOG_DOWN_SVG,
+      guard_dog_up: MonsterAndItemSprites.GUARD_DOG_DOWN_SVG,
+      guard_dog_side: MonsterAndItemSprites.GUARD_DOG_DOWN_SVG,
+      guard_dog_diag_down: MonsterAndItemSprites.GUARD_DOG_DOWN_SVG,
+      guard_dog_diag_up: MonsterAndItemSprites.GUARD_DOG_DOWN_SVG,
+
       // アイテム
+      item_gold: MonsterAndItemSprites.ITEM_GOLD_PILE_SVG,
       item_potion: `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="32" cy="58" rx="16" ry="4" fill="rgba(0,0,0,0.35)"/>
@@ -1164,6 +1209,10 @@ export class SVGSprites {
     category: ItemCategory,
     name?: string
   ): SpriteId {
+    if (category === 'GOLD' || (name && name.includes('ゴールド'))) {
+      return 'item_gold';
+    }
+
     if (name) {
       // ポーション・薬・種・草
       if (name.includes('復活')) return 'item_potion_revive';

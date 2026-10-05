@@ -1425,4 +1425,172 @@ export class MonsterAndItemSprites {
   <path d="M25 36 Q32 24 39 26 Q32 32 25 36 Z" fill="#047857"/>
   <path d="M27 26 Q34 32 37 38" stroke="#10b981" stroke-width="2" fill="none"/>
 </svg>`.trim();
+
+  // =========================================================================
+  // 11. ショップ・商人・番犬・ゴールド通貨スプライト
+  // =========================================================================
+
+  /** 店主・商人ネロ（平時: 豊かな髭、商人帽、革エプロン、ゴールドコイン袋） */
+  public static readonly MERCHANT_DOWN_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- 接地影 -->
+  <ellipse cx="32" cy="58" rx="20" ry="5.5" fill="rgba(0,0,0,0.35)"/>
+  <!-- 両足・革ブーツ -->
+  <rect x="23" y="47" width="8" height="9" rx="2.5" fill="#78350f" stroke="#451a03" stroke-width="1.2"/>
+  <rect x="33" y="47" width="8" height="9" rx="2.5" fill="#78350f" stroke="#451a03" stroke-width="1.2"/>
+  <!-- 胴体ローブ・上着 -->
+  <path d="M19 28 L45 28 L47 48 L17 48 Z" fill="#1e3a8a" stroke="#172554" stroke-width="1.5"/>
+  <!-- 革のエプロン -->
+  <path d="M22 30 L42 30 L40 47 L24 47 Z" fill="#b45309" stroke="#78350f" stroke-width="1.2"/>
+  <!-- エプロンのポケットとゴールド刺繍 -->
+  <rect x="26" y="38" width="12" height="7" rx="1.5" fill="#92400e" stroke="#d97706" stroke-width="1"/>
+  <circle cx="32" cy="41.5" r="2" fill="#fbbf24"/>
+  <!-- 右手: ずっしり重い金貨袋 -->
+  <path d="M46 36 Q49 32 52 35 Q55 38 54 44 Q52 48 47 47 Q44 45 44 40 Z" fill="#ca8a04" stroke="#854d0e" stroke-width="1.2"/>
+  <polygon points="48,34 51,32 50,35" fill="#eab308"/>
+  <line x1="47" y1="36" x2="52" y2="36" stroke="#713f12" stroke-width="1.5"/>
+  <text x="49" y="44" font-size="7" font-weight="bold" fill="#713f12" text-anchor="middle">G</text>
+  <!-- 左手: 招き手 -->
+  <circle cx="17" cy="38" r="3.5" fill="#fed7aa" stroke="#c2410c" stroke-width="1"/>
+  <!-- 商人の豊かな白髭 -->
+  <path d="M22 25 Q32 37 42 25 Q38 34 32 36 Q26 34 22 25 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+  <!-- 顔・肌 -->
+  <circle cx="32" cy="22" r="9" fill="#fed7aa" stroke="#c2410c" stroke-width="1.2"/>
+  <!-- 穏やかな目（笑顔） -->
+  <path d="M27 21 Q29 19 31 21" stroke="#7c2d12" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M33 21 Q35 19 37 21" stroke="#7c2d12" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <!-- 赤ら顔の鼻と頬 -->
+  <ellipse cx="32" cy="23.5" rx="2" ry="1.5" fill="#f97316"/>
+  <circle cx="25" cy="23" r="1.5" fill="#fb7185" opacity="0.6"/>
+  <circle cx="39" cy="23" r="1.5" fill="#fb7185" opacity="0.6"/>
+  <!-- 商人帽（緑のベレー帽と黄金の羽飾り） -->
+  <ellipse cx="32" cy="15" rx="13" ry="5.5" fill="#15803d" stroke="#14532d" stroke-width="1.5"/>
+  <ellipse cx="32" cy="13" rx="10" ry="4" fill="#16a34a"/>
+  <!-- 黄金の羽飾り -->
+  <path d="M38 14 Q46 6 48 3 Q43 9 40 13 Z" fill="#fbbf24" stroke="#d97706" stroke-width="0.8"/>
+</svg>`.trim();
+
+  public static readonly MERCHANT_UP_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="58" rx="20" ry="5.5" fill="rgba(0,0,0,0.35)"/>
+  <rect x="23" y="47" width="8" height="9" rx="2.5" fill="#78350f" stroke="#451a03" stroke-width="1.2"/>
+  <rect x="33" y="47" width="8" height="9" rx="2.5" fill="#78350f" stroke="#451a03" stroke-width="1.2"/>
+  <path d="M19 28 L45 28 L47 48 L17 48 Z" fill="#1e3a8a" stroke="#172554" stroke-width="1.5"/>
+  <circle cx="32" cy="22" r="9" fill="#fed7aa" stroke="#c2410c" stroke-width="1.2"/>
+  <ellipse cx="32" cy="15" rx="13" ry="5.5" fill="#15803d" stroke="#14532d" stroke-width="1.5"/>
+  <ellipse cx="32" cy="13" rx="10" ry="4" fill="#16a34a"/>
+  <path d="M38 14 Q46 6 48 3 Q43 9 40 13 Z" fill="#fbbf24" stroke="#d97706" stroke-width="0.8"/>
+</svg>`.trim();
+
+  public static readonly MERCHANT_SIDE_SVG = MonsterAndItemSprites.MERCHANT_DOWN_SVG;
+  public static readonly MERCHANT_DIAG_DOWN_SVG = MonsterAndItemSprites.MERCHANT_DOWN_SVG;
+  public static readonly MERCHANT_DIAG_UP_SVG = MonsterAndItemSprites.MERCHANT_UP_SVG;
+
+  /** 怒れる店主（泥棒追撃時: 逆立つ怒髪、紅蓮の炎オーラ、血走る赤眼、黄金の棍棒） */
+  public static readonly ANGRY_MERCHANT_DOWN_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- 紅蓮の怒気炎オーラ -->
+  <path d="M10 50 Q4 32 18 20 Q24 6 32 2 Q40 6 46 20 Q60 32 54 50 Q40 62 32 60 Q24 62 10 50 Z" fill="#ef4444" opacity="0.35"/>
+  <path d="M14 48 Q10 34 20 24 Q26 10 32 8 Q38 10 44 24 Q54 34 50 48 Z" fill="#f97316" opacity="0.45"/>
+  <!-- 接地影 -->
+  <ellipse cx="32" cy="58" rx="22" ry="6" fill="rgba(0,0,0,0.5)"/>
+  <!-- 両足 -->
+  <rect x="22" y="46" width="9" height="10" rx="2.5" fill="#450a0a" stroke="#180202" stroke-width="1.5"/>
+  <rect x="33" y="46" width="9" height="10" rx="2.5" fill="#450a0a" stroke="#180202" stroke-width="1.5"/>
+  <!-- 胴体・紅蓮の戦闘服 -->
+  <path d="M18 28 L46 28 L48 48 L16 48 Z" fill="#991b1b" stroke="#450a0a" stroke-width="1.8"/>
+  <!-- 右手: 振り上げた巨大な黄金棍棒 -->
+  <g transform="rotate(-30 48 20)">
+    <line x1="48" y1="2" x2="48" y2="34" stroke="#ca8a04" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="48" cy="4" r="5" fill="#eab308" stroke="#ca8a04" stroke-width="1.5"/>
+    <circle cx="45" cy="4" r="1.5" fill="#ffffff"/>
+    <polygon points="44,8 52,8 50,14 46,14" fill="#fbbf24"/>
+  </g>
+  <!-- 左手: 怒りの拳 -->
+  <ellipse cx="15" cy="36" rx="4" ry="4" fill="#fca5a5" stroke="#991b1b" stroke-width="1.5"/>
+  <!-- 逆立つ白髭と怒りの口 -->
+  <path d="M20 24 Q32 38 44 24 Q40 37 32 40 Q24 37 20 24 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+  <path d="M26 30 Q32 36 38 30 Z" fill="#450a0a"/>
+  <polygon points="28,30 30,33 32,30 34,33 36,30" fill="#ffffff"/>
+  <!-- 顔・怒りで充血 -->
+  <circle cx="32" cy="20" r="9.5" fill="#fca5a5" stroke="#991b1b" stroke-width="1.5"/>
+  <!-- 怒りの青筋マーク -->
+  <path d="M37 14 L41 18 M41 14 L37 18" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/>
+  <!-- ギラつく血走った赤眼 -->
+  <ellipse cx="27" cy="19" rx="3.5" ry="3" fill="#ffffff" stroke="#991b1b" stroke-width="1"/>
+  <circle cx="28" cy="19" r="1.8" fill="#dc2626"/>
+  <circle cx="28.5" cy="18.5" r="0.6" fill="#ffffff"/>
+  <ellipse cx="37" cy="19" rx="3.5" ry="3" fill="#ffffff" stroke="#991b1b" stroke-width="1"/>
+  <circle cx="36" cy="19" r="1.8" fill="#dc2626"/>
+  <circle cx="36.5" cy="18.5" r="0.6" fill="#ffffff"/>
+  <!-- 逆立つ怒髪 -->
+  <path d="M22 13 L26 4 L30 11 L34 2 L38 11 L42 5 L42 14 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+</svg>`.trim();
+
+  /** 番犬・警備犬 (GUARD_DOG: 俊敏なドーベルマン、トゲ付き真鍮首輪、牙、跳躍ポーズ) */
+  public static readonly GUARD_DOG_DOWN_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- 接地影 -->
+  <ellipse cx="32" cy="58" rx="18" ry="4.5" fill="rgba(0,0,0,0.35)"/>
+  <!-- 4本のしなやかな脚 -->
+  <rect x="20" y="45" width="5" height="12" rx="2" fill="#292524" stroke="#1c1917" stroke-width="1.2"/>
+  <rect x="39" y="45" width="5" height="12" rx="2" fill="#292524" stroke="#1c1917" stroke-width="1.2"/>
+  <rect x="25" y="44" width="4.5" height="11" rx="2" fill="#44403c" stroke="#1c1917" stroke-width="1"/>
+  <rect x="34" y="44" width="4.5" height="11" rx="2" fill="#44403c" stroke="#1c1917" stroke-width="1"/>
+  <!-- 胴体（引き締まった黒褐色ボディ） -->
+  <ellipse cx="32" cy="40" rx="12" ry="9" fill="#292524" stroke="#1c1917" stroke-width="1.5"/>
+  <!-- 胸のタンマーク（茶褐色の毛並み） -->
+  <path d="M26 36 Q32 44 38 36 Q36 45 32 46 Q28 45 26 36 Z" fill="#b45309"/>
+  <!-- 立ち尾 -->
+  <path d="M42 36 Q49 32 50 24" stroke="#292524" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  <!-- トゲ付き真鍮首輪 -->
+  <rect x="25" y="27" width="14" height="4" rx="1.5" fill="#ca8a04" stroke="#713f12" stroke-width="1"/>
+  <polygon points="26,27 25,24 28,27" fill="#ffffff"/>
+  <polygon points="31,27 32,23 33,27" fill="#ffffff"/>
+  <polygon points="37,27 39,24 38,27" fill="#ffffff"/>
+  <!-- 頭部（鋭いマズルと尖耳） -->
+  <path d="M24 24 L21 11 L28 18 L36 18 L43 11 L40 24 Z" fill="#292524" stroke="#1c1917" stroke-width="1.5"/>
+  <!-- 顔・マズル -->
+  <ellipse cx="32" cy="24" rx="6" ry="5.5" fill="#b45309"/>
+  <!-- 鼻 -->
+  <polygon points="30,22 34,22 32,25" fill="#0c0a09"/>
+  <!-- 鋭い赤く光る眼光 -->
+  <ellipse cx="28" cy="18" rx="2.2" ry="2.5" fill="#ef4444" stroke="#7f1d1d" stroke-width="0.8"/>
+  <circle cx="28.5" cy="17.5" r="0.7" fill="#ffffff"/>
+  <ellipse cx="36" cy="18" rx="2.2" ry="2.5" fill="#ef4444" stroke="#7f1d1d" stroke-width="0.8"/>
+  <circle cx="36.5" cy="17.5" r="0.7" fill="#ffffff"/>
+  <!-- 唸る牙 -->
+  <path d="M28 27 Q32 29 36 27" stroke="#1c1917" stroke-width="1.2" fill="none"/>
+  <polygon points="29,27 30,29 31,27" fill="#ffffff"/>
+  <polygon points="33,27 34,29 35,27" fill="#ffffff"/>
+</svg>`.trim();
+
+  /** ゴールド通貨・金貨の山 (ITEM_GOLD_PILE: キラキラ輝くゴールドコインの山) */
+  public static readonly ITEM_GOLD_PILE_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- 接地影 -->
+  <ellipse cx="32" cy="56" rx="16" ry="4" fill="rgba(0,0,0,0.35)"/>
+  <!-- コインの山（最下段） -->
+  <ellipse cx="24" cy="51" rx="8" ry="4" fill="#ca8a04" stroke="#854d0e" stroke-width="1"/>
+  <ellipse cx="24" cy="49" rx="7.5" ry="3.5" fill="#eab308"/>
+  <ellipse cx="40" cy="51" rx="8" ry="4" fill="#ca8a04" stroke="#854d0e" stroke-width="1"/>
+  <ellipse cx="40" cy="49" rx="7.5" ry="3.5" fill="#eab308"/>
+  <ellipse cx="32" cy="52" rx="9" ry="4.5" fill="#ca8a04" stroke="#854d0e" stroke-width="1"/>
+  <ellipse cx="32" cy="50" rx="8.5" ry="4" fill="#fbbf24"/>
+  <!-- コインの山（中段） -->
+  <ellipse cx="26" cy="44" rx="8" ry="4" fill="#ca8a04" stroke="#854d0e" stroke-width="1"/>
+  <ellipse cx="26" cy="42" rx="7.5" ry="3.5" fill="#fde047"/>
+  <text x="26" y="44" font-size="5" font-weight="bold" fill="#854d0e" text-anchor="middle">G</text>
+  <ellipse cx="38" cy="44" rx="8" ry="4" fill="#ca8a04" stroke="#854d0e" stroke-width="1"/>
+  <ellipse cx="38" cy="42" rx="7.5" ry="3.5" fill="#fde047"/>
+  <text x="38" y="44" font-size="5" font-weight="bold" fill="#854d0e" text-anchor="middle">G</text>
+  <!-- 頂上の大金貨 -->
+  <ellipse cx="32" cy="35" rx="9" ry="4.5" fill="#ca8a04" stroke="#854d0e" stroke-width="1.2"/>
+  <ellipse cx="32" cy="33" rx="8.5" ry="4" fill="#fef08a"/>
+  <text x="32" y="35" font-size="6" font-weight="bold" fill="#a16207" text-anchor="middle">★</text>
+  <!-- キラリと光る星スパークル -->
+  <polygon points="44,25 46,28 49,29 46,30 44,33 43,30 40,29 43,28" fill="#ffffff"/>
+  <polygon points="18,33 19,35 21,36 19,37 18,39 17,37 15,36 17,35" fill="#fef08a"/>
+  <polygon points="32,20 33,22 35,23 33,24 32,26 31,24 29,23 31,22" fill="#ffffff"/>
+</svg>`.trim();
 }

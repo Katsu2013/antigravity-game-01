@@ -36,6 +36,12 @@ export class UIManager {
   /** 攻撃力/防御力を表示するDOM要素 */
   private statsEl: HTMLElement;
 
+  /** 所持ゴールドを表示するDOM要素 */
+  private goldEl: HTMLElement;
+
+  /** 泥棒警報インジケータDOM要素 */
+  private thiefIndicatorEl: HTMLElement;
+
   /** 現在ターン数を表示するDOM要素 */
   private turnEl: HTMLElement;
 
@@ -120,6 +126,8 @@ export class UIManager {
     this.hungerEl = document.getElementById('hud-hunger')!;
     this.hungerBarEl = document.getElementById('hud-hunger-bar');
     this.statsEl = document.getElementById('hud-stats')!;
+    this.goldEl = document.getElementById('hud-gold')!;
+    this.thiefIndicatorEl = document.getElementById('hud-thief-indicator')!;
     this.turnEl = document.getElementById('hud-turn')!;
     this.logListEl = document.getElementById('log-list')!;
     this.mobileTickerEl = document.getElementById('mobile-ticker')!;
@@ -516,6 +524,16 @@ export class UIManager {
     this.hpEl.textContent = `${player.hp}/${player.maxHp}`;
     this.hungerEl.textContent = `${player.hunger}%`;
     this.statsEl.textContent = `${player.atk}/${player.def}`;
+    if (this.goldEl) {
+      this.goldEl.textContent = `${player.gold ?? 0}G`;
+    }
+    if (this.thiefIndicatorEl) {
+      if (this.engine.map.isThiefMode) {
+        this.thiefIndicatorEl.classList.remove('hidden');
+      } else {
+        this.thiefIndicatorEl.classList.add('hidden');
+      }
+    }
     this.turnEl.textContent = `${player.turn}`;
 
     // 2. HP危険度に応じたカラーハイライト切り替え & 棒グラフゲージの更新
@@ -684,7 +702,12 @@ export class UIManager {
       name.textContent = displayName;
       nameRow.appendChild(name);
 
-      if (isEquipped) {
+      if (item.isShopItem) {
+        const shopTag = document.createElement('span');
+        shopTag.className = 'shop-item-tag';
+        shopTag.textContent = `商品:${item.price ?? item.value}G`;
+        nameRow.appendChild(shopTag);
+      } else if (isEquipped) {
         const tag = document.createElement('span');
         tag.className = 'equipped-tag';
         tag.textContent = 'E';
@@ -755,8 +778,19 @@ export class UIManager {
       desc.className = 'item-desc';
       desc.textContent = item.description;
 
+      // 価格・査定行
+      const priceRow = document.createElement('div');
+      priceRow.className = 'item-price-row';
+      if (item.isShopItem) {
+        priceRow.innerHTML = `<span class="price-buy">💰 買値: ${item.price ?? item.value}G (未会計)</span>`;
+      } else {
+        const sellPrice = item.sellPrice ?? Math.floor((item.value ?? 100) * 0.5);
+        priceRow.innerHTML = `<span class="price-sell">🏷️ 売却査定: ${sellPrice}G</span>`;
+      }
+
       card.appendChild(topRow);
       card.appendChild(desc);
+      card.appendChild(priceRow);
 
       if (container === this.modalInventoryListEl) {
         card.addEventListener('pointerdown', () => {

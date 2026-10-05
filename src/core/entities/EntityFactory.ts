@@ -45,6 +45,12 @@ export class EntityFactory {
     const floorScale = 1 + (floor - 1) * 0.15;
 
     switch (type) {
+      case 'MERCHANT':
+        return this.createMerchant(x, y);
+
+      case 'GUARD_DOG':
+        return this.createGuardDog(x, y);
+
       case 'SLIME':
         return {
           id,
@@ -460,13 +466,29 @@ export class EntityFactory {
   }
 
   /**
-   * 指定した座標にランダムなアイテムを生成します。
+   * 指定した座標にランダムなアイテムを生成します（適正価格自動付与）。
    *
    * @param x - 初期配置X座標
    * @param y - 初期配置Y座標
    * @returns 生成されたアイテムオブジェクト
    */
   public static createRandomItem(x: number, y: number): Item {
+    return this.assignItemPrices(this.createRawRandomItem(x, y));
+  }
+
+  /**
+   * ショップ（店）に並ぶ高品質な商品アイテムを生成します。
+   */
+  public static createShopItem(x: number, y: number): Item {
+    const item = this.assignItemPrices(this.createRawRandomItem(x, y));
+    item.isShopItem = true;
+    return item;
+  }
+
+  /**
+   * 内部用: ランダムな基本アイテムデータを生成します。
+   */
+  private static createRawRandomItem(x: number, y: number): Item {
     const id = `item_${++this.idCounter}`;
     const roll = Math.random();
 
@@ -1154,6 +1176,148 @@ export class EntityFactory {
         color: '#38bdf8',
       };
     }
+  }
+
+  /**
+   * アイテムのカテゴリ、効果値、強化値等に基づいて適正な買値・売値を自動算定・付与します。
+   */
+  public static assignItemPrices(item: Item): Item {
+    let basePrice = 100;
+    const name = item.name;
+
+    if (item.category === 'POTION') {
+      if (name.includes('復活')) basePrice = 1500;
+      else if (name.includes('剛力')) basePrice = 600;
+      else if (name.includes('命の草')) basePrice = 500;
+      else if (name.includes('すばやさ')) basePrice = 400;
+      else if (name.includes('力の種')) basePrice = 350;
+      else if (name.includes('弟切草')) basePrice = 300;
+      else if (name.includes('特薬草')) basePrice = 150;
+      else if (name.includes('どくけし')) basePrice = 60;
+      else basePrice = 50; // 薬草
+    } else if (item.category === 'FOOD') {
+      if (name.includes('巨大なおにぎり')) basePrice = 250;
+      else if (name.includes('パン')) basePrice = 120;
+      else basePrice = 100; // 特製おにぎり
+    } else if (item.category === 'WEAPON') {
+      if (name.includes('ムラマサ')) basePrice = 2000;
+      else if (name.includes('ホーリーランス')) basePrice = 1500;
+      else if (name.includes('ルーン')) basePrice = 1200;
+      else if (name.includes('ドラゴンキラー')) basePrice = 1400;
+      else if (name.includes('炎')) basePrice = 1000;
+      else if (name.includes('ウォーハンマー')) basePrice = 800;
+      else if (name.includes('ミスリル')) basePrice = 600;
+      else if (name.includes('短剣')) basePrice = 150;
+      else basePrice = 250; // 鉄の剣
+      if (item.upgradeLevel) {
+        basePrice += item.upgradeLevel * 200;
+      }
+    } else if (item.category === 'SHIELD') {
+      if (name.includes('イージス')) basePrice = 2500;
+      else if (name.includes('ドラゴン')) basePrice = 1500;
+      else if (name.includes('魔法')) basePrice = 900;
+      else if (name.includes('タワー')) basePrice = 700;
+      else if (name.includes('風')) basePrice = 500;
+      else if (name.includes('青銅')) basePrice = 300;
+      else if (name.includes('木')) basePrice = 150;
+      else basePrice = 350;
+      if (item.upgradeLevel) {
+        basePrice += item.upgradeLevel * 200;
+      }
+    } else if (item.category === 'TALISMAN') {
+      if (name.includes('すり抜け')) basePrice = 3000;
+      else if (name.includes('遠見')) basePrice = 2000;
+      else if (name.includes('ちから')) basePrice = 1500;
+      else basePrice = 1500;
+    } else if (item.category === 'STAFF') {
+      const charge = item.charges ?? 5;
+      if (name.includes('かなしばり')) basePrice = 500 + charge * 80;
+      else if (name.includes('雷鳴')) basePrice = 400 + charge * 60;
+      else if (name.includes('場所替え')) basePrice = 400 + charge * 60;
+      else basePrice = 300 + charge * 50; // 吹き飛ばし
+    } else if (item.category === 'ARROW') {
+      const count = item.count ?? 10;
+      if (name.includes('銀の矢')) basePrice = count * 35;
+      else if (name.includes('鉄の矢')) basePrice = count * 15;
+      else basePrice = count * 6; // 木の矢
+    } else if (item.category === 'SCROLL') {
+      if (name.includes('天の恵み') || name.includes('地の恵み')) basePrice = 600;
+      else if (name.includes('真空斬り')) basePrice = 400;
+      else if (name.includes('雷')) basePrice = 300;
+      else if (name.includes('混乱') || name.includes('睡眠')) basePrice = 250;
+      else if (name.includes('あかり')) basePrice = 150;
+      else basePrice = 100; // ワープ
+    }
+
+    item.price = basePrice;
+    item.sellPrice = Math.max(10, Math.floor(basePrice * 0.5));
+    return item;
+  }
+
+  /**
+   * 指定した階層と座標に床落ちゴールド（金貨の山）を生成します。
+   */
+  public static createGoldPile(floor: number, x: number, y: number): Item {
+    const id = `gold_${++this.idCounter}`;
+    const amount = Math.floor(60 + floor * 45 + Math.random() * 40);
+    return {
+      id,
+      name: `${amount}ゴールド`,
+      category: 'GOLD',
+      description: `床に散らばる黄金の金貨。拾うと所持金が ${amount}G 増加する。`,
+      value: amount,
+      price: amount,
+      sellPrice: amount,
+      x,
+      y,
+      symbol: '$',
+      color: '#fbbf24',
+    };
+  }
+
+  /**
+   * 店主・商人ネロを生成します（平時は中立NPC・話しかけると買い物や会話が可能）。
+   */
+  public static createMerchant(x: number, y: number): Monster {
+    const id = `merchant_${++this.idCounter}`;
+    return {
+      id,
+      name: '商人ネロ',
+      type: 'MERCHANT',
+      x,
+      y,
+      hp: 300,
+      maxHp: 300,
+      atk: 60,
+      def: 25,
+      expValue: 600,
+      isFriendly: true,
+      isShopkeeper: true,
+      symbol: 'M',
+      color: '#fbbf24',
+    };
+  }
+
+  /**
+   * 泥棒発生時に召喚される俊敏な番犬・警備隊を生成します。
+   */
+  public static createGuardDog(x: number, y: number): Monster {
+    const id = `guard_dog_${++this.idCounter}`;
+    return {
+      id,
+      name: '番犬',
+      type: 'GUARD_DOG',
+      x,
+      y,
+      hp: 55,
+      maxHp: 55,
+      atk: 22,
+      def: 8,
+      expValue: 60,
+      isGuardDog: true,
+      symbol: 'd',
+      color: '#dc2626',
+    };
   }
 
   /**
