@@ -734,9 +734,9 @@ export class GameEngine {
         curY = nextY;
       }
 
-      // 氷塊の滑走距離に応じた演出ロック時間を設定（秒速2.0マスで算出）
+      // 氷塊の滑走距離に応じた演出ロック時間を設定（秒速3.5マスで算出）
       const slideDist = Math.hypot(curX - startX, curY - startY);
-      const slideDurationMs = Math.max(900, Math.round((slideDist / 2.0) * 1000) + 250);
+      const slideDurationMs = Math.max(500, Math.round((slideDist / 3.5) * 1000) + 150);
       this.actionLockUntil = Date.now() + slideDurationMs;
 
       if (hitMonster) {
@@ -1103,8 +1103,8 @@ export class GameEngine {
 
       if (slid) {
         const slideSteps = Math.hypot(curX - this.player.x, curY - this.player.y);
-        // 滑走にかかる時間: ユーザー要望「３倍以上ゆっくりが良い」に基づき秒速1.5マスで算出
-        let slideDurationMs = Math.max(1000, Math.round((slideSteps / 1.5) * 1000) + 300);
+        // 滑走にかかる時間: ユーザー要望「今の半分の時間で良かった」に基づき秒速3.0マスで算出（従来の半分の所要時間）
+        let slideDurationMs = Math.max(500, Math.round((slideSteps / 3.0) * 1000) + 150);
 
         // まれに滑って転んで軽度ダメージを受ける（約18%の確率）
         const didFall = Math.random() < 0.18;
@@ -1112,7 +1112,7 @@ export class GameEngine {
         if (didFall) {
           slipDamage = Math.floor(Math.random() * 3) + 2; // 2〜4ダメージ
           this.player.hp = Math.max(0, this.player.hp - slipDamage);
-          slideDurationMs += 700; // 尻もちをついて立ち上がるまでのダウン時間
+          slideDurationMs += 400; // 尻もちをついて立ち上がるまでのダウン時間
 
           if (this.player.hp <= 0) {
             this.player.isAlive = false;

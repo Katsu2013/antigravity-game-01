@@ -140,7 +140,7 @@ export class CanvasRenderer {
       const dx = Math.sign(toX - fromX);
       const dy = Math.sign(toY - fromY);
       const dist = Math.hypot(toX - fromX, toY - fromY);
-      const slideDuration = durationSec || Math.max(1.0, (dist / 1.5) + 0.3);
+      const slideDuration = durationSec || Math.max(0.5, (dist / 3.0) + 0.15);
 
       // プレイヤーの等速滑走アニメーション状態を設定（滑走完了時に壁激突ならエフェクト発動）
       const pState = this.anim.getState('player', fromX, fromY);
@@ -156,7 +156,7 @@ export class CanvasRenderer {
         }
         if (didFall) {
           // 転倒演出: 尻もちスクワッシュ＆星パーティクル＆被弾フラッシュ＆シェイク
-          this.anim.triggerPlayerSlipFall(0.75);
+          this.anim.triggerPlayerSlipFall(0.45);
           this.anim.triggerDamage('player');
           this.anim.triggerScreenShake(0.3, 4.0);
           this.anim.triggerDizzyStars(toX, toY);

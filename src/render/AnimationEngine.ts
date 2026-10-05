@@ -128,7 +128,7 @@ export class AnimationEngine {
 
   /** 氷スリップ転倒ダウン経過時間（秒、未発生時は -1） */
   private playerSlipFallTime = -1;
-  private playerSlipFallDuration = 0.75;
+  private playerSlipFallDuration = 0.45;
 
   /**
    * 画面全体の地響きスクリーンシェイクをトリガーします。
@@ -156,7 +156,7 @@ export class AnimationEngine {
   /**
    * 氷上で足を滑らせて転倒したダウンアニメーションを開始します。
    */
-  public triggerPlayerSlipFall(durationSec = 0.75): void {
+  public triggerPlayerSlipFall(durationSec = 0.45): void {
     this.playerSlipFallTime = durationSec;
     this.playerSlipFallDuration = durationSec;
   }
@@ -646,8 +646,8 @@ export class AnimationEngine {
     // 氷スリップ傾き＆焦りワタワタ揺れの更新
     if (this.iceSlideTime > 0) {
       this.iceSlideTime -= dt;
-      this.playerSlipTilt = Math.sin(this.globalTime * 14) * 0.26; // 慌てて左右にバランスを取るバタバタ揺れ（約15度）
-      this.playerSlipWobbleY = Math.sin(this.globalTime * 22) * 2.5; // 足が滑ってよろめく上下ワタワタ
+      this.playerSlipTilt = Math.sin(this.globalTime * 18) * 0.24; // 慌てて左右にバランスを取るバタバタ揺れ（約14度）
+      this.playerSlipWobbleY = Math.sin(this.globalTime * 28) * 2.2; // 足が滑ってよろめく上下ワタワタ
     } else {
       this.playerSlipTilt = 0;
       this.playerSlipWobbleY = 0;
@@ -689,11 +689,10 @@ export class AnimationEngine {
         }
       } else if (state.isSliding) {
         // 氷の滑走演出:
-        // 急激なLerpではなく、等速でスーッと滑らかに滑走！
-        // 「３倍以上ゆっくりが良い」に基づき、秒速1.5マス（1マス進むのに約0.67秒。通常歩行の4倍以上ゆっくり！）
-        // 氷の塊（ICE_BLOCK）は秒速2.0マス
+        // ユーザー要望「今の半分の時間で良かった」に基づき、秒速3.0マス（滑走所要時間を従来のちょうど半分に短縮！）
+        // 氷の塊（ICE_BLOCK）は秒速3.5マス
         const slideSpeed =
-          (state.id === 'player' ? 1.5 : 2.0) * (state.moveSpeedMultiplier || 1.0);
+          (state.id === 'player' ? 3.0 : 3.5) * (state.moveSpeedMultiplier || 1.0);
         const maxStep = slideSpeed * dt;
 
         if (dist > 0.01) {
