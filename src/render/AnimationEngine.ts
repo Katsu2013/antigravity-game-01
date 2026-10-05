@@ -627,8 +627,8 @@ export class AnimationEngine {
     // 氷スリップ傾き＆焦りワタワタ揺れの更新
     if (this.iceSlideTime > 0) {
       this.iceSlideTime -= dt;
-      this.playerSlipTilt = Math.sin(this.globalTime * 18) * 0.24; // 慌てて左右にバランスを取るバタバタ揺れ（約14度）
-      this.playerSlipWobbleY = Math.sin(this.globalTime * 28) * 2.2; // 足が滑ってよろめく上下ワタワタ
+      this.playerSlipTilt = Math.sin(this.globalTime * 18) * 0.12; // 慌ててバランスを取る細かなバタバタ揺れ（約7度）
+      this.playerSlipWobbleY = Math.sin(this.globalTime * 28) * 2.0; // 足が滑ってよろめく上下ワタワタ
     } else {
       this.playerSlipTilt = 0;
       this.playerSlipWobbleY = 0;

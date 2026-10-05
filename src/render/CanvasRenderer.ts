@@ -2371,36 +2371,28 @@ export class CanvasRenderer {
       }
 
       // 氷上滑走中演出: ユーザー要望「左を向いて歩いていたら、左上方を向いて滑っていく」に基づき、
-      // 表情（横顔）が見えるスプライトのまま、体全体を斜め上方に大きく傾けて（仰天ポーズ）滑走！
+      // 表情（横顔）が見えるスプライトのまま、体全体を斜め上方に大きく傾けて（仰天スリップポーズ）滑走！
       const isSlidingOnIce = this.anim.isIceSliding() || anim.isSliding;
       if (isSlidingOnIce) {
         bobY = 0; // 滑走中は足踏み上下動なし
 
-        if (dir.includes('left') || anim.facingDir === -1) {
+        const isLeft = dir.includes('left') || (dir !== 'right' && anim.facingDir === -1);
+        if (isLeft) {
           // 左向きスプライト（横顔が見える状態）
           spriteKey = 'player_side';
           scaleX = -1.0;
           effectiveDir = 'left';
-          // 左上方を向く傾き（反時計回りに約32度傾斜：頭と上半身が左上方を向き、足が下へ滑り出す）
-          rotation = -0.55 + this.anim.playerSlipTilt * 0.3;
-        } else if (dir.includes('right') || anim.facingDir === 1) {
-          // 右向きスプライト
+          // 正の回転角（+0.58 rad ≈ +33.2度）：
+          // 体が右後ろにのけぞり、足が左前方へ放り出され、顔が「左斜め上方（空）」をしっかり仰ぎ見る！
+          rotation = 0.58;
+        } else {
+          // 右向きスプライト（横顔が見える状態）
           spriteKey = 'player_side';
           scaleX = 1.0;
           effectiveDir = 'right';
-          // 右上方を向く傾き（時計回りに約32度傾斜：頭と上半身が右上方を向き、足が下へ滑り出す）
-          rotation = 0.55 + this.anim.playerSlipTilt * 0.3;
-        } else if (dir === 'up') {
-          spriteKey = 'player_diag_up';
-          scaleX = anim.facingDir === -1 ? -1.0 : 1.0;
-          effectiveDir = anim.facingDir === -1 ? 'up_left' : 'up_right';
-          rotation = (scaleX > 0 ? -0.4 : 0.4) + this.anim.playerSlipTilt * 0.3;
-        } else {
-          // down (真下)
-          spriteKey = 'player_side';
-          scaleX = anim.facingDir === -1 ? -1.0 : 1.0;
-          effectiveDir = anim.facingDir === -1 ? 'left' : 'right';
-          rotation = (scaleX < 0 ? -0.55 : 0.55) + this.anim.playerSlipTilt * 0.3;
+          // 負の回転角（-0.58 rad ≈ -33.2度）：
+          // 体が左後ろにのけぞり、足が右前方へ放り出され、顔が「右斜め上方（空）」をしっかり仰ぎ見る！
+          rotation = -0.58;
         }
       }
 
@@ -2503,7 +2495,9 @@ export class CanvasRenderer {
         this.anim.playerEscapeJumpY +
         this.anim.playerSlipWobbleY +
         fallSquash.offsetY;
-      const totalRotation = rotation + this.anim.playerSlipTilt;
+      const totalRotation =
+        rotation +
+        (isSlidingOnIce ? (scaleX < 0 ? 1 : -1) * this.anim.playerSlipTilt : 0);
       ctx.save();
       ctx.translate(cx, cy + totalYOffset);
       ctx.rotate(totalRotation);
@@ -2706,8 +2700,9 @@ export class CanvasRenderer {
       // 5. 氷上スリップ焦り（冷や汗漫符 💦）および転倒（ピヨピヨ星 💫）演出描画
       if (this.anim.isIceSliding()) {
         // --- 焦り冷や汗漫符 💦 ---
-        // 頭上右上にコミカルな冷や汗アイコン
-        const sweatX = cx + size * 0.28;
+        // 頭上（仰け反った頭の側）にコミカルな冷や汗アイコン
+        const sweatOffsetX = (scaleX < 0 ? 1 : -1) * size * 0.28;
+        const sweatX = cx + sweatOffsetX;
         const sweatY = barY - 14 + Math.sin(this.anim.globalTime * 12) * 2;
         ctx.save();
         ctx.translate(sweatX, sweatY);
