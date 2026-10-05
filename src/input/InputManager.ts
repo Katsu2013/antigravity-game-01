@@ -70,6 +70,10 @@ export class InputManager {
     this.bindMouse();
     this.bindTouch();
     this.bindUIButtons();
+
+    // ズームボタンの初期表示設定と同期リスナー
+    this.updateZoomButtonUI(this.renderer.zoom);
+    this.renderer.onZoomChange = (z) => this.updateZoomButtonUI(z);
   }
 
   /**
@@ -227,6 +231,16 @@ export class InputManager {
       if (['v', 'm'].includes(keyLower)) {
         e.preventDefault();
         this.toggleMinimap();
+        return;
+      }
+      if (['+', ';', '='].includes(e.key)) {
+        e.preventDefault();
+        this.renderer.setZoom(this.renderer.zoom + 0.15);
+        return;
+      }
+      if (['-', '_'].includes(e.key)) {
+        e.preventDefault();
+        this.renderer.setZoom(this.renderer.zoom - 0.15);
         return;
       }
       if (['p', 'g'].includes(keyLower)) {
@@ -486,6 +500,28 @@ export class InputManager {
   }
 
   /**
+   * カメラズームのHUDボタン表示を最新の倍率に更新します。
+   */
+  public updateZoomButtonUI(zoom: number): void {
+    const btn = document.getElementById('btn-zoom-toggle');
+    if (btn) {
+      btn.textContent = `🔍 ${Math.round(zoom * 100)}%`;
+    }
+  }
+
+  /**
+   * カメラのズーム倍率を主要プリセット（100% -> 150% -> 200%）で循環切り替えします。
+   */
+  public toggleZoom(): void {
+    const nextZoom = this.renderer.cycleZoom();
+    this.updateZoomButtonUI(nextZoom);
+    this.engine.addLog(
+      `画面表示を ${Math.round(nextZoom * 100)}% に切り替えました。`,
+      'info'
+    );
+  }
+
+  /**
    * 仮想ボタンの長押しオートリピートを安全に停止・クリーンアップします。
    */
   private stopButtonRepeat(): void {
@@ -638,6 +674,12 @@ export class InputManager {
         return;
       }
       this.quickZapStaff();
+    });
+
+    // HUDのズーム切替ボタン
+    document.getElementById('btn-zoom-toggle')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.toggleZoom();
     });
 
     // HUDのミニマップ切替ボタン

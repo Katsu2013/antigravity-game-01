@@ -35,8 +35,11 @@ export class CanvasRenderer {
   /** 基準となる1タイルのピクセルサイズ（デバイス幅に応じて動的に変動） */
   public tileSize = 32;
 
-  /** 現在のカメラズーム倍率 */
-  public zoom = 1.0;
+  /** 現在のカメラズーム倍率（標準: 1.5 = 150%拡大） */
+  public zoom = 1.5;
+
+  /** ズーム倍率変更時コールバック */
+  public onZoomChange?: (zoom: number) => void;
 
   /** ミニマップを表示するかどうかのフラグ */
   public showMinimap = true;
@@ -68,6 +71,23 @@ export class CanvasRenderer {
     this.engine = engine;
     this.anim = new AnimationEngine();
 
+    // ローカルストレージから保存されたズーム設定を復元（デフォルトは150% / 1.5倍）
+    try {
+      const savedZoom = localStorage.getItem('rogue_camera_zoom');
+      if (savedZoom !== null) {
+        const parsed = parseFloat(savedZoom);
+        if (!isNaN(parsed) && parsed >= 0.8 && parsed <= 3.0) {
+          this.zoom = parsed;
+        } else {
+          this.zoom = 1.5;
+        }
+      } else {
+        this.zoom = 1.5;
+      }
+    } catch {
+      this.zoom = 1.5;
+    }
+
     const ctx = canvas.getContext('2d');
     if (!ctx) {
       throw new Error('Canvas 2D context not supported');
@@ -81,6 +101,9 @@ export class CanvasRenderer {
 
     // ゲームエンジンとのアニメーションイベント配線
     this.bindEngineEvents();
+
+    // マウスホイールによるズーム操作（Ctrl+ホイール または 通常ホイール）
+    this.setupWheelZoom();
 
     this.handleResize();
     window.addEventListener('resize', () => this.handleResize());
@@ -270,6 +293,96 @@ export class CanvasRenderer {
   public toggleMinimap(): boolean {
     this.showMinimap = !this.showMinimap;
     return this.showMinimap;
+  }
+
+  /**
+   * カメラのズーム倍率を設定し、ローカルストレージへ保存します。
+   *
+   * @param newZoom - 新しいズーム倍率（0.8〜3.0）
+   */
+  public setZoom(newZoom: number): void {
+    const clamped = Math.min(3.0, Math.max(0.8, Math.round(newZoom * 100) / 100));
+    this.zoom = clamped;
+    try {
+      localStorage.setItem('rogue_camera_zoom', String(this.zoom));
+    } catch {
+      // ignore
+    }
+    this.onZoomChange?.(this.zoom);
+    this.render();
+  }
+
+  /**
+   * ズーム倍率を主要プリセット（100% -> 150% -> 200% -> 100%）で循環切り替えします。
+   *
+   * @returns 切り替え後のズーム倍率
+   */
+  public cycleZoom(): number {
+    if (this.zoom < 1.25) {
+      this.setZoom(1.5);
+    } else if (this.zoom < 1.75) {
+      this.setZoom(2.0);
+    } else {
+      this.setZoom(1.0);
+    }
+    return this.zoom;
+  }
+
+  /**
+   * キャンバス上でのマウスホイール操作およびピンチ操作によるズーム拡大縮小を登録します。
+   */
+  private setupWheelZoom(): void {
+    // 1. マウスホイール操作（キャンバス上スクロールで直感的に拡縮）
+    this.canvas.addEventListener(
+      'wheel',
+      (e: WheelEvent) => {
+        e.preventDefault();
+        const delta = e.deltaY < 0 ? 0.15 : -0.15;
+        this.setZoom(this.zoom + delta);
+      },
+      { passive: false }
+    );
+
+    // 2. スマホのピンチズーム操作（2本指タッチ）
+    let initialPinchDist = 0;
+    let initialZoom = 1.5;
+
+    this.canvas.addEventListener(
+      'touchstart',
+      (e: TouchEvent) => {
+        if (e.touches.length === 2) {
+          const dx = e.touches[0].clientX - e.touches[1].clientX;
+          const dy = e.touches[0].clientY - e.touches[1].clientY;
+          initialPinchDist = Math.hypot(dx, dy);
+          initialZoom = this.zoom;
+        }
+      },
+      { passive: true }
+    );
+
+    this.canvas.addEventListener(
+      'touchmove',
+      (e: TouchEvent) => {
+        if (e.touches.length === 2 && initialPinchDist > 0) {
+          const dx = e.touches[0].clientX - e.touches[1].clientX;
+          const dy = e.touches[0].clientY - e.touches[1].clientY;
+          const dist = Math.hypot(dx, dy);
+          const ratio = dist / initialPinchDist;
+          this.setZoom(initialZoom * ratio);
+        }
+      },
+      { passive: true }
+    );
+
+    this.canvas.addEventListener(
+      'touchend',
+      (e: TouchEvent) => {
+        if (e.touches.length < 2) {
+          initialPinchDist = 0;
+        }
+      },
+      { passive: true }
+    );
   }
 
   /**
@@ -2381,7 +2494,7 @@ export class CanvasRenderer {
 
     const cx = screenX + tileSize / 2;
     const cy = screenY + tileSize / 2;
-    const size = monster.type === 'ABYSS_LORD' ? tileSize * 1.35 : tileSize * 0.95;
+    const size = monster.type === 'ABYSS_LORD' ? tileSize * 1.45 : tileSize * 1.05;
 
     // アイドルおよび歩行アニメーションの計算
     const time = this.anim.globalTime * 3.5 + anim.idleOffset;
@@ -2620,7 +2733,7 @@ export class CanvasRenderer {
 
     const cx = screenX + tileSize / 2;
     const cy = screenY + tileSize / 2;
-    const size = tileSize * 0.95;
+    const size = tileSize * 1.05;
 
     if (isAlive) {
       // 生存中なら死亡アニメーション状態をリセット
