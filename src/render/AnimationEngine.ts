@@ -274,8 +274,7 @@ export class AnimationEngine {
   private playerSlipFallTime = -1;
 
   /**
-   * 氷スリップ転倒ダウンの演出所要時間（秒）。
-   * - 想定値: 0.45（定数秒）
+   * 氷スリップ転倒ダウン演出の所要時間（秒）。
    * - 初期値: 0.45
    */
   private playerSlipFallDuration = 0.45;

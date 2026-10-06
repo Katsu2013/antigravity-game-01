@@ -56,8 +56,6 @@ export interface ItemActionResult {
 export class ItemSystem {
   /**
    * インベントリのデフォルト標準最大所持枠数。
-   * - 想定値: 12（定数）
-   * - 初期値: 12
    */
   public static readonly MAX_INVENTORY_SIZE = 12;
 
