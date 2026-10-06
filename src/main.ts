@@ -13,6 +13,7 @@ import { UIManager } from './ui/UIManager';
 
 /**
  * Service Worker を登録し、オフラインSPAおよびPWA機能を有効化します。
+ * 新しいバージョンがサーバーに配備された場合は自動更新チェックと即時同期を実行します。
  */
 function registerServiceWorker(): void {
   if ('serviceWorker' in navigator) {
@@ -24,10 +25,41 @@ function registerServiceWorker(): void {
             'Service Worker registered successfully with scope:',
             registration.scope
           );
+
+          // 起動時に最新のService Workerが存在するかサーバーへ確認
+          registration.update().catch((err) => {
+            console.warn('Service Worker update check failed:', err);
+          });
+
+          // 新バージョンインストール完了検知時に即時アクティベート要求
+          registration.addEventListener('updatefound', () => {
+            const installingWorker = registration.installing;
+            if (installingWorker) {
+              installingWorker.addEventListener('statechange', () => {
+                if (
+                  installingWorker.state === 'installed' &&
+                  navigator.serviceWorker.controller
+                ) {
+                  console.log('New Service Worker installed, requesting skipWaiting...');
+                  installingWorker.postMessage({ type: 'SKIP_WAITING' });
+                }
+              });
+            }
+          });
         })
         .catch((error) => {
           console.warn('Service Worker registration failed:', error);
         });
+
+      // 新しい Service Worker がクライアント制御を開始した際に最新版へ自動リフレッシュ
+      let isRefreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!isRefreshing) {
+          isRefreshing = true;
+          console.log('Service Worker controller changed, reloading page...');
+          window.location.reload();
+        }
+      });
     });
   }
 }

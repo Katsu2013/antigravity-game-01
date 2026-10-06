@@ -6,11 +6,71 @@
   <meta name="theme-color" content="#111827" />
   <meta name="description" content="完全オフラインで遊べるWebローグライクゲーム" />
   <title>RogueLabyrinth</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <link rel="manifest" href="./manifest.json" />
   <link rel="apple-touch-icon" href="./icons/icon-192.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="RogueLabyrinth" />
+
+  <!-- クリティカル初期スタイル: 外部CSSの読込前・読込失敗時の画面崩壊(FOUC)を完全防止 -->
+  <style>
+    html, body {
+      background-color: #030712 !important;
+      color: #f3f4f6 !important;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .hidden {
+      display: none !important;
+    }
+    .modal-overlay {
+      display: none !important;
+    }
+    .modal-overlay:not(.hidden) {
+      display: flex !important;
+    }
+    .title-overlay.hidden {
+      display: none !important;
+    }
+    .floor-toast.hidden {
+      display: none !important;
+    }
+  </style>
+
+  <!-- アセット読み込み障害時の自動キャッシュリカバリ -->
+  <script>
+    window.addEventListener('error', function(event) {
+      var target = event.target;
+      if (target && (target.tagName === 'LINK' || target.tagName === 'SCRIPT')) {
+        var src = target.src || target.href;
+        if (src && (src.indexOf('/assets/') !== -1 || src.indexOf('style.css') !== -1)) {
+          console.warn('[CacheRecovery] Failed to load asset:', src);
+          if ('serviceWorker' in navigator && !sessionStorage.getItem('cache_recovery_triggered')) {
+            sessionStorage.setItem('cache_recovery_triggered', '1');
+            navigator.serviceWorker.getRegistrations().then(function(regs) {
+              for (var i = 0; i < regs.length; i++) {
+                regs[i].unregister();
+              }
+              if ('caches' in window) {
+                caches.keys().then(function(names) {
+                  return Promise.all(names.map(function(n) { return caches.delete(n); }));
+                }).then(function() {
+                  window.location.reload();
+                });
+              } else {
+                window.location.reload();
+              }
+            });
+          }
+        }
+      }
+    }, true);
+  </script>
   <link rel="stylesheet" href="./src/style.css" />
 </head>
 <body class="bg-gray-950 text-gray-100 select-none overflow-hidden m-0 p-0">
