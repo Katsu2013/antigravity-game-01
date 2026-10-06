@@ -210,10 +210,17 @@ export type GameAction =
 
 ---
 
-## 8. 将来の拡張性（WASM / WebGL）
+## 9. コーディング規約 & TypeDocドキュメンテーション設計
 
-本アーキテクチャでは、ゲームロジック（`GameEngine`）と描画（`CanvasRenderer`）が完全にインターフェースで分離されています。
-- **WASM適用ポイント**:
-  - ダンジョン自動生成や、数千体のユニット・領地計算（モナーク風要素）を追加したくなった場合、`core/algorithms/` 内の計算モジュールを Rust で作成した `.wasm` モジュールに透過的に差し替え可能。
-- **WebGL適用ポイント**:
-  - 大量のエフェクトやパーティクルを描画したくなった場合、`render/CanvasRenderer.ts` を PixiJS または Three.js などの WebGL レンダラーに容易に置換可能。
+本プロジェクトでは、コードの保守性と堅牢性を長期にわたり維持するため、詳細なコーディング規約およびTypeDoc/JSDoc記述ポリシー（[docs/07_coding_standards.md](file:///c:/Users/katsu/Documents/Antigravity/WebGame01/docs/07_coding_standards.md)）を制定しています。
+
+### 規約の主要ポイント
+1. **変数・プロパティへのTypeDocコメントの完全義務化**:
+   - すべてのクラスプロパティ、インターフェース/型のフィールド、定数、モジュール変数にJSDocコメント（`/** ... */`）を付与。
+2. **フラグ値（boolean / 状態値 / Unionリテラル）の特別記述ルール**:
+   - ① フラグの概要と役割
+   - ② 想定値・許容値とその意味（`true` / `false`、各リテラル値の意味）
+   - ③ 初期値（生成時のデフォルト値）
+   - ④ 状態変化の契機（どのシステムやイベントで値が変わるか）
+3. **TypeDoc設定（`typedoc.json`）**:
+   - `"excludePrivate": false` を設定し、privateな内部状態フラグやキャッシュも含めた完全なAPIリファレンスを `docs/api` に自動生成。

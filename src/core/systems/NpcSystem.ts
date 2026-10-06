@@ -14,20 +14,40 @@ import { SoundSystem } from '../../audio/SoundSystem';
 export type NpcEventType = 'ADVENTURER_TRADE' | 'GAMBLER_RPS' | 'BLACKSMITH_FORGE';
 
 /**
- * NPCインタラクションの対話データ
+ * NPCインタラクションの対話モーダル用データインターフェース。
  */
 export interface NpcDialogData {
+  /** 対話対象のNPC（Monsterインスタンス） */
   npc: Monster;
+  /** モーダルヘッダーに表示するNPC名・タイトル */
   title: string;
+  /** NPCが語りかけてくるセリフ・説明本文 */
   message: string;
+  /**
+   * 発生しているイベントの種別。
+   * - 想定値:
+   *   - `'ADVENTURER_TRADE'`: 旅の冒険者レオンとの物々交換
+   *   - `'GAMBLER_RPS'`: 賭博仙人ガンジとのじゃんけん大勝負
+   *   - `'BLACKSMITH_FORGE'`: さすらいの鍛冶職人バルカンとの無料鍛錬
+   */
   eventType: NpcEventType;
-  // 物々交換用データ
+  /** 物々交換で欲しがっているアイテムカテゴリの日本語名（例: 「武器」「巻物」） */
   tradeWantCategoryName?: string;
+  /** 物々交換で見返りとして提示されている報酬アイテム */
   tradeOfferedItem?: Item;
+  /** プレイヤーの所持品の中で交換条件に合致するアイテム一覧 */
   playerMatchingItems?: Item[];
-  // 鍛冶屋用データ
+  /** 鍛冶屋で鍛錬可能なプレイヤーの装備中武器 */
   equippedWeapon?: Item | null;
+  /** 鍛冶屋で鍛錬可能なプレイヤーの装備中盾 */
   equippedShield?: Item | null;
+  /**
+   * 当該イベントがこのフロアですでに完了・終了済みかどうかのフラグ。
+   * - 想定値:
+   *   - `true`: 既に交換や鍛錬を終えており、追加のイベントは不可
+   *   - `false` / `undefined`: 初回対話でありイベント実行可能
+   * - 初期値: `undefined`
+   */
   alreadyDone?: boolean;
 }
 

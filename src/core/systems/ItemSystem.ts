@@ -10,19 +10,42 @@ import { CombatSystem } from './CombatSystem';
  * アイテム操作の結果情報を表すインターフェース。
  */
 export interface ItemActionResult {
-  /** 操作が成功したかどうか */
+  /**
+   * 操作が成功したかどうかのフラグ。
+   * - 想定値:
+   *   - `true`: アイテムの使用・装備・投擲・拾得・売買が正常に成立した
+   *   - `false`: 容量不足・対象不在・金不足等により失敗した
+   * - 初期値: 各操作の判定結果に基づく
+   */
   success: boolean;
-  /** ログ表示用の結果メッセージ */
+  /** ログ表示用の結果メッセージ（例: 「薬草を飲んだ。HPが25回復した！」） */
   message: string;
-  /** 飛翔体または光線の始点・終点情報（アニメーション用） */
+  /**
+   * 飛翔体または魔法光線の始点・終点情報（アニメーション演出用）。
+   * - 想定値: 演出情報オブジェクト、または演出なしの場合 `undefined`
+   */
   projectile?: {
+    /** 飛翔体の射出始点X座標 */
     fromX: number;
+    /** 飛翔体の射出始点Y座標 */
     fromY: number;
+    /** 飛翔体の着弾終点X座標 */
     toX: number;
+    /** 飛翔体の着弾終点Y座標 */
     toY: number;
+    /**
+     * 飛翔体の種別。
+     * - 想定値: `'ARROW'` (矢), `'BEAM'` (魔法光線), `'STONE'` (投擲石), `'ITEM'` (投擲アイテム)
+     */
     type: 'ARROW' | 'BEAM' | 'STONE' | 'ITEM';
+    /** 飛翔体の発光カラーコード（HEX） */
     color: string;
+    /** 命中した対象モンスターのID（存在する場合） */
     hitMonsterId?: string;
+    /**
+     * モンスターまたは壁に命中したかどうかのフラグ。
+     * - 想定値: `true` (命中), `false` (目標地点到達または消滅)
+     */
     isHit?: boolean;
   };
 }
@@ -31,7 +54,11 @@ export interface ItemActionResult {
  * アイテム関連のロジックを統括する静的システムクラス。
  */
 export class ItemSystem {
-  /** インベントリの最大所持枠数 */
+  /**
+   * インベントリのデフォルト標準最大所持枠数。
+   * - 想定値: 12（定数）
+   * - 初期値: 12
+   */
   public static readonly MAX_INVENTORY_SIZE = 12;
 
   /**

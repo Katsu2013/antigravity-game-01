@@ -45,28 +45,60 @@ export interface RunStats {
  * IndexedDB との通信およびデータ永続化を統括するシングルトン風マネージャークラス。
  */
 export class StorageManager {
-  /** IndexedDB データベース名 */
+  /**
+   * IndexedDB データベース名。
+   * - 想定値: 'RogueLabyrinthDB'（定数）
+   * - 初期値: 'RogueLabyrinthDB'
+   */
   private static readonly DB_NAME = 'RogueLabyrinthDB';
 
-  /** データベーススキーマバージョン */
+  /**
+   * データベーススキーマバージョン。
+   * - 想定値: 1（定数）
+   * - 初期値: 1
+   */
   private static readonly DB_VERSION = 1;
 
-  /** 中断セーブデータ用オブジェクトストア名 */
+  /**
+   * 中断セーブデータ用オブジェクトストア名。
+   * - 想定値: 'current_run'（定数）
+   * - 初期値: 'current_run'
+   */
   private static readonly STORE_CURRENT_RUN = 'current_run';
 
-  /** 通算戦歴・ハイスコア用オブジェクトストア名 */
+  /**
+   * 通算戦歴・ハイスコア用オブジェクトストア名。
+   * - 想定値: 'highscores'（定数）
+   * - 初期値: 'highscores'
+   */
   private static readonly STORE_HIGHSCORES = 'highscores';
 
-  /** 中断セーブデータのプライマリキー名 */
+  /**
+   * 中断セーブデータのプライマリキー名。
+   * - 想定値: 'active'（定数）
+   * - 初期値: 'active'
+   */
   private static readonly KEY_ACTIVE_RUN = 'active';
 
-  /** ブラウザ終了・クラッシュ時にも即時同期書き込み可能なlocalStorageバックアップキー名 */
+  /**
+   * ブラウザ終了・クラッシュ時にも即時同期書き込み可能なlocalStorageバックアップキー名。
+   * - 想定値: 'RogueLabyrinth_ActiveRun'（定数）
+   * - 初期値: 'RogueLabyrinth_ActiveRun'
+   */
   private static readonly LOCAL_STORAGE_KEY = 'RogueLabyrinth_ActiveRun';
 
-  /** 現在表示されている画面状態（タイトルかプレイ中か）を記録するlocalStorageキー名 */
+  /**
+   * 現在表示されている画面状態（タイトルかプレイ中か）を記録するlocalStorageキー名。
+   * - 想定値: 'RogueLabyrinth_CurrentScreen'（定数）
+   * - 初期値: 'RogueLabyrinth_CurrentScreen'
+   */
   private static readonly LOCAL_STORAGE_SCREEN_KEY = 'RogueLabyrinth_CurrentScreen';
 
-  /** 開かれたIDBDatabaseインスタンスのキャッシュ */
+  /**
+   * 開かれたIDBDatabaseインスタンスの接続キャッシュPromise。
+   * - 想定値: Promise<IDBDatabase> または未接続時 `null`
+   * - 初期値: `null`
+   */
   private static dbPromise: Promise<IDBDatabase> | null = null;
 
   /**

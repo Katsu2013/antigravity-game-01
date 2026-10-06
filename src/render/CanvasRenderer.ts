@@ -17,40 +17,79 @@ import { SoundSystem } from '../audio/SoundSystem';
  * 2D Canvas描画管理クラス。
  */
 export class CanvasRenderer {
-  /** 描画先の HTMLCanvasElement */
+  /**
+   * 描画先の HTMLCanvasElement。
+   */
   private canvas: HTMLCanvasElement;
 
-  /** Canvasの2D描画コンテキスト */
+  /**
+   * Canvasの2D描画コンテキスト。
+   */
   private ctx: CanvasRenderingContext2D;
 
-  /** 描画データを参照するゲームエンジンインスタンス */
+  /**
+   * 描画元データを参照するゲームエンジンインスタンス。
+   */
   private engine: GameEngine;
 
-  /** Canvasを内包する親コンテナ要素 */
+  /**
+   * Canvasを内包する親コンテナ要素（リサイズ計算基準）。
+   */
   private container: HTMLElement;
 
-  /** アニメーション状態を管理するエンジン */
+  /**
+   * アニメーション状態（イージング、パーティクル、飛翔体）を管理するエンジン。
+   */
   public anim: AnimationEngine;
 
-  /** 基準となる1タイルのピクセルサイズ（デバイス幅に応じて動的に変動） */
+  /**
+   * 基準となる1タイルのピクセルサイズ（デバイス解像度やウィンドウ幅に応じて動的に変動）。
+   * - 想定値: 24 〜 48 の整数（基準値: 32）
+   * - 初期値: 32
+   */
   public tileSize = 32;
 
-  /** 現在のカメラズーム倍率（標準: 1.5 = 150%拡大） */
+  /**
+   * 現在のカメラズーム倍率。
+   * - 想定値: 0.8 〜 3.0 の浮動小数点数（標準値: 1.5 = 150%迫力ズーム）
+   * - 初期値: 1.5（localStorage 'rogue_camera_zoom' より復元）
+   */
   public zoom = 1.5;
 
-  /** ズーム倍率変更時コールバック */
+  /**
+   * ズーム倍率変更時コールバック関数（HUDボタンの倍率表示更新用）。
+   * - 初期値: `undefined`
+   */
   public onZoomChange?: (zoom: number) => void;
 
-  /** ミニマップを表示するかどうかのフラグ */
+  /**
+   * ミニマップを画面右上にオーバーレイ描画するかどうかのフラグ。
+   * - 想定値:
+   *   - `true`: ミニマップ（探索済みマップと敵・階段位置）を表示
+   *   - `false`: ミニマップを非表示（全画面ダンジョンビュー）
+   * - 初期値: `true`
+   */
   public showMinimap = true;
 
-  /** requestAnimationFrame のループ管理用ID */
+  /**
+   * requestAnimationFrame の描画ループ管理用ID。
+   * - 想定値: requestAnimationFrameが返却する正の整数、または停止時 `null`
+   * - 初期値: `null`
+   */
   private rafId: number | null = null;
 
-  /** 前フレームのタイムスタンプ（デルタタイム計算用） */
+  /**
+   * 前フレームのタイムスタンプ（ミリ秒、デルタタイム計算用）。
+   * - 想定値: performance.now() または requestAnimationFrameのタイムスタンプ
+   * - 初期値: 0
+   */
   private lastTime = 0;
 
-  /** 直前に描画したフロア階層番号（階層切り替え検知用） */
+  /**
+   * 直前に描画したフロア階層番号（階層切り替え・新フロア到達検知用）。
+   * - 想定値: 1以上の正の整数
+   * - 初期値: 1
+   */
   private lastFloor = 1;
 
   /**

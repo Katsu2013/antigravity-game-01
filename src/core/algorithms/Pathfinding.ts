@@ -9,19 +9,37 @@ import { DungeonMap, Point, TileType } from '../types';
 /**
  * A* 探索のオープンリスト/クローズドリスト用ノード情報インターフェース。
  */
-interface Node {
-  /** X座標 */
+export interface PathNode {
+  /**
+   * グリッドX座標。
+   * - 想定値: 0以上の整数
+   */
   x: number;
-  /** Y座標 */
+  /**
+   * グリッドY座標。
+   * - 想定値: 0以上の整数
+   */
   y: number;
-  /** スタート地点からの実コスト (g) */
+  /**
+   * スタート地点からこのノードまでの移動コスト実測値 (g)。
+   * - 想定値: 0以上の数値
+   */
   g: number;
-  /** ゴールまでの推定コスト・ヒューリスティック (h) */
+  /**
+   * このノードからゴールまでの推定コスト・ヒューリスティック (h)。
+   * - 想定値: 0以上の数値（チェビシェフまたはマンハッタン距離）
+   */
   h: number;
-  /** 合計スコア f = g + h */
+  /**
+   * 総合評価スコア (f = g + h)。
+   * - 想定値: 0以上の数値
+   */
   f: number;
-  /** 経路復元用の親ノード参照 */
-  parent: Node | null;
+  /**
+   * 経路復元用の親ノード参照。
+   * - 想定値: 直前の PathNode インスタンスまたはスタート時 `null`
+   */
+  parent: PathNode | null;
 }
 
 /**
@@ -49,7 +67,7 @@ export class Pathfinding {
       return null;
     }
 
-    const openList: Node[] = [];
+    const openList: PathNode[] = [];
     const closedSet: Set<string> = new Set();
 
     /** 座標を一意な文字列キーに変換するヘルパー関数 */
@@ -63,7 +81,7 @@ export class Pathfinding {
       }
     }
 
-    const startNode: Node = {
+    const startNode: PathNode = {
       x: start.x,
       y: start.y,
       g: 0,
@@ -102,7 +120,7 @@ export class Pathfinding {
 
       // ゴールに到達した場合、親を遡って「スタート直後の最初の1歩」を特定
       if (current.x === goal.x && current.y === goal.y) {
-        let curr: Node = current;
+        let curr: PathNode = current;
         while (curr.parent && curr.parent.parent) {
           curr = curr.parent;
         }

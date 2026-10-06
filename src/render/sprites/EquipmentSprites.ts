@@ -68,10 +68,18 @@ export type EquipmentSpriteId =
  * 武器および盾のオーバーレイスプライト管理クラス。
  */
 export class EquipmentSprites {
-  /** キャッシュされた装備スプライト画像マップ */
+  /**
+   * キャッシュされた装備スプライト画像マップ。
+   * - 想定値: Map<EquipmentSpriteId, HTMLImageElement>
+   * - 初期値: 空のMap
+   */
   private static imageCache: Map<EquipmentSpriteId, HTMLImageElement> = new Map();
 
-  /** 初期化完了を通知するPromise */
+  /**
+   * 初期化完了を通知するPromise。
+   * - 想定値: Promise<void> または未初期化時 `null`
+   * - 初期値: `null`
+   */
   private static readyPromise: Promise<void> | null = null;
 
   // =========================================================================

@@ -2,6 +2,7 @@
   "$schema": "https://typedoc.org/schema.json",
   "entryPoints": [
     "src/main.ts",
+    "src/audio/SoundSystem.ts",
     "src/core/types.ts",
     "src/core/GameEngine.ts",
     "src/core/algorithms/DungeonGenerator.ts",
@@ -10,6 +11,9 @@
     "src/core/entities/EntityFactory.ts",
     "src/core/systems/CombatSystem.ts",
     "src/core/systems/ItemSystem.ts",
+    "src/core/systems/NpcSystem.ts",
+    "src/core/systems/ShopSystem.ts",
+    "src/core/systems/SynthesisSystem.ts",
     "src/storage/StorageManager.ts",
     "src/render/CanvasRenderer.ts",
     "src/render/AnimationEngine.ts",
@@ -23,5 +27,6 @@
   "out": "docs/api",
   "name": "RogueLabyrinth API Reference",
   "readme": "README.md",
-  "includeVersion": true
+  "includeVersion": true,
+  "excludePrivate": false
 }

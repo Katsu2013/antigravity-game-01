@@ -25,11 +25,39 @@ export interface ShopBill {
   canAfford: boolean;
 }
 
+/**
+ * 店主との会話イベント処理結果を表すインターフェース。
+ */
 export interface ShopkeeperTalkResult {
+  /** 表示するメッセージ本文 */
   message: string;
+  /**
+   * メッセージの表示種別。
+   * - 想定値: `'normal' | 'info' | 'warning' | 'damage' | 'turn-header'`
+   * - 初期値: 通常会話時は `'turn-header'`
+   */
   type: 'normal' | 'info' | 'warning' | 'damage' | 'turn-header';
+  /**
+   * 会話によって発生した特殊アクション。
+   * - 想定値:
+   *   - `'slap'`: しつこい連続会話に対する怒りの張り手・ビンタ（ノックバック＋小ダメージ）
+   *   - `'close_shop'`: 怒りによる強制閉店（シャッターを下ろして取引拒否）
+   *   - `'checkout'`: 会計完了（売買精算）
+   *   - `undefined`: 通常の挨拶・案内会話
+   * - 初期値: `undefined`
+   */
   actionTaken?: 'slap' | 'close_shop' | 'checkout';
+  /**
+   * ビンタ・張り手による被ダメージ量。
+   * - 想定値: 0以上の整数（通常3〜5ダメージ）
+   * - 初期値: `undefined`
+   */
   slapDamage?: number;
+  /**
+   * ビンタによるノックバック吹き飛ばし方向ベクトル。
+   * - 想定値: `{ dx: number, dy: number }`
+   * - 初期値: `undefined`
+   */
   knockbackDir?: { dx: number; dy: number };
 }
 
@@ -37,12 +65,31 @@ export interface ShopkeeperTalkResult {
  * 店主が泥棒中のプレイヤーに対して遠隔攻撃を実行した結果を表すインターフェース。
  */
 export interface ShopkeeperTheftAttackResult {
+  /**
+   * 遠隔攻撃が実行されたかどうかの真偽フラグ。
+   * - 想定値:
+   *   - `true`: 射線が通っており遠隔攻撃が命中・発動した
+   *   - `false`: 射線が通っていない、または距離制限により実行されなかった
+   * - 初期値: `false`
+   */
   executed: boolean;
+  /** 発動した攻撃技の名称（例: 「居合い飛燕斬り」「ゴールド手裏剣」） */
   attackName: string;
+  /** ログに表示する攻撃メッセージ本文 */
   message: string;
+  /**
+   * 与えたダメージ量。
+   * - 想定値: 1以上の正の整数（店主の超火力: 12〜25ダメージ）
+   */
   damage: number;
+  /**
+   * 投射物エフェクトの種別。
+   * - 想定値: `'ITEM'` | `'ARROW'` | `'BEAM'` | `'STONE'`
+   */
   projectileType: 'ITEM' | 'ARROW' | 'BEAM' | 'STONE';
+  /** 投射物の発光カラーコード（例: '#f59e0b', '#38bdf8'） */
   color: string;
+  /** 再生するWeb Audio SEの種別 */
   soundType: 'thunder' | 'slash' | 'hammer' | 'throw' | 'slap';
 }
 
@@ -50,11 +97,17 @@ export interface ShopkeeperTheftAttackResult {
  * 店主が泥棒追撃時に繰り出す遠隔攻撃の定義インターフェース。
  */
 export interface ShopkeeperRangedAttack {
+  /** 攻撃技の表示名称 */
   name: string;
+  /** 攻撃時のセリフ・メッセージ */
   msg: string;
+  /** 基本ダメージ値（10〜25） */
   damage: number;
+  /** 投射物の演出タイプ */
   projectileType: 'ITEM' | 'ARROW' | 'BEAM' | 'STONE';
+  /** 投射物のエフェクトカラー */
   color: string;
+  /** 再生するSE種別 */
   soundType: 'thunder' | 'slash' | 'hammer' | 'throw' | 'slap';
 }
 
@@ -62,18 +115,29 @@ export interface ShopkeeperRangedAttack {
  * 店主キャラクターの個性・外見・専用台詞を定義するインターフェース。
  */
 export interface ShopkeeperProfile {
+  /** 店主プロファイル固有ID */
   id: 'NERO' | 'TORNEKO' | 'SHIREN' | 'GOLDO' | 'CELIA';
+  /** 平常時の店主表示名（例: 「大商人トルネー」） */
   name: string;
+  /** 激怒・追撃モード時の表示名（例: 「激怒の大商人トルネー」） */
   angryName: string;
+  /** 平常時のスプライト/ネームカラー（HEX） */
   color: string;
+  /** 激怒時のオーラカラー（HEX） */
   angryColor: string;
+  /** 初回会話・立ち寄り時の挨拶台詞 */
   greetingMsg: string;
+  /** 所持金不足時の警告台詞生成関数 */
   shortageMsg: (need: number, has: number) => string;
+  /** アイテム購入完了時の感謝台詞生成関数 */
   purchaseMsg: (cost: number, remain: number) => string;
+  /** アイテム売却受領時の台詞生成関数 */
   sellMsg: (earned: number, total: number) => string;
+  /** 売買相殺精算時の台詞生成関数 */
   settleMsg: (cost: number, sell: number, remain: number) => string;
+  /** 泥棒発覚時の激怒台詞 */
   angryTheftMsg: string;
-  /** しつこく話しかけられた時の困惑・警告台詞 */
+  /** しつこく話しかけられた時の困惑・警告台詞生成関数 */
   annoyedMsg: (streak: number) => string;
   /** 怒りのビンタ・張り手台詞 */
   slapQuote: string;

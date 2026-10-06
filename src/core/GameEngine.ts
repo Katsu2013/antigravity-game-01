@@ -32,25 +32,51 @@ import {
  * ゲーム全体のステートとルール進行を統括する中央エンジンクラス。
  */
 export class GameEngine {
-  /** 現在のダンジョンフロアの完全なマップ情報 */
+  /**
+   * 現在のダンジョンフロアの完全なマップ情報（地形タイル、部屋、敵、アイテム、ギミック）。
+   * - 初期値: `initDefaultState()` または `resumeSavedGame()` 実行時に初期化生成
+   */
   public map!: DungeonMap;
 
-  /** プレイヤーの現在ステータス（座標、HP、満腹度等） */
+  /**
+   * プレイヤーキャラクターの現在ステータス（座標、HP、満腹度、装備品、インベントリ等）。
+   * - 初期値: `initDefaultState()` でLv1初期ステータス（HP15, 満腹度100%）として生成
+   */
   public player!: PlayerState;
 
-  /** 行動ログの履歴リスト（新しいログが先頭） */
+  /**
+   * 行動ログ・メッセージの履歴リスト（最新ログが先頭インデックス0）。
+   * - 想定値: GameLogEntryオブジェクトの配列（上限50件程度保持）
+   * - 初期値: `[]`（空配列）
+   */
   public logs: GameLogEntry[] = [];
 
-  /** 死亡時の敗因メッセージ（スコア記録用） */
+  /**
+   * 死亡時の敗因メッセージ（ハイスコア記録・冒険結果画面表示用）。
+   * - 想定値: 「ゴブリンの一撃により力尽きた」「空腹で力尽きた」等の文字列
+   * - 初期値: `''`（空文字）
+   */
   public lastDefeatCause = '';
 
-  /** ログエントリの一意なIDを生成するための連番カウンタ */
+  /**
+   * ログエントリの一意なIDを生成するための内部連番カウンタ。
+   * - 想定値: 0以上の整数（ログ追加ごとにインクリメント）
+   * - 初期値: `0`
+   */
   private logIdCounter = 0;
 
-  /** ゲーム状態が変化した際に通知を受け取るコールバック関数のリスト */
+  /**
+   * ゲーム状態が変化（ターン経過、HP変動等）した際に呼び出されるリスナー関数のリスト。
+   * - 想定値: コールバック関数の配列
+   * - 初期値: `[]`（空配列）
+   */
   private listeners: (() => void)[] = [];
 
-  /** 攻撃アニメーション発生時コールバック */
+  /**
+   * 攻撃演出アニメーション発生時のコールバック関数。
+   * - 想定引数: attackerId（攻撃者ID）, dx/dy（攻撃方向ベクトル）, targetId（対象ID）
+   * - 初期値: `undefined`
+   */
   public onAttack?: (
     attackerId: string,
     dx: number,
@@ -58,37 +84,80 @@ export class GameEngine {
     targetId: string
   ) => void;
 
-  /** 被ダメージアニメーション発生時コールバック */
+  /**
+   * 被ダメージ・被弾アニメーション発生時のコールバック関数。
+   * - 想定引数: targetId（被弾対象のID）
+   * - 初期値: `undefined`
+   */
   public onDamage?: (targetId: string) => void;
 
-  /** レアNPCとの対話イベント発生時コールバック */
+  /**
+   * レアNPCとの対話イベント発生時のコールバック関数。
+   * - 想定引数: npc（対話対象のMonsterオブジェクト）
+   * - 初期値: `undefined`
+   */
   public onNpcInteract?: (npc: Monster) => void;
 
-  /** 合成の壺使用時の鍛冶錬成モーダル呼び出しコールバック */
+  /**
+   * 合成の壺使用時の鍛冶錬成モーダル呼び出しコールバック関数。
+   * - 想定引数: potItem（使用された合成の壺アイテム）
+   * - 初期値: `undefined`
+   */
   public onOpenSynthesis?: (potItem: Item) => void;
 
-  /** 第50層ボス撃破時のゲームクリア（完全制覇）コールバック */
+  /**
+   * 第50層ボス撃破時のゲームクリア（完全制覇）コールバック関数。
+   * - 初期値: `undefined`
+   */
   public onGameClear?: () => void;
 
-  /** 節目階層到達時のストーリーモノローグ通知コールバック */
+  /**
+   * 節目階層到達時のストーリーモノローグ通知コールバック関数。
+   * - 想定引数: floor（到達階層番号）, title（章タイトル）, text（本文）
+   * - 初期値: `undefined`
+   */
   public onStoryMonologue?: (floor: number, title: string, text: string) => void;
 
-  /** モノローグを既に表示した階層の記録セット */
+  /**
+   * モノローグを既に表示した階層の記録セット（同一階層での重複ポップアップ防止用）。
+   * - 想定値: 階層番号のSet集合（例: Set { 1, 10, 25, 50 }）
+   * - 初期値: `new Set<number>()`
+   */
   private shownMonologueFloors = new Set<number>();
 
-  /** 障害物を押して移動した際のコールバック */
+  /**
+   * 障害物を押して移動した際の演出コールバック関数。
+   * - 想定引数: obstacle（移動した障害物）, dx/dy（移動方向）
+   * - 初期値: `undefined`
+   */
   public onObstaclePush?: (obstacle: Obstacle, dx: number, dy: number) => void;
 
-  /** 障害物が破壊・粉砕された際のコールバック */
+  /**
+   * 障害物が破壊・粉砕された際の破片演出コールバック関数。
+   * - 想定引数: obstacle（破壊された障害物）
+   * - 初期値: `undefined`
+   */
   public onObstacleBreak?: (obstacle: Obstacle) => void;
 
-  /** 泥濘や沼に足を取られて身動きが取れなくなった際のコールバック */
+  /**
+   * 泥濘や沼に足を取られて身動きが取れなくなった際のエフェクトコールバック関数。
+   * - 想定引数: x, y（泥沼座標）
+   * - 初期値: `undefined`
+   */
   public onSwampStuck?: (x: number, y: number) => void;
 
-  /** 泥濘や沼から力いっぱい足を引き抜いて脱出した際のコールバック */
+  /**
+   * 泥濘や沼から力いっぱい足を引き抜いて脱出した際の演出コールバック関数。
+   * - 想定引数: fromX, fromY, toX, toY（脱出移動の始点と終点座標）
+   * - 初期値: `undefined`
+   */
   public onSwampEscape?: (fromX: number, fromY: number, toX: number, toY: number) => void;
 
-  /** 氷の床で滑走した際のコールバック */
+  /**
+   * 氷の床で滑走した際の氷煙・滑走演出コールバック関数。
+   * - 想定引数: fromX, fromY, toX, toY, hitWall（壁激突フラグ）, durationSec（滑走時間秒）, didFall（水没落下フラグ）, damage（落下ダメージ）
+   * - 初期値: `undefined`
+   */
   public onIceSlide?: (
     fromX: number,
     fromY: number,
@@ -100,7 +169,11 @@ export class GameEngine {
     damage?: number
   ) => void;
 
-  /** 飛び道具・光線演出発生時コールバック */
+  /**
+   * 飛び道具（弓矢・魔法弾・火炎・投擲岩）の飛翔・着弾演出コールバック関数。
+   * - 想定引数: fromX, fromY, toX, toY, type（ARROW/BEAM/STONE/ITEM）, color（発光色）
+   * - 初期値: `undefined`
+   */
   public onProjectile?: (
     fromX: number,
     fromY: number,
@@ -110,11 +183,19 @@ export class GameEngine {
     color: string
   ) => void;
 
-  /** 演出アニメーション中（岩押し・氷滑走・沼脱出など）に次の操作を遮断するミリ秒タイムスタンプ */
+  /**
+   * 演出アニメーション中（岩押し・氷滑走・沼脱出等）に入力受付を遮断するミリ秒タイムスタンプ。
+   * - 想定値: 未来のエポックミリ秒（Date.now() + 演出所要時間）、演出待機なし時は 0
+   * - 初期値: `0`
+   */
   public actionLockUntil = 0;
 
   /**
    * 現在演出アニメーション等のためプレイヤー入力がロック中かどうかを判定します。
+   * - 想定返り値:
+   *   - `true`: ロック中（Date.now() < actionLockUntil）であり、キー・タッチ入力を無視
+   *   - `false`: 入力受付可能（通常操作状態）
+   * @returns 入力遮断中かどうかの真偽値
    */
   public isActionLocked(): boolean {
     return Date.now() < this.actionLockUntil;

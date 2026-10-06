@@ -14,37 +14,74 @@ import { SoundSystem } from '../audio/SoundSystem';
  * 入力抽象化マネージャークラス。
  */
 export class InputManager {
-  /** アクションを実行する対象のゲームエンジン */
+  /**
+   * アクションを実行・指示する対象のゲームエンジンインスタンス。
+   */
   private engine: GameEngine;
 
-  /** 座標変換に使用するレンダラー */
+  /**
+   * 画面座標からゲーム内グリッド座標への変換に使用するレンダラー。
+   */
   private renderer: CanvasRenderer;
 
-  /** UIダイアログ操作用マネージャー */
+  /**
+   * UIダイアログやインベントリモーダルの開閉操作を行うマネージャー。
+   */
   private ui: UIManager;
 
-  /** マウス・タッチイベントを監視するキャンバス要素 */
+  /**
+   * マウス・タッチイベントを監視するキャンバス要素。
+   */
   private canvas: HTMLCanvasElement;
 
-  /** タッチ開始時のクライアントX座標（スワイプ検出用） */
+  /**
+   * タッチ開始時のクライアントX座標（スワイプ方向判定用）。
+   * - 想定値: クライアントピクセル座標
+   * - 初期値: 0
+   */
   private touchStartX = 0;
 
-  /** タッチ開始時のクライアントY座標（スワイプ検出用） */
+  /**
+   * タッチ開始時のクライアントY座標（スワイプ方向判定用）。
+   * - 想定値: クライアントピクセル座標
+   * - 初期値: 0
+   */
   private touchStartY = 0;
 
-  /** 現在タッチ操作中かどうかのフラグ */
+  /**
+   * 現在画面上でタッチ操作が継続中かどうかのフラグ。
+   * - 想定値:
+   *   - `true`: 画面に指が触れている状態（スワイプ中または長押し中）
+   *   - `false`: 指が離れている静止状態
+   * - 初期値: `false`
+   */
   private isTouching = false;
 
-  /** 押下中のキーセット（矢印やWASDの同時押しによる斜め移動判定用） */
+  /**
+   * 現在押下されているキーのセット（矢印やWASDの同時押しによる8方向斜め移動判定用）。
+   * - 初期値: 空のSet
+   */
   private pressedKeys = new Set<string>();
 
-  /** 方向キーの同時押し合成用バッファタイマーID */
+  /**
+   * 方向キーの同時押し斜め合成用バッファタイマーID（約20〜30msディレイ）。
+   * - 想定値: window.setTimeout ID または `null`
+   * - 初期値: `null`
+   */
   private moveTimer: number | null = null;
 
-  /** 仮想パッドの長押しリピート用ディレイタイマーID */
+  /**
+   * 仮想パッドボタンの長押しリピート開始ディレイタイマーID。
+   * - 想定値: window.setTimeout ID または `null`
+   * - 初期値: `null`
+   */
   private repeatDelayTimer: number | null = null;
 
-  /** 仮想パッドの長押し連続実行用インターバルタイマーID */
+  /**
+   * 仮想パッドボタンの長押し連続移動・足踏み実行用インターバルタイマーID。
+   * - 想定値: window.setInterval ID または `null`
+   * - 初期値: `null`
+   */
   private repeatIntervalTimer: number | null = null;
 
   /**

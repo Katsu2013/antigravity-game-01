@@ -10,7 +10,11 @@ import { DungeonMap, Point, TileType } from '../types';
  * 視界計算（Field of View）処理を担当する静的ユーティリティクラス。
  */
 export class FOV {
-  /** 通路でのレイキャスティングで使用する光線（Ray）の本数 */
+  /**
+   * 通路での360度レイキャスティングで使用する光線（Ray）の本数。
+   * - 想定値: 120（定数、3度刻みで全方位に照射）
+   * - 初期値: 120
+   */
   private static readonly RAY_STEPS = 120;
 
   /**

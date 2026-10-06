@@ -260,10 +260,18 @@ export type SpriteId =
  * SVGスプライトの定義・生成・キャッシュ管理クラス。
  */
 export class SVGSprites {
-  /** プリロードされたスプライト画像のキャッシュマップ */
+  /**
+   * プリロードされたスプライト画像のキャッシュマップ。
+   * - 想定値: Map<SpriteId, HTMLImageElement>
+   * - 初期値: 空のMap
+   */
   private static imageCache: Map<SpriteId, HTMLImageElement> = new Map();
 
-  /** 全スプライトのロード完了を監視するPromise */
+  /**
+   * 全スプライトのロード完了を監視するPromise。
+   * - 想定値: Promise<void> または未初期化時 `null`
+   * - 初期値: `null`
+   */
   private static readyPromise: Promise<void> | null = null;
 
   // ==========================================

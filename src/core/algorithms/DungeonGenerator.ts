@@ -22,16 +22,32 @@ import {
  * プロシージャル（手続き型）ダンジョン生成クラス。
  */
 export class DungeonGenerator {
-  /** 生成する部屋の最大目標数 */
+  /**
+   * 生成する部屋の最大目標数。
+   * - 想定値: 8（定数）
+   * - 初期値: 8
+   */
   private static readonly MAX_ROOMS = 8;
 
-  /** 部屋の最小横・縦サイズ（セル数） */
+  /**
+   * 部屋の最小横・縦サイズ（セル数、壁含まず）。
+   * - 想定値: 5（定数）
+   * - 初期値: 5
+   */
   private static readonly MIN_ROOM_SIZE = 5;
 
-  /** 部屋の最大横・縦サイズ（セル数） */
+  /**
+   * 部屋の最大横・縦サイズ（セル数、壁含まず）。
+   * - 想定値: 10（定数）
+   * - 初期値: 10
+   */
   private static readonly MAX_ROOM_SIZE = 10;
 
-  /** 部屋配置の試行回数上限 */
+  /**
+   * 部屋重複回避配置の最大試行回数上限。
+   * - 想定値: 40（定数）
+   * - 初期値: 40
+   */
   private static readonly MAX_PLACEMENT_ATTEMPTS = 40;
 
   /**

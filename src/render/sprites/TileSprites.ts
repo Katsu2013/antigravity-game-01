@@ -104,10 +104,18 @@ export type TileSpriteId =
  * ダンジョンの床・壁のベクターグラフィックスプライト管理クラス。
  */
 export class TileSprites {
-  /** キャッシュされたスプライト画像マップ */
+  /**
+   * キャッシュされたタイルスプライト画像マップ。
+   * - 想定値: Map<TileSpriteId, HTMLImageElement>
+   * - 初期値: 空のMap
+   */
   private static imageCache: Map<TileSpriteId, HTMLImageElement> = new Map();
 
-  /** ロード完了を示すPromise */
+  /**
+   * 全タイルスプライトのロード完了を監視するPromise。
+   * - 想定値: Promise<void> または未初期化時 `null`
+   * - 初期値: `null`
+   */
   private static readyPromise: Promise<void> | null = null;
 
   // ==========================================

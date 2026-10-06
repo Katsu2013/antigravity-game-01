@@ -111,42 +111,94 @@ export class UIManager {
 
   /** 合成モーダル要素 */
   private synthesisModalEl: HTMLElement;
+  /** 合成の壺名称表示要素 */
   private synthesisPotNameEl: HTMLElement;
+  /** 合成の壺残り容量表示要素 */
   private synthesisPotCapacityEl: HTMLElement;
+  /** 合成ベース装備選択リストコンテナ要素 */
   private synthesisBaseListEl: HTMLElement;
+  /** 合成素材装備選択リストコンテナ要素 */
   private synthesisMaterialListEl: HTMLElement;
+  /** 合成プレビュー表示ボックス要素 */
   private synthesisPreviewBoxEl: HTMLElement;
+  /** 合成プレビュー内容テキスト要素 */
   private synthesisPreviewContentEl: HTMLElement;
+  /** 合成実行ボタン要素 */
   private btnExecuteSynthesisEl: HTMLButtonElement;
+
+  /**
+   * 現在合成錬成モーダルで操作対象となっている合成の壺アイテム。
+   * - 想定値: Item インスタンスまたは未選択時 `null`
+   * - 初期値: `null`
+   */
   private activeSynthesisPot: Item | null = null;
+
+  /**
+   * 合成のベース（強化先）として選択されているアイテムのID。
+   * - 想定値: string または未選択時 `null`
+   * - 初期値: `null`
+   */
   private selectedBaseItemId: string | null = null;
+
+  /**
+   * 合成の素材（消費消滅側）として選択されているアイテムのID。
+   * - 想定値: string または未選択時 `null`
+   * - 初期値: `null`
+   */
   private selectedMaterialItemId: string | null = null;
 
   /** ストーリーモノローグモーダル要素 */
   private storyModalEl: HTMLElement;
+  /** ストーリーモノローグ章タイトル要素 */
   private storyTitleEl: HTMLElement;
+  /** ストーリーモノローグ本文要素 */
   private storyTextEl: HTMLElement;
 
   /** ゲームクリアモーダル要素 */
   private gameClearModalEl: HTMLElement;
+  /** ゲームクリアスコア・戦績表示要素 */
   private gameClearStatsEl: HTMLElement;
 
-  /** 直前に描画した階層番号（フロア変化の検知用） */
+  /**
+   * 直前に描画した階層番号（フロア変化・新フロア到達トースト演出の検知用）。
+   * - 想定値: 1以上の正の整数
+   * - 初期値: 1
+   */
   private lastRenderedFloor = 1;
 
-  /** ゲームオーバー表示ディレイ用タイマーID（倒れ込み演出待機用） */
+  /**
+   * ゲームオーバー表示ディレイ用タイマーID（倒れ込みアニメーションをじっくり見せる約1.8秒の待機）。
+   * - 想定値: window.setTimeout ID または `null`
+   * - 初期値: `null`
+   */
   private gameOverTimerId: number | null = null;
 
-  /** モバイルティッカー自動消去用タイマーID（約3秒でフェードアウト） */
+  /**
+   * モバイルティッカー自動消去用タイマーID（約4.5秒でフェードアウト）。
+   * - 想定値: window.setTimeout ID または `null`
+   * - 初期値: `null`
+   */
   private tickerTimerId: number | null = null;
 
-  /** 直前に処理した最新ログID */
+  /**
+   * 直前に処理・画面反映した最新ログエントリのID（重複演出防止用）。
+   * - 想定値: string または未処理時 `null`
+   * - 初期値: `null`
+   */
   private lastHandledLogId: string | null = null;
 
-  /** モーダルが開かれたタイムスタンプ（スマホタッチ直後の合成クリックによる即時クローズ防止用） */
+  /**
+   * モーダルが開かれた瞬間のミリ秒タイムスタンプ（スマホタッチ直後の合成クリックによる誤クローズ防止用マップ）。
+   * - 想定値: Map<モーダルID, 開放ミリ秒エポックタイム>
+   * - 初期値: 空のMap
+   */
   private modalOpenTimestamps: Map<string, number> = new Map();
 
-  /** トースト通知消去用タイマーID */
+  /**
+   * フロア到達トースト通知の自動消去タイマーID。
+   * - 想定値: window.setTimeout ID または `null`
+   * - 初期値: `null`
+   */
   private toastTimerId: number | null = null;
 
   /**

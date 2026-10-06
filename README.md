@@ -80,31 +80,36 @@ npm run doc
 - 👾 **[キャラクター一覧＆グラフィック設計書](docs/04_characters.md)**: 各キャラクターのSVGグラフィックプレビュー、AI、アニメーション仕様
 - 🏆 **[タイトル画面＆スコア履歴設計書](docs/05_title_and_scores.md)**: タイトルUI、スコア算出式、ランキング仕様、パーマデス連携
 - 🌲 **[ダンジョンバイオーム＆フロア構成設計書](docs/06_biomes_and_floors.md)**: 7大バイオーム（石・赤土・旧遺跡・清流洞・地下湖・雪原・氷窟）、連続水流・木橋アルゴリズム、正面敵攻撃・素振り仕様
-- 📚 **[TypeDoc APIリファレンス (HTML)](docs/api/index.html)**: 各クラス・メソッド・型の詳細仕様（`npm run doc` で生成）
+- 📋 **[コーディング規約＆TypeDocドキュメント規約](docs/07_coding_standards.md)**: 変数・プロパティへのTypeDoc完全義務化、フラグ値（想定値・初期値・変化契機）の記述ルール
+- 📚 **[TypeDoc APIリファレンス (HTML)](docs/api/index.html)**: 各クラス・メソッド・型・変数の詳細仕様（`npm run doc` で生成）
 
 ---
 
 ## ソースコード構成とTypeDoc対応状況
 
-本リポジトリの全TypeScriptソースコードには、レビューおよび保守を円滑に行えるよう、**TypeDoc標準に準拠した包括的な日本語ドキュメンテーションコメント**（クラス、プロパティ、メソッド、定数、引数 `@param`、返り値 `@returns`）を記述しています。
+本リポジトリの全TypeScriptソースコードには、レビューおよび保守を円滑に行えるよう、**TypeDoc標準に準拠した包括的な日本語ドキュメンテーションコメント**（クラス、プロパティ、変数、フラグ値の初期値・想定値、メソッド、定数、引数 `@param`、返り値 `@returns`）を記述しています。
 
 | ファイル | 概要・役割 |
 |---|---|
-| [`src/core/types.ts`](src/core/types.ts) | タイル種別(`TileType`)、バイオーム(`BiomeType`)、座標(`Point`)、アクション(`ActionType`)、ステータス等の型定義 |
-| [`src/core/algorithms/DungeonGenerator.ts`](src/core/algorithms/DungeonGenerator.ts) | 手続き型ダンジョン自動生成（部屋配置・重なり判定・通路掘削・7大バイオーム・連続水流・木橋・全域到達性保証） |
+| [`src/core/types.ts`](src/core/types.ts) | タイル種別(`TileType`)、バイオーム(`BiomeType`)、座標(`Point`)、アクション(`ActionType`)、ステータス等の型・フラグ定義 |
+| [`src/audio/SoundSystem.ts`](src/audio/SoundSystem.ts) | Web Audio API による完全オフライン物理合成効果音（SE）生成システム（武器別打撃・素振り・杖・大石・スクーター等） |
+| [`src/core/algorithms/DungeonGenerator.ts`](src/core/algorithms/DungeonGenerator.ts) | 手続き型ダンジョン自動生成（部屋配置・重なり判定・通路掘削・バイオーム・連続水流・木橋・全域到達性保証） |
 | [`src/core/algorithms/FOV.ts`](src/core/algorithms/FOV.ts) | プレイヤー視界計算（部屋一括可視化 ＋ 360度レイキャスティング） |
 | [`src/core/algorithms/Pathfinding.ts`](src/core/algorithms/Pathfinding.ts) | A*（A-Star）探索によるモンスターの最短経路探索アルゴリズム |
-| [`src/core/entities/EntityFactory.ts`](src/core/entities/EntityFactory.ts) | モンスター（全10種）およびアイテム（全16種）のインスタンス生成・階層スケーリングファクトリ |
-| [`src/core/systems/CombatSystem.ts`](src/core/systems/CombatSystem.ts) | 近接攻撃、ダメージ計算式、撃破判定、経験値獲得およびレベルアップ処理（HP回復バランス調整済み） |
+| [`src/core/entities/EntityFactory.ts`](src/core/entities/EntityFactory.ts) | モンスターおよびアイテムのインスタンス生成・階層スケーリングファクトリ |
+| [`src/core/systems/CombatSystem.ts`](src/core/systems/CombatSystem.ts) | 近接攻撃、ダメージ計算式、撃破判定、経験値獲得およびレベルアップ処理 |
 | [`src/core/systems/ItemSystem.ts`](src/core/systems/ItemSystem.ts) | アイテム拾得、使用・消費・装備変更、および足元投棄処理 |
+| [`src/core/systems/ShopSystem.ts`](src/core/systems/ShopSystem.ts) | ダンジョン商店（ショップ）、店主NPCとの取引・会計・会話、および泥棒追撃システム |
+| [`src/core/systems/NpcSystem.ts`](src/core/systems/NpcSystem.ts) | まれに出現する特殊レアNPC（冒険者レオン、賭博仙人ガンジ、鍛冶屋バルカン）の会話・イベント管理 |
+| [`src/core/systems/SynthesisSystem.ts`](src/core/systems/SynthesisSystem.ts) | 武器・盾の鍛冶合成、強化値合算、特殊能力（印・ルーン）の継承システム |
 | [`src/core/GameEngine.ts`](src/core/GameEngine.ts) | コアゲームステート統括、ターン進行、モンスター自律AI、行動ログ管理 |
 | [`src/storage/StorageManager.ts`](src/storage/StorageManager.ts) | IndexedDB による1ターンごとの自動中断セーブ・復元・パーマデス消去・ハイスコア記録 |
 | [`src/render/sprites/SVGSprites.ts`](src/render/sprites/SVGSprites.ts) | 100%ベクターSVGスプライト定義（プレイヤー素体8方向＋歩行アニメ・倒れ姿、モンスター、基本アイテム、下り階段） |
 | [`src/render/sprites/EquipmentSprites.ts`](src/render/sprites/EquipmentSprites.ts) | 装備品（武器5種・盾5種×各5方向＝全50種）の動的オーバーレイ（ペーパードールシステム）スプライト |
-| [`src/render/sprites/MonsterAndItemSprites.ts`](src/render/sprites/MonsterAndItemSprites.ts) | 拡張モンスター4種（コウモリ・亡霊・メイジ・ドラゴン）および拡張アイテムスプライト |
-| [`src/render/sprites/TileSprites.ts`](src/render/sprites/TileSprites.ts) | 7大バイオーム壁・床（高コントラスト設計）および木製の橋スプライト |
+| [`src/render/sprites/MonsterAndItemSprites.ts`](src/render/sprites/MonsterAndItemSprites.ts) | 拡張モンスターおよび拡張アイテムスプライト |
+| [`src/render/sprites/TileSprites.ts`](src/render/sprites/TileSprites.ts) | 多彩なバイオーム壁・床（高コントラスト設計）および木製の橋スプライト |
 | [`src/render/AnimationEngine.ts`](src/render/AnimationEngine.ts) | 移動イージング補間、歩行ステップ、攻撃スラッシュ、被弾フラッシュ＆振動、死亡ダウン演出管理 |
-| [`src/render/CanvasRenderer.ts`](src/render/CanvasRenderer.ts) | HiDPI対応 60fps描画エンジン、装備ペーパードール合成、環境大気パーティクル（粉雪・氷晶）、ミニマップ |
+| [`src/render/CanvasRenderer.ts`](src/render/CanvasRenderer.ts) | HiDPI対応 60fps描画エンジン、装備ペーパードール合成、環境大気パーティクル、ミニマップ |
 | [`src/input/InputManager.ts`](src/input/InputManager.ts) | PCキーボード/マウス ＋ スマホ仮想十字キー＆4ボタンの入力を統一アクションへ変換 |
 | [`src/ui/UIManager.ts`](src/ui/UIManager.ts) | レスポンシブDOM UI（HUD、インベントリ、行動ログ、モーダルダイアログ）の更新 |
 | [`src/main.ts`](src/main.ts) | アプリケーションエントリーポイント（Service Worker登録・中断データ復元） |

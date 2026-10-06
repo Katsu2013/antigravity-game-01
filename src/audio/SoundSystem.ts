@@ -8,10 +8,45 @@
 import { Item } from '../core/types';
 
 export class SoundSystem {
+  /**
+   * SoundSystem のシングルトンキャッシュインスタンス。
+   * - 想定値: SoundSystem インスタンスまたは `null`
+   * - 初期値: `null`
+   */
   private static instance: SoundSystem | null = null;
+
+  /**
+   * Web Audio API のメイン音声コンテキスト。
+   * - 想定値: AudioContext インスタンスまたは未初期化時 `null`
+   * - 初期値: `null`
+   */
   private ctx: AudioContext | null = null;
+
+  /**
+   * ゲーム全体の効果音ボリュームを制御するマスターゲインノード。
+   * - 想定値: GainNode インスタンスまたは `null`
+   * - 初期値: `null`
+   */
   private masterGain: GainNode | null = null;
+
+  /**
+   * 効果音ミュート（消音）フラグ。
+   * - 想定値:
+   *   - `true`: 全効果音を消音（マスターゲイン=0）
+   *   - `false`: 効果音を発音（マスターゲイン=0.7）
+   * - 初期値: `false`（localStorage 'rogue_se_muted' から復元）
+   * - 変化契機: `toggleMute()` 実行時に反転
+   */
   private muted = false;
+
+  /**
+   * ブラウザのユーザー操作によるAudioContextアンロック完了フラグ。
+   * - 想定値:
+   *   - `true`: ユーザーのクリックやキー入力によってAudioContextのサスペンドが解除され発音可能
+   *   - `false`: 自動再生制限によりまだアンロックされていない待機状態
+   * - 初期値: `false`
+   * - 変化契機: 初回操作時の `unlock()` 実行時に `true`
+   */
   private isUnlocked = false;
 
   private constructor() {

@@ -10,10 +10,18 @@ import { Item } from '../types';
  * 武器・盾に宿る特殊印（ルーン）の定義。
  */
 export interface RuneDefinition {
+  /** ルーンの一意なID識別子（例: 'DRAGON', 'FIRE'） */
   id: string;
+  /** UIや装備名末尾に表示される漢字1文字シンボル（例: '竜', '炎', '金'） */
   symbol: string;
+  /** 特殊印の名称（例: 「ドラゴン特効」「サビよけ」） */
   name: string;
+  /** 特殊印の具体的な効果説明文 */
   description: string;
+  /**
+   * 印を付与できる対象装備カテゴリ。
+   * - 想定値: `'WEAPON'` (武器専用) または `'SHIELD'` (盾専用)
+   */
   category: 'WEAPON' | 'SHIELD';
 }
 
