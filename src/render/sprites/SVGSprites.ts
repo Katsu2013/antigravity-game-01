@@ -618,6 +618,7 @@ export class SVGSprites {
   // ==========================================
   // 下り階段タイル
   // ==========================================
+  /** 階段（下り）タイルSVG */
   public static readonly STAIRS_DOWN_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect x="4" y="4" width="56" height="56" rx="4" fill="#1e293b" stroke="#0f172a" stroke-width="2"/>
@@ -663,6 +664,7 @@ export class SVGSprites {
   <ellipse cx="16" cy="38" rx="2" ry="4" transform="rotate(-15 16 38)" fill="#a7f3d0" opacity="0.5"/>
 </svg>`.trim();
 
+  /** スライム背面（上向き） */
   public static readonly SLIME_UP_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="32" cy="56" rx="22" ry="6" fill="rgba(0,0,0,0.35)"/>
@@ -673,8 +675,11 @@ export class SVGSprites {
   <path d="M22 14 Q32 12 40 16 Q34 19 22 17 Z" fill="#ffffff" opacity="0.65"/>
 </svg>`.trim();
 
+  /** スライム側面（横向きエイリアス） */
   public static readonly SLIME_SIDE_SVG = SVGSprites.SLIME_DOWN_SVG;
+  /** スライム斜め手前エイリアス */
   public static readonly SLIME_DIAG_DOWN_SVG = SVGSprites.SLIME_DOWN_SVG;
+  /** スライム斜め奥エイリアス */
   public static readonly SLIME_DIAG_UP_SVG = SVGSprites.SLIME_UP_SVG;
 
   /** ゴブリン正面（トゲ付き棍棒、木製バックラー、ピアス大耳、ギラつく黄赤の瞳、ツギハギ革鎧） */
@@ -729,6 +734,7 @@ export class SVGSprites {
   <circle cx="48" cy="36" r="2.5" fill="#94a3b8" stroke="#475569" stroke-width="1"/>
 </svg>`.trim();
 
+  /** ゴブリン背面（上向き） */
   public static readonly GOBLIN_UP_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="32" cy="58" rx="18" ry="5.5" fill="rgba(0,0,0,0.4)"/>
@@ -742,8 +748,11 @@ export class SVGSprites {
   <rect x="18" y="16" width="4" height="28" rx="1.5" fill="#78350f" stroke="#451a03" stroke-width="1" transform="rotate(30 20 30)"/>
 </svg>`.trim();
 
+  /** ゴブリン側面（横向きエイリアス） */
   public static readonly GOBLIN_SIDE_SVG = SVGSprites.GOBLIN_DOWN_SVG;
+  /** ゴブリン斜め手前エイリアス */
   public static readonly GOBLIN_DIAG_DOWN_SVG = SVGSprites.GOBLIN_DOWN_SVG;
+  /** ゴブリン斜め奥エイリアス */
   public static readonly GOBLIN_DIAG_UP_SVG = SVGSprites.GOBLIN_UP_SVG;
 
   /** スケルトン正面（錆びた長剣、円盾、青白く灯るソウルアイ、精巧な頭蓋骨、破れたマント） */
@@ -793,6 +802,7 @@ export class SVGSprites {
   <polygon points="48,31 51,36 48,41 45,36" fill="#cbd5e1"/>
 </svg>`.trim();
 
+  /** スケルトン背面（上向き） */
   public static readonly SKELETON_UP_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="32" cy="58" rx="18" ry="5.5" fill="rgba(0,0,0,0.4)"/>
@@ -802,8 +812,11 @@ export class SVGSprites {
   <line x1="38" y1="46" x2="39" y2="56" stroke="#f1f5f9" stroke-width="3.2"/>
 </svg>`.trim();
 
+  /** スケルトン側面（横向きエイリアス） */
   public static readonly SKELETON_SIDE_SVG = SVGSprites.SKELETON_DOWN_SVG;
+  /** スケルトン斜め手前エイリアス */
   public static readonly SKELETON_DIAG_DOWN_SVG = SVGSprites.SKELETON_DOWN_SVG;
+  /** スケルトン斜め奥エイリアス */
   public static readonly SKELETON_DIAG_UP_SVG = SVGSprites.SKELETON_UP_SVG;
 
   /** 岩石ゴーレム（立体多面玄武岩、灼熱の古代ルーン発光、クラック陰影、巨岩ハンマーアーム） */
@@ -842,9 +855,13 @@ export class SVGSprites {
   <rect x="35" y="14" width="4" height="3" rx="1" fill="#fef08a" stroke="#ea580c" stroke-width="0.8"/>
 </svg>`.trim();
 
+  /** 岩石ゴーレム（上向きエイリアス） */
   public static readonly GOLEM_UP_SVG = SVGSprites.GOLEM_DOWN_SVG;
+  /** 岩石ゴーレム（横向き側面エイリアス） */
   public static readonly GOLEM_SIDE_SVG = SVGSprites.GOLEM_DOWN_SVG;
+  /** 岩石ゴーレム（斜め手前エイリアス） */
   public static readonly GOLEM_DIAG_DOWN_SVG = SVGSprites.GOLEM_DOWN_SVG;
+  /** 岩石ゴーレム（斜め奥エイリアス） */
   public static readonly GOLEM_DIAG_UP_SVG = SVGSprites.GOLEM_DOWN_SVG;
 
   /** マンドラゴラ（ねじれ人型根茎、狂気の叫ぶ大口、大輪の熱帯毒花、鋸歯状の葉脈） */
@@ -880,9 +897,13 @@ export class SVGSprites {
   <circle cx="32" cy="5" r="1.5" fill="#fef08a"/>
 </svg>`.trim();
 
+  /** マンドラゴラ（上向きエイリアス） */
   public static readonly MANDRAGORA_UP_SVG = SVGSprites.MANDRAGORA_DOWN_SVG;
+  /** マンドラゴラ（横向き側面エイリアス） */
   public static readonly MANDRAGORA_SIDE_SVG = SVGSprites.MANDRAGORA_DOWN_SVG;
+  /** マンドラゴラ（斜め手前エイリアス） */
   public static readonly MANDRAGORA_DIAG_DOWN_SVG = SVGSprites.MANDRAGORA_DOWN_SVG;
+  /** マンドラゴラ（斜め奥エイリアス） */
   public static readonly MANDRAGORA_DIAG_UP_SVG = SVGSprites.MANDRAGORA_DOWN_SVG;
 
   /** サハギン戦士（三叉銛トライデント、巨大トゲ背ビレ、ギョロリ魚眼、深海魚鱗グラデーション） */
@@ -928,17 +949,27 @@ export class SVGSprites {
   <polygon points="34,27 35,24 36,27" fill="#ffffff"/>
 </svg>`.trim();
 
+  /** サハギン戦士（上向きエイリアス） */
   public static readonly SAHAGIN_UP_SVG = SVGSprites.SAHAGIN_DOWN_SVG;
+  /** サハギン戦士（横向き側面エイリアス） */
   public static readonly SAHAGIN_SIDE_SVG = SVGSprites.SAHAGIN_DOWN_SVG;
+  /** サハギン戦士（斜め手前エイリアス） */
   public static readonly SAHAGIN_DIAG_DOWN_SVG = SVGSprites.SAHAGIN_DOWN_SVG;
+  /** サハギン戦士（斜め奥エイリアス） */
   public static readonly SAHAGIN_DIAG_UP_SVG = SVGSprites.SAHAGIN_DOWN_SVG;
 
   // 後方互換用エイリアス
+  /** プレイヤー（正面下向き後方互換エイリアス） */
   public static readonly PLAYER_SVG = SVGSprites.PLAYER_DOWN_SVG;
+  /** プレイヤー歩行1（正面下向き後方互換エイリアス） */
   public static readonly PLAYER_WALK1_SVG = SVGSprites.PLAYER_DOWN_WALK1_SVG;
+  /** プレイヤー歩行2（正面下向き後方互換エイリアス） */
   public static readonly PLAYER_WALK2_SVG = SVGSprites.PLAYER_DOWN_WALK2_SVG;
+  /** スライム（正面下向き後方互換エイリアス） */
   public static readonly SLIME_SVG = SVGSprites.SLIME_DOWN_SVG;
+  /** ゴブリン（正面下向き後方互換エイリアス） */
   public static readonly GOBLIN_SVG = SVGSprites.GOBLIN_DOWN_SVG;
+  /** スケルトン（正面下向き後方互換エイリアス） */
   public static readonly SKELETON_SVG = SVGSprites.SKELETON_DOWN_SVG;
 
   /**

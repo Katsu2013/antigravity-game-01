@@ -692,6 +692,7 @@ export class MonsterAndItemSprites {
   <circle cx="32" cy="46" r="0.8" fill="#fda4af"/>
 </svg>`.trim();
 
+  /** 人食い箱 (MIMIC) - 背面（上向き） */
   public static readonly MIMIC_UP_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="32" cy="58" rx="20" ry="5" fill="rgba(0,0,0,0.35)"/>
@@ -770,6 +771,7 @@ export class MonsterAndItemSprites {
   <rect x="34" y="27" width="1.8" height="3" fill="#fef3c7"/>
 </svg>`.trim();
 
+  /** 腐乱ゾンビ (ZOMBIE) - 背面（上向き） */
   public static readonly ZOMBIE_UP_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="32" cy="58" rx="18" ry="4.5" fill="rgba(0,0,0,0.35)"/>
@@ -862,6 +864,7 @@ export class MonsterAndItemSprites {
   <circle cx="43" cy="5" r="1" fill="#ef4444"/>
 </svg>`.trim();
 
+  /** 小悪魔インプ (IMP) - 背面（上向き） */
   public static readonly IMP_UP_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="32" cy="58" rx="15" ry="4" fill="rgba(0,0,0,0.3)"/>
@@ -942,6 +945,7 @@ export class MonsterAndItemSprites {
   <circle cx="32" cy="24" r="0.7" fill="#c084fc"/>
 </svg>`.trim();
 
+  /** 古代のミイラ (MUMMY) - 背面（上向き） */
   public static readonly MUMMY_UP_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="32" cy="58" rx="18" ry="5" fill="rgba(0,0,0,0.4)"/>
@@ -1470,6 +1474,7 @@ export class MonsterAndItemSprites {
   <path d="M38 14 Q46 6 48 3 Q43 9 40 13 Z" fill="#fbbf24" stroke="#d97706" stroke-width="0.8"/>
 </svg>`.trim();
 
+  /** 店主・商人ネロ（背面・上向き） */
   public static readonly MERCHANT_UP_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="32" cy="58" rx="20" ry="5.5" fill="rgba(0,0,0,0.35)"/>
@@ -1482,8 +1487,11 @@ export class MonsterAndItemSprites {
   <path d="M38 14 Q46 6 48 3 Q43 9 40 13 Z" fill="#fbbf24" stroke="#d97706" stroke-width="0.8"/>
 </svg>`.trim();
 
+  /** 店主・商人ネロ（側面・横向きエイリアス） */
   public static readonly MERCHANT_SIDE_SVG = MonsterAndItemSprites.MERCHANT_DOWN_SVG;
+  /** 店主・商人ネロ（斜め手前エイリアス） */
   public static readonly MERCHANT_DIAG_DOWN_SVG = MonsterAndItemSprites.MERCHANT_DOWN_SVG;
+  /** 店主・商人ネロ（斜め奥エイリアス） */
   public static readonly MERCHANT_DIAG_UP_SVG = MonsterAndItemSprites.MERCHANT_UP_SVG;
 
   /** 怒れる店主（泥棒追撃時: 逆立つ怒髪、紅蓮の炎オーラ、血走る赤眼、黄金の棍棒） */
@@ -1925,7 +1933,9 @@ export class MonsterAndItemSprites {
   <path d="M35 15 L39 16 L38 18 L35 17 Z" fill="#38bdf8" opacity="0.6"/>
 </svg>`.trim();
 
+  /** スクーターおじさん（斜め手前エイリアス） */
   public static readonly SCOOTER_GUY_DIAG_DOWN_SVG = MonsterAndItemSprites.SCOOTER_GUY_SIDE_SVG;
+  /** スクーターおじさん（斜め奥エイリアス） */
   public static readonly SCOOTER_GUY_DIAG_UP_SVG = MonsterAndItemSprites.SCOOTER_GUY_UP_SVG;
 
   // =========================================================================

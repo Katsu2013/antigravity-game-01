@@ -70,15 +70,11 @@ export type EquipmentSpriteId =
 export class EquipmentSprites {
   /**
    * キャッシュされた装備スプライト画像マップ。
-   * - 想定値: Map<EquipmentSpriteId, HTMLImageElement>
-   * - 初期値: 空のMap
    */
   private static imageCache: Map<EquipmentSpriteId, HTMLImageElement> = new Map();
 
   /**
    * 初期化完了を通知するPromise。
-   * - 想定値: Promise<void> または未初期化時 `null`
-   * - 初期値: `null`
    */
   private static readyPromise: Promise<void> | null = null;
 
@@ -86,7 +82,7 @@ export class EquipmentSprites {
   // 1. 武器 (WEAPONS) SVG 定義
   // =========================================================================
 
-  // --- 1-1. 青銅の短剣 (Dagger) ---
+  /** 青銅の短剣（下向き正面）オーバーレイSVG */
   private static readonly DAGGER_DOWN = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect x="44" y="20" width="3.5" height="15" rx="1" fill="#d97706" stroke="#92400e" stroke-width="1"/>
@@ -95,12 +91,14 @@ export class EquipmentSprites {
   <rect x="44.5" y="36.5" width="2" height="4" fill="#451a03"/>
 </svg>`.trim();
 
+  /** 青銅の短剣（上向き背面）オーバーレイSVG */
   private static readonly DAGGER_UP = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect x="43" y="14" width="3" height="12" rx="1" fill="#92400e"/>
   <rect x="41" y="24" width="7" height="2.5" fill="#78350f"/>
 </svg>`.trim();
 
+  /** 青銅の短剣（横向きサイドビュー）オーバーレイSVG */
   private static readonly DAGGER_SIDE = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect x="39" y="31.5" width="14" height="3" rx="1" fill="#d97706" stroke="#92400e" stroke-width="1"/>
@@ -108,6 +106,7 @@ export class EquipmentSprites {
   <rect x="37" y="30" width="2.5" height="6" fill="#78350f"/>
 </svg>`.trim();
 
+  /** 青銅の短剣（斜め手前クォータービュー）オーバーレイSVG */
   private static readonly DAGGER_DIAG_DOWN = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <g transform="rotate(38 38 28)">
@@ -117,6 +116,7 @@ export class EquipmentSprites {
   </g>
 </svg>`.trim();
 
+  /** 青銅の短剣（斜め奥背面）オーバーレイSVG */
   private static readonly DAGGER_DIAG_UP = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <g transform="rotate(25 36 20)">
@@ -125,7 +125,7 @@ export class EquipmentSprites {
   </g>
 </svg>`.trim();
 
-  // --- 1-2. 鉄の剣 (Iron Sword) ---
+  /** 鉄の剣（下向き正面）オーバーレイSVG */
   private static readonly IRON_SWORD_DOWN = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect x="44" y="10" width="4" height="24" rx="1" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1"/>
@@ -135,6 +135,7 @@ export class EquipmentSprites {
   <circle cx="46" cy="42" r="2" fill="#fbbf24"/>
 </svg>`.trim();
 
+  /** 鉄の剣（上向き背面）オーバーレイSVG */
   private static readonly IRON_SWORD_UP = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect x="42" y="8" width="4" height="18" rx="1" fill="#78350f" stroke="#451a03" stroke-width="1"/>
@@ -142,6 +143,7 @@ export class EquipmentSprites {
   <circle cx="44" cy="7" r="2" fill="#fbbf24"/>
 </svg>`.trim();
 
+  /** 鉄の剣（横向きサイドビュー）オーバーレイSVG */
   private static readonly IRON_SWORD_SIDE = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect x="39" y="31" width="21" height="4" rx="1" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1"/>
@@ -150,6 +152,7 @@ export class EquipmentSprites {
   <circle cx="34" cy="33" r="2" fill="#fbbf24"/>
 </svg>`.trim();
 
+  /** 鉄の剣（斜め手前クォータービュー）オーバーレイSVG */
   private static readonly IRON_SWORD_DIAG_DOWN = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <g transform="rotate(40 38 28)">
@@ -160,6 +163,7 @@ export class EquipmentSprites {
   </g>
 </svg>`.trim();
 
+  /** 鉄の剣（斜め奥背面）オーバーレイSVG */
   private static readonly IRON_SWORD_DIAG_UP = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <g transform="rotate(25 36 20)">
@@ -169,7 +173,7 @@ export class EquipmentSprites {
   </g>
 </svg>`.trim();
 
-  // --- 1-3. ミスリルの剣 (Mithril Sword) ---
+  /** ミスリルの剣（下向き正面）オーバーレイSVG */
   private static readonly MITHRIL_SWORD_DOWN = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect x="44" y="8" width="4" height="25" rx="1" fill="#c7d2fe" stroke="#6366f1" stroke-width="1.2"/>
@@ -179,6 +183,7 @@ export class EquipmentSprites {
   <circle cx="46" cy="42" r="2.5" fill="#818cf8"/>
 </svg>`.trim();
 
+  /** ミスリルの剣（上向き背面）オーバーレイSVG */
   private static readonly MITHRIL_SWORD_UP = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect x="42" y="6" width="4" height="20" rx="1" fill="#312e81" stroke="#6366f1" stroke-width="1"/>
@@ -186,6 +191,7 @@ export class EquipmentSprites {
   <circle cx="44" cy="5" r="2.5" fill="#a5b4fc"/>
 </svg>`.trim();
 
+  /** ミスリルの剣（横向きサイドビュー）オーバーレイSVG */
   private static readonly MITHRIL_SWORD_SIDE = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect x="39" y="30.5" width="22" height="4.5" rx="1" fill="#c7d2fe" stroke="#6366f1" stroke-width="1.2"/>
@@ -194,6 +200,7 @@ export class EquipmentSprites {
   <circle cx="34" cy="32.5" r="2.5" fill="#818cf8"/>
 </svg>`.trim();
 
+  /** ミスリルの剣（斜め手前クォータービュー）オーバーレイSVG */
   private static readonly MITHRIL_SWORD_DIAG_DOWN = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <g transform="rotate(40 38 28)">
@@ -204,6 +211,7 @@ export class EquipmentSprites {
   </g>
 </svg>`.trim();
 
+  /** ミスリルの剣（斜め奥背面）オーバーレイSVG */
   private static readonly MITHRIL_SWORD_DIAG_UP = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <g transform="rotate(25 36 20)">
@@ -213,7 +221,7 @@ export class EquipmentSprites {
   </g>
 </svg>`.trim();
 
-  // --- 1-4. 炎の剣 (Flame Sword) ---
+  /** 炎の剣（下向き正面）オーバーレイSVG */
   private static readonly FLAME_SWORD_DOWN = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <path d="M44 8 Q47 18 45 28 L47 32 L45 32 Z" fill="#ef4444" stroke="#b91c1c" stroke-width="1.2"/>
@@ -222,12 +230,14 @@ export class EquipmentSprites {
   <circle cx="46" cy="42" r="2.5" fill="#f97316"/>
 </svg>`.trim();
 
+  /** 炎の剣（上向き背面）オーバーレイSVG */
   private static readonly FLAME_SWORD_UP = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect x="42" y="6" width="4" height="19" rx="1" fill="#7f1d1d" stroke="#ef4444" stroke-width="1"/>
   <rect x="39" y="22" width="10" height="3.5" fill="#991b1b"/>
 </svg>`.trim();
 
+  /** 炎の剣（横向きサイドビュー）オーバーレイSVG */
   private static readonly FLAME_SWORD_SIDE = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect x="39" y="30.5" width="22" height="4.5" rx="1" fill="#ef4444" stroke="#b91c1c" stroke-width="1.2"/>
@@ -235,6 +245,7 @@ export class EquipmentSprites {
   <rect x="37" y="27" width="3" height="11" rx="1" fill="#991b1b"/>
 </svg>`.trim();
 
+  /** 炎の剣（斜め手前クォータービュー）オーバーレイSVG */
   private static readonly FLAME_SWORD_DIAG_DOWN = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <g transform="rotate(40 38 28)">
@@ -245,6 +256,7 @@ export class EquipmentSprites {
   </g>
 </svg>`.trim();
 
+  /** 炎の剣（斜め奥背面）オーバーレイSVG */
   private static readonly FLAME_SWORD_DIAG_UP = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <g transform="rotate(25 36 20)">
@@ -253,7 +265,7 @@ export class EquipmentSprites {
   </g>
 </svg>`.trim();
 
-  // --- 1-5. ルーンの剣 (Rune Sword) ---
+  /** ルーンの剣（下向き正面）オーバーレイSVG */
   private static readonly RUNE_SWORD_DOWN = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect x="44" y="6" width="4" height="27" rx="1" fill="#a855f7" stroke="#6b21a8" stroke-width="1.2"/>
@@ -263,12 +275,14 @@ export class EquipmentSprites {
   <circle cx="46" cy="42" r="2.5" fill="#c084fc"/>
 </svg>`.trim();
 
+  /** ルーンの剣（上向き背面）オーバーレイSVG */
   private static readonly RUNE_SWORD_UP = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect x="42" y="5" width="4" height="21" rx="1" fill="#3b0764" stroke="#a855f7" stroke-width="1"/>
   <rect x="39" y="22" width="10" height="3.5" fill="#581c87"/>
 </svg>`.trim();
 
+  /** ルーンの剣（横向きサイドビュー）オーバーレイSVG */
   private static readonly RUNE_SWORD_SIDE = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect x="39" y="30" width="23" height="5" rx="1" fill="#a855f7" stroke="#6b21a8" stroke-width="1.2"/>
@@ -276,6 +290,7 @@ export class EquipmentSprites {
   <rect x="37" y="26.5" width="3" height="12" rx="1" fill="#581c87"/>
 </svg>`.trim();
 
+  /** ルーンの剣（斜め手前クォータービュー）オーバーレイSVG */
   private static readonly RUNE_SWORD_DIAG_DOWN = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <g transform="rotate(40 38 28)">
@@ -286,6 +301,7 @@ export class EquipmentSprites {
   </g>
 </svg>`.trim();
 
+  /** ルーンの剣（斜め奥背面）オーバーレイSVG */
   private static readonly RUNE_SWORD_DIAG_UP = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <g transform="rotate(25 36 20)">
@@ -299,83 +315,98 @@ export class EquipmentSprites {
   // =========================================================================
 
   // --- 2-1. 木の盾 (Wood Shield) ---
+  /** 木の盾（下向き正面）オーバーレイSVG */
   private static readonly WOOD_SHIELD_DOWN = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <circle cx="20" cy="34" r="8" fill="#78350f" stroke="#451a03" stroke-width="2"/>
   <circle cx="20" cy="34" r="3" fill="#92400e"/>
 </svg>`.trim();
 
+  /** 木の盾（上向き背面）オーバーレイSVG */
   private static readonly WOOD_SHIELD_UP = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <circle cx="20" cy="33" r="7.5" fill="#451a03" stroke="#291003" stroke-width="1.5"/>
 </svg>`.trim();
 
+  /** 木の盾（横向き側面）オーバーレイSVG */
   private static readonly WOOD_SHIELD_SIDE = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="26" cy="34" rx="5" ry="8" fill="#78350f" stroke="#451a03" stroke-width="2"/>
 </svg>`.trim();
 
+  /** 木の盾（斜め手前）オーバーレイSVG */
   private static readonly WOOD_SHIELD_DIAG_DOWN = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="16" cy="35" rx="5" ry="8" fill="#78350f" stroke="#451a03" stroke-width="2"/>
 </svg>`.trim();
 
+  /** 木の盾（斜め奥背面）オーバーレイSVG */
   private static readonly WOOD_SHIELD_DIAG_UP = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="16" cy="33" rx="5" ry="7.5" fill="#451a03" stroke="#291003" stroke-width="1.5"/>
 </svg>`.trim();
 
   // --- 2-2. 青銅の盾 (Bronze Buckler) ---
+  /** 青銅の盾（下向き正面）オーバーレイSVG */
   private static readonly BRONZE_SHIELD_DOWN = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <circle cx="20" cy="34" r="8.5" fill="#b45309" stroke="#78350f" stroke-width="2"/>
   <circle cx="20" cy="34" r="3.5" fill="#d97706"/>
 </svg>`.trim();
 
+  /** 青銅の盾（上向き背面）オーバーレイSVG */
   private static readonly BRONZE_SHIELD_UP = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <circle cx="20" cy="33" r="8" fill="#78350f" stroke="#451a03" stroke-width="1.5"/>
 </svg>`.trim();
 
+  /** 青銅の盾（横向き側面）オーバーレイSVG */
   private static readonly BRONZE_SHIELD_SIDE = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="26" cy="34" rx="5.5" ry="9" fill="#b45309" stroke="#78350f" stroke-width="2"/>
 </svg>`.trim();
 
+  /** 青銅の盾（斜め手前）オーバーレイSVG */
   private static readonly BRONZE_SHIELD_DIAG_DOWN = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="16" cy="35" rx="5.5" ry="9" fill="#b45309" stroke="#78350f" stroke-width="2"/>
 </svg>`.trim();
 
+  /** 青銅の盾（斜め奥背面）オーバーレイSVG */
   private static readonly BRONZE_SHIELD_DIAG_UP = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="16" cy="33" rx="5" ry="8" fill="#78350f" stroke="#451a03" stroke-width="1.5"/>
 </svg>`.trim();
 
   // --- 2-3. 鋼の盾 (Steel Shield) ---
+  /** 鋼の盾（下向き正面）オーバーレイSVG */
   private static readonly STEEL_SHIELD_DOWN = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <path d="M14 26 Q12 40 20 44 Q28 40 26 26 Z" fill="#2563eb" stroke="#fbbf24" stroke-width="2"/>
   <circle cx="20" cy="34" r="3" fill="#fbbf24"/>
 </svg>`.trim();
 
+  /** 鋼の盾（上向き背面）オーバーレイSVG */
   private static readonly STEEL_SHIELD_UP = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <path d="M14 24 Q12 38 20 42 Q28 38 26 24 Z" fill="#1e3a8a" stroke="#d97706" stroke-width="1.5"/>
 </svg>`.trim();
 
+  /** 鋼の盾（横向き側面）オーバーレイSVG */
   private static readonly STEEL_SHIELD_SIDE = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="26" cy="34" rx="6" ry="10" fill="#2563eb" stroke="#fbbf24" stroke-width="2"/>
   <circle cx="26" cy="34" r="2.5" fill="#fbbf24"/>
 </svg>`.trim();
 
+  /** 鋼の盾（斜め手前）オーバーレイSVG */
   private static readonly STEEL_SHIELD_DIAG_DOWN = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="16" cy="35" rx="5" ry="9" fill="#2563eb" stroke="#fbbf24" stroke-width="2"/>
   <circle cx="16" cy="35" r="2" fill="#fbbf24"/>
 </svg>`.trim();
 
+  /** 鋼の盾（斜め奥背面）オーバーレイSVG */
   private static readonly STEEL_SHIELD_DIAG_UP = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <path d="M12 24 Q9 38 16 42 Q24 38 22 24 Z" fill="#1e3a8a" stroke="#d97706" stroke-width="1.5"/>
@@ -383,58 +414,68 @@ export class EquipmentSprites {
 </svg>`.trim();
 
   // --- 2-4. 魔法の盾 (Magic Shield) ---
+  /** 魔法の盾（下向き正面）オーバーレイSVG */
   private static readonly MAGIC_SHIELD_DOWN = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <path d="M13 24 Q11 40 20 45 Q29 40 27 24 Z" fill="#0284c7" stroke="#38bdf8" stroke-width="2"/>
   <polygon points="20,28 23,34 20,40 17,34" fill="#a5f3fc"/>
 </svg>`.trim();
 
+  /** 魔法の盾（上向き背面）オーバーレイSVG */
   private static readonly MAGIC_SHIELD_UP = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <path d="M13 23 Q11 38 20 43 Q29 38 27 23 Z" fill="#0369a1" stroke="#0284c7" stroke-width="1.5"/>
 </svg>`.trim();
 
+  /** 魔法の盾（横向き側面）オーバーレイSVG */
   private static readonly MAGIC_SHIELD_SIDE = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="26" cy="34" rx="6.5" ry="10.5" fill="#0284c7" stroke="#38bdf8" stroke-width="2"/>
   <polygon points="26,29 28,34 26,39 24,34" fill="#a5f3fc"/>
 </svg>`.trim();
 
+  /** 魔法の盾（斜め手前）オーバーレイSVG */
   private static readonly MAGIC_SHIELD_DIAG_DOWN = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="16" cy="35" rx="5.5" ry="9.5" fill="#0284c7" stroke="#38bdf8" stroke-width="2"/>
   <polygon points="16,30 18,35 16,40 14,35" fill="#a5f3fc"/>
 </svg>`.trim();
 
+  /** 魔法の盾（斜め奥背面）オーバーレイSVG */
   private static readonly MAGIC_SHIELD_DIAG_UP = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <path d="M11 23 Q8 38 16 43 Q24 38 22 23 Z" fill="#0369a1" stroke="#0284c7" stroke-width="1.5"/>
 </svg>`.trim();
 
   // --- 2-5. ドラゴンの盾 (Dragon Shield) ---
+  /** ドラゴンの盾（下向き正面）オーバーレイSVG */
   private static readonly DRAGON_SHIELD_DOWN = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <path d="M13 24 L20 46 L27 24 L20 22 Z" fill="#dc2626" stroke="#fbbf24" stroke-width="2"/>
   <polygon points="20,26 23,32 20,40 17,32" fill="#fbbf24"/>
 </svg>`.trim();
 
+  /** ドラゴンの盾（上向き背面）オーバーレイSVG */
   private static readonly DRAGON_SHIELD_UP = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <path d="M13 22 L20 44 L27 22 L20 20 Z" fill="#991b1b" stroke="#d97706" stroke-width="1.5"/>
 </svg>`.trim();
 
+  /** ドラゴンの盾（横向き側面）オーバーレイSVG */
   private static readonly DRAGON_SHIELD_SIDE = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="26" cy="34" rx="7" ry="11" fill="#dc2626" stroke="#fbbf24" stroke-width="2"/>
   <circle cx="26" cy="34" r="3" fill="#fbbf24"/>
 </svg>`.trim();
 
+  /** ドラゴンの盾（斜め手前）オーバーレイSVG */
   private static readonly DRAGON_SHIELD_DIAG_DOWN = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="16" cy="35" rx="6" ry="10" fill="#dc2626" stroke="#fbbf24" stroke-width="2"/>
   <circle cx="16" cy="35" r="2.5" fill="#fbbf24"/>
 </svg>`.trim();
 
+  /** ドラゴンの盾（斜め奥背面）オーバーレイSVG */
   private static readonly DRAGON_SHIELD_DIAG_UP = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <path d="M11 22 L17 44 L23 22 L17 20 Z" fill="#991b1b" stroke="#d97706" stroke-width="1.5"/>

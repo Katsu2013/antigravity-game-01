@@ -897,6 +897,7 @@ export class TileSprites {
   // ==========================================
   // 8. 泥濘の湿地帯 (SWAMP) SVG 定義
   // ==========================================
+  /** 泥濘の湿地帯・床タイル1 */
   public static readonly SWAMP_FLOOR_1_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect width="64" height="64" fill="#1b281c"/>
@@ -907,6 +908,7 @@ export class TileSprites {
   <circle cx="16" cy="46" r="3" fill="#365314"/>
 </svg>`.trim();
 
+  /** 泥濘の湿地帯・壁タイル1 */
   public static readonly SWAMP_WALL_1_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect width="64" height="64" fill="#0b140c"/>
@@ -919,6 +921,7 @@ export class TileSprites {
   // ==========================================
   // 9. 腐蝕の毒沼窟 (TOXIC) SVG 定義
   // ==========================================
+  /** 腐蝕の毒沼窟・床タイル1 */
   public static readonly TOXIC_FLOOR_1_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect width="64" height="64" fill="#24142a"/>
@@ -928,6 +931,7 @@ export class TileSprites {
   <circle cx="20" cy="50" r="3" fill="#9333ea" opacity="0.5"/>
 </svg>`.trim();
 
+  /** 腐蝕の毒沼窟・壁タイル1 */
   public static readonly TOXIC_WALL_1_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect width="64" height="64" fill="#100713"/>
@@ -940,6 +944,7 @@ export class TileSprites {
   // ==========================================
   // 10. 古代真鍮の機巧回廊 (MECHA) SVG 定義
   // ==========================================
+  /** 古代真鍮の機巧回廊・歯車床タイル1 */
   public static readonly MECHA_FLOOR_1_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect width="64" height="64" fill="#382918"/>
@@ -952,6 +957,7 @@ export class TileSprites {
   <circle cx="56" cy="56" r="2.5" fill="#f59e0b"/>
 </svg>`.trim();
 
+  /** 古代真鍮の機巧回廊・機巧壁タイル1 */
   public static readonly MECHA_WALL_1_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect width="64" height="64" fill="#1a1109"/>
@@ -965,6 +971,7 @@ export class TileSprites {
   // ==========================================
   // 11. 大海原の孤島迷宮 (ISLAND) SVG 定義
   // ==========================================
+  /** 大海原の孤島迷宮・砂岩石畳床タイル1 */
   public static readonly ISLAND_FLOOR_1_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect width="64" height="64" fill="#475569"/>
@@ -974,6 +981,7 @@ export class TileSprites {
   <circle cx="48" cy="38" r="2" fill="#f1f5f9" opacity="0.7"/>
 </svg>`.trim();
 
+  /** 大海原の孤島迷宮・海蝕断崖壁タイル1 */
   public static readonly ISLAND_WALL_1_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect width="64" height="64" fill="#0f172a"/>
@@ -986,6 +994,7 @@ export class TileSprites {
   // ==========================================
   // 特殊環境ギミック床 (GIMMICKS) SVG 定義
   // ==========================================
+  /** 特殊環境ギミック・氷床（スリップ床）タイル */
   public static readonly GIMMICK_ICE_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect width="64" height="64" fill="#0284c7"/>
@@ -998,6 +1007,7 @@ export class TileSprites {
   <circle cx="44" cy="20" r="2.5" fill="#ffffff" opacity="0.8"/>
 </svg>`.trim();
 
+  /** 特殊環境ギミック・泥濘（足止め床）タイル */
   public static readonly GIMMICK_MUD_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect width="64" height="64" fill="#451a03"/>
@@ -1010,6 +1020,7 @@ export class TileSprites {
   <ellipse cx="34" cy="48" rx="6" ry="3" fill="#451a03"/>
 </svg>`.trim();
 
+  /** 特殊環境ギミック・毒沼（毒ダメージ床）タイル */
   public static readonly GIMMICK_POISON_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect width="64" height="64" fill="#3b0764"/>
