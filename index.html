@@ -101,6 +101,8 @@
         <button id="btn-zoom-toggle" class="hud-btn highlight" title="ズーム切替 (100% / 150% / 200%)">🔍 150%</button>
         <button id="btn-toggle-map" class="hud-btn highlight" title="ミニマップ表示切替 (M/V)">MAP: ON</button>
         <button id="btn-sound-toggle" class="hud-btn highlight" title="サウンド切替 (SE)">🔊 SE: ON</button>
+        <button id="btn-compendium" class="hud-btn highlight" title="迷宮博物誌（モンスター＆アイテム図鑑）">📜 博物誌</button>
+        <button id="btn-settings" class="hud-btn highlight" title="ゲーム設定（速度・音量・操作）">⚙️ 設定</button>
         <button id="btn-inventory-top" class="hud-btn" title="持ち物一覧 (I/C)">持ち物</button>
         <button id="btn-to-title" class="hud-btn" title="タイトル画面へ戻る">タイトル</button>
         <button id="btn-regen" class="hud-btn" title="フロア再生成 (R)">再生成</button>
@@ -368,6 +370,76 @@
       </div>
     </div>
 
+    <!-- Compendium (Encyclopedia) Modal Dialog -->
+    <div id="compendium-modal" class="modal-overlay hidden">
+      <div class="modal-dialog compendium-dialog">
+        <div class="modal-header">
+          <h3 class="modal-title">📜 迷宮博物誌（図鑑）</h3>
+          <button id="btn-close-compendium" class="modal-close-btn">&times;</button>
+        </div>
+        <div class="compendium-nav-tabs">
+          <button id="tab-compendium-monsters" class="compendium-tab active">魔物図鑑 (モンスター)</button>
+          <button id="tab-compendium-items" class="compendium-tab">名品図鑑 (アイテム)</button>
+        </div>
+        <div class="compendium-stats-bar">
+          <span id="compendium-progress-text" class="compendium-progress-text">収集率: 0% (0/0)</span>
+        </div>
+        <div class="modal-body compendium-scroll-body">
+          <div id="compendium-grid" class="compendium-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Settings Modal Dialog -->
+    <div id="settings-modal" class="modal-overlay hidden">
+      <div class="modal-dialog settings-dialog">
+        <div class="modal-header">
+          <h3 class="modal-title">⚙️ ゲーム詳細設定</h3>
+          <button id="btn-close-settings" class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body settings-scroll-body">
+          <div class="settings-group">
+            <h4 class="settings-group-title">⚡ ゲーム速度 (テンポ設定)</h4>
+            <div class="settings-speed-buttons">
+              <button class="settings-opt-btn" data-speed="NORMAL">標準 (1.0x)</button>
+              <button class="settings-opt-btn active" data-speed="FAST">高速 (1.5x)</button>
+              <button class="settings-opt-btn" data-speed="VERY_FAST">超高速 (2.0x)</button>
+            </div>
+            <p class="settings-hint">※移動アニメーション、敵の行動テンポ、滑走ウェイトを加速します。</p>
+          </div>
+
+          <div class="settings-group">
+            <h4 class="settings-group-title">🎵 サウンド設定 (プログラマティックWeb Audio)</h4>
+            <div class="settings-slider-row">
+              <label for="setting-bgm-volume" class="settings-label">BGM音量:</label>
+              <input type="range" id="setting-bgm-volume" class="settings-slider" min="0" max="100" value="50" />
+              <span id="setting-bgm-val" class="settings-val-text">50%</span>
+            </div>
+            <div class="settings-slider-row">
+              <label for="setting-se-volume" class="settings-label">SE音量 (効果音):</label>
+              <input type="range" id="setting-se-volume" class="settings-slider" min="0" max="100" value="70" />
+              <span id="setting-se-val" class="settings-val-text">70%</span>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <h4 class="settings-group-title">📱 操作・表示設定</h4>
+            <div class="settings-toggle-row">
+              <span class="settings-label">仮想ゲームパッド (十字キー+4ボタン):</span>
+              <button id="btn-setting-toggle-pad" class="settings-toggle-btn">表示中 (ON)</button>
+            </div>
+            <div class="settings-toggle-row">
+              <span class="settings-label">ミニマップ表示:</span>
+              <button id="btn-setting-toggle-minimap" class="settings-toggle-btn">表示中 (ON)</button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-settings-save" class="story-continue-btn">設定を保存して閉じる</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Title Screen Overlay -->
     <div id="title-screen" class="title-overlay">
       <div class="title-container">
@@ -408,6 +480,14 @@
           <button id="btn-title-new" class="title-menu-btn title-btn-new">
             <span class="btn-icon">✨</span>
             <span class="btn-text">新しく冒険を始める</span>
+          </button>
+          <button id="btn-title-compendium" class="title-menu-btn title-btn-compendium">
+            <span class="btn-icon">📜</span>
+            <span class="btn-text">迷宮博物誌（図鑑）</span>
+          </button>
+          <button id="btn-title-settings" class="title-menu-btn title-btn-settings">
+            <span class="btn-icon">⚙️</span>
+            <span class="btn-text">ゲーム詳細設定</span>
           </button>
           <button id="btn-title-scores" class="title-menu-btn title-btn-scores">
             <span class="btn-icon">🏆</span>

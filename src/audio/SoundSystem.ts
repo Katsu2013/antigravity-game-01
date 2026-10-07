@@ -7,6 +7,21 @@
 
 import { Item } from '../core/types';
 
+/**
+ * プログラマティックBGMの楽曲トラック識別子を表す型。
+ */
+export type BgmTrackName =
+  | 'TITLE'
+  | 'DUNGEON_STONE'
+  | 'DUNGEON_CAVE'
+  | 'DUNGEON_ICE'
+  | 'DUNGEON_SWAMP'
+  | 'SHOP'
+  | 'THIEF'
+  | 'MONSTER_HOUSE'
+  | 'BOSS'
+  | 'NONE';
+
 export class SoundSystem {
   /**
    * SoundSystem のシングルトンキャッシュインスタンス。
@@ -30,14 +45,79 @@ export class SoundSystem {
   private masterGain: GainNode | null = null;
 
   /**
+   * プログラマティックBGM全体のボリュームを制御するBGMゲインノード。
+   * - 想定値: GainNode インスタンスまたは `null`
+   * - 初期値: `null`
+   */
+  private bgmGain: GainNode | null = null;
+
+  /**
    * 効果音ミュート（消音）フラグ。
    * - 想定値:
    *   - `true`: 全効果音を消音（マスターゲイン=0）
-   *   - `false`: 効果音を発音（マスターゲイン=0.7）
+   *   - `false`: 効果音を発音（マスターゲイン=seVolume）
    * - 初期値: `false`（localStorage 'rogue_se_muted' から復元）
    * - 変化契機: `toggleMute()` 実行時に反転
    */
   private muted = false;
+
+  /**
+   * BGM消音フラグ。
+   * - 想定値:
+   *   - `true`: BGMを消音（BGMゲイン=0）
+   *   - `false`: BGMを発音（BGMゲイン=bgmVolume * 0.35）
+   * - 初期値: `false`（localStorage 'rogue_bgm_muted' から復元）
+   * - 変化契機: `toggleBgmMute()` 実行時に反転
+   */
+  private bgmMuted = false;
+
+  /**
+   * BGM音量倍率（0.0〜1.0）。
+   * - 想定値: 0.0 〜 1.0 の実数
+   * - 初期値: `0.5`
+   * - 変化契機: `setBgmVolume()` 呼び出し時
+   */
+  private bgmVolume = 0.5;
+
+  /**
+   * 効果音（SE）音量倍率（0.0〜1.0）。
+   * - 想定値: 0.0 〜 1.0 の実数
+   * - 初期値: `0.7`
+   * - 変化契機: `setSeVolume()` 呼び出し時
+   */
+  private seVolume = 0.7;
+
+  /**
+   * 現在再生中のBGMトラック種別。
+   * - 想定値: BgmTrackName 列挙値（'TITLE', 'DUNGEON_STONE', 'SHOP'等）
+   * - 初期値: `'NONE'`
+   * - 変化契機: `playBgm()` / `stopBgm()` 呼び出し時
+   */
+  private currentTrack: BgmTrackName = 'NONE';
+
+  /**
+   * BGMシーケンサーの周期的タイマーID。
+   * - 想定値: タイマーID数値または停止時 `null`
+   * - 初期値: `null`
+   * - 変化契機: `startBgmLoop()` 開始時および停止時
+   */
+  private bgmTimerId: number | null = null;
+
+  /**
+   * BGMシーケンサーの次回ノート発音予定時刻（AudioContext時間軸）。
+   * - 想定値: 0以上の実数
+   * - 初期値: `0`
+   * - 変化契機: ノートスケジューリングごとに加算
+   */
+  private bgmNextTime = 0;
+
+  /**
+   * 現在のBGMメロディステップ位置インデックス。
+   * - 想定値: 0以上の整数
+   * - 初期値: `0`
+   * - 変化契機: ノート発音ごとにインクリメントし小節長でループ
+   */
+  private bgmStepIndex = 0;
 
   /**
    * ブラウザのユーザー操作によるAudioContextアンロック完了フラグ。
@@ -50,15 +130,30 @@ export class SoundSystem {
   private isUnlocked = false;
 
   private constructor() {
-    // ローカルストレージからミュート設定を復元
+    // ローカルストレージからミュート・音量設定を復元
     try {
       const savedMute = localStorage.getItem('rogue_se_muted');
       if (savedMute !== null) {
         this.muted = savedMute === 'true';
       }
+      const savedBgmMute = localStorage.getItem('rogue_bgm_muted');
+      if (savedBgmMute !== null) {
+        this.bgmMuted = savedBgmMute === 'true';
+      }
+      const savedBgmVol = localStorage.getItem('rogue_bgm_volume');
+      if (savedBgmVol !== null) {
+        const val = parseFloat(savedBgmVol);
+        if (!isNaN(val)) this.bgmVolume = Math.max(0, Math.min(1, val));
+      }
+      const savedSeVol = localStorage.getItem('rogue_se_volume');
+      if (savedSeVol !== null) {
+        const val = parseFloat(savedSeVol);
+        if (!isNaN(val)) this.seVolume = Math.max(0, Math.min(1, val));
+      }
     } catch {
       // localStorageが制限されている環境でもフォールバック
       this.muted = false;
+      this.bgmMuted = false;
     }
   }
 
@@ -85,19 +180,31 @@ export class SoundSystem {
       const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       if (!this.ctx && AudioCtx) {
         this.ctx = new AudioCtx();
+        // 効果音（SE）ゲイン
         this.masterGain = this.ctx.createGain();
-        this.masterGain.gain.setValueAtTime(this.muted ? 0 : 0.7, this.ctx.currentTime);
+        this.masterGain.gain.setValueAtTime(this.muted ? 0 : this.seVolume, this.ctx.currentTime);
         this.masterGain.connect(this.ctx.destination);
+
+        // BGMゲイン
+        this.bgmGain = this.ctx.createGain();
+        this.bgmGain.gain.setValueAtTime(this.bgmMuted ? 0 : this.bgmVolume * 0.35, this.ctx.currentTime);
+        this.bgmGain.connect(this.ctx.destination);
       }
 
       if (this.ctx && this.ctx.state === 'suspended') {
         this.ctx.resume().then(() => {
           this.isUnlocked = true;
+          if (this.currentTrack !== 'NONE' && !this.bgmTimerId) {
+            this.startBgmLoop();
+          }
         }).catch(() => {
           // ユーザーインタラクション待機中
         });
       } else if (this.ctx && this.ctx.state === 'running') {
         this.isUnlocked = true;
+        if (this.currentTrack !== 'NONE' && !this.bgmTimerId) {
+          this.startBgmLoop();
+        }
       }
     } catch (e) {
       console.warn('AudioContext initialization failed:', e);
@@ -118,7 +225,7 @@ export class SoundSystem {
     }
 
     if (this.masterGain && this.ctx) {
-      this.masterGain.gain.setValueAtTime(this.muted ? 0 : 0.7, this.ctx.currentTime);
+      this.masterGain.gain.setValueAtTime(this.muted ? 0 : this.seVolume, this.ctx.currentTime);
     }
     return this.muted;
   }
@@ -128,6 +235,315 @@ export class SoundSystem {
    */
   public isMuted(): boolean {
     return this.muted;
+  }
+
+  /**
+   * BGMミュート状態を反転切り替えします。
+   * @returns 切り替え後のBGMミュート状態（true: 消音, false: 発音）
+   */
+  public toggleBgmMute(): boolean {
+    this.unlock();
+    this.bgmMuted = !this.bgmMuted;
+    try {
+      localStorage.setItem('rogue_bgm_muted', String(this.bgmMuted));
+    } catch {
+      // ignore
+    }
+
+    if (this.bgmGain && this.ctx) {
+      this.bgmGain.gain.setValueAtTime(this.bgmMuted ? 0 : this.bgmVolume * 0.35, this.ctx.currentTime);
+    }
+    return this.bgmMuted;
+  }
+
+  /**
+   * 現在BGMがミュート中かどうかを取得します。
+   */
+  public isBgmMuted(): boolean {
+    return this.bgmMuted;
+  }
+
+  /**
+   * BGM音量を設定します（0.0 〜 1.0）。
+   * @param vol 設定する音量スケール
+   */
+  public setBgmVolume(vol: number): void {
+    this.bgmVolume = Math.max(0, Math.min(1, vol));
+    try {
+      localStorage.setItem('rogue_bgm_volume', String(this.bgmVolume));
+    } catch {
+      // ignore
+    }
+    if (this.bgmGain && this.ctx) {
+      this.bgmGain.gain.setValueAtTime(this.bgmMuted ? 0 : this.bgmVolume * 0.35, this.ctx.currentTime);
+    }
+  }
+
+  /**
+   * 現在のBGM音量スケール（0.0〜1.0）を取得します。
+   */
+  public getBgmVolume(): number {
+    return this.bgmVolume;
+  }
+
+  /**
+   * 効果音（SE）音量を設定します（0.0 〜 1.0）。
+   * @param vol 設定する音量スケール
+   */
+  public setSeVolume(vol: number): void {
+    this.seVolume = Math.max(0, Math.min(1, vol));
+    try {
+      localStorage.setItem('rogue_se_volume', String(this.seVolume));
+    } catch {
+      // ignore
+    }
+    if (this.masterGain && this.ctx) {
+      this.masterGain.gain.setValueAtTime(this.muted ? 0 : this.seVolume, this.ctx.currentTime);
+    }
+  }
+
+  /**
+   * 現在の効果音（SE）音量スケール（0.0〜1.0）を取得します。
+   */
+  public getSeVolume(): number {
+    return this.seVolume;
+  }
+
+  /**
+   * 現在再生中のBGMトラック名を取得します。
+   */
+  public getCurrentBgm(): BgmTrackName {
+    return this.currentTrack;
+  }
+
+  /**
+   * 指定したBGMトラックのループ再生を開始します。
+   * 同一トラックが再生中の場合は再開せず継続します。
+   *
+   * @param track 再生する楽曲トラック名
+   */
+  public playBgm(track: BgmTrackName): void {
+    if (this.currentTrack === track && this.bgmTimerId !== null) {
+      return;
+    }
+
+    this.currentTrack = track;
+    this.stopBgmLoop();
+
+    if (track === 'NONE') {
+      return;
+    }
+
+    this.unlock();
+    if (this.ctx && this.isUnlocked) {
+      this.startBgmLoop();
+    }
+  }
+
+  /**
+   * BGMの再生を完全停止します。
+   */
+  public stopBgm(): void {
+    this.currentTrack = 'NONE';
+    this.stopBgmLoop();
+  }
+
+  /**
+   * BGMスケジューラループを開始します。
+   */
+  private startBgmLoop(): void {
+    this.stopBgmLoop();
+    if (!this.ctx || this.currentTrack === 'NONE') return;
+
+    this.bgmStepIndex = 0;
+    this.bgmNextTime = this.ctx.currentTime + 0.05;
+
+    // 定期スケジューラタイマー（100msごとに先行スケジューリング）
+    this.bgmTimerId = window.setInterval(() => {
+      this.scheduleBgmNotes();
+    }, 100);
+  }
+
+  /**
+   * BGMスケジューラループを停止します。
+   */
+  private stopBgmLoop(): void {
+    if (this.bgmTimerId !== null) {
+      window.clearInterval(this.bgmTimerId);
+      this.bgmTimerId = null;
+    }
+  }
+
+  /**
+   * Web Audio APIの先読みスケジューリングによってBGMノートを発音します。
+   */
+  private scheduleBgmNotes(): void {
+    if (!this.ctx || !this.bgmGain || this.currentTrack === 'NONE') return;
+
+    const pattern = this.getTrackPattern(this.currentTrack);
+    if (!pattern) return;
+
+    const scheduleAheadTime = 0.25; // 250ms先まで先行予約
+    while (this.bgmNextTime < this.ctx.currentTime + scheduleAheadTime) {
+      const step = this.bgmStepIndex % pattern.melody.length;
+      const melodyFreq = pattern.melody[step];
+      const bassFreq = pattern.bass ? pattern.bass[step % pattern.bass.length] : 0;
+
+      // メロディ発音
+      if (melodyFreq > 20) {
+        this.playToneNote(
+          melodyFreq,
+          this.bgmNextTime,
+          pattern.stepDurationSec * 0.85,
+          pattern.melodyWave || 'triangle',
+          0.20
+        );
+      }
+
+      // ベース発音
+      if (bassFreq > 20) {
+        this.playToneNote(
+          bassFreq,
+          this.bgmNextTime,
+          pattern.stepDurationSec * 0.75,
+          pattern.bassWave || 'square',
+          0.14
+        );
+      }
+
+      this.bgmNextTime += pattern.stepDurationSec;
+      this.bgmStepIndex++;
+    }
+  }
+
+  /**
+   * 単一のBGMノートをオシレーターとエンベロープで発音・スケジューリングします。
+   */
+  private playToneNote(
+    freq: number,
+    startTime: number,
+    duration: number,
+    waveType: OscillatorType,
+    volume: number
+  ): void {
+    if (!this.ctx || !this.bgmGain) return;
+
+    try {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = waveType;
+      osc.frequency.setValueAtTime(freq, startTime);
+
+      // ADSR エンベロープ
+      const attack = 0.015;
+      gain.gain.setValueAtTime(0.0001, startTime);
+      gain.gain.exponentialRampToValueAtTime(volume, startTime + attack);
+      gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+      osc.connect(gain);
+      gain.connect(this.bgmGain);
+
+      osc.start(startTime);
+      osc.stop(startTime + duration + 0.02);
+    } catch {
+      // AudioContext state edge case fallback
+    }
+  }
+
+  /**
+   * 各トラックの旋律パターン定義を取得します。
+   */
+  private getTrackPattern(track: BgmTrackName): {
+    stepDurationSec: number;
+    melody: number[];
+    bass?: number[];
+    melodyWave?: OscillatorType;
+    bassWave?: OscillatorType;
+  } | null {
+    // 音階定数
+    const C3 = 130.81, Cs3 = 138.59, D3 = 146.83, Eb3 = 155.56, E3 = 164.81, F3 = 174.61, Fs3 = 185.00, G3 = 196.00, Gs3 = 207.65, A3 = 220.00, Bb3 = 233.08, B3 = 246.94;
+    const C4 = 261.63, Cs4 = 277.18, D4 = 293.66, Eb4 = 311.13, E4 = 329.63, F4 = 349.23, Fs4 = 369.99, G4 = 392.00, Gs4 = 415.30, A4 = 440.00, Bb4 = 466.16, B4 = 493.88;
+    const C5 = 523.25, Cs5 = 554.37, D5 = 587.33, Eb5 = 622.25, E5 = 659.25, Fs5 = 739.99, G5 = 783.99, B5 = 987.77;
+    const C6 = 1046.50, E6 = 1318.51;
+    const R = 0; // 休符
+
+    switch (track) {
+      case 'TITLE':
+        return {
+          stepDurationSec: 0.28,
+          melody: [C4, E4, G4, B4, C5, G4, E4, D4, E4, G4, C5, D5, C5, B4, A4, G4],
+          bass: [C3, R, G3, R, A3, R, E3, R, F3, R, C3, R, G3, R, G3, R],
+          melodyWave: 'triangle',
+          bassWave: 'sine',
+        };
+      case 'DUNGEON_STONE':
+        return {
+          stepDurationSec: 0.25,
+          melody: [A4, R, C5, E5, D5, R, A4, R, F4, A4, E5, D5, C5, B4, A4, R],
+          bass: [A3, R, E3, R, D3, R, A3, R, F3, R, C3, R, E3, R, E3, R],
+          melodyWave: 'triangle',
+          bassWave: 'square',
+        };
+      case 'DUNGEON_CAVE':
+        return {
+          stepDurationSec: 0.23,
+          melody: [D4, F4, A4, R, G4, F4, D4, R, C4, E4, G4, R, F4, E4, D4, R],
+          bass: [D3, D3, A3, D3, G3, D3, F3, D3, C3, C3, G3, C3, Bb3, A3, D3, R],
+          melodyWave: 'triangle',
+          bassWave: 'square',
+        };
+      case 'DUNGEON_ICE':
+        return {
+          stepDurationSec: 0.22,
+          melody: [E5, G5, B5, E6, D5, B5, G5, E5, C5, E5, G5, C6, B5, G5, Fs5, E5],
+          bass: [E3, R, B3, R, C3, R, G3, R, A3, R, E3, R, B3, R, E3, R],
+          melodyWave: 'sine',
+          bassWave: 'triangle',
+        };
+      case 'DUNGEON_SWAMP':
+        return {
+          stepDurationSec: 0.29,
+          melody: [C4, Eb4, Fs4, G4, C5, Fs4, Eb4, C4, Bb3, D4, F4, Gs4, G4, F4, Eb4, D4],
+          bass: [C3, R, Fs3, R, G3, R, C3, R, Bb3, R, F3, R, G3, R, C3, R],
+          melodyWave: 'triangle',
+          bassWave: 'square',
+        };
+      case 'SHOP':
+        return {
+          stepDurationSec: 0.19,
+          melody: [C4, E4, G4, C5, B4, G4, E4, G4, A4, F4, D4, F4, G4, F4, E4, D4],
+          bass: [C3, G3, C3, G3, D3, G3, D3, G3, F3, C4, F3, C4, G3, D4, G3, B3],
+          melodyWave: 'triangle',
+          bassWave: 'square',
+        };
+      case 'THIEF':
+        return {
+          stepDurationSec: 0.16,
+          melody: [A4, A4, C5, D5, Eb5, D5, C5, A4, G4, A4, C5, A4, Eb5, D5, C5, Eb5],
+          bass: [A3, A3, Eb3, E3, A3, A3, C3, D3, A3, A3, Eb3, E3, F3, E3, Eb3, D3],
+          melodyWave: 'square',
+          bassWave: 'sawtooth',
+        };
+      case 'MONSTER_HOUSE':
+        return {
+          stepDurationSec: 0.17,
+          melody: [E4, G4, Bb4, Cs5, C5, Bb4, G4, E4, F4, Gs4, B4, D5, Cs5, B4, Gs4, F4],
+          bass: [E3, E3, Bb3, E3, Cs3, E3, G3, E3, F3, F3, B3, F3, D3, F3, Gs3, F3],
+          melodyWave: 'square',
+          bassWave: 'sawtooth',
+        };
+      case 'BOSS':
+        return {
+          stepDurationSec: 0.18,
+          melody: [D4, D4, F4, Gs4, A4, D5, C5, A4, Bb4, A4, F4, D4, Cs4, E4, A4, Cs5],
+          bass: [D3, D3, A3, D3, F3, D3, Gs3, D3, Bb3, A3, G3, F3, A3, E3, Cs3, A3],
+          melodyWave: 'sawtooth',
+          bassWave: 'square',
+        };
+      default:
+        return null;
+    }
   }
 
   /**
@@ -1668,4 +2084,93 @@ export class SoundSystem {
       noise.stop(crashTime + 0.25);
     }
   }
+
+  /**
+   * モンスターハウス突入時の危険警報ファンファーレSE（ジャジャーン！）。
+   * 突入の衝撃と緊迫感を演出する3和音のブラス風サウンドを合成します。
+   */
+  public playMonsterHouseFanfare(): void {
+    if (this.muted) return;
+    this.unlock();
+    if (!this.ctx || !this.masterGain) return;
+
+    const now = this.ctx.currentTime;
+
+    // 第1和音: D4, F#4, A4 (鋭く短く)
+    [293.66, 369.99, 440.00].forEach((freq) => {
+      this.playBrassTone(freq, now, 0.14, 0.45);
+    });
+
+    // 第2和音: G4, B4, D5 (急激な緊張)
+    [392.00, 493.88, 587.33].forEach((freq) => {
+      this.playBrassTone(freq, now + 0.16, 0.14, 0.50);
+    });
+
+    // 第3和音: C5, E5, G5, C6 (重厚な決定打！)
+    [523.25, 659.25, 783.99, 1046.50].forEach((freq) => {
+      this.playBrassTone(freq, now + 0.32, 0.55, 0.60);
+    });
+  }
+
+  /**
+   * アイテム鑑定・識別成功時の美しいベル・チャイムSE（チリーン！）。
+   * 高音の澄んだサイン波の連鎖で閃き・発見感を演出します。
+   */
+  public playIdentify(): void {
+    if (this.muted) return;
+    this.unlock();
+    if (!this.ctx || !this.masterGain) return;
+
+    const now = this.ctx.currentTime;
+    const notes = [1046.50, 1318.51, 1567.98, 2093.00]; // C6, E6, G6, C7
+    notes.forEach((freq, idx) => {
+      if (!this.ctx || !this.masterGain) return;
+      const t = now + idx * 0.07;
+      const dur = 0.28;
+
+      const osc = this.ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, t);
+
+      const gain = this.ctx.createGain();
+      gain.gain.setValueAtTime(0.001, t);
+      gain.gain.exponentialRampToValueAtTime(0.35, t + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+
+      osc.start(t);
+      osc.stop(t + dur + 0.02);
+    });
+  }
+
+  /**
+   * ファンファーレ用のブラス風トーンを合成します。
+   */
+  private playBrassTone(freq: number, startTime: number, duration: number, volume: number): void {
+    if (!this.ctx || !this.masterGain) return;
+
+    const osc = this.ctx.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(freq, startTime);
+
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(freq * 3.5, startTime);
+    filter.frequency.exponentialRampToValueAtTime(freq * 1.5, startTime + duration);
+
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.001, startTime);
+    gain.gain.exponentialRampToValueAtTime(volume, startTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.masterGain);
+
+    osc.start(startTime);
+    osc.stop(startTime + duration + 0.02);
+  }
 }
+

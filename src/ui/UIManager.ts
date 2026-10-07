@@ -5,12 +5,17 @@
  */
 
 import { GameEngine } from '../core/GameEngine';
-import { Item, Monster } from '../core/types';
+import { GameSettings, GameSpeed, Item, Monster } from '../core/types';
 import { NpcSystem } from '../core/systems/NpcSystem';
 import { SynthesisSystem } from '../core/systems/SynthesisSystem';
 import { SVGSprites } from '../render/sprites/SVGSprites';
 import { RunStats, StorageManager } from '../storage/StorageManager';
 import { SoundSystem } from '../audio/SoundSystem';
+import {
+  COMPENDIUM_ITEM_LIST,
+  COMPENDIUM_MONSTER_LIST,
+} from '../core/compendiumData';
+
 
 /**
  * DOM UIコンポーネント管理クラス。
@@ -194,10 +199,71 @@ export class UIManager {
    */
   private modalOpenTimestamps: Map<string, number> = new Map();
 
+  /** 図鑑（迷宮博物誌）モーダル要素 */
+  private compendiumModalEl: HTMLElement;
+  /** 図鑑モンスタータブボタン要素 */
+  private compendiumTabMonstersEl: HTMLElement;
+  /** 図鑑アイテムタブボタン要素 */
+  private compendiumTabItemsEl: HTMLElement;
+  /** 図鑑収集率進捗表示要素 */
+  private compendiumProgressTextEl: HTMLElement;
+  /** 図鑑カードグリッドコンテナ要素 */
+  private compendiumGridEl: HTMLElement;
+
+  /**
+   * 図鑑モーダルで現在アクティブになっている表示タブ。
+   * - 想定値: `'MONSTERS'` または `'ITEMS'`
+   * - 初期値: `'MONSTERS'`
+   * - 変化契機: ユーザーが図鑑内のタブボタンをクリックした時
+   */
+  private activeCompendiumTab: 'MONSTERS' | 'ITEMS' = 'MONSTERS';
+
+  /** ゲーム詳細設定モーダル要素 */
+  private settingsModalEl: HTMLElement;
+  /** BGM音量スライダー要素 */
+  private settingBgmSliderEl: HTMLInputElement | null;
+  /** BGM音量数値表示要素 */
+  private settingBgmValEl: HTMLElement | null;
+  /** SE音量スライダー要素 */
+  private settingSeSliderEl: HTMLInputElement | null;
+  /** SE音量数値表示要素 */
+  private settingSeValEl: HTMLElement | null;
+  /** ゲーム速度選択ボタン群 */
+  private settingSpeedBtns: NodeListOf<HTMLButtonElement>;
+  /** 仮想ゲームパッドトグルボタン要素 */
+  private settingTogglePadBtn: HTMLButtonElement | null;
+  /** ミニマップトグルボタン要素 */
+  private settingToggleMinimapBtn: HTMLButtonElement | null;
+
+  /**
+   * 現在選択されているゲーム速度設定。
+   * - 想定値: `'NORMAL'` | `'FAST'` | `'VERY_FAST'`
+   * - 初期値: `'FAST'`
+   * - 変化契機: 設定モーダル内で速度ボタンをクリックした時、またはロード時
+   */
+  private currentSpeedSetting: GameSpeed = 'FAST';
+
+  /**
+   * 画面下部仮想ゲームパッドが表示中かどうかのフラグ。
+   * - 想定値: `true`（表示）または `false`（非表示）
+   * - 初期値: `true`
+   * - 変化契機: 設定モーダル内でパッド表示トグルを押した時
+   */
+  private isVirtualPadVisible = true;
+
+  /**
+   * ミニマップが表示中かどうかのフラグ。
+   * - 想定値: `true`（表示）または `false`（非表示）
+   * - 初期値: `true`
+   * - 変化契機: 設定モーダルやHUDマップボタン、ショートカットキーでトグルした時
+   */
+  private isMinimapVisible = true;
+
   /**
    * フロア到達トースト通知の自動消去タイマーID。
    * - 想定値: window.setTimeout ID または `null`
    * - 初期値: `null`
+   * - 変化契機: 新フロア到達時にsetTimeoutを設定し、タイムアウト時にクリア
    */
   private toastTimerId: number | null = null;
 
@@ -258,6 +324,23 @@ export class UIManager {
 
     this.gameClearModalEl = document.getElementById('gameclear-modal')!;
     this.gameClearStatsEl = document.getElementById('gameclear-stats')!;
+
+    this.compendiumModalEl = document.getElementById('compendium-modal')!;
+    this.compendiumTabMonstersEl = document.getElementById('tab-compendium-monsters')!;
+    this.compendiumTabItemsEl = document.getElementById('tab-compendium-items')!;
+    this.compendiumProgressTextEl = document.getElementById('compendium-progress-text')!;
+    this.compendiumGridEl = document.getElementById('compendium-grid')!;
+
+    this.settingsModalEl = document.getElementById('settings-modal')!;
+    this.settingBgmSliderEl = document.getElementById('setting-bgm-volume') as HTMLInputElement | null;
+    this.settingBgmValEl = document.getElementById('setting-bgm-val');
+    this.settingSeSliderEl = document.getElementById('setting-se-volume') as HTMLInputElement | null;
+    this.settingSeValEl = document.getElementById('setting-se-val');
+    this.settingSpeedBtns = document.querySelectorAll('.settings-speed-buttons .settings-opt-btn');
+    this.settingTogglePadBtn = document.getElementById('btn-setting-toggle-pad') as HTMLButtonElement | null;
+    this.settingToggleMinimapBtn = document.getElementById('btn-setting-toggle-minimap') as HTMLButtonElement | null;
+
+    this.loadAndApplySettings();
 
     this.engine.onNpcInteract = (npc) => {
       this.showNpcModal(npc);
@@ -470,6 +553,100 @@ export class UIManager {
       this.closeGameClearModal();
       this.showTitleScreen();
     });
+
+    // 迷宮博物誌（図鑑）ボタン（HUD & タイトル）
+    document.getElementById('btn-compendium')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.showCompendiumModal();
+    });
+    document.getElementById('btn-title-compendium')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.showCompendiumModal();
+    });
+    document.getElementById('btn-close-compendium')?.addEventListener('click', () => {
+      this.hideCompendiumModal();
+    });
+    this.compendiumModalEl.addEventListener('click', (e) => {
+      const openedAt = this.modalOpenTimestamps.get('compendium-modal') || 0;
+      if (Date.now() - openedAt < 350) return;
+      if (e.target === this.compendiumModalEl) {
+        this.hideCompendiumModal();
+      }
+    });
+
+    // 図鑑タブ切替
+    this.compendiumTabMonstersEl?.addEventListener('click', () => {
+      this.activeCompendiumTab = 'MONSTERS';
+      this.compendiumTabMonstersEl.classList.add('active');
+      this.compendiumTabItemsEl.classList.remove('active');
+      this.renderCompendium();
+    });
+    this.compendiumTabItemsEl?.addEventListener('click', () => {
+      this.activeCompendiumTab = 'ITEMS';
+      this.compendiumTabItemsEl.classList.add('active');
+      this.compendiumTabMonstersEl.classList.remove('active');
+      this.renderCompendium();
+    });
+
+    // ゲーム詳細設定ボタン（HUD & タイトル）
+    document.getElementById('btn-settings')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.showSettingsModal();
+    });
+    document.getElementById('btn-title-settings')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.showSettingsModal();
+    });
+    document.getElementById('btn-close-settings')?.addEventListener('click', () => {
+      this.hideSettingsModal();
+    });
+    document.getElementById('btn-settings-save')?.addEventListener('click', () => {
+      this.hideSettingsModal();
+    });
+    this.settingsModalEl.addEventListener('click', (e) => {
+      const openedAt = this.modalOpenTimestamps.get('settings-modal') || 0;
+      if (Date.now() - openedAt < 350) return;
+      if (e.target === this.settingsModalEl) {
+        this.hideSettingsModal();
+      }
+    });
+
+    // 音量スライダー
+    this.settingBgmSliderEl?.addEventListener('input', () => {
+      const vol = parseInt(this.settingBgmSliderEl?.value ?? '50', 10);
+      if (this.settingBgmValEl) this.settingBgmValEl.textContent = `${vol}%`;
+      SoundSystem.getInstance().setBgmVolume(vol / 100);
+    });
+    this.settingSeSliderEl?.addEventListener('input', () => {
+      const vol = parseInt(this.settingSeSliderEl?.value ?? '70', 10);
+      if (this.settingSeValEl) this.settingSeValEl.textContent = `${vol}%`;
+      SoundSystem.getInstance().setSeVolume(vol / 100);
+    });
+
+    // 速度ボタン
+    this.settingSpeedBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const speed = btn.dataset.speed as GameSpeed;
+        if (!speed) return;
+        this.currentSpeedSetting = speed;
+        this.settingSpeedBtns.forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        this.engine.updateSettings({ gameSpeed: speed });
+      });
+    });
+
+    // 仮想パッドトグル
+    this.settingTogglePadBtn?.addEventListener('click', () => {
+      this.isVirtualPadVisible = !this.isVirtualPadVisible;
+      this.updateVirtualPadVisibility();
+      this.engine.updateSettings({ showVirtualPad: this.isVirtualPadVisible });
+    });
+
+    // ミニマップトグル
+    this.settingToggleMinimapBtn?.addEventListener('click', () => {
+      this.isMinimapVisible = !this.isMinimapVisible;
+      this.updateMinimapVisibility();
+    });
   }
 
   /**
@@ -480,7 +657,7 @@ export class UIManager {
   }
 
   /**
-   * いずれかのモーダル（インベントリ、ゲームオーバー、スコア、ヘルプ、NPC対話、合成、ストーリー、クリア）が開いているかを判定します。
+   * いずれかのモーダル（インベントリ、ゲームオーバー、スコア、ヘルプ、NPC対話、合成、ストーリー、クリア、図鑑、設定）が開いているかを判定します。
    */
   public isAnyModalOpen(): boolean {
     return (
@@ -491,7 +668,9 @@ export class UIManager {
       !this.npcModalEl.classList.contains('hidden') ||
       !this.synthesisModalEl.classList.contains('hidden') ||
       !this.storyModalEl.classList.contains('hidden') ||
-      !this.gameClearModalEl.classList.contains('hidden')
+      !this.gameClearModalEl.classList.contains('hidden') ||
+      !this.compendiumModalEl.classList.contains('hidden') ||
+      !this.settingsModalEl.classList.contains('hidden')
     );
   }
 
@@ -1250,19 +1429,27 @@ export class UIManager {
       const nameRow = document.createElement('div');
       nameRow.className = 'item-name-row';
 
+      const isIdentified = item.isIdentified !== false;
       const name = document.createElement('span');
       name.className = 'item-name';
-      let displayName = item.name;
-      if (item.upgradeLevel && item.upgradeLevel > 0) {
+      let displayName = isIdentified ? item.name : (item.unidentifiedName ?? item.name);
+      if (isIdentified && item.upgradeLevel && item.upgradeLevel > 0) {
         displayName += `+${item.upgradeLevel}`;
       }
       if (item.category === 'ARROW' && item.count !== undefined) {
         displayName += ` [${item.count}]`;
-      } else if (item.category === 'STAFF' && item.charges !== undefined) {
-        displayName += ` [${item.charges}]`;
+      } else if (item.category === 'STAFF') {
+        displayName += isIdentified && item.charges !== undefined ? ` [${item.charges}]` : ' [?]';
       }
       name.textContent = displayName;
       nameRow.appendChild(name);
+
+      if (!isIdentified) {
+        const unTag = document.createElement('span');
+        unTag.className = 'unidentified-tag';
+        unTag.textContent = '？ 未識別';
+        nameRow.appendChild(unTag);
+      }
 
       if (item.isShopItem) {
         const shopTag = document.createElement('span');
@@ -1338,7 +1525,9 @@ export class UIManager {
       // 下段: 詳細説明・性能テキスト（小画面でも全文読めるように独立配置）
       const desc = document.createElement('div');
       desc.className = 'item-desc';
-      desc.textContent = item.description;
+      desc.textContent = isIdentified
+        ? item.description
+        : '正体不明の道具。何が起きるか使ってみるまで分からない……';
 
       // 価格・査定行
       const priceRow = document.createElement('div');
@@ -1562,5 +1751,315 @@ export class UIManager {
    */
   private showFloorToast(text: string): void {
     this.showToast(text, 2200);
+  }
+
+  // =========================================================================
+  // ゲーム詳細設定モーダル制御
+  // =========================================================================
+
+  /**
+   * localStorageから保存されたゲーム設定を読み込み、UIおよび各システムに適用します。
+   */
+  public loadAndApplySettings(): void {
+    const settings = StorageManager.loadSettings();
+    this.currentSpeedSetting = settings.gameSpeed;
+    this.isVirtualPadVisible = settings.showVirtualPad;
+    this.isMinimapVisible = settings.showMinimap;
+
+    // サウンドシステムへ音量適用
+    const soundSys = SoundSystem.getInstance();
+    soundSys.setBgmVolume(settings.bgmVolume);
+    soundSys.setSeVolume(settings.seVolume);
+
+    // スライダーと数値の同期
+    if (this.settingBgmSliderEl) {
+      this.settingBgmSliderEl.value = `${Math.round(settings.bgmVolume * 100)}`;
+    }
+    if (this.settingBgmValEl) {
+      this.settingBgmValEl.textContent = `${Math.round(settings.bgmVolume * 100)}%`;
+    }
+    if (this.settingSeSliderEl) {
+      this.settingSeSliderEl.value = `${Math.round(settings.seVolume * 100)}`;
+    }
+    if (this.settingSeValEl) {
+      this.settingSeValEl.textContent = `${Math.round(settings.seVolume * 100)}%`;
+    }
+
+    // 速度ボタンのアクティブ状態同期
+    this.settingSpeedBtns.forEach((btn) => {
+      if (btn.dataset.speed === this.currentSpeedSetting) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    // 仮想パッド表示状態の同期
+    this.updateVirtualPadVisibility();
+
+    // ミニマップ表示状態の同期
+    this.updateMinimapVisibility();
+
+    // エンジンへの反映
+    this.engine.updateSettings(settings);
+  }
+
+  /**
+   * ゲーム詳細設定モーダルを開きます。
+   */
+  public showSettingsModal(): void {
+    this.modalOpenTimestamps.set('settings-modal', Date.now());
+    this.loadAndApplySettings();
+    this.settingsModalEl.classList.remove('hidden');
+  }
+
+  /**
+   * ゲーム詳細設定モーダルを閉じ、変更された設定値を永続化保存します。
+   */
+  public hideSettingsModal(): void {
+    const bgmVol = this.settingBgmSliderEl
+      ? parseInt(this.settingBgmSliderEl.value, 10) / 100
+      : 0.5;
+    const seVol = this.settingSeSliderEl
+      ? parseInt(this.settingSeSliderEl.value, 10) / 100
+      : 0.7;
+
+    const newSettings: GameSettings = {
+      gameSpeed: this.currentSpeedSetting,
+      bgmVolume: bgmVol,
+      seVolume: seVol,
+      showVirtualPad: this.isVirtualPadVisible,
+      showMinimap: this.isMinimapVisible,
+    };
+
+    StorageManager.saveSettings(newSettings);
+    this.engine.updateSettings(newSettings);
+    this.settingsModalEl.classList.add('hidden');
+  }
+
+  /**
+   * 画面下部仮想ゲームパッドの表示/非表示をDOMに反映します。
+   */
+  private updateVirtualPadVisibility(): void {
+    const padEl = document.getElementById('mobile-controls');
+    if (padEl) {
+      if (this.isVirtualPadVisible) {
+        padEl.classList.remove('hidden');
+      } else {
+        padEl.classList.add('hidden');
+      }
+    }
+    if (this.settingTogglePadBtn) {
+      this.settingTogglePadBtn.textContent = this.isVirtualPadVisible
+        ? '表示中 (ON)'
+        : '非表示 (OFF)';
+      if (this.isVirtualPadVisible) {
+        this.settingTogglePadBtn.classList.remove('off');
+      } else {
+        this.settingTogglePadBtn.classList.add('off');
+      }
+    }
+  }
+
+  /**
+   * ミニマップの表示/非表示をDOMおよび設定に反映します。
+   */
+  private updateMinimapVisibility(): void {
+    if (this.settingToggleMinimapBtn) {
+      this.settingToggleMinimapBtn.textContent = this.isMinimapVisible
+        ? '表示中 (ON)'
+        : '非表示 (OFF)';
+      if (this.isMinimapVisible) {
+        this.settingToggleMinimapBtn.classList.remove('off');
+      } else {
+        this.settingToggleMinimapBtn.classList.add('off');
+      }
+    }
+
+    const mapBtn = document.getElementById('btn-toggle-map');
+    if (mapBtn) {
+      mapBtn.textContent = this.isMinimapVisible ? 'MAP: ON' : 'MAP: OFF';
+    }
+
+    this.engine.updateSettings({ showMinimap: this.isMinimapVisible });
+  }
+
+  // =========================================================================
+  // 迷宮博物誌（図鑑）モーダル制御
+  // =========================================================================
+
+  /**
+   * 迷宮博物誌（図鑑）モーダルを開きます。
+   */
+  public showCompendiumModal(): void {
+    this.modalOpenTimestamps.set('compendium-modal', Date.now());
+    this.renderCompendium();
+    this.compendiumModalEl.classList.remove('hidden');
+  }
+
+  /**
+   * 迷宮博物誌（図鑑）モーダルを閉じます。
+   */
+  public hideCompendiumModal(): void {
+    this.compendiumModalEl.classList.add('hidden');
+  }
+
+  /**
+   * 現在選択中のタブに応じた図鑑内容（魔物または名品）をレンダリングします。
+   */
+  public renderCompendium(): void {
+    if (this.activeCompendiumTab === 'MONSTERS') {
+      this.renderCompendiumMonsters();
+    } else {
+      this.renderCompendiumItems();
+    }
+  }
+
+  /**
+   * 魔物図鑑（モンスター一覧）をレンダリングします。
+   */
+  private renderCompendiumMonsters(): void {
+    const compendium = StorageManager.loadMonsterCompendium();
+    const totalCount = COMPENDIUM_MONSTER_LIST.length;
+
+    let unlockedCount = 0;
+    for (const def of COMPENDIUM_MONSTER_LIST) {
+      const entry = compendium[def.type];
+      if (entry && entry.defeatedCount > 0) {
+        unlockedCount++;
+      }
+    }
+
+    const percentage = Math.round((unlockedCount / totalCount) * 100);
+    this.compendiumProgressTextEl.textContent = `魔物収集率: ${percentage}% (${unlockedCount}/${totalCount}種)`;
+
+    this.compendiumGridEl.innerHTML = '';
+
+    for (const def of COMPENDIUM_MONSTER_LIST) {
+      const entry = compendium[def.type];
+      const isUnlocked = entry !== undefined && entry.defeatedCount > 0;
+
+      const card = document.createElement('div');
+      card.className = `compendium-card ${isUnlocked ? '' : 'locked'}`;
+
+      if (isUnlocked) {
+        const sprite = SVGSprites.get(def.spriteId);
+        const imgSrc = sprite?.src ?? '';
+
+        card.innerHTML = `
+          <div class="compendium-card-top">
+            <div class="compendium-card-thumb">
+              ${imgSrc ? `<img src="${imgSrc}" alt="${def.name}" width="48" height="48" />` : '<span style="font-size: 32px;">👾</span>'}
+            </div>
+            <div class="compendium-card-header">
+              <h4 class="compendium-card-name">${def.name}</h4>
+              <div class="compendium-card-sub">
+                <span class="compendium-floor-tag">生息: ${def.floorRange}</span>
+                <span class="compendium-defeat-tag">撃破: ${entry.defeatedCount}体</span>
+              </div>
+            </div>
+          </div>
+          <div class="compendium-badge-row">
+            <span class="compendium-feature-badge">${def.features}</span>
+          </div>
+          <p class="compendium-card-desc">${def.description}</p>
+        `;
+      } else {
+        card.innerHTML = `
+          <div class="compendium-card-top">
+            <div class="compendium-card-thumb compendium-locked-thumb">
+              <span class="compendium-locked-icon">？</span>
+            </div>
+            <div class="compendium-card-header">
+              <h4 class="compendium-card-name text-gray-500">？？？？？</h4>
+              <div class="compendium-card-sub">
+                <span class="compendium-floor-tag text-gray-600">生息: ？？？</span>
+                <span class="compendium-defeat-tag text-gray-600">未討伐</span>
+              </div>
+            </div>
+          </div>
+          <div class="compendium-badge-row">
+            <span class="compendium-feature-badge text-gray-600">未解明の脅威</span>
+          </div>
+          <p class="compendium-card-desc text-gray-600">まだ遭遇・討伐したことのない未知の魔物。迷宮の深層に潜んでいる……</p>
+        `;
+      }
+
+      this.compendiumGridEl.appendChild(card);
+    }
+  }
+
+  /**
+   * 名品図鑑（アイテム一覧）をレンダリングします。
+   */
+  private renderCompendiumItems(): void {
+    const compendium = StorageManager.loadItemCompendium();
+    const totalCount = COMPENDIUM_ITEM_LIST.length;
+
+    let unlockedCount = 0;
+    for (const def of COMPENDIUM_ITEM_LIST) {
+      const entry = compendium[def.matchKey];
+      if (entry && entry.discoveredCount > 0) {
+        unlockedCount++;
+      }
+    }
+
+    const percentage = Math.round((unlockedCount / totalCount) * 100);
+    this.compendiumProgressTextEl.textContent = `名品収集率: ${percentage}% (${unlockedCount}/${totalCount}種)`;
+
+    this.compendiumGridEl.innerHTML = '';
+
+    for (const def of COMPENDIUM_ITEM_LIST) {
+      const entry = compendium[def.matchKey];
+      const isUnlocked = entry !== undefined && entry.discoveredCount > 0;
+
+      const card = document.createElement('div');
+      card.className = `compendium-card ${isUnlocked ? '' : 'locked'}`;
+
+      if (isUnlocked) {
+        const sprite = SVGSprites.get(def.spriteId);
+        const imgSrc = sprite?.src ?? '';
+
+        card.innerHTML = `
+          <div class="compendium-card-top">
+            <div class="compendium-card-thumb">
+              ${imgSrc ? `<img src="${imgSrc}" alt="${def.name}" width="48" height="48" />` : '<span style="font-size: 32px;">📦</span>'}
+            </div>
+            <div class="compendium-card-header">
+              <h4 class="compendium-card-name">${def.name}</h4>
+              <div class="compendium-card-sub">
+                <span class="compendium-floor-tag">分類: ${def.category}</span>
+                <span class="compendium-defeat-tag">発見: ${entry.discoveredCount}回</span>
+              </div>
+            </div>
+          </div>
+          <div class="compendium-badge-row">
+            <span class="compendium-feature-badge">${def.statsSummary}</span>
+          </div>
+          <p class="compendium-card-desc">${def.description}</p>
+        `;
+      } else {
+        card.innerHTML = `
+          <div class="compendium-card-top">
+            <div class="compendium-card-thumb compendium-locked-thumb">
+              <span class="compendium-locked-icon">？</span>
+            </div>
+            <div class="compendium-card-header">
+              <h4 class="compendium-card-name text-gray-500">？？？？？</h4>
+              <div class="compendium-card-sub">
+                <span class="compendium-floor-tag text-gray-600">分類: 未鑑定</span>
+                <span class="compendium-defeat-tag text-gray-600">未発見</span>
+              </div>
+            </div>
+          </div>
+          <div class="compendium-badge-row">
+            <span class="compendium-feature-badge text-gray-600">未発見の秘宝</span>
+          </div>
+          <p class="compendium-card-desc text-gray-600">まだ手に入れたことのない未知の名品。迷宮のどこかに眠っている……</p>
+        `;
+      }
+
+      this.compendiumGridEl.appendChild(card);
+    }
   }
 }

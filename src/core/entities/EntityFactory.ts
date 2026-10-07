@@ -7,6 +7,7 @@
 import {
   BiomeType,
   Item,
+  ItemCategory,
   Monster,
   MonsterType,
   Obstacle,
@@ -780,24 +781,32 @@ export class EntityFactory {
   }
 
   /**
-   * 指定した座標にランダムなアイテムを生成します（適正価格自動付与）。
+   * 指定した座標にランダムなアイテムを生成します（適正価格自動付与・階層に応じた未識別判定）。
    *
    * @param x - 初期配置X座標
    * @param y - 初期配置Y座標
+   * @param floor - 現在の地下階層番号（未識別アイテム判定に使用、8F以降で未識別率上昇）
    * @returns 生成されたアイテムオブジェクト
    */
-  public static createRandomItem(x: number, y: number): Item {
-    return this.assignItemPrices(this.createRawRandomItem(x, y));
+  public static createRandomItem(x: number, y: number, floor = 1): Item {
+    const raw = this.createRawRandomItem(x, y);
+    const item = this.assignItemPrices(raw);
+    return this.applyIdentificationState(item, floor);
   }
 
   /**
    * ショップ（店）に並ぶ高品質な商品アイテムを生成します。
+   *
+   * @param x - 初期配置X座標
+   * @param y - 初期配置Y座標
+   * @param floor - 現在の地下階層番号
+   * @returns 生成されたショップ陳列アイテム
    */
-  public static createShopItem(x: number, y: number): Item {
+  public static createShopItem(x: number, y: number, floor = 1): Item {
     const raw = Math.random() < 0.20 ? this.createSynthesisPot(x, y) : this.createRawRandomItem(x, y);
     const item = this.assignItemPrices(raw);
     item.isShopItem = true;
-    return item;
+    return this.applyIdentificationState(item, floor);
   }
 
   /**
@@ -1486,7 +1495,7 @@ export class EntityFactory {
         symbol: '?',
         color: '#f43f5e',
       };
-    } else if (roll < 0.996) {
+    } else if (roll < 0.994) {
       // あかりの巻物
       return {
         id,
@@ -1499,9 +1508,120 @@ export class EntityFactory {
         symbol: '?',
         color: '#38bdf8',
       };
+    } else if (roll < 0.998) {
+      // 識別の巻物
+      return this.createIdentifyScroll(x, y);
     } else {
       // 合成の壺（武具の合算強化・印継承）
       return this.createSynthesisPot(x, y);
+    }
+  }
+
+  /**
+   * 識別の巻物アイテムを新規生成します。
+   *
+   * @param x 初期配置X座標
+   * @param y 初期配置Y座標
+   * @returns 生成された識別の巻物アイテム
+   */
+  public static createIdentifyScroll(x: number, y: number): Item {
+    const id = `item_${++this.idCounter}`;
+    return {
+      id,
+      name: '識別の巻物',
+      category: 'SCROLL',
+      description: '読むと所持品の中から1つのアイテムを選んで真の正体を看破・鑑定する魔導の巻物。',
+      value: 1,
+      specialEffect: 'IDENTIFY',
+      x,
+      y,
+      symbol: '?',
+      color: '#c084fc',
+      isIdentified: true,
+    };
+  }
+
+  /**
+   * 階層およびアイテムカテゴリに応じて未識別状態を判定・適用します。
+   * 第8層以降では草・杖・巻物が約70%の確率で未識別（仮名表示）として生成されます。
+   *
+   * @param item 対象アイテム
+   * @param floor 現在の地下階層番号
+   * @returns 未識別プロパティが付与されたアイテム
+   */
+  public static applyIdentificationState(item: Item, floor: number): Item {
+    // 既に識別フラグが明示されている場合
+    if (item.isIdentified !== undefined) {
+      return item;
+    }
+
+    // 序盤階層（1〜7F）または武具・矢・食料・壺・ゴールドは初期から識別済み
+    if (floor < 8 || !['POTION', 'STAFF', 'SCROLL'].includes(item.category)) {
+      item.isIdentified = true;
+      return item;
+    }
+
+    // 8F以降の草・杖・巻物は70%の確率で未識別
+    if (Math.random() < 0.70) {
+      item.isIdentified = false;
+      item.unidentifiedName = this.getUnidentifiedName(item.name, item.category);
+    } else {
+      item.isIdentified = true;
+    }
+
+    return item;
+  }
+
+  /**
+   * アイテムの正規名称およびカテゴリに対応する未識別の仮名称を取得します。
+   *
+   * @param realName アイテムの正規名称
+   * @param category アイテムのカテゴリ分類
+   * @returns 風情ある未識別の仮名称
+   */
+  public static getUnidentifiedName(realName: string, category: ItemCategory): string {
+    const nameMap: Record<string, string> = {
+      // 草・ポーション
+      '薬草': 'あかい草',
+      '特薬草': 'きいろい草',
+      '弟切草': 'べにいろの草',
+      'どくけし草': 'みどりの草',
+      '命の草': 'わかくさ色の草',
+      'すばやさの草': 'あおい草',
+      '力の種': 'ちゃいろの種',
+      '復活の草': 'きんいろの草',
+      // 魔法の杖
+      '吹き飛ばしの杖': 'くねくねした杖',
+      '場所替えの杖': 'ねじれた杖',
+      'かなしばりの杖': 'ぎざぎざの杖',
+      '睡眠の杖': 'みじかい杖',
+      '封印の杖': 'こくたんの杖',
+      '雷鳴の杖': 'ガラスの杖',
+      // 巻物
+      '天の恵みの巻物': 'アギの巻物',
+      '地の恵みの巻物': 'ポロンの巻物',
+      '真空斬りの巻物': 'ルーンの巻物',
+      'ワープの巻物': 'シエルの巻物',
+      '雷の巻物': 'バルドの巻物',
+      '睡眠の巻物': 'ミルルの巻物',
+      '混乱の巻物': 'ザクの巻物',
+      'あかりの巻物': 'ネルの巻物',
+      '識別の巻物': 'ヒスイの巻物',
+    };
+
+    if (nameMap[realName]) {
+      return nameMap[realName];
+    }
+
+    switch (category) {
+      case 'POTION':
+        return 'なぞの草';
+      case 'STAFF':
+        return 'ふしぎな杖';
+      case 'SCROLL':
+        return '古びた巻物';
+      default:
+        return '未識別の品';
     }
   }
 

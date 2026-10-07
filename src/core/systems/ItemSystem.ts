@@ -3,8 +3,17 @@
  * @description アイテムの拾得、使用、装備変更、および足元への投棄を管理するシステムクラス。
  */
 
-import { DungeonMap, ItemCategory, Monster, PlayerState, TileType } from '../types';
+import {
+  DungeonMap,
+  Item,
+  ItemCategory,
+  Monster,
+  PlayerState,
+  TileType,
+} from '../types';
 import { CombatSystem } from './CombatSystem';
+import { StorageManager } from '../../storage/StorageManager';
+import { SoundSystem } from '../../audio/SoundSystem';
 
 /**
  * アイテム操作の結果情報を表すインターフェース。
@@ -100,19 +109,74 @@ export class ItemSystem {
     map.items.splice(itemIndex, 1);
     player.inventory.push(item);
 
-    // 3. ショップ商品拾得時の案内
+    // 3. 識別済みアイテムの場合は博物誌（図鑑）に登録
+    if (item.isIdentified !== false) {
+      StorageManager.recordItemDiscovery(item.name, item.category, item.description);
+    }
+
+    const displayName =
+      item.isIdentified === false && item.unidentifiedName
+        ? item.unidentifiedName
+        : item.name;
+
+    // 4. ショップ商品拾得時の案内
     if (item.isShopItem) {
       const price = item.price ?? item.value ?? 100;
       return {
         success: true,
-        message: `${item.name} (${price}G) を手に取った。出入口で店主に代金を払おう。`,
+        message: `${displayName} (${price}G) を手に取った。出入口で店主に代金を払おう。`,
       };
     }
 
     return {
       success: true,
-      message: `${item.name} を拾って持ち物にしまった。`,
+      message: `${displayName} を拾って持ち物にしまった。`,
     };
+  }
+
+  /**
+   * 未識別アイテムの正体を看破・鑑定し、所持品・フロア内の同名アイテムを一括識別します。
+   *
+   * @param item - 鑑定対象のアイテム
+   * @param player - プレイヤー情報
+   * @param map - ダンジョンマップ情報
+   * @returns 初回識別時のメッセージ追記文字列（既に識別済みの場合は空文字）
+   */
+  public static identifyItem(
+    item: Item,
+    player: PlayerState,
+    map?: DungeonMap
+  ): string {
+    if (item.isIdentified === true) {
+      return '';
+    }
+
+    item.isIdentified = true;
+    const realName = item.name;
+
+    // 1. プレイヤー所持品内の同名アイテムをすべて識別済みに更新
+    for (const inv of player.inventory) {
+      if (inv.name === realName) {
+        inv.isIdentified = true;
+      }
+    }
+
+    // 2. フロア床落ちの同名アイテムをすべて識別済みに更新
+    if (map) {
+      for (const floorItem of map.items) {
+        if (floorItem.name === realName) {
+          floorItem.isIdentified = true;
+        }
+      }
+    }
+
+    // 3. 博物誌（アイテム図鑑）にアンロック登録
+    StorageManager.recordItemDiscovery(item.name, item.category, item.description);
+
+    // 4. 鑑定SE再生
+    SoundSystem.getInstance().playIdentify();
+
+    return ` ✨（なんとこれは【${realName}】だった！）`;
   }
 
   /**
@@ -134,16 +198,24 @@ export class ItemSystem {
     }
 
     const item = player.inventory[index];
+    const isInitiallyUnidentified = item.isIdentified === false;
+    const prevDisplayName = isInitiallyUnidentified
+      ? item.unidentifiedName || '未識別の草'
+      : item.name;
 
     switch (item.category) {
       case 'POTION': {
+        const identifyExtra = isInitiallyUnidentified
+          ? this.identifyItem(item, player, map)
+          : '';
+
         if (item.name === 'どくけし草') {
           const heal = Math.min(15, player.maxHp - player.hp);
           player.hp += heal;
           player.inventory.splice(index, 1);
           return {
             success: true,
-            message: `${item.name} を煎じて飲んだ。体内の毒気が浄化され、HPが ${heal} 回復した！`,
+            message: `${prevDisplayName} を煎じて飲んだ。体内の毒気が浄化され、HPが ${heal} 回復した！${identifyExtra}`,
           };
         }
 
@@ -155,7 +227,7 @@ export class ItemSystem {
           player.inventory.splice(index, 1);
           return {
             success: true,
-            message: `${item.name} を食べた！身体が軽くなり、身のこなしが鋭くなった！(最大HP+2, 防御+1)`,
+            message: `${prevDisplayName} を食べた！身体が軽くなり、身のこなしが鋭くなった！(最大HP+2, 防御+1)${identifyExtra}`,
           };
         }
 
@@ -167,7 +239,7 @@ export class ItemSystem {
           player.inventory.splice(index, 1);
           return {
             success: true,
-            message: `${item.name} を食べた。身体の芯から力が湧き上がった！(最大HP+3, 攻撃力+1)`,
+            message: `${prevDisplayName} を食べた。身体の芯から力が湧き上がった！(最大HP+3, 攻撃力+1)${identifyExtra}`,
           };
         }
 
@@ -177,7 +249,7 @@ export class ItemSystem {
           player.inventory.splice(index, 1);
           return {
             success: true,
-            message: `${item.name} を飲み干した！全身に凄まじい力がみなぎる！(基礎攻撃力+2永続上昇)`,
+            message: `${prevDisplayName} を飲み干した！全身に凄まじい力がみなぎる！(基礎攻撃力+2永続上昇)${identifyExtra}`,
           };
         }
 
@@ -187,7 +259,7 @@ export class ItemSystem {
           player.inventory.splice(index, 1);
           return {
             success: true,
-            message: `${item.name} を飲んだ！傷口が神速で塞がり、HPが ${heal} 大幅回復した！`,
+            message: `${prevDisplayName} を飲んだ！傷口が神速で塞がり、HPが ${heal} 大幅回復した！${identifyExtra}`,
           };
         }
 
@@ -197,7 +269,7 @@ export class ItemSystem {
           player.inventory.splice(index, 1);
           return {
             success: true,
-            message: `${item.name} を食べた！命の脈動が高まり、最大HPが+5上昇した！(HP 5回復)`,
+            message: `${prevDisplayName} を食べた！命の脈動が高まり、最大HPが+5上昇した！(HP 5回復)${identifyExtra}`,
           };
         }
 
@@ -206,7 +278,7 @@ export class ItemSystem {
           player.inventory.splice(index, 1);
           return {
             success: true,
-            message: `${item.name} を食べた！全身に疾風が宿り、10ターンの間倍速で行動できるようになった！`,
+            message: `${prevDisplayName} を食べた！全身に疾風が宿り、10ターンの間倍速で行動できるようになった！${identifyExtra}`,
           };
         }
 
@@ -216,7 +288,7 @@ export class ItemSystem {
           player.inventory.splice(index, 1);
           return {
             success: true,
-            message: `${item.name} を食べた！生命の輝きが満ち、HPが全快した！(※持っているだけで倒れた時に自動復活します)`,
+            message: `${prevDisplayName} を食べた！生命の輝きが満ち、HPが全快した！(※持っているだけで倒れた時に自動復活します)${identifyExtra}`,
           };
         }
 
@@ -225,17 +297,16 @@ export class ItemSystem {
           player.inventory.splice(index, 1);
           return {
             success: true,
-            message: `うぐっ……！ ${item.name} を飲んでしまった！激痛が走り、5ダメージを受けた！(敵に投げて使いましょう)`,
+            message: `うぐっ……！ ${prevDisplayName} を飲んでしまった！激痛が走り、5ダメージを受けた！(敵に投げて使いましょう)${identifyExtra}`,
           };
         }
 
         const heal = Math.min(item.value, player.maxHp - player.hp);
         player.hp += heal;
-        // 消費してインベントリから削除
         player.inventory.splice(index, 1);
         return {
           success: true,
-          message: `${item.name} を飲んだ。HPが ${heal} 回復した！`,
+          message: `${prevDisplayName} を飲んだ。HPが ${heal} 回復した！${identifyExtra}`,
         };
       }
 
@@ -348,6 +419,30 @@ export class ItemSystem {
       }
 
       case 'SCROLL': {
+        const identifyExtra = isInitiallyUnidentified
+          ? this.identifyItem(item, player, map)
+          : '';
+
+        // 識別の巻物
+        if (item.name === '識別の巻物' || item.specialEffect === 'IDENTIFY') {
+          player.inventory.splice(index, 1);
+          const unidentifiedList = player.inventory.filter((it) => it.isIdentified === false);
+          if (unidentifiedList.length > 0) {
+            const target = unidentifiedList[0];
+            const oldName = target.unidentifiedName || '未識別の品';
+            this.identifyItem(target, player, map);
+            return {
+              success: true,
+              message: `📜 識別の巻物を読んだ！魔力が宿り、【${oldName}】の真の正体が【${target.name}】と判明した！${identifyExtra}`,
+            };
+          } else {
+            return {
+              success: true,
+              message: `📜 識別の巻物を読んだ！しかし持ち物はすべて既に鑑定済みだった！${identifyExtra}`,
+            };
+          }
+        }
+
         if (item.name.includes('天の恵み') || item.name.includes('武器強化')) {
           if (!player.equippedWeapon) {
             return {
@@ -360,7 +455,7 @@ export class ItemSystem {
           player.inventory.splice(index, 1);
           return {
             success: true,
-            message: `${item.name} を読んだ！天から光が降り注ぎ、${player.equippedWeapon.name} が強化された！(+${player.equippedWeapon.upgradeLevel} / ATK: ${player.atk})`,
+            message: `${prevDisplayName} を読んだ！天から光が降り注ぎ、${player.equippedWeapon.name} が強化された！(+${player.equippedWeapon.upgradeLevel} / ATK: ${player.atk})${identifyExtra}`,
           };
         }
 
@@ -376,7 +471,7 @@ export class ItemSystem {
           player.inventory.splice(index, 1);
           return {
             success: true,
-            message: `${item.name} を読んだ！大地の加護が宿り、${player.equippedShield.name} が強化された！(+${player.equippedShield.upgradeLevel} / DEF: ${player.def})`,
+            message: `${prevDisplayName} を読んだ！大地の加護が宿り、${player.equippedShield.name} が強化された！(+${player.equippedShield.upgradeLevel} / DEF: ${player.def})${identifyExtra}`,
           };
         }
 
@@ -397,7 +492,7 @@ export class ItemSystem {
           player.inventory.splice(index, 1);
           return {
             success: true,
-            message: `${item.name} を読んだ！真空の刃が旋風となって吹き荒れ、視界内の敵（${hitCount}体）を切り刻んだ！(各20ダメージ)`,
+            message: `${prevDisplayName} を読んだ！真空の刃が旋風となって吹き荒れ、視界内の敵（${hitCount}体）を切り刻んだ！(各20ダメージ)${identifyExtra}`,
           };
         }
 
@@ -426,7 +521,7 @@ export class ItemSystem {
           const lvUpMsg = didLevelUp ? ` レベルが上がった！ (Lv.${player.level} / 最大HP+5 / 攻撃+2 / 防御+1 / HP+5回復)` : '';
           return {
             success: true,
-            message: `${item.name} を読んだ！轟音とともに激しい稲妻が視界の敵を焼き払った！${detail}${lvUpMsg}`,
+            message: `${prevDisplayName} を読んだ！轟音とともに激しい稲妻が視界の敵を焼き払った！${detail}${lvUpMsg}${identifyExtra}`,
           };
         }
 
@@ -440,7 +535,7 @@ export class ItemSystem {
           player.inventory.splice(index, 1);
           return {
             success: true,
-            message: `${item.name} を読んだ！神秘の輝きがダンジョンを満たし、フロア全体の構造が明らかになった！`,
+            message: `${prevDisplayName} を読んだ！神秘の輝きがダンジョンを満たし、フロア全体の構造が明らかになった！${identifyExtra}`,
           };
         }
 
@@ -455,7 +550,7 @@ export class ItemSystem {
           player.inventory.splice(index, 1);
           return {
             success: true,
-            message: `${item.name} を読んだ！神秘的な安らぎが満ち、視界内の敵（${count}体）が深い眠りに落ちた！`,
+            message: `${prevDisplayName} を読んだ！神秘的な安らぎが満ち、視界内の敵（${count}体）が深い眠りに落ちた！${identifyExtra}`,
           };
         }
 
@@ -470,7 +565,7 @@ export class ItemSystem {
           player.inventory.splice(index, 1);
           return {
             success: true,
-            message: `${item.name} を読んだ！妖しい狂気の波長が放たれ、視界内の敵（${count}体）が激しい混乱に陥った！`,
+            message: `${prevDisplayName} を読んだ！妖しい狂気の波長が放たれ、視界内の敵（${count}体）が激しい混乱に陥った！${identifyExtra}`,
           };
         }
 
@@ -492,7 +587,7 @@ export class ItemSystem {
         player.inventory.splice(index, 1);
         return {
           success: true,
-          message: `${item.name} を読んだ！不思議な光に包まれて別の場所へワープした！`,
+          message: `${prevDisplayName} を読んだ！不思議な光に包まれて別の場所へワープした！${identifyExtra}`,
         };
       }
 
@@ -782,9 +877,14 @@ export class ItemSystem {
       }
     }
 
+    const identifyExtra =
+      staff.isIdentified === false && targetMonster
+        ? this.identifyItem(staff, player, map)
+        : '';
+
     return {
       success: true,
-      message: effectMsg,
+      message: `${effectMsg}${identifyExtra}`,
       projectile: {
         fromX: player.x,
         fromY: player.y,
@@ -857,7 +957,12 @@ export class ItemSystem {
       }
     }
 
-    let msg = `${item.name} を投げつけた！`;
+    const isInitiallyUnidentified = item.isIdentified === false;
+    const prevDisplayName = isInitiallyUnidentified
+      ? item.unidentifiedName || '未識別の品'
+      : item.name;
+
+    let msg = `${prevDisplayName} を投げつけた！`;
 
     if (hitMonster) {
       if (item.category === 'STAFF') {
@@ -915,6 +1020,12 @@ export class ItemSystem {
           item.y = lastValidY;
           map.items.push(item);
         }
+      }
+
+      // 草・杖が命中して効果を発揮した場合は識別
+      if (isInitiallyUnidentified && ['POTION', 'STAFF'].includes(item.category)) {
+        const identifyExtra = this.identifyItem(item, player, map);
+        msg += identifyExtra;
       }
     } else {
       // 誰にも当たらず床に落ちる

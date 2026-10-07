@@ -21,10 +21,12 @@ import {
   Direction8,
   DungeonMap,
   GameLogEntry,
+  GameSettings,
   Item,
   Monster,
   Obstacle,
   PlayerState,
+  Room,
   TileType,
 } from './types';
 
@@ -189,6 +191,154 @@ export class GameEngine {
    * - 初期値: `0`
    */
   public actionLockUntil = 0;
+
+  /**
+   * プレイヤーがカスタマイズしたゲーム詳細設定。
+   * - 想定値: GameSettings オブジェクト（ゲーム速度、BGM/SE音量、仮想パッド表示等）
+   * - 初期値: StorageManager.loadSettings() から復元
+   * - 変化契機: 設定モーダルでの変更時に updateSettings() で更新
+   */
+  public settings: GameSettings = StorageManager.loadSettings();
+
+  /**
+   * ゲーム詳細設定を更新し、ストレージ保存および音声システムへ即時反映します。
+   *
+   * @param newSettings 変更する設定差分
+   */
+  public updateSettings(newSettings: Partial<GameSettings>): void {
+    this.settings = { ...this.settings, ...newSettings };
+    StorageManager.saveSettings(this.settings);
+
+    // 音声システムへの即時反映
+    if (newSettings.bgmVolume !== undefined) {
+      SoundSystem.getInstance().setBgmVolume(newSettings.bgmVolume);
+    }
+    if (newSettings.seVolume !== undefined) {
+      SoundSystem.getInstance().setSeVolume(newSettings.seVolume);
+    }
+
+    this.notify();
+  }
+
+  /**
+   * プレイヤーが現在滞在している部屋オブジェクトを取得します。
+   * 通路にいる場合は null を返します。
+   *
+   * @returns 滞在中のRoomオブジェクト、または通路時は null
+   */
+  public getCurrentRoom(): Room | null {
+    if (!this.map || !this.player) return null;
+    const px = this.player.x;
+    const py = this.player.y;
+    for (const r of this.map.rooms) {
+      if (px >= r.x && px < r.x + r.w && py >= r.y && py < r.y + r.h) {
+        return r;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * プレイヤーがモンスターハウスの部屋に進入したかを検知し、
+   * 初回進入時に警報ファンファーレSE、BGM切替、警告ログ、部屋内魔物の全覚醒を発動します。
+   */
+  public checkMonsterHouseEntry(): void {
+    const room = this.getCurrentRoom();
+    if (room && room.isMonsterHouse && !room.monsterHouseTriggered) {
+      room.monsterHouseTriggered = true;
+
+      // 1. 警報ファンファーレSE再生
+      SoundSystem.getInstance().playMonsterHouseFanfare();
+
+      // 2. 警告ログ出力
+      this.addLog('🚨 モンスターハウスだ！！ 部屋の魔物たちが一斉に目を覚ました！', 'warning');
+
+      // 3. 部屋内のモンスターを一斉覚醒（睡眠解除）
+      for (const m of this.map.monsters) {
+        if (
+          m.x >= room.x &&
+          m.x < room.x + room.w &&
+          m.y >= room.y &&
+          m.y < room.y + room.h
+        ) {
+          m.isDormant = false;
+        }
+      }
+
+      // 4. BGMをモンスターハウス曲に切り替え
+      this.updateBgm();
+    }
+  }
+
+  /**
+   * 現在のフロア環境や探索状況（泥棒、店、モンスターハウス、ボス）に応じたプログラマティックBGMを自動再生します。
+   */
+  public updateBgm(): void {
+    const sound = SoundSystem.getInstance();
+    if (!this.player || !this.player.isAlive) {
+      sound.stopBgm();
+      return;
+    }
+
+    // 1. 泥棒発覚時
+    if (this.map.isThiefMode) {
+      sound.playBgm('THIEF');
+      return;
+    }
+
+    // 2. モンスターハウス発動中の部屋内にいる場合
+    const currentRoom = this.getCurrentRoom();
+    if (currentRoom && currentRoom.isMonsterHouse && currentRoom.monsterHouseTriggered) {
+      sound.playBgm('MONSTER_HOUSE');
+      return;
+    }
+
+    // 3. ショップ部屋内にいる場合（平常時）
+    if (currentRoom && currentRoom.isShop) {
+      sound.playBgm('SHOP');
+      return;
+    }
+
+    // 4. 第50層ボスフロア
+    if (this.player.floor === 50) {
+      sound.playBgm('BOSS');
+      return;
+    }
+
+    // 5. バイオーム別BGM
+    switch (this.map.biome) {
+      case 'ICE':
+      case 'SNOW':
+        sound.playBgm('DUNGEON_ICE');
+        break;
+      case 'SWAMP':
+      case 'TOXIC':
+      case 'MAGMA':
+        sound.playBgm('DUNGEON_SWAMP');
+        break;
+      case 'EARTH':
+      case 'MECHA':
+        sound.playBgm('DUNGEON_CAVE');
+        break;
+      default:
+        sound.playBgm('DUNGEON_STONE');
+        break;
+    }
+  }
+
+  /**
+   * モンスター討伐実績を迷宮博物誌（図鑑）に登録します。
+   *
+   * @param monster 討伐されたモンスター
+   */
+  public recordMonsterKill(monster: Monster): void {
+    StorageManager.recordMonsterDefeat(
+      monster.type,
+      monster.name,
+      this.player.floor,
+      monster.variantId
+    );
+  }
 
   /**
    * 現在演出アニメーション等のためプレイヤー入力がロック中かどうかを判定します。
@@ -417,6 +567,9 @@ export class GameEngine {
     // 節目階層ストーリーモノローグ演出
     this.checkAndTriggerStoryMonologue(floorNum);
 
+    // バイオームに応じたBGM自動再生
+    this.updateBgm();
+
     if (shouldSave) {
       this.saveGame();
     }
@@ -619,6 +772,10 @@ export class GameEngine {
         this.player.y = targetY;
         turnPassed = true;
 
+        // モンスターハウス突入検知 & BGM環境更新
+        this.checkMonsterHouseEntry();
+        this.updateBgm();
+
         // 5. タイル環境ギミック処理（氷の滑走、泥濘の足枷、毒沼の毒気）
         const extraTurn = this.handleTileGimmick(
           targetTile,
@@ -631,7 +788,11 @@ export class GameEngine {
           (it) => it.x === this.player.x && it.y === this.player.y
         );
         if (groundItem) {
-          this.addLog(`足元に ${groundItem.name} が落ちている。`, 'info');
+          const groundName =
+            groundItem.isIdentified === false && groundItem.unidentifiedName
+              ? groundItem.unidentifiedName
+              : groundItem.name;
+          this.addLog(`足元に ${groundName} が落ちている。`, 'info');
         }
 
         if (targetTile === TileType.StairsDown) {
@@ -1733,6 +1894,7 @@ export class GameEngine {
         'info'
       );
       this.map.monsters = this.map.monsters.filter((m) => m.id !== monster.id);
+      this.recordMonsterKill(monster);
 
       if (monster.type === 'ABYSS_LORD') {
         this.player.isGameCleared = true;

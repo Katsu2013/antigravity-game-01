@@ -190,6 +190,20 @@ export class DungeonGenerator {
       }
     }
 
+    // 8.5 モンスターハウス（魔物の巣窟）部屋の選定
+    // 4階以上、かつ部屋が3つ以上ある場合、約16%の確率でスタート・ショップ・階段以外の部屋をモンスターハウスに指定
+    if (floor >= 4 && rooms.length >= 3 && Math.random() < 0.16) {
+      const mhCandidates = rooms.filter(
+        (r, idx) => idx !== 0 && !r.isShop && idx !== stairRoomIndex
+      );
+      if (mhCandidates.length > 0) {
+        const monsterHouseRoom =
+          mhCandidates[Math.floor(Math.random() * mhCandidates.length)];
+        monsterHouseRoom.isMonsterHouse = true;
+        monsterHouseRoom.monsterHouseTriggered = false;
+      }
+    }
+
     // 9. モンスター、アイテム、障害物の配置
     const monsters: Monster[] = [];
     const items: Item[] = [];
@@ -235,12 +249,74 @@ export class DungeonGenerator {
           const isOccupied = items.some((it) => it.x === sx && it.y === sy);
 
           if (!isMerchant && !isStairs && !isOccupied && isWalkableTile(tiles[sy][sx])) {
-            items.push(EntityFactory.createShopItem(sx, sy));
+            items.push(EntityFactory.createShopItem(sx, sy, floor));
             placedCount++;
           }
         }
 
         // ショップ内には通常の敵や障害物は配置しない
+        continue;
+      }
+
+      // 【モンスターハウス部屋の特別な高密度配置処理】
+      if (room.isMonsterHouse) {
+        // 1. 敵モンスターを高密度配置（6〜9体、深い睡眠 isDormant = true で待機）
+        const mhMonsterCount = Math.min(
+          Math.floor(Math.random() * 4) + 6,
+          Math.floor(room.w * room.h * 0.45)
+        );
+        let mhMonstersPlaced = 0;
+        let mhMonsterAttempts = 0;
+
+        while (mhMonstersPlaced < mhMonsterCount && mhMonsterAttempts < 50) {
+          mhMonsterAttempts++;
+          const mx = room.x + Math.floor(Math.random() * room.w);
+          const my = room.y + Math.floor(Math.random() * room.h);
+
+          const isStairs = mx === stairsDown.x && my === stairsDown.y;
+          const isOccupied = monsters.some((mon) => mon.x === mx && mon.y === my);
+
+          if (!isStairs && !isOccupied && isWalkableTile(tiles[my][mx])) {
+            const monster = EntityFactory.createMonster(floor, mx, my, biomeInfo.biome);
+            monster.isDormant = true; // 突入まで安眠
+            monsters.push(monster);
+            mhMonstersPlaced++;
+          }
+        }
+
+        // 2. 宝物アイテムを高密度配置（4〜6個）
+        const mhItemCount = Math.floor(Math.random() * 3) + 4;
+        let mhItemsPlaced = 0;
+        let mhItemAttempts = 0;
+
+        while (mhItemsPlaced < mhItemCount && mhItemAttempts < 40) {
+          mhItemAttempts++;
+          const ix = room.x + Math.floor(Math.random() * room.w);
+          const iy = room.y + Math.floor(Math.random() * room.h);
+
+          const isStairs = ix === stairsDown.x && iy === stairsDown.y;
+          const isOccupied = items.some((it) => it.x === ix && it.y === iy);
+
+          if (!isStairs && !isOccupied && isWalkableTile(tiles[iy][ix])) {
+            items.push(EntityFactory.createRandomItem(ix, iy, floor));
+            mhItemsPlaced++;
+          }
+        }
+
+        // 3. ゴールドを配置（2〜3山）
+        const mhGoldCount = Math.floor(Math.random() * 2) + 2;
+        for (let g = 0; g < mhGoldCount; g++) {
+          const gx = room.x + Math.floor(Math.random() * room.w);
+          const gy = room.y + Math.floor(Math.random() * room.h);
+          const isStairs = gx === stairsDown.x && gy === stairsDown.y;
+          const isOccupied = items.some((it) => it.x === gx && it.y === gy);
+
+          if (!isStairs && !isOccupied && isWalkableTile(tiles[gy][gx])) {
+            items.push(EntityFactory.createGoldPile(floor, gx, gy));
+          }
+        }
+
+        // モンスターハウス内には障害物は配置しない（大乱戦用スペース確保）
         continue;
       }
 
@@ -272,7 +348,7 @@ export class DungeonGenerator {
         const isItemOccupied = items.some((it) => it.x === ix && it.y === iy);
 
         if (!isStairs && !isStart && !isItemOccupied && isWalkableTile(tiles[iy][ix])) {
-          items.push(EntityFactory.createRandomItem(ix, iy));
+          items.push(EntityFactory.createRandomItem(ix, iy, floor));
         }
       }
 
@@ -479,8 +555,8 @@ export class DungeonGenerator {
     monsters.push(EntityFactory.createMonster(50, bossX + 5, bossY + 2, 'ALTAR'));
 
     // ボス戦の補給アイテム
-    items.push(EntityFactory.createRandomItem(rx + 2, ry + rh - 2));
-    items.push(EntityFactory.createRandomItem(rx + rw - 3, ry + rh - 2));
+    items.push(EntityFactory.createRandomItem(rx + 2, ry + rh - 2, 50));
+    items.push(EntityFactory.createRandomItem(rx + rw - 3, ry + rh - 2, 50));
 
     // 遮蔽用の押せる大石
     obstacles.push(EntityFactory.createObstacle('PUSH_ROCK', rx + 6, ry + 10));

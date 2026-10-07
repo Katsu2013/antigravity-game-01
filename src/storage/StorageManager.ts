@@ -5,7 +5,16 @@
  * 死亡時のセーブデータ消去（パーマデス担保）、およびハイスコア・戦歴の保存を担当します。
  */
 
-import { DungeonMap, GameLogEntry, PlayerState } from '../core/types';
+import {
+  DungeonMap,
+  GameLogEntry,
+  GameSettings,
+  ItemCategory,
+  ItemCompendiumEntry,
+  MonsterCompendiumEntry,
+  MonsterType,
+  PlayerState,
+} from '../core/types';
 
 /**
  * 進行中ゲームの中断セーブデータを表すインターフェース。
@@ -79,6 +88,21 @@ export class StorageManager {
    * 現在表示されている画面状態（タイトルかプレイ中か）を記録するlocalStorageキー名。
    */
   private static readonly LOCAL_STORAGE_SCREEN_KEY = 'RogueLabyrinth_CurrentScreen';
+
+  /**
+   * ゲーム詳細設定（速度・音量・仮想パッド等）を記録するlocalStorageキー名。
+   */
+  private static readonly LOCAL_STORAGE_SETTINGS_KEY = 'RogueLabyrinth_Settings';
+
+  /**
+   * 迷宮博物誌（モンスター図鑑）のアンロック情報を記録するlocalStorageキー名。
+   */
+  private static readonly LOCAL_STORAGE_MONSTER_COMPENDIUM_KEY = 'RogueLabyrinth_MonsterCompendium';
+
+  /**
+   * 迷宮博物誌（アイテム図鑑）の鑑定・入手情報を記録するlocalStorageキー名。
+   */
+  private static readonly LOCAL_STORAGE_ITEM_COMPENDIUM_KEY = 'RogueLabyrinth_ItemCompendium';
 
   /**
    * 開かれたIDBDatabaseインスタンスの接続キャッシュPromise。
@@ -368,5 +392,166 @@ export class StorageManager {
       console.warn('Failed to load highscores from IndexedDB:', err);
       return [];
     }
+  }
+
+  // ==========================================
+  // ゲーム詳細設定（オプション）の永続化
+  // ==========================================
+
+  /**
+   * ゲーム詳細設定（速度・音量・操作盤表示など）を保存します。
+   * @param settings 保存する設定オブジェクト
+   */
+  public static saveSettings(settings: GameSettings): void {
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(this.LOCAL_STORAGE_SETTINGS_KEY, JSON.stringify(settings));
+      }
+    } catch (e) {
+      console.warn('Failed to save game settings to localStorage:', e);
+    }
+  }
+
+  /**
+   * ゲーム詳細設定を読み込みます。未設定時はデバイスに応じた既定値を返却します。
+   * @returns 復元されたゲーム詳細設定
+   */
+  public static loadSettings(): GameSettings {
+    const isMobile = typeof navigator !== 'undefined' && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+    const defaultSettings: GameSettings = {
+      gameSpeed: 'FAST',
+      bgmVolume: 0.5,
+      seVolume: 0.7,
+      showVirtualPad: isMobile,
+      showMinimap: true,
+    };
+
+    try {
+      if (typeof localStorage !== 'undefined') {
+        const raw = localStorage.getItem(this.LOCAL_STORAGE_SETTINGS_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw) as Partial<GameSettings>;
+          return {
+            ...defaultSettings,
+            ...parsed,
+          };
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to load game settings from localStorage:', e);
+    }
+    return defaultSettings;
+  }
+
+  // ==========================================
+  // 迷宮博物誌（モンスター図鑑・アイテム図鑑）の永続化
+  // ==========================================
+
+  /**
+   * モンスターの討伐・遭遇実績を迷宮博物誌に記録・更新します。
+   *
+   * @param type モンスターの種族
+   * @param name モンスターの表示名
+   * @param floor 遭遇・撃破したフロア階層
+   * @param variantId 上位種バリアント識別子
+   */
+  public static recordMonsterDefeat(
+    type: MonsterType,
+    name: string,
+    floor: number,
+    variantId?: string
+  ): void {
+    try {
+      const compendium = this.loadMonsterCompendium();
+      const key = variantId ? `${type}_${variantId}` : type;
+
+      if (!compendium[key]) {
+        compendium[key] = {
+          type,
+          variantId,
+          name,
+          defeatedCount: 1,
+          firstSeenFloor: floor,
+        };
+      } else {
+        compendium[key].defeatedCount++;
+      }
+
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(this.LOCAL_STORAGE_MONSTER_COMPENDIUM_KEY, JSON.stringify(compendium));
+      }
+    } catch (e) {
+      console.warn('Failed to record monster defeat to compendium:', e);
+    }
+  }
+
+  /**
+   * 迷宮博物誌の全モンスター登録データを読み込みます。
+   * @returns キーごとのモンスター図鑑レコード
+   */
+  public static loadMonsterCompendium(): Record<string, MonsterCompendiumEntry> {
+    try {
+      if (typeof localStorage !== 'undefined') {
+        const raw = localStorage.getItem(this.LOCAL_STORAGE_MONSTER_COMPENDIUM_KEY);
+        if (raw) {
+          return JSON.parse(raw) as Record<string, MonsterCompendiumEntry>;
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to load monster compendium:', e);
+    }
+    return {};
+  }
+
+  /**
+   * アイテムの鑑定・入手実績を迷宮博物誌に記録・更新します。
+   *
+   * @param name アイテムの正規名称
+   * @param category アイテムのカテゴリ分類
+   * @param description アイテムの効能説明文
+   */
+  public static recordItemDiscovery(
+    name: string,
+    category: ItemCategory,
+    description: string
+  ): void {
+    try {
+      const compendium = this.loadItemCompendium();
+
+      if (!compendium[name]) {
+        compendium[name] = {
+          name,
+          category,
+          description,
+          discoveredCount: 1,
+        };
+      } else {
+        compendium[name].discoveredCount++;
+      }
+
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(this.LOCAL_STORAGE_ITEM_COMPENDIUM_KEY, JSON.stringify(compendium));
+      }
+    } catch (e) {
+      console.warn('Failed to record item discovery to compendium:', e);
+    }
+  }
+
+  /**
+   * 迷宮博物誌の全アイテム登録データを読み込みます。
+   * @returns アイテム名ごとのアイテム図鑑レコード
+   */
+  public static loadItemCompendium(): Record<string, ItemCompendiumEntry> {
+    try {
+      if (typeof localStorage !== 'undefined') {
+        const raw = localStorage.getItem(this.LOCAL_STORAGE_ITEM_COMPENDIUM_KEY);
+        if (raw) {
+          return JSON.parse(raw) as Record<string, ItemCompendiumEntry>;
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to load item compendium:', e);
+    }
+    return {};
   }
 }

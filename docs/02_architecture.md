@@ -69,6 +69,7 @@ WebGame01/
 │   ├── core/                         # コアゲームロジック（DOM非依存・ヘッドレス可能）
 │   │   ├── GameEngine.ts             # ゲーム全体のファサード・ターン進行・状態遷移
 │   │   ├── types.ts                  # 共通型定義（Player, Monster, Item, ActionType等）
+│   │   ├── compendiumData.ts         # 迷宮博物誌（全魔物・全名品）マスタ定義
 │   │   ├── algorithms/
 │   │   │   ├── DungeonGenerator.ts   # BSP空間分割・部屋・通路・特殊バイオーム生成
 │   │   │   ├── FOV.ts                # 再帰的シャドウキャスティング視界計算
@@ -266,3 +267,100 @@ export type ActionType =
    - ④ 状態変化の契機（どのシステムやイベントで値が変わるか）
 3. **TypeDoc設定（`typedoc.json`）**:
    - `"excludePrivate": false` を設定し、privateな内部状態フラグやキャッシュも含めた完全なAPIリファレンスを `docs/api` に自動生成。
+
+---
+
+## 10. プログラマティックWeb Audio BGMアーキテクチャ
+
+外部音声ファイル（MP3/WAV等）を一切追加せず、ブラウザ内蔵のWeb Audio APIのみで状況追従型BGMをループ再生するプログラマティック音響システムです。
+
+```mermaid
+flowchart LR
+    Scheduler["Look-ahead Scheduler<br>(setInterval 100ms)"]
+    Scheduler -->|先読み250msスケジューリング| WebAudioCtx["AudioContext (currentTime)"]
+    
+    subgraph SynthGraph["シンセサイザー ノードグラフ"]
+        MelodyOsc["Melody Oscillator<br>(三角波 / 鋸歯状波)"] --> MelodyGain["Melody Gain<br>(ADSRエンベロープ)"]
+        BassOsc["Bass Oscillator<br>(三角波 / 矩形波)"] --> BassGain["Bass Gain<br>(低音エンベロープ)"]
+        MelodyGain --> MasterBgmGain["Master BGM Gain<br>(ユーザー音量倍率)"]
+        BassGain --> MasterBgmGain
+        MasterBgmGain --> Destination["AudioContext.destination (スピーカー)"]
+    end
+    
+    WebAudioCtx --> SynthGraph
+```
+
+### 10.1. 先行スケジューリング（Look-ahead Scheduler）
+- タイマーのジッター（タブ非アクティブ時やUI負荷によるフレーム落ち）による音飛びを防止するため、`audioContext.currentTime` を基準タイムベースとして採用。
+- 100msごとにループ関数が起動し、現在時刻から250ms先までに鳴らすべき音符の周波数と発音タイミングを `gainNode.gain.setValueAtTime` / `exponentialRampToValueAtTime` で先行予約します。
+
+### 10.2. 状況別動的トラック切替（Situational Track Switch）
+- `GameEngine` がフロア遷移、店舗進入、泥棒発覚、モンスターハウス突入、ボス遭遇を検知した際、`SoundSystem.getInstance().playBgm(trackId)` を発行。
+- 現在のトラックの再生予約を即座にフェードアウト・キャンセルし、新トラックの小節頭から即座にシームレス移行します。
+
+---
+
+## 11. モンスターハウス生成＆覚醒アーキテクチャ
+
+```mermaid
+sequenceDiagram
+    participant DG as DungeonGenerator
+    participant GE as GameEngine
+    participant SS as SoundSystem
+    participant UI as UIManager
+
+    Note over DG: 4F以降、約16%で1部屋を選定 (isMonsterHouse = true)
+    DG->>DG: 睡眠モンスター6〜9体、アイテム4〜6個、金貨を密集生成
+    Note over GE: プレイヤーが部屋の境界マスに進入
+    GE->>GE: checkMonsterHouseEntry(x, y)
+    GE->>SS: playMonsterHouseFanfare() (突入警報SE)
+    GE->>SS: playBgm('MONSTER_HOUSE') (BGM切替)
+    GE->>GE: 部屋内全モンスターの isAsleep を解除・覚醒
+    GE->>UI: showToast("🚨 モンスターハウスだ！！")
+    GE->>GE: 覚醒モンスターが一斉にプレイヤーへ向けて追跡行動開始
+```
+
+---
+
+## 12. 未識別アイテム＆一括識別データフロー
+
+```mermaid
+flowchart TD
+    Drop["8F以降のアイテム生成<br>(EntityFactory)"] --> CheckIdent{"未識別抽選<br>(70%)"}
+    CheckIdent -->|未識別| SetUnidentified["isIdentified = false<br>unidentifiedName = 'あかい草' 等"]
+    CheckIdent -->|通常識別| SetIdentified["isIdentified = true"]
+    
+    SetUnidentified --> Inv["インベントリ保持<br>(UIは仮名・伏字表示)"]
+    
+    Inv --> Action{"識別契機アクション"}
+    Action -->|識別の巻物を使用| IdentifyItem["ItemSystem.identifyItem()"]
+    Action -->|草を飲む / 巻物を読む| IdentifyItem
+    Action -->|杖を照射 (命中)| IdentifyItem
+    Action -->|アイテムを投擲 (命中)| IdentifyItem
+    
+    IdentifyItem --> Resolve["該当アイテムの isIdentified = true に変更"]
+    Resolve --> Batch["インベントリ・フロア上の<br>『同名アイテム』を全件一括識別"]
+    Resolve --> Sound["SoundSystem.playIdentify() 再生"]
+    Resolve --> RecordComp["StorageManager.recordItemDiscovery()<br>(迷宮博物誌へ自動永続登録)"]
+```
+
+---
+
+## 13. 迷宮博物誌（図鑑）＆設定データフロー
+
+### 13.1. 迷宮博物誌データフロー
+- **保存構造**:
+  - `MonsterCompendium`: `{ [type: string]: MonsterCompendiumEntry }`（討伐累計数、初遭遇階層）
+  - `ItemCompendium`: `{ [matchKey: string]: ItemCompendiumEntry }`（発見累計数）
+- **永続化**: 各モンスター撃破時（`GameEngine.recordMonsterKill`）およびアイテム鑑定・入手時（`ItemSystem.identifyItem`, `pickupItem`）に即座に `localStorage` および `IndexedDB` へ差分更新。
+- **UI描画**: `UIManager` が `compendiumData.ts` のマスタデータと保存データを結合し、収集率（%）とアンロック状態（SVGSpritesによる高精細イラスト表示 vs ロック時のシルエット表示）を動的レンダリング。
+
+### 13.2. ゲーム詳細設定データフロー
+- **設定構造 (`GameSettings`)**:
+  - `gameSpeed`: `'NORMAL'` (1.0x) | `'FAST'` (1.5x) | `'VERY_FAST'` (2.0x)
+  - `bgmVolume`: 0.0 〜 1.0
+  - `seVolume`: 0.0 〜 1.0
+  - `showVirtualPad`: boolean
+  - `showMinimap`: boolean
+- **適用フロー**: 設定変更時に `StorageManager.saveSettings()` で即時保存、`GameEngine.updateSettings()` を介して各サブシステム（アニメーションディレイ、レンダラー、Web Audio音量）へリアクティブに即時反映。
+
