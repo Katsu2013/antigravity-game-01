@@ -363,4 +363,47 @@ flowchart TD
   - `showVirtualPad`: boolean
   - `showMinimap`: boolean
 - **適用フロー**: 設定変更時に `StorageManager.saveSettings()` で即時保存、`GameEngine.updateSettings()` を介して各サブシステム（アニメーションディレイ、レンダラー、Web Audio音量）へリアクティブに即時反映。
+---
 
+## 14. 迷宮の屋台（ラーメンマルキン / おでん）システムアーキテクチャ
+
+### 14.1. 屋台対話・注文シーケンス
+```mermaid
+sequenceDiagram
+    participant P as プレイヤー
+    participant UI as UIManager
+    participant GE as GameEngine
+    participant NS as NpcSystem
+    participant SS as SoundSystem
+    
+    P->>GE: 屋台マスに隣接して対話 (NPC_INTERACT / TALK)
+    GE->>UI: onNpcInteract(stallNpc)
+    UI->>NS: startInteraction(player, stallNpc)
+    NS-->>UI: NpcDialogData (セリフ・メニュー一覧・店員種別)
+    UI->>UI: showNpcModal (屋台注文モーダル描画)
+    
+    alt 店主「金さん」の場合 (65%)
+        P->>UI: 「マルキン特製ラーメン」または「特盛麺」を選択
+        UI->>GE: executeAction(ORDER_FOOD, foodMenuId)
+        GE->>NS: orderFood(player, stallNpc, menuId)
+        NS->>SS: playCharumera() ＆ playSlurp()
+        Note over NS: ゴールド減算、満腹度全快、HP回復、最大満腹度拡張
+        NS-->>GE: 成功メッセージ返却
+        GE->>UI: showNpcModal(stallNpc) (完食状態へUI更新)
+    else 奥さんの場合 (35%)
+        alt 1〜2回目 (門前払い)
+            P->>UI: 「何か売ってください！」と懇願
+            UI->>GE: executeAction(TALK_WIFE)
+            GE->>NS: talkWife(player, stallNpc)
+            Note over NS: wifeTalkCount インクリメント
+            NS-->>UI: 「ウチやってません！」怒られセリフ更新
+        else 3回目以降 (救済ギミック発動)
+            Note over NS: 態度軟化、塩むすびメニュー開放
+            P->>UI: 「おかみ特製・塩むすび (50G)」を注文
+            UI->>GE: executeAction(ORDER_FOOD, 'WIFE_ONIGIRI')
+            GE->>NS: orderFood(player, stallNpc, 'WIFE_ONIGIRI')
+            NS->>SS: playSlurp()
+            Note over NS: 満腹度+40%回復、HP+15回復
+        end
+    end
+```
