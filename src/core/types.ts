@@ -463,6 +463,27 @@ export interface Monster {
    */
   isFriendly?: boolean;
   /**
+   * モンスターの色違い・上位種・亜種のスプライト識別子。
+   * - 想定値: `'red_slime'` | `'metal_slime'` | `'hobgoblin'` | `'goblin_shaman'` | `'poison_skeleton'` | `'blood_skeleton'` | `'chaos_bat'` | `'wraith'` | `'magma_golem'` | `'blue_dragon'` | `'black_dragon'` 等
+   * - 初期値: 基本種は `undefined`、上位種・亜種のみ文字列キーを指定
+   */
+  variantId?: string;
+  /**
+   * 極稀に攻撃せずプレイヤーと仲良くなりたがる仲間モンスターフラグ。
+   * - 想定値:
+   *   - `true`: プレイヤーを敵対視せず、後をついてきたり敵と戦ってくれたり癒やしてくれる友好モンスター
+   *   - `false`: 通常の敵性または中立NPCモンスター
+   * - 初期値: 通常は `false`（約2%の極稀な確率で `true` でスポーン）
+   * - 変化契機: プレイヤーから執拗に攻撃を受けると `false` に反転
+   */
+  isCompanion?: boolean;
+  /**
+   * 仲間モンスターのなかよし度（触れ合いやエサを与えた回数）。
+   * - 想定値: 0以上の整数（数値が高いほど癒やしの発生率や支援能力が向上）
+   * - 初期値: 0
+   */
+  companionAffection?: number;
+  /**
    * ショップ店主フラグ。
    * - 想定値:
    *   - `true`: ショップ部屋で商品を販売している店主NPC

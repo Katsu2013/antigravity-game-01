@@ -2564,7 +2564,9 @@ export class CanvasRenderer {
 
     // 8方向スプライトIDおよび水平反転の決定
     let monsterBase: string;
-    if (monster.type === 'MERCHANT') {
+    if (monster.variantId) {
+      monsterBase = monster.variantId.toLowerCase();
+    } else if (monster.type === 'MERCHANT') {
       const pid = (monster.shopkeeperProfileId && monster.shopkeeperProfileId !== 'NERO')
         ? `_${monster.shopkeeperProfileId.toLowerCase()}`
         : '';
@@ -2686,6 +2688,8 @@ export class CanvasRenderer {
       statusBadges.push({ icon: '🔨', bg: '#9a3412', color: '#fed7aa' }); // 鍛冶屋バルカン（武具強化）
     } else if (monster.type === 'SCOOTER_GUY') {
       statusBadges.push({ icon: '🛵', bg: '#0284c7', color: '#bae6fd' }); // スクーターおじさん
+    } else if (monster.isCompanion) {
+      statusBadges.push({ icon: '💖', bg: '#be185d', color: '#fbcfe8' }); // 仲良し仲間モンスター（愛着）
     }
 
     if (statusBadges.length > 0) {

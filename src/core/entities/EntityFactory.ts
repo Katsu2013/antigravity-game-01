@@ -48,6 +48,8 @@ export class EntityFactory {
     // 階層スケーリング（深層ほど基本ステータス微増）
     const floorScale = 1 + (floor - 1) * 0.15;
 
+    let monster: Monster;
+
     switch (type) {
       case 'MERCHANT':
         return this.createMerchant(x, y);
@@ -73,8 +75,46 @@ export class EntityFactory {
       case 'SCOOTER_GUY':
         return this.createScooterGuy(x, y, x + 5, y + 5);
 
-      case 'SLIME':
-        return {
+      case 'SLIME': {
+        // メタルスライム（全階層で約 1.5% の極低確率出現: カチコチ高防御・大量経験値）
+        if (Math.random() < 0.015) {
+          monster = {
+            id,
+            name: 'メタルスライム',
+            type: 'SLIME',
+            variantId: 'metal_slime',
+            x,
+            y,
+            hp: 4,
+            maxHp: 4,
+            atk: Math.round(4 * floorScale),
+            def: 99,
+            expValue: Math.round(150 * floorScale),
+            symbol: 's',
+            color: '#cbd5e1',
+          };
+          break;
+        }
+        // レッドスライム（6F以降、約 45% の確率で出現: 好戦的・攻撃力高め）
+        if (floor >= 6 && Math.random() < 0.45) {
+          monster = {
+            id,
+            name: 'レッドスライム',
+            type: 'SLIME',
+            variantId: 'red_slime',
+            x,
+            y,
+            hp: Math.round(14 * floorScale),
+            maxHp: Math.round(14 * floorScale),
+            atk: Math.round(6 * floorScale),
+            def: 2,
+            expValue: Math.round(10 * floorScale),
+            symbol: 's',
+            color: '#ef4444',
+          };
+          break;
+        }
+        monster = {
           id,
           name: 'スライム',
           type: 'SLIME',
@@ -88,9 +128,52 @@ export class EntityFactory {
           symbol: 's',
           color: '#34d399',
         };
+        break;
+      }
 
-      case 'GOBLIN':
-        return {
+      case 'GOBLIN': {
+        // ゴブリンシャーマン（26F以降、約 40% の確率で出現: 中距離魔法弾）
+        if (floor >= 26 && Math.random() < 0.4) {
+          monster = {
+            id,
+            name: 'ゴブリンシャーマン',
+            type: 'GOBLIN',
+            variantId: 'goblin_shaman',
+            x,
+            y,
+            hp: Math.round(22 * floorScale),
+            maxHp: Math.round(22 * floorScale),
+            atk: Math.round(8 * floorScale),
+            def: 2,
+            expValue: Math.round(24 * floorScale),
+            hasRangedAttack: true,
+            rangedAttackType: 'magic',
+            symbol: 'g',
+            color: '#7c3aed',
+          };
+          break;
+        }
+        // ホブゴブリン（11F以降、約 50% の確率で出現: 高HP・強打）
+        if (floor >= 11 && Math.random() < 0.5) {
+          monster = {
+            id,
+            name: 'ホブゴブリン',
+            type: 'GOBLIN',
+            variantId: 'hobgoblin',
+            x,
+            y,
+            hp: Math.round(26 * floorScale),
+            maxHp: Math.round(26 * floorScale),
+            atk: Math.round(9 * floorScale),
+            def: 3,
+            expValue: Math.round(18 * floorScale),
+            hasBackBlindSpot: true,
+            symbol: 'g',
+            color: '#b45309',
+          };
+          break;
+        }
+        monster = {
           id,
           name: 'ゴブリン',
           type: 'GOBLIN',
@@ -101,13 +184,53 @@ export class EntityFactory {
           atk: Math.round(5 * floorScale),
           def: 2,
           expValue: Math.round(8 * floorScale),
-          hasBackBlindSpot: true, // 背後から近づけば気付かないアホな敵
+          hasBackBlindSpot: true,
           symbol: 'g',
           color: '#f59e0b',
         };
+        break;
+      }
 
-      case 'SKELETON':
-        return {
+      case 'SKELETON': {
+        // ブラッドスケルトン（31F以降、約 50% の確率で出現: 高火力）
+        if (floor >= 31 && Math.random() < 0.5) {
+          monster = {
+            id,
+            name: 'ブラッドスケルトン',
+            type: 'SKELETON',
+            variantId: 'blood_skeleton',
+            x,
+            y,
+            hp: Math.round(36 * floorScale),
+            maxHp: Math.round(36 * floorScale),
+            atk: Math.round(14 * floorScale),
+            def: 4,
+            expValue: Math.round(32 * floorScale),
+            symbol: 'k',
+            color: '#dc2626',
+          };
+          break;
+        }
+        // ポイズンスケルトン（16F以降、約 50% の確率で出現: 毒骨）
+        if (floor >= 16 && Math.random() < 0.5) {
+          monster = {
+            id,
+            name: 'ポイズンスケルトン',
+            type: 'SKELETON',
+            variantId: 'poison_skeleton',
+            x,
+            y,
+            hp: Math.round(26 * floorScale),
+            maxHp: Math.round(26 * floorScale),
+            atk: Math.round(9 * floorScale),
+            def: 3,
+            expValue: Math.round(22 * floorScale),
+            symbol: 'k',
+            color: '#10b981',
+          };
+          break;
+        }
+        monster = {
           id,
           name: 'スケルトン',
           type: 'SKELETON',
@@ -121,9 +244,31 @@ export class EntityFactory {
           symbol: 'k',
           color: '#e2e8f0',
         };
+        break;
+      }
 
-      case 'GOLEM':
-        return {
+      case 'GOLEM': {
+        // マグマゴーレム（35F以降、約 50% の確率で出現: 溶岩熱打撃）
+        if (floor >= 35 && Math.random() < 0.5) {
+          monster = {
+            id,
+            name: 'マグマゴーレム',
+            type: 'GOLEM',
+            variantId: 'magma_golem',
+            x,
+            y,
+            hp: Math.round(48 * floorScale),
+            maxHp: Math.round(48 * floorScale),
+            atk: Math.round(14 * floorScale),
+            def: 6,
+            expValue: Math.round(40 * floorScale),
+            isSlow: true,
+            symbol: 'G',
+            color: '#dc2626',
+          };
+          break;
+        }
+        monster = {
           id,
           name: '岩石ゴーレム',
           type: 'GOLEM',
@@ -134,13 +279,15 @@ export class EntityFactory {
           atk: Math.round(7 * floorScale),
           def: 4,
           expValue: Math.round(18 * floorScale),
-          isSlow: true, // 2ターンに1回しか動かない鈍重モンスター
+          isSlow: true,
           symbol: 'G',
           color: '#a8a29e',
         };
+        break;
+      }
 
       case 'MANDRAGORA':
-        return {
+        monster = {
           id,
           name: 'マンドラゴラ',
           type: 'MANDRAGORA',
@@ -154,9 +301,10 @@ export class EntityFactory {
           symbol: 'm',
           color: '#84cc16',
         };
+        break;
 
       case 'SAHAGIN':
-        return {
+        monster = {
           id,
           name: 'サハギン戦士',
           type: 'SAHAGIN',
@@ -170,9 +318,29 @@ export class EntityFactory {
           symbol: 'w',
           color: '#06b6d4',
         };
+        break;
 
-      case 'BAT':
-        return {
+      case 'BAT': {
+        // カオスバット（18F以降、約 50% の確率で出現: 黄金羽・混乱超音波）
+        if (floor >= 18 && Math.random() < 0.5) {
+          monster = {
+            id,
+            name: 'カオスバット',
+            type: 'BAT',
+            variantId: 'chaos_bat',
+            x,
+            y,
+            hp: Math.round(18 * floorScale),
+            maxHp: Math.round(18 * floorScale),
+            atk: Math.round(6 * floorScale),
+            def: 2,
+            expValue: Math.round(16 * floorScale),
+            symbol: 'b',
+            color: '#f59e0b',
+          };
+          break;
+        }
+        monster = {
           id,
           name: '吸血コウモリ',
           type: 'BAT',
@@ -186,9 +354,30 @@ export class EntityFactory {
           symbol: 'b',
           color: '#c084fc',
         };
+        break;
+      }
 
-      case 'GHOST':
-        return {
+      case 'GHOST': {
+        // 冥府のレイス（25F以降、約 50% の確率で出現: 死霊紫黒・高防御）
+        if (floor >= 25 && Math.random() < 0.5) {
+          monster = {
+            id,
+            name: '冥府のレイス',
+            type: 'GHOST',
+            variantId: 'wraith',
+            x,
+            y,
+            hp: Math.round(28 * floorScale),
+            maxHp: Math.round(28 * floorScale),
+            atk: Math.round(10 * floorScale),
+            def: 5,
+            expValue: Math.round(26 * floorScale),
+            symbol: 'u',
+            color: '#a855f7',
+          };
+          break;
+        }
+        monster = {
           id,
           name: '彷徨う亡霊',
           type: 'GHOST',
@@ -202,9 +391,11 @@ export class EntityFactory {
           symbol: 'u',
           color: '#67e8f9',
         };
+        break;
+      }
 
       case 'MAGE':
-        return {
+        monster = {
           id,
           name: 'ダークメイジ',
           type: 'MAGE',
@@ -215,14 +406,57 @@ export class EntityFactory {
           atk: Math.round(9 * floorScale),
           def: 2,
           expValue: Math.round(22 * floorScale),
-          hasRangedAttack: true, // 中距離遠隔攻撃（闇の魔弾）
+          hasRangedAttack: true,
           rangedAttackType: 'magic',
           symbol: 'M',
           color: '#a855f7',
         };
+        break;
 
-      case 'DRAGON':
-        return {
+      case 'DRAGON': {
+        // ブラックドラゴン（48F以降、約 30% の確率で出現: 漆黒の最凶覇者）
+        if (floor >= 48 && Math.random() < 0.3) {
+          monster = {
+            id,
+            name: 'ブラックドラゴン',
+            type: 'DRAGON',
+            variantId: 'black_dragon',
+            x,
+            y,
+            hp: Math.round(75 * floorScale),
+            maxHp: Math.round(75 * floorScale),
+            atk: Math.round(20 * floorScale),
+            def: 8,
+            expValue: Math.round(90 * floorScale),
+            hasRangedAttack: true,
+            rangedAttackType: 'fire',
+            symbol: 'D',
+            color: '#0f172a',
+          };
+          break;
+        }
+        // ブルードラゴン（45F以降、約 40% の確率で出現: 蒼き冷気竜）
+        if (floor >= 45 && Math.random() < 0.4) {
+          monster = {
+            id,
+            name: 'ブルードラゴン',
+            type: 'DRAGON',
+            variantId: 'blue_dragon',
+            x,
+            y,
+            hp: Math.round(55 * floorScale),
+            maxHp: Math.round(55 * floorScale),
+            atk: Math.round(16 * floorScale),
+            def: 6,
+            expValue: Math.round(60 * floorScale),
+            hasRangedAttack: true,
+            rangedAttackType: 'magic',
+            symbol: 'D',
+            color: '#2563eb',
+          };
+          break;
+        }
+        monster = {
           id,
           name: 'レッドドラゴン',
           type: 'DRAGON',
@@ -233,14 +467,16 @@ export class EntityFactory {
           atk: Math.round(13 * floorScale),
           def: 5,
           expValue: Math.round(45 * floorScale),
-          hasRangedAttack: true, // 灼熱の竜ブレス
+          hasRangedAttack: true,
           rangedAttackType: 'fire',
           symbol: 'D',
           color: '#ef4444',
         };
+        break;
+      }
 
       case 'MIMIC':
-        return {
+        monster = {
           id,
           name: '人食い箱',
           type: 'MIMIC',
@@ -251,13 +487,14 @@ export class EntityFactory {
           atk: Math.round(8 * floorScale),
           def: 3,
           expValue: Math.round(20 * floorScale),
-          isDormant: true, // 宝箱に擬態・刺激するまで動かない
+          isDormant: true,
           symbol: 'T',
           color: '#d97706',
         };
+        break;
 
       case 'ZOMBIE':
-        return {
+        monster = {
           id,
           name: '腐乱ゾンビ',
           type: 'ZOMBIE',
@@ -268,13 +505,14 @@ export class EntityFactory {
           atk: Math.round(5 * floorScale),
           def: 2,
           expValue: Math.round(11 * floorScale),
-          isSlow: true, // 2ターンに1回しか動かない鈍重モンスター
+          isSlow: true,
           symbol: 'z',
           color: '#65a30d',
         };
+        break;
 
       case 'IMP':
-        return {
+        monster = {
           id,
           name: '小悪魔インプ',
           type: 'IMP',
@@ -285,15 +523,16 @@ export class EntityFactory {
           atk: Math.round(7 * floorScale),
           def: 2,
           expValue: Math.round(14 * floorScale),
-          hasRangedAttack: true, // 中距離火の玉攻撃
+          hasRangedAttack: true,
           rangedAttackType: 'fire',
-          hasBackBlindSpot: true, // 背後から近づけば気付かない
+          hasBackBlindSpot: true,
           symbol: 'i',
           color: '#ec4899',
         };
+        break;
 
       case 'MUMMY':
-        return {
+        monster = {
           id,
           name: '古代のミイラ',
           type: 'MUMMY',
@@ -304,13 +543,14 @@ export class EntityFactory {
           atk: Math.round(9 * floorScale),
           def: 4,
           expValue: Math.round(25 * floorScale),
-          isSlow: true, // 2ターンに1回しか動かない鈍重モンスター
+          isSlow: true,
           symbol: 'M',
           color: '#d4d4d8',
         };
+        break;
 
       default:
-        return {
+        monster = {
           id,
           name: 'スライム',
           type: 'SLIME',
@@ -322,9 +562,34 @@ export class EntityFactory {
           def: 1,
           expValue: 3,
           symbol: 's',
-          color: '#38bdf8',
+          color: '#34d399',
         };
+        break;
     }
+
+    // 極稀（約 2.5%）でプレイヤーに攻撃せず仲良くしたがる友好仲間モンスターとして生成
+    if (
+      !monster.isShopkeeper &&
+      !monster.isGuardDog &&
+      !monster.isRareNpc &&
+      monster.type !== 'ABYSS_LORD' &&
+      Math.random() < 0.025
+    ) {
+      monster.isFriendly = true;
+      monster.isCompanion = true;
+      monster.companionAffection = 0;
+
+      const friendlyPrefixes = ['人なつっこい', '心優しい', '甘えん坊な', 'おとなしい', '照れ屋な'];
+      const prefix = friendlyPrefixes[Math.floor(Math.random() * friendlyPrefixes.length)];
+      monster.name = `${prefix}${monster.name}`;
+
+      if (monster.type === 'SLIME') {
+        monster.variantId = 'friendly_slime';
+        monster.color = '#f472b6';
+      }
+    }
+
+    return monster;
   }
 
   /**

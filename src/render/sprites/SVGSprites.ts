@@ -254,7 +254,9 @@ export type SpriteId =
   | 'obstacle_tree_stump'
   | 'obstacle_snow_mound'
   | 'obstacle_push_rock'
-  | 'obstacle_ice_block';
+  | 'obstacle_ice_block'
+  // 動的パレットスワップ・色違いバリアント用
+  | (string & {});
 
 /**
  * SVGスプライトの定義・生成・キャッシュ管理クラス。
@@ -262,15 +264,11 @@ export type SpriteId =
 export class SVGSprites {
   /**
    * プリロードされたスプライト画像のキャッシュマップ。
-   * - 想定値: Map<SpriteId, HTMLImageElement>
-   * - 初期値: 空のMap
    */
   private static imageCache: Map<SpriteId, HTMLImageElement> = new Map();
 
   /**
    * 全スプライトのロード完了を監視するPromise。
-   * - 想定値: Promise<void> または未初期化時 `null`
-   * - 初期値: `null`
    */
   private static readyPromise: Promise<void> | null = null;
 
@@ -1283,6 +1281,225 @@ export class SVGSprites {
       item_scroll_vacuum: MonsterAndItemSprites.ITEM_SCROLL_VACUUM_SVG,
     };
 
+    // ==========================================
+    // 色違い・上位種・亜種モンスターSVGの動的パレットスワップ生成
+    // ==========================================
+    const baseSprites: Record<
+      string,
+      { down: string; up: string; side: string; diag_down: string; diag_up: string }
+    > = {
+      slime: {
+        down: this.SLIME_DOWN_SVG,
+        up: this.SLIME_UP_SVG,
+        side: this.SLIME_SIDE_SVG,
+        diag_down: this.SLIME_DIAG_DOWN_SVG,
+        diag_up: this.SLIME_DIAG_UP_SVG,
+      },
+      goblin: {
+        down: this.GOBLIN_DOWN_SVG,
+        up: this.GOBLIN_UP_SVG,
+        side: this.GOBLIN_SIDE_SVG,
+        diag_down: this.GOBLIN_DIAG_DOWN_SVG,
+        diag_up: this.GOBLIN_DIAG_UP_SVG,
+      },
+      skeleton: {
+        down: this.SKELETON_DOWN_SVG,
+        up: this.SKELETON_UP_SVG,
+        side: this.SKELETON_SIDE_SVG,
+        diag_down: this.SKELETON_DIAG_DOWN_SVG,
+        diag_up: this.SKELETON_DIAG_UP_SVG,
+      },
+      golem: {
+        down: this.GOLEM_DOWN_SVG,
+        up: this.GOLEM_UP_SVG,
+        side: this.GOLEM_SIDE_SVG,
+        diag_down: this.GOLEM_DIAG_DOWN_SVG,
+        diag_up: this.GOLEM_DIAG_UP_SVG,
+      },
+      bat: {
+        down: MonsterAndItemSprites.BAT_DOWN_SVG,
+        up: MonsterAndItemSprites.BAT_UP_SVG,
+        side: MonsterAndItemSprites.BAT_SIDE_SVG,
+        diag_down: MonsterAndItemSprites.BAT_DIAG_DOWN_SVG,
+        diag_up: MonsterAndItemSprites.BAT_DIAG_UP_SVG,
+      },
+      ghost: {
+        down: MonsterAndItemSprites.GHOST_DOWN_SVG,
+        up: MonsterAndItemSprites.GHOST_UP_SVG,
+        side: MonsterAndItemSprites.GHOST_SIDE_SVG,
+        diag_down: MonsterAndItemSprites.GHOST_DIAG_DOWN_SVG,
+        diag_up: MonsterAndItemSprites.GHOST_DIAG_UP_SVG,
+      },
+      dragon: {
+        down: MonsterAndItemSprites.DRAGON_DOWN_SVG,
+        up: MonsterAndItemSprites.DRAGON_UP_SVG,
+        side: MonsterAndItemSprites.DRAGON_SIDE_SVG,
+        diag_down: MonsterAndItemSprites.DRAGON_DIAG_DOWN_SVG,
+        diag_up: MonsterAndItemSprites.DRAGON_UP_SVG,
+      },
+    };
+
+    const variantDefs: {
+      id: string;
+      base: 'slime' | 'goblin' | 'skeleton' | 'bat' | 'ghost' | 'golem' | 'dragon';
+      colors: Record<string, string>;
+    }[] = [
+      // 1. スライム系
+      {
+        id: 'red_slime',
+        base: 'slime',
+        colors: {
+          '#10b981': '#ef4444',
+          '#064e3b': '#7f1d1d',
+          '#34d399': '#f87171',
+          '#a7f3d0': '#fca5a5',
+          '#0284c7': '#ea580c',
+          '#38bdf8': '#fde047',
+        },
+      },
+      {
+        id: 'metal_slime',
+        base: 'slime',
+        colors: {
+          '#10b981': '#64748b',
+          '#064e3b': '#1e293b',
+          '#34d399': '#cbd5e1',
+          '#a7f3d0': '#f1f5f9',
+          '#0284c7': '#38bdf8',
+          '#38bdf8': '#ffffff',
+        },
+      },
+      {
+        id: 'friendly_slime',
+        base: 'slime',
+        colors: {
+          '#10b981': '#ec4899',
+          '#064e3b': '#831843',
+          '#34d399': '#f472b6',
+          '#a7f3d0': '#fbcfe8',
+          '#0284c7': '#f43f5e',
+          '#38bdf8': '#fecdd3',
+        },
+      },
+      // 2. ゴブリン系
+      {
+        id: 'hobgoblin',
+        base: 'goblin',
+        colors: {
+          '#65a30d': '#b45309',
+          '#365314': '#451a03',
+          '#4d7c0f': '#78350f',
+        },
+      },
+      {
+        id: 'goblin_shaman',
+        base: 'goblin',
+        colors: {
+          '#65a30d': '#7c3aed',
+          '#365314': '#2e1065',
+          '#4d7c0f': '#581c87',
+          '#713f12': '#1e1b4b',
+        },
+      },
+      // 3. スケルトン系
+      {
+        id: 'poison_skeleton',
+        base: 'skeleton',
+        colors: {
+          '#f8fafc': '#10b981',
+          '#f1f5f9': '#34d399',
+          '#e2e8f0': '#059669',
+          '#38bdf8': '#a855f7',
+          '#881337': '#064e3b',
+          '#9f1239': '#022c22',
+        },
+      },
+      {
+        id: 'blood_skeleton',
+        base: 'skeleton',
+        colors: {
+          '#f8fafc': '#dc2626',
+          '#f1f5f9': '#ef4444',
+          '#e2e8f0': '#b91c1c',
+          '#38bdf8': '#fbbf24',
+          '#881337': '#450a0a',
+          '#9f1239': '#180117',
+        },
+      },
+      // 4. コウモリ系
+      {
+        id: 'chaos_bat',
+        base: 'bat',
+        colors: {
+          '#3b0764': '#d97706',
+          '#581c87': '#f59e0b',
+          '#2e1065': '#78350f',
+          '#7e22ce': '#fbbf24',
+        },
+      },
+      // 5. ゴースト系
+      {
+        id: 'wraith',
+        base: 'ghost',
+        colors: {
+          '#38bdf8': '#a855f7',
+          '#0284c7': '#6b21a8',
+          '#0369a1': '#3b0764',
+          '#bae6fd': '#e9d5ff',
+        },
+      },
+      // 6. ゴーレム系
+      {
+        id: 'magma_golem',
+        base: 'golem',
+        colors: {
+          '#57534e': '#7f1d1d',
+          '#44403c': '#450a0a',
+          '#a8a29e': '#ea580c',
+          '#fef08a': '#fbbf24',
+        },
+      },
+      // 7. ドラゴン系
+      {
+        id: 'blue_dragon',
+        base: 'dragon',
+        colors: {
+          '#dc2626': '#2563eb',
+          '#991b1b': '#1d4ed8',
+          '#ef4444': '#38bdf8',
+          '#7f1d1d': '#1e3a8a',
+        },
+      },
+      {
+        id: 'black_dragon',
+        base: 'dragon',
+        colors: {
+          '#dc2626': '#0f172a',
+          '#991b1b': '#1e1b4b',
+          '#ef4444': '#475569',
+          '#7f1d1d': '#020617',
+          '#fbbf24': '#ef4444',
+        },
+      },
+    ];
+
+    for (const v of variantDefs) {
+      const b = baseSprites[v.base];
+      if (!b) continue;
+      const downSvg = this.replaceSvgColors(b.down, v.colors);
+      const upSvg = this.replaceSvgColors(b.up, v.colors);
+      const sideSvg = this.replaceSvgColors(b.side, v.colors);
+      const diagDownSvg = this.replaceSvgColors(b.diag_down, v.colors);
+      const diagUpSvg = this.replaceSvgColors(b.diag_up, v.colors);
+
+      spriteMap[v.id as SpriteId] = downSvg;
+      spriteMap[`${v.id}_down` as SpriteId] = downSvg;
+      spriteMap[`${v.id}_up` as SpriteId] = upSvg;
+      spriteMap[`${v.id}_side` as SpriteId] = sideSvg;
+      spriteMap[`${v.id}_diag_down` as SpriteId] = diagDownSvg;
+      spriteMap[`${v.id}_diag_up` as SpriteId] = diagUpSvg;
+    }
+
     const promises: Promise<void>[] = [];
 
     for (const [key, svg] of Object.entries(spriteMap)) {
@@ -1311,6 +1528,27 @@ export class SVGSprites {
       EquipmentSprites.init(),
     ]).then(() => {});
     return this.readyPromise;
+  }
+
+  /**
+   * SVG文字列内のカラーコード（HEXコード）を指定されたマッピングに従って一括置換します。
+   * 大文字・小文字両方のHEX表記に対応して安全に置換を行います。
+   *
+   * @param svg - 元となるベクターSVG文字列
+   * @param colorMap - 置換元カラー -> 置換後カラーのマッピング
+   * @returns パレット置換後のSVG文字列
+   */
+  public static replaceSvgColors(
+    svg: string,
+    colorMap: Record<string, string>
+  ): string {
+    let result = svg;
+    for (const [fromColor, toColor] of Object.entries(colorMap)) {
+      const escaped = fromColor.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(escaped, 'gi');
+      result = result.replace(regex, toColor);
+    }
+    return result;
   }
 
   /**

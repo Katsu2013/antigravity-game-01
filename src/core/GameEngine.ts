@@ -542,6 +542,13 @@ export class GameEngine {
             return false;
           }
 
+          // 仲良し仲間モンスターなら、攻撃せず触れ合い＆位置スワップ
+          if (targetMonster.isCompanion) {
+            this.interactWithCompanion(targetMonster);
+            turnPassed = true;
+            break;
+          }
+
           this.executePlayerAttack(targetMonster, action.dx, action.dy);
           turnPassed = true;
           break;
@@ -698,25 +705,7 @@ export class GameEngine {
         // 2. 階段マス判定（足元）
         const currentTile = this.map.tiles[this.player.y][this.player.x];
         if (currentTile === TileType.StairsDown) {
-          SoundSystem.getInstance().playStairs();
-          if (this.map.isThiefMode) {
-            this.addLog(
-              '泥棒大成功！！ 店主と番犬の猛追撃を振り切り、商品を無事に手に入れた！',
-              'turn-header'
-            );
-            for (const item of this.player.inventory) {
-              delete item.isShopItem;
-            }
-          }
-          this.player.floor += 1;
-          this.player.turn += 1;
-          const nextBiome = DungeonGenerator.getBiomeForFloor(this.player.floor);
-          this.addLog(
-            `階段を降り、地下 ${this.player.floor} 階【${nextBiome.name}】へ進んだ。`,
-            'info'
-          );
-          this.generateFloor(this.player.floor);
-          return true;
+          return this.descendFloor();
         }
 
         // 3. プレイヤーの向いている方向（8方向）の直前マスを計算
@@ -783,6 +772,13 @@ export class GameEngine {
             this.talkToScooterGuy(facingMonster);
             this.notify();
             return false;
+          }
+
+          // 仲良し仲間モンスターなら、攻撃せず触れ合い＆位置スワップ
+          if (facingMonster.isCompanion) {
+            this.interactWithCompanion(facingMonster);
+            turnPassed = true;
+            break;
           }
 
           this.executePlayerAttack(facingMonster, fdx, fdy);
@@ -928,28 +924,7 @@ export class GameEngine {
       }
 
       case 'DESCEND': {
-        const currentTile = this.map.tiles[this.player.y][this.player.x];
-        if (currentTile === TileType.StairsDown) {
-          SoundSystem.getInstance().playStairs();
-          if (this.map.isThiefMode) {
-            this.addLog(
-              '泥棒大成功！！ 店主と番犬の猛追撃を振り切り、商品を無事に手に入れた！',
-              'turn-header'
-            );
-            for (const item of this.player.inventory) {
-              delete item.isShopItem;
-            }
-          }
-          this.player.floor += 1;
-          this.player.turn += 1;
-          this.addLog(`階段を降り、地下 ${this.player.floor} 階へ進んだ。`, 'info');
-          this.generateFloor(this.player.floor);
-          return true;
-        } else {
-          this.addLog('ここには降りる階段がない。', 'warning');
-          this.notify();
-          return false;
-        }
+        return this.descendFloor();
       }
 
       case 'RESTART': {
@@ -1734,6 +1709,24 @@ export class GameEngine {
       );
     }
 
+    // 仲間モンスターを誤爆・攻撃した場合のペナルティ処理
+    if (monster.isCompanion) {
+      monster.companionAffection = Math.max(0, (monster.companionAffection ?? 1) - 30);
+      if (monster.companionAffection <= 0) {
+        monster.isCompanion = false;
+        monster.isFriendly = false;
+        this.addLog(
+          `${monster.name} は信じていたあなたに裏切られ、怒りと悲しみで敵対した……！`,
+          'warning'
+        );
+      } else {
+        this.addLog(
+          `${monster.name} は悲しそうに身を縮めて涙を浮かべた。（なかよし度低下: ${monster.companionAffection}）`,
+          'warning'
+        );
+      }
+    }
+
     if (result.isDefeated) {
       this.addLog(
         `${monster.name} を倒した！ (${result.expGained} EXP獲得)`,
@@ -1902,6 +1895,125 @@ export class GameEngine {
   }
 
   /**
+   * 仲間モンスターとの触れ合いおよび位置入れ替え（スワップ）処理を実行します。
+   * 通路でのスタック事故を防ぐため、プレイヤーとモンスターの位置を相互に入れ替えます。
+   * なかよし度の加算、確率によるプレイヤーのHP癒やし回復を行います。
+   *
+   * @param companion - 対象の仲間モンスター
+   */
+  private interactWithCompanion(companion: Monster): void {
+    // 1. 位置スワップ
+    const oldPx = this.player.x;
+    const oldPy = this.player.y;
+    this.player.x = companion.x;
+    this.player.y = companion.y;
+    companion.x = oldPx;
+    companion.y = oldPy;
+
+    // 2. なかよし度の加算
+    companion.companionAffection = Math.min(100, (companion.companionAffection ?? 1) + 1);
+    const affection = companion.companionAffection;
+
+    const petSounds = ['「きゅいっ💖」', '「ぷにっ✨」', '「ぐるるん♪」', '「わふっ💕」'];
+    const randomPetSound = petSounds[Math.floor(Math.random() * petSounds.length)];
+
+    // なかよし度に応じた回復判定（30%〜50%）
+    const healChance = 0.3 + Math.min(0.2, affection * 0.005);
+    const canHeal = this.player.hp < this.player.maxHp && Math.random() < healChance;
+
+    if (canHeal) {
+      const healAmount = Math.floor(Math.random() * 4) + 3; // 3〜6回復
+      this.player.hp = Math.min(this.player.maxHp, this.player.hp + healAmount);
+      SoundSystem.getInstance().playHeal();
+      this.addLog(
+        `${companion.name} と位置を入れ替えた。${randomPetSound} 擦り寄って癒やしてくれた！（HPが ${healAmount} 回復 / なかよし度: ${affection}）`,
+        'info'
+      );
+    } else {
+      SoundSystem.getInstance().playPickup();
+      this.addLog(
+        `${companion.name} と位置を入れ替えた。${randomPetSound} 嬉しそうに微笑みかけてくれた。（なかよし度: ${affection}）`,
+        'normal'
+      );
+    }
+
+    FOV.compute(this.map, { x: this.player.x, y: this.player.y });
+    this.notify();
+  }
+
+  /**
+   * 階段を降りて次の深層フロアへ進みます。
+   * 泥棒モードの解除精算、フロア生成、および生存している仲間モンスターの同伴連行を行います。
+   *
+   * @returns 階段降下に成功したかどうかの真偽値
+   */
+  private descendFloor(): boolean {
+    const currentTile = this.map.tiles[this.player.y][this.player.x];
+    if (currentTile !== TileType.StairsDown) {
+      this.addLog('ここには降りる階段がない。', 'warning');
+      this.notify();
+      return false;
+    }
+
+    SoundSystem.getInstance().playStairs();
+    if (this.map.isThiefMode) {
+      this.addLog(
+        '泥棒大成功！！ 店主と番犬の猛追撃を振り切り、商品を無事に手に入れた！',
+        'turn-header'
+      );
+      for (const item of this.player.inventory) {
+        delete item.isShopItem;
+      }
+    }
+
+    // 生存している仲間モンスターを退避
+    const companion = this.map.monsters.find((m) => m.isCompanion && m.hp > 0);
+
+    this.player.floor += 1;
+    this.player.turn += 1;
+    const nextBiome = DungeonGenerator.getBiomeForFloor(this.player.floor);
+    this.addLog(
+      `階段を降り、地下 ${this.player.floor} 階【${nextBiome.name}】へ進んだ。`,
+      'info'
+    );
+    this.generateFloor(this.player.floor);
+
+    // 仲間モンスターを新フロアのプレイヤー隣接空きマスに配置
+    if (companion) {
+      const candidateOffsets = [
+        { dx: 1, dy: 0 }, { dx: -1, dy: 0 }, { dx: 0, dy: 1 }, { dx: 0, dy: -1 },
+        { dx: 1, dy: 1 }, { dx: -1, dy: -1 }, { dx: 1, dy: -1 }, { dx: -1, dy: 1 },
+      ];
+      let placed = false;
+      for (const offset of candidateOffsets) {
+        const cx = this.player.x + offset.dx;
+        const cy = this.player.y + offset.dy;
+        if (
+          cx >= 0 && cx < this.map.width && cy >= 0 && cy < this.map.height &&
+          this.map.tiles[cy][cx] !== TileType.Wall &&
+          this.map.tiles[cy][cx] !== TileType.Water &&
+          !this.map.monsters.some((m) => m.x === cx && m.y === cy)
+        ) {
+          companion.x = cx;
+          companion.y = cy;
+          this.map.monsters.push(companion);
+          placed = true;
+          break;
+        }
+      }
+      if (placed) {
+        this.addLog(
+          `仲間モンスター【${companion.name}】も一緒に階段を駆け下りてきた！`,
+          'turn-header'
+        );
+      }
+    }
+
+    return true;
+  }
+
+
+  /**
    * マップ上の生存モンスター全員の自律AI（索敵・追跡・近接＆中距離攻撃）を実行します。
    */
   private updateMonsters(): void {
@@ -1978,6 +2090,121 @@ export class GameEngine {
 
       // 1.6. レア中立NPC（レオン、ガンジ、バルカン）はプレイヤーを攻撃しない
       if (monster.isRareNpc) {
+        continue;
+      }
+
+      // 1.65. 極稀な仲良し仲間モンスター (isCompanion) の援護＆癒やしAI
+      if (monster.isCompanion) {
+        // A. 5マス以内の敵モンスターを索敵
+        const nearbyEnemies = this.map.monsters.filter(
+          (m) =>
+            m !== monster &&
+            !m.isCompanion &&
+            !m.isFriendly &&
+            m.type !== 'SCOOTER_GUY' &&
+            Math.max(Math.abs(m.x - monster.x), Math.abs(m.y - monster.y)) <= 5
+        );
+
+        if (nearbyEnemies.length > 0) {
+          // 最も近い敵モンスターを選択
+          nearbyEnemies.sort((a, b) => {
+            const distA = Math.max(Math.abs(a.x - monster.x), Math.abs(a.y - monster.y));
+            const distB = Math.max(Math.abs(b.x - monster.x), Math.abs(b.y - monster.y));
+            return distA - distB;
+          });
+          const targetEnemy = nearbyEnemies[0];
+          const distToEnemy = Math.max(
+            Math.abs(targetEnemy.x - monster.x),
+            Math.abs(targetEnemy.y - monster.y)
+          );
+
+          if (distToEnemy <= 1) {
+            // 敵に隣接しているなら援護攻撃！
+            const edx = targetEnemy.x - monster.x;
+            const edy = targetEnemy.y - monster.y;
+            monster.direction = this.calcDirection(edx, edy);
+            this.onAttack?.(monster.id, edx, edy, targetEnemy.id);
+            this.onDamage?.(targetEnemy.id);
+            SoundSystem.getInstance().playAttack();
+            SoundSystem.getInstance().playMonsterHit();
+
+            const cResult = CombatSystem.companionAttack(monster, targetEnemy);
+            this.addLog(
+              `仲間モンスター【${monster.name}】の勇敢な攻撃！ ${targetEnemy.name} に ${cResult.damage} のダメージ！`,
+              'turn-header'
+            );
+
+            if (cResult.isDefeated) {
+              this.addLog(
+                `仲間モンスター【${monster.name}】が ${targetEnemy.name} を討ち取った！ (${targetEnemy.expValue} EXP獲得)`,
+                'info'
+              );
+              this.player.exp += targetEnemy.expValue;
+              if (CombatSystem.checkLevelUp(this.player)) {
+                SoundSystem.getInstance().playLevelUp();
+                this.addLog(
+                  `レベルが上がった！ (Lv.${this.player.level} / 最大HP+5 / 攻撃+2 / 防御+1 / HP+5回復)`,
+                  'turn-header'
+                );
+              }
+              this.map.monsters = this.map.monsters.filter((m) => m.id !== targetEnemy.id);
+            }
+            continue;
+          } else {
+            // 敵モンスターへ向かって1歩接近移動
+            const nextStep = Pathfinding.getNextStep(
+              this.map,
+              { x: monster.x, y: monster.y },
+              { x: targetEnemy.x, y: targetEnemy.y }
+            );
+            if (
+              nextStep &&
+              !(nextStep.x === playerPos.x && nextStep.y === playerPos.y) &&
+              !this.map.monsters.some((m) => m !== monster && m.x === nextStep.x && m.y === nextStep.y)
+            ) {
+              monster.direction = this.calcDirection(nextStep.x - monster.x, nextStep.y - monster.y);
+              monster.x = nextStep.x;
+              monster.y = nextStep.y;
+            }
+            continue;
+          }
+        }
+
+        // B. 周囲に敵がいない場合はプレイヤーへ追従または触れ合い応援
+        const distToPlayer = Math.max(
+          Math.abs(monster.x - playerPos.x),
+          Math.abs(monster.y - playerPos.y)
+        );
+
+        if (distToPlayer <= 1) {
+          // プレイヤーに隣接: 一定確率でHP回復応援
+          const healChance = 0.25 + Math.min(0.2, (monster.companionAffection ?? 1) * 0.005);
+          if (this.player.hp < this.player.maxHp && Math.random() < healChance) {
+            const healVal = Math.floor(Math.random() * 3) + 3; // 3〜5回復
+            this.player.hp = Math.min(this.player.maxHp, this.player.hp + healVal);
+            SoundSystem.getInstance().playHeal();
+            this.addLog(
+              `仲間モンスター【${monster.name}】は一生懸命に応援してくれた！ HPが ${healVal} 回復した♪`,
+              'info'
+            );
+          }
+        } else {
+          // プレイヤーに向かって追従移動
+          const nextStep = Pathfinding.getNextStep(
+            this.map,
+            { x: monster.x, y: monster.y },
+            playerPos
+          );
+          if (
+            nextStep &&
+            !(nextStep.x === playerPos.x && nextStep.y === playerPos.y) &&
+            !this.map.monsters.some((m) => m !== monster && m.x === nextStep.x && m.y === nextStep.y)
+          ) {
+            monster.direction = this.calcDirection(nextStep.x - monster.x, nextStep.y - monster.y);
+            monster.x = nextStep.x;
+            monster.y = nextStep.y;
+          }
+        }
         continue;
       }
 
@@ -2100,6 +2327,39 @@ export class GameEngine {
         Math.abs(monster.y - playerPos.y)
       );
 
+      // 2.5. メタルスライム（metal_slime）は好戦的でなく、プレイヤーから遠ざかるように素早く逃走する
+      if (monster.variantId === 'metal_slime') {
+        const awayDirs = [
+          { dx: 1, dy: 0 }, { dx: -1, dy: 0 }, { dx: 0, dy: 1 }, { dx: 0, dy: -1 },
+          { dx: 1, dy: 1 }, { dx: -1, dy: -1 }, { dx: 1, dy: -1 }, { dx: -1, dy: 1 },
+        ];
+        let bestDir: { dx: number; dy: number } | null = null;
+        let maxDist = distToPlayer;
+        for (const dir of awayDirs) {
+          const nx = monster.x + dir.dx;
+          const ny = monster.y + dir.dy;
+          if (
+            nx >= 0 && nx < this.map.width && ny >= 0 && ny < this.map.height &&
+            this.map.tiles[ny][nx] !== TileType.Wall &&
+            this.map.tiles[ny][nx] !== TileType.Water &&
+            !(nx === playerPos.x && ny === playerPos.y) &&
+            !this.map.monsters.some((m) => m !== monster && m.x === nx && m.y === ny)
+          ) {
+            const d = Math.max(Math.abs(nx - playerPos.x), Math.abs(ny - playerPos.y));
+            if (d > maxDist) {
+              maxDist = d;
+              bestDir = dir;
+            }
+          }
+        }
+        if (bestDir) {
+          monster.direction = this.calcDirection(bestDir.dx, bestDir.dy);
+          monster.x += bestDir.dx;
+          monster.y += bestDir.dy;
+        }
+        continue;
+      }
+
       // 3. 隣接（距離1）している場合は近接攻撃
       if (distToPlayer <= 1) {
         const dx = playerPos.x - monster.x;
@@ -2147,6 +2407,33 @@ export class GameEngine {
             SoundSystem.getInstance().playDefeat();
             this.lastDefeatCause = `${monster.name} の攻撃により力尽きた`;
             return; // 死亡確定時は即座に全モンスターの行動を完全終了！
+          }
+        } else {
+          // プレイヤー生存時: 色違い・上位種モンスターの固有追加効果
+          if (monster.variantId === 'poison_skeleton' && Math.random() < 0.45) {
+            const poisonExtra = 3;
+            this.player.hp = Math.max(1, this.player.hp - poisonExtra);
+            this.addLog(
+              `【猛毒浸食】ポイズンスケルトンの毒針が肉体を蝕み、追加で ${poisonExtra} の毒ダメージを受けた！`,
+              'damage'
+            );
+          } else if (monster.variantId === 'chaos_bat' && Math.random() < 0.40) {
+            const randomDirections: CardinalDirection[] = [
+              'up', 'down', 'left', 'right', 'up_left', 'up_right', 'down_left', 'down_right',
+            ];
+            this.player.direction =
+              randomDirections[Math.floor(Math.random() * randomDirections.length)];
+            this.addLog(
+              `【超音波乱流】カオスバットの怪音波を浴びて平衡感覚が狂い、向きを強制転換された！`,
+              'warning'
+            );
+          } else if (monster.variantId === 'blood_skeleton') {
+            const lifesteal = Math.max(1, Math.floor(combat.damage * 0.4));
+            monster.hp = Math.min(monster.maxHp, monster.hp + lifesteal);
+            this.addLog(
+              `【吸血再生】ブラッドスケルトンは吸血の魔力で自身のHPを ${lifesteal} 回復した！`,
+              'warning'
+            );
           }
         }
         continue;

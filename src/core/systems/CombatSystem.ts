@@ -155,6 +155,11 @@ export class CombatSystem {
       damage = Math.max(2, Math.round(damage * 1.6));
     }
 
+    // メタルスライムは極めて頑丈な金属外殻を持ち、被ダメージを1（会心・不意打ち時のみ2）に抑える
+    if (monster.variantId === 'metal_slime') {
+      damage = isBackstab || runes.includes('CRITICAL') ? 2 : 1;
+    }
+
     monster.hp = Math.max(0, monster.hp - damage);
     const isDefeated = monster.hp <= 0;
     let didLevelUp = false;
@@ -202,7 +207,12 @@ export class CombatSystem {
     // 遠隔ダメージ式: 飛び道具威力 + (ATK * 0.35) - (DEF * 0.7)
     const variance = 0.9 + Math.random() * 0.25;
     const rawDamage = (projectilePower + player.atk * 0.35) * variance - monster.def * 0.7;
-    const damage = Math.max(1, Math.round(rawDamage));
+    let damage = Math.max(1, Math.round(rawDamage));
+
+    // メタルスライムは飛び道具に対しても強固（ダメージ1に制限）
+    if (monster.variantId === 'metal_slime') {
+      damage = 1;
+    }
 
     monster.hp = Math.max(0, monster.hp - damage);
     const isDefeated = monster.hp <= 0;
@@ -307,5 +317,45 @@ export class CombatSystem {
     }
 
     return didLevelUp;
+  }
+
+  /**
+   * 仲間モンスターから敵モンスターへの攻撃ダメージを計算・適用します。
+   * なかよし度（companionAffection）に応じて追加ボーナスダメージが付与されます。
+   *
+   * @param companion - 攻撃側の仲間モンスター
+   * @param target - 攻撃対象の敵モンスター
+   * @returns 攻撃結果オブジェクト（与ダメージ、撃破判定）
+   */
+  public static companionAttack(
+    companion: Monster,
+    target: Monster
+  ): { damage: number; isDefeated: boolean } {
+    // 被弾により状態異常解除
+    if (target.isParalyzed) {
+      target.isParalyzed = false;
+    }
+    if (target.sleepTurns) {
+      target.sleepTurns = 0;
+    }
+
+    // ダメージ計算: ATK * (0.85 〜 1.15) - DEF + (なかよし度 / 5)
+    const variance = 0.85 + Math.random() * 0.3;
+    const baseDamage = companion.atk * variance - target.def;
+    const affectionBonus = Math.floor((companion.companionAffection ?? 1) / 5);
+    let damage = Math.max(1, Math.round(baseDamage) + affectionBonus);
+
+    // メタルスライム相手の場合は被ダメージ1に抑える
+    if (target.variantId === 'metal_slime') {
+      damage = 1;
+    }
+
+    target.hp = Math.max(0, target.hp - damage);
+    const isDefeated = target.hp <= 0;
+
+    return {
+      damage,
+      isDefeated,
+    };
   }
 }
