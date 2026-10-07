@@ -25,7 +25,7 @@ flowchart TD
             DungeonGen["Dungeon Generator<br>(BSP二分空間分割 / 通路接続 / 配置)"]
             FOV["FOV Engine<br>(Shadowcasting 視界計算)"]
             Pathfinding["Pathfinding Engine<br>(A* アルゴリズム / ダイクストラマップ)"]
-            EntityMgr["Entity & Component System<br>(Player / Monsters / Items / Traps)"]
+            EntityMgr["Entity & Component System<br>(Player / Monsters / Items / Obstacles / Hazards)"]
         end
     end
 
@@ -48,46 +48,58 @@ flowchart TD
 
 ```text
 WebGame01/
-├── docs/                      # 企画書・設計書・ロードマップ
-│   ├── 01_game_design.md
-│   ├── 02_architecture.md
-│   └── 03_roadmap.md
-├── public/                    # 静的アセット (PWAアイコン, 音源等)
+├── docs/                             # 仕様書・設計書・コーディング規約
+│   ├── 01_game_design.md             # ゲーム企画書・詳細仕様・アイテムマスタ
+│   ├── 02_architecture.md            # システムアーキテクチャ・モジュール構造
+│   ├── 03_roadmap.md                 # 開発ロードマップ・マイルストーン
+│   ├── 04_characters.md              # キャラクター・モンスター完全仕様・SVG一覧
+│   ├── 05_title_and_scores.md        # タイトル画面・スコア計算・ハイスコア履歴
+│   ├── 06_biomes_and_floors.md       # バイオーム・フロア構成・決定ボタン優先度
+│   └── 07_coding_standards.md        # コーディング規約（TypeDocコメント基準）
+├── public/                           # 静的Web公開アセット
 │   ├── favicon.ico
-│   ├── manifest.json          # PWA設定
-│   └── icons/                 # 各サイズのアプリアイコン (192x192, 512x512)
+│   ├── manifest.json                 # PWA Web App Manifest
+│   ├── sw.js                         # Service Worker（ビルド時にバージョン注入）
+│   └── icons/                        # PWAアプリアイコン群 (192x192, 512x512)
 ├── src/
-│   ├── core/                  # ゲームエンジン・ロジック (UI/DOM非依存)
-│   │   ├── algorithms/        # アルゴリズム (BSP生成, FOV, A*探索)
-│   │   ├── entities/          # エンティティ定義 (Actor, Player, Monster, Item)
-│   │   ├── systems/           # 各種システム (TurnSystem, CombatSystem, InventorySystem)
-│   │   ├── types/             # 共通型定義 (Point, Direction, GameAction, TileType)
-│   │   └── GameEngine.ts      # ゲーム全体の統合ファサード
-│   ├── render/                # 描画レイヤー
-│   │   ├── CanvasRenderer.ts  # Canvas 2D 描画クラス (タイリング・カメラ・視界暗黒)
-│   │   ├── Camera.ts          # プレイヤー追従・ズーム・パン制御
-│   │   └── SpriteSheet.ts     # タイル・スプライト管理
-│   ├── input/                 # 入力抽象化レイヤー
-│   │   ├── InputManager.ts    # 統一入力マネージャー
-│   │   ├── KeyboardInput.ts   # PCキーボード対応 (WASD, テンキー, 矢印)
-│   │   ├── MouseInput.ts      # PCマウスクリック・ドラッグ
-│   │   └── TouchInput.ts      # スマホ仮想パッド・スワイプ・ピンチズーム
-│   ├── storage/               # データ永続化 (IndexedDB)
-│   │   ├── StorageManager.ts  # IndexedDBラッパー
-│   │   └── SaveSerializer.ts  # セーブデータのシリアライズ / 復元
-│   ├── ui/                    # レスポンシブDOM UI
-│   │   ├── components/        # HUD, VirtualPad, InventoryDialog, LogBox
-│   │   └── UIManager.ts       # DOM UIとゲームエンジンのイベント連携
-│   ├── audio/                 # サウンド管理 (Web Audio API)
-│   │   └── SoundManager.ts
-│   ├── sw/                    # サービスワーカー
-│   │   └── sw.ts              # オフラインキャッシュスクリプト
-│   ├── main.ts                # アプリケーションエントリーポイント
-│   └── style.css              # レスポンシブレイアウト・スタイル
-├── index.html                 # メインHTML
+│   ├── main.ts                       # アプリケーション初期化エントリーポイント
+│   ├── style.css                     # レスポンシブレイアウト・Tailwindスタイル定義
+│   ├── audio/
+│   │   └── SoundSystem.ts            # Web Audio API シンセサイズ物理音響システム（全SE生成）
+│   ├── core/                         # コアゲームロジック（DOM非依存・ヘッドレス可能）
+│   │   ├── GameEngine.ts             # ゲーム全体のファサード・ターン進行・状態遷移
+│   │   ├── types.ts                  # 共通型定義（Player, Monster, Item, ActionType等）
+│   │   ├── algorithms/
+│   │   │   ├── DungeonGenerator.ts   # BSP空間分割・部屋・通路・特殊バイオーム生成
+│   │   │   ├── FOV.ts                # 再帰的シャドウキャスティング視界計算
+│   │   │   └── Pathfinding.ts        # A* 経路探索アルゴリズム
+│   │   ├── entities/
+│   │   │   └── EntityFactory.ts      # モンスター・アイテム・障害物のパラメータ生成ファクトリ
+│   │   └── systems/
+│   │       ├── CombatSystem.ts       # プレイヤー/敵/仲間間の戦闘ダメージ・命中・レベル計算
+│   │       ├── ItemSystem.ts         # アイテム使用・拾得・投擲・矢射出・杖照射判定
+│   │       ├── NpcSystem.ts          # レア中立NPC（レオン・ガンジ・ピクシー・バルカン）会話イベント
+│   │       ├── ShopSystem.ts         # 商店売買精算・泥棒判定・店主冷やかし＆遠隔追撃AI
+│   │       └── SynthesisSystem.ts    # 合成の壺による武具強化値合算＆印継承錬成
+│   ├── input/
+│   │   └── InputManager.ts           # キーボード・タッチ・仮想十字キー・マウスクリック統合
+│   ├── render/                       # 描画・アニメーションレイヤー
+│   │   ├── CanvasRenderer.ts         # Canvas 2D 描画（カメラ追従・タイル・キャラ・Fog of War）
+│   │   ├── AnimationEngine.ts        # 飛翔体（矢・杖ビーム・投擲）＆被弾補間演出
+│   │   └── sprites/
+│   │       ├── SVGSprites.ts         # プレイヤー素体・ペーパードール・色違いスワップ生成
+│   │       ├── MonsterAndItemSprites.ts # 基本種モンスター・全アイテムSVG定義
+│   │       ├── EquipmentSprites.ts   # 武器・盾SVG定義
+│   │       └── TileSprites.ts        # バイオーム別タイルグラフィックSVG定義
+│   ├── storage/
+│   │   └── StorageManager.ts         # LocalStorage & IndexedDB 多層セーブ永続化
+│   └── ui/
+│       └── UIManager.ts              # HUD・仮想パッド・所持品・対話・合成モーダル制御
+├── index.html                        # メインSPA HTML（HUD・DOMコンテナ）
 ├── package.json
 ├── tsconfig.json
-└── vite.config.ts             # Vite ビルド設定
+├── typedoc.json                      # TypeDoc 自動ドキュメント生成設定
+└── vite.config.ts                    # Vite ビルド設定（PWAプラグイン含む）
 ```
 
 ---
@@ -155,21 +167,24 @@ IndexedDB を採用（LocalStorageの5MB制限や同期ブロックによる描�
 
 ## 6. 入力抽象化レイヤー（Unified Input Adapter）
 
-プラットフォーム（PC / スマホ）ごとに異なる入力を、共通の `GameAction` に集約します。
+プラットフォーム（PC / スマホ）ごとに異なる入力を、共通の `ActionType` に集約してゲームエンジンに渡します。
 
 ```typescript
-export type GameAction =
-  | { type: 'MOVE'; dx: number; dy: number } // 8方向移動
-  | { type: 'ATTACK'; dx: number; dy: number } // 指定方向への攻撃
-  | { type: 'SHOOT'; itemId?: string }        // 矢の8方向射出
-  | { type: 'ZAP_STAFF'; itemId: string }     // 魔法の杖の照射
-  | { type: 'THROW_ITEM'; itemId: string }    // アイテムの投擲
-  | { type: 'WAIT' }                          // 足踏み（HP回復）
-  | { type: 'PICKUP' }                        // アイテム取得
-  | { type: 'DESCEND' }                       // 階段を降りる
-  | { type: 'USE_ITEM'; itemId: string }      // アイテム使用・装備変更
-  | { type: 'DROP_ITEM'; itemId: string }     // アイテム捨てる
-  | { type: 'CHANGE_FACING'; dx: number; dy: number }; // 向き変更のみ
+export type ActionType =
+  | { type: 'MOVE'; dx: number; dy: number }       // 8方向移動 / 近接攻撃 / 位置スワップ
+  | { type: 'WAIT' }                                // 足踏み（1ターン経過・HP自然回復）
+  | { type: 'PICKUP' }                              // 足元アイテム拾得
+  | { type: 'INTERACT' }                            // Aボタン: 足元拾得 / 階段降り / 正面攻撃 / 素振り
+  | { type: 'USE_ITEM'; itemId: string }            // アイテム使用・装備変更
+  | { type: 'DROP_ITEM'; itemId: string }           // アイテム足元配置
+  | { type: 'SHOOT'; itemId?: string; dx?: number; dy?: number } // 矢射出
+  | { type: 'ZAP_STAFF'; itemId: string; dx?: number; dy?: number } // 魔法の杖照射
+  | { type: 'THROW_ITEM'; itemId: string; dx?: number; dy?: number } // アイテム投擲
+  | { type: 'DESCEND' }                             // 階段を降りる（仲間同伴連行）
+  | { type: 'RESTART' }                             // 新規ゲーム開始
+  | { type: 'REGEN' }                               // フロア再生成（デバッグ用）
+  | { type: 'NPC_INTERACT'; monsterId: string; action: string; ... } // NPC会話・交換・じゃんけん・鍛錬
+  | { type: 'SYNTHESIZE'; baseItemId: string; materialItemId: string; ... }; // 合成の壺錬成
 ```
 
 - **アニメーション＆飛翔体アーキテクチャ (`AnimationEngine`)**:
@@ -182,10 +197,11 @@ export type GameAction =
   - プレイヤーの死亡検知時にインベントリの「復活の草」を自動検索し、HP全快での即時奇跡蘇生（パーマデス回避）を割り込み処理。
 
 - **PC 入力**:
-  - キーボードイベント（`keydown`）を直接 `GameAction` へマッピング。
-  - マウスのマップクリック時: 隣接マスなら移動/攻撃、離れたマスなら A* 探索による「自動歩行アクションキュー」を生成。
+  - キーボードイベント（`keydown`）を直接 `ActionType` へマッピング。
+  - マウスのマップクリック時: 隣接マスなら移動/攻撃を実行。
 - **スマホ 入力**:
-  - 画面上の仮想パッド（D-pad）タッチイベントから `MOVE` を発行。
+  - 画面上の仮想十字キー（8方向D-pad）タッチイベントから `MOVE` を発行。
+  - 右側4ボタン（A: 攻撃/拾う, B: 撃つ, Y: 振る, X: 持物）による直感操作。
   - スワイプジェスチャーによる直感移動もサポート。
 
 ---
