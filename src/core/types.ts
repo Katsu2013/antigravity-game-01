@@ -249,6 +249,7 @@ export type MonsterType =
   | 'HEALING_FAIRY'         // 慈愛の妖精ピクシー（敵なのにプレイヤーを回復してくれる）
   | 'TRAVELING_BLACKSMITH' // さすらいの鍛冶職人バルカン（装備品の無料鍛錬）
   | 'SCOOTER_GUY'          // スクーターおじさん（脈絡なくダンジョンを通過する謎のオジサン）
+  | 'FOOD_STALL'           // 迷宮の屋台（ラーメンマルキン、おでん等で空腹を癒やすオアシス）
   | 'ABYSS_LORD';          // 奈落の魔王アビス・ロード（第50層 最深部の支配者・大ボス）
 
 /**
@@ -574,6 +575,32 @@ export interface Monster {
      * - 初期値: 0
      */
     rpsStreak?: number;
+    /**
+     * 屋台の種別。
+     * - 想定値: `'RAMEN_MARUKIN'`（ラーメンマルキン） | `'ODEN'`（おでん屋台）
+     * - 初期値: 屋台生成時に抽選
+     */
+    stallType?: 'RAMEN_MARUKIN' | 'ODEN';
+    /**
+     * 現在店先に立っている店員の役割。
+     * - 想定値: `'MASTER'`（おじさん店主「あじゃあうえっぇー！」） | `'WIFE'`（奥さん「ウチやってません」）
+     * - 初期値: 生成時に確率で割り当て
+     */
+    stallClerk?: 'MASTER' | 'WIFE';
+    /**
+     * 奥さんに話しかけて門前払いされた連続回数カウンタ。
+     * - 想定値: 0以上の整数
+     * - 初期値: 0
+     * - 変化契機: 奥さんに話しかけるたびに +1
+     */
+    wifeTalkCount?: number;
+    /**
+     * 当該フロアの屋台ですでに食事・購入を済ませたかどうかのフラグ。
+     * - 想定値: `true` (完食済み), `false` (未購入)
+     * - 初期値: `false`
+     * - 変化契機: ラーメンやおでんの注文完了時に `true` に設定
+     */
+    foodPurchased?: boolean;
   };
   /**
    * スクーターおじさんの横断走行データ。
@@ -711,9 +738,17 @@ export type ActionType =
   | {
       type: 'NPC_INTERACT';
       monsterId: string;
-      action: 'TALK' | 'TRADE_ACCEPT' | 'RPS_PLAY' | 'FORGE_WEAPON' | 'FORGE_SHIELD';
+      action:
+        | 'TALK'
+        | 'TRADE_ACCEPT'
+        | 'RPS_PLAY'
+        | 'FORGE_WEAPON'
+        | 'FORGE_SHIELD'
+        | 'ORDER_FOOD'
+        | 'TALK_WIFE';
       rpsChoice?: 'ROCK' | 'SCISSORS' | 'PAPER';
       tradePlayerItemId?: string;
+      foodMenuId?: 'RAMEN_NORMAL' | 'RAMEN_SPECIAL' | 'WIFE_ONIGIRI' | 'ODEN_HOT';
     }
   /**
    * 武器・盾の合成・鍛冶錬成アクション（合成の壺による強化値加算・印継承）。

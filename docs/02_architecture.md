@@ -79,7 +79,7 @@ WebGame01/
 │   │   └── systems/
 │   │       ├── CombatSystem.ts       # プレイヤー/敵/仲間間の戦闘ダメージ・命中・レベル計算
 │   │       ├── ItemSystem.ts         # アイテム使用・拾得・投擲・矢射出・杖照射判定
-│   │       ├── NpcSystem.ts          # レア中立NPC（レオン・ガンジ・ピクシー・バルカン）会話イベント
+│   │       ├── NpcSystem.ts          # レア中立NPC（レオン・ガンジ・ピクシー・バルカン・屋台マルキン/おでん）会話・注文イベント
 │   │       ├── ShopSystem.ts         # 商店売買精算・泥棒判定・店主冷やかし＆遠隔追撃AI
 │   │       └── SynthesisSystem.ts    # 合成の壺による武具強化値合算＆印継承錬成
 │   ├── input/
@@ -184,7 +184,7 @@ export type ActionType =
   | { type: 'DESCEND' }                             // 階段を降りる（仲間同伴連行）
   | { type: 'RESTART' }                             // 新規ゲーム開始
   | { type: 'REGEN' }                               // フロア再生成（デバッグ用）
-  | { type: 'NPC_INTERACT'; monsterId: string; action: string; ... } // NPC会話・交換・じゃんけん・鍛錬
+  | { type: 'NPC_INTERACT'; monsterId: string; action: string; ... } // NPC会話・交換・じゃんけん・鍛錬・屋台注文
   | { type: 'SYNTHESIZE'; baseItemId: string; materialItemId: string; ... }; // 合成の壺錬成
 ```
 

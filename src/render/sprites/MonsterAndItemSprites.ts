@@ -2172,4 +2172,150 @@ export class MonsterAndItemSprites {
   <ellipse cx="29" cy="20" rx="1.5" ry="2" fill="#dc2626"/>
   <ellipse cx="35" cy="20" rx="1.5" ry="2" fill="#dc2626"/>
 </svg>`.trim();
+
+  // =========================================================================
+  // 迷宮屋台システム（ラーメン屋台マルキン・おでん屋台）
+  // =========================================================================
+
+  /** ラーメン屋台マルキン（おじさん店主「あじゃあうえっぇー！」） */
+  public static readonly FOOD_STALL_RAMEN_DOWN_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- 接地シャドウ -->
+  <ellipse cx="32" cy="59" rx="26" ry="4" fill="rgba(0,0,0,0.4)"/>
+  <!-- 屋台車輪 -->
+  <circle cx="16" cy="54" r="6" fill="#78350f" stroke="#451a03" stroke-width="1.5"/>
+  <circle cx="16" cy="54" r="2" fill="#d97706"/>
+  <circle cx="48" cy="54" r="6" fill="#78350f" stroke="#451a03" stroke-width="1.5"/>
+  <circle cx="48" cy="54" r="2" fill="#d97706"/>
+  <!-- カウンター台車本体 -->
+  <rect x="10" y="34" width="44" height="18" rx="2" fill="#92400e" stroke="#451a03" stroke-width="1.5"/>
+  <rect x="8" y="32" width="48" height="4" rx="1" fill="#b45309" stroke="#78350f" stroke-width="1"/>
+  <!-- 支柱 -->
+  <rect x="12" y="10" width="2.5" height="23" fill="#78350f"/>
+  <rect x="49.5" y="10" width="2.5" height="23" fill="#78350f"/>
+  <!-- 屋根（瓦屋根ひさし） -->
+  <path d="M6 10 L58 10 L54 4 L10 4 Z" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
+  <rect x="8" y="9" width="48" height="2" fill="#d97706"/>
+  <!-- 暖簾（紺色・マルキン） -->
+  <path d="M14 10 L50 10 L50 20 L42 20 L42 16 L38 16 L38 20 L26 20 L26 16 L22 16 L22 20 L14 20 Z" fill="#1e3a8a" stroke="#172554" stroke-width="0.8"/>
+  <text x="32" y="16" font-size="5" font-weight="bold" fill="#ffffff" text-anchor="middle" font-family="sans-serif">マルキン</text>
+  <!-- 赤提灯（左右） -->
+  <ellipse cx="10" cy="18" rx="3.5" ry="5" fill="#ef4444" stroke="#991b1b" stroke-width="0.8"/>
+  <rect x="8.5" y="13" width="3" height="1" fill="#1e293b"/>
+  <rect x="8.5" y="22" width="3" height="1" fill="#1e293b"/>
+  <text x="10" y="19" font-size="3.5" font-weight="bold" fill="#fef08a" text-anchor="middle" font-family="sans-serif">拉</text>
+  <ellipse cx="54" cy="18" rx="3.5" ry="5" fill="#ef4444" stroke="#991b1b" stroke-width="0.8"/>
+  <rect x="52.5" y="13" width="3" height="1" fill="#1e293b"/>
+  <rect x="52.5" y="22" width="3" height="1" fill="#1e293b"/>
+  <text x="54" y="19" font-size="3.5" font-weight="bold" fill="#fef08a" text-anchor="middle" font-family="sans-serif">麺</text>
+  <!-- 店主おじさん（カウンター奥） -->
+  <g transform="translate(0, 0)">
+    <!-- 体（白Tシャツ） -->
+    <rect x="26" y="22" width="12" height="11" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.8"/>
+    <!-- 顔・ヒゲ・笑顔 -->
+    <circle cx="32" cy="19" r="5.5" fill="#fed7aa"/>
+    <!-- ねじり鉢巻き（赤白） -->
+    <path d="M26.5 16 Q32 14 37.5 16" stroke="#dc2626" stroke-width="1.8" stroke-dasharray="1.5,1" fill="none"/>
+    <circle cx="37" cy="16" r="1" fill="#dc2626"/>
+    <!-- 目（にっこり笑い目） -->
+    <path d="M29.5 18 Q30.5 17 31.5 18" stroke="#78350f" stroke-width="0.8" fill="none"/>
+    <path d="M32.5 18 Q33.5 17 34.5 18" stroke="#78350f" stroke-width="0.8" fill="none"/>
+    <!-- 口（豪快な開口「あじゃあうえっぇー！」） -->
+    <path d="M30.5 21 Q32 23.5 33.5 21 Z" fill="#b91c1c"/>
+    <ellipse cx="32" cy="20" rx="1.5" ry="1" fill="#ea580c"/>
+    <!-- ヒゲ -->
+    <path d="M30 20.5 Q32 21.5 34 20.5" stroke="#78350f" stroke-width="0.6" fill="none"/>
+  </g>
+  <!-- カウンター上の寸胴鍋と湯気 -->
+  <rect x="14" y="28" width="8" height="6" rx="1" fill="#94a3b8" stroke="#475569" stroke-width="0.8"/>
+  <!-- 立ち上る湯気 -->
+  <path d="M16 26 Q18 23 16 20 Q14 17 17 14" stroke="#ffffff" stroke-width="0.8" fill="none" opacity="0.75"/>
+  <path d="M20 25 Q22 22 20 19 Q18 16 21 13" stroke="#ffffff" stroke-width="0.8" fill="none" opacity="0.6"/>
+  <!-- カウンター上のドンブリ（極上ラーメン） -->
+  <path d="M40 31 L48 31 L46 36 L42 36 Z" fill="#dc2626" stroke="#991b1b" stroke-width="0.8"/>
+  <ellipse cx="44" cy="31" rx="4" ry="1.2" fill="#fef08a"/>
+  <!-- ナルトとチャーシュー -->
+  <circle cx="43" cy="31" r="0.8" fill="#f43f5e"/>
+  <ellipse cx="45.5" cy="31" rx="1.2" ry="0.6" fill="#b45309"/>
+  <!-- 箸 -->
+  <line x1="39" y1="29" x2="47" y2="33" stroke="#d97706" stroke-width="0.6"/>
+</svg>`.trim();
+
+  /** ラーメン屋台マルキン（おかみさん奥さん「ウチやってません！」） */
+  public static readonly FOOD_STALL_RAMEN_WIFE_DOWN_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- 接地シャドウ -->
+  <ellipse cx="32" cy="59" rx="26" ry="4" fill="rgba(0,0,0,0.4)"/>
+  <!-- 屋台車輪 -->
+  <circle cx="16" cy="54" r="6" fill="#78350f" stroke="#451a03" stroke-width="1.5"/>
+  <circle cx="16" cy="54" r="2" fill="#d97706"/>
+  <circle cx="48" cy="54" r="6" fill="#78350f" stroke="#451a03" stroke-width="1.5"/>
+  <circle cx="48" cy="54" r="2" fill="#d97706"/>
+  <!-- カウンター台車本体 -->
+  <rect x="10" y="34" width="44" height="18" rx="2" fill="#92400e" stroke="#451a03" stroke-width="1.5"/>
+  <rect x="8" y="32" width="48" height="4" rx="1" fill="#b45309" stroke="#78350f" stroke-width="1"/>
+  <!-- 支柱 -->
+  <rect x="12" y="10" width="2.5" height="23" fill="#78350f"/>
+  <rect x="49.5" y="10" width="2.5" height="23" fill="#78350f"/>
+  <!-- 屋根 -->
+  <path d="M6 10 L58 10 L54 4 L10 4 Z" fill="#1e293b" stroke="#0f172a" stroke-width="1.2"/>
+  <rect x="8" y="9" width="48" height="2" fill="#d97706"/>
+  <!-- 暖簾（裏返し・準備中感） -->
+  <path d="M14 10 L50 10 L50 18 L42 18 L42 15 L38 15 L38 18 L26 18 L26 15 L22 15 L22 18 L14 18 Z" fill="#334155" stroke="#1e293b" stroke-width="0.8"/>
+  <text x="32" y="15" font-size="4" font-weight="bold" fill="#94a3b8" text-anchor="middle" font-family="sans-serif">仕込中</text>
+  <!-- 赤提灯（消灯・暗い赤） -->
+  <ellipse cx="10" cy="18" rx="3.5" ry="5" fill="#7f1d1d" stroke="#450a0a" stroke-width="0.8"/>
+  <ellipse cx="54" cy="18" rx="3.5" ry="5" fill="#7f1d1d" stroke="#450a0a" stroke-width="0.8"/>
+  <!-- 奥さん（割烹着エプロン・三角巾・不機嫌仁王立ち） -->
+  <g transform="translate(0, 0)">
+    <!-- 割烹着（ピンクエプロン） -->
+    <rect x="26" y="22" width="12" height="11" fill="#f43f5e" stroke="#be123c" stroke-width="0.8"/>
+    <rect x="28" y="24" width="8" height="8" fill="#ffffff"/>
+    <!-- 顔 -->
+    <circle cx="32" cy="18" r="5.5" fill="#fed7aa"/>
+    <!-- 三角巾（水色）とお団子髪 -->
+    <path d="M26 16 L38 16 L32 12 Z" fill="#38bdf8"/>
+    <circle cx="32" cy="12" r="2" fill="#78350f"/>
+    <!-- 不機嫌眉毛・じと目（「ウチやってません」） -->
+    <line x1="28" y1="16.5" x2="31" y2="18" stroke="#78350f" stroke-width="0.9"/>
+    <line x1="36" y1="16.5" x2="33" y2="18" stroke="#78350f" stroke-width="0.9"/>
+    <circle cx="30" cy="19" r="0.7" fill="#0f172a"/>
+    <circle cx="34" cy="19" r="0.7" fill="#0f172a"/>
+    <!-- 引き結んだへの字口 -->
+    <path d="M30.5 22 Q32 20.5 33.5 22" stroke="#be123c" stroke-width="1" fill="none"/>
+    <!-- 怒りマーク・青筋 -->
+    <path d="M38 13 L42 13 M40 11 L40 15" stroke="#ef4444" stroke-width="1"/>
+  </g>
+  <!-- カウンター上の「準備中」札 -->
+  <rect x="22" y="28" width="20" height="4" rx="1" fill="#fef08a" stroke="#ca8a04" stroke-width="0.8"/>
+  <text x="32" y="31" font-size="3" font-weight="bold" fill="#7f1d1d" text-anchor="middle" font-family="sans-serif">本日休業 / 準備中</text>
+</svg>`.trim();
+
+  /** 秘伝のおでん屋台 */
+  public static readonly FOOD_STALL_ODEN_DOWN_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <ellipse cx="32" cy="59" rx="26" ry="4" fill="rgba(0,0,0,0.4)"/>
+  <circle cx="16" cy="54" r="6" fill="#78350f" stroke="#451a03" stroke-width="1.5"/>
+  <circle cx="48" cy="54" r="6" fill="#78350f" stroke="#451a03" stroke-width="1.5"/>
+  <rect x="10" y="34" width="44" height="18" rx="2" fill="#78350f" stroke="#451a03" stroke-width="1.5"/>
+  <rect x="8" y="32" width="48" height="4" rx="1" fill="#92400e"/>
+  <rect x="12" y="10" width="2.5" height="23" fill="#78350f"/>
+  <rect x="49.5" y="10" width="2.5" height="23" fill="#78350f"/>
+  <path d="M6 10 L58 10 L54 4 L10 4 Z" fill="#3f3f46" stroke="#18181b" stroke-width="1.2"/>
+  <!-- おでん提灯 -->
+  <ellipse cx="10" cy="18" rx="3.5" ry="5" fill="#f59e0b" stroke="#b45309" stroke-width="0.8"/>
+  <text x="10" y="19" font-size="3.5" font-weight="bold" fill="#451a03" text-anchor="middle" font-family="sans-serif">お</text>
+  <ellipse cx="54" cy="18" rx="3.5" ry="5" fill="#f59e0b" stroke="#b45309" stroke-width="0.8"/>
+  <text x="54" y="19" font-size="3.5" font-weight="bold" fill="#451a03" text-anchor="middle" font-family="sans-serif">でん</text>
+  <!-- おでん鍋（仕切り） -->
+  <rect x="20" y="27" width="24" height="6" fill="#cbd5e1" stroke="#475569" stroke-width="1"/>
+  <line x1="32" y1="27" x2="32" y2="33" stroke="#475569" stroke-width="0.8"/>
+  <!-- 大根・玉子・こんにゃく -->
+  <circle cx="25" cy="30" r="2" fill="#fef08a"/>
+  <polygon points="28,29 31,29 29.5,32" fill="#713f12"/>
+  <rect x="34" y="29" width="4" height="2" fill="#d97706"/>
+  <!-- 立ち上る湯気 -->
+  <path d="M26 25 Q28 22 26 19" stroke="#ffffff" stroke-width="0.8" fill="none" opacity="0.7"/>
+  <path d="M38 25 Q40 22 38 19" stroke="#ffffff" stroke-width="0.8" fill="none" opacity="0.7"/>
+</svg>`.trim();
 }

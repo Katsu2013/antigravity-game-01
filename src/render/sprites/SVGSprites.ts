@@ -197,6 +197,19 @@ export type SpriteId =
   | 'merchant_celia_down'
   | 'angry_merchant_celia'
   | 'angry_merchant_celia_down'
+  // 迷宮屋台システム（ラーメンマルキン・おでん）
+  | 'food_stall'
+  | 'food_stall_down'
+  | 'food_stall_up'
+  | 'food_stall_side'
+  | 'food_stall_diag_down'
+  | 'food_stall_diag_up'
+  | 'food_stall_ramen'
+  | 'food_stall_ramen_down'
+  | 'food_stall_ramen_wife'
+  | 'food_stall_ramen_wife_down'
+  | 'food_stall_oden'
+  | 'food_stall_oden_down'
   // アイテムグラフィックスプライト
   | 'item_gold'
   | 'item_pot_synthesis'
@@ -1137,6 +1150,20 @@ export class SVGSprites {
       merchant_celia_down: MonsterAndItemSprites.MERCHANT_CELIA_DOWN_SVG,
       angry_merchant_celia: MonsterAndItemSprites.ANGRY_CELIA_DOWN_SVG,
       angry_merchant_celia_down: MonsterAndItemSprites.ANGRY_CELIA_DOWN_SVG,
+
+      // 迷宮屋台システム（ラーメンマルキン・おでん）
+      food_stall: MonsterAndItemSprites.FOOD_STALL_RAMEN_DOWN_SVG,
+      food_stall_down: MonsterAndItemSprites.FOOD_STALL_RAMEN_DOWN_SVG,
+      food_stall_up: MonsterAndItemSprites.FOOD_STALL_RAMEN_DOWN_SVG,
+      food_stall_side: MonsterAndItemSprites.FOOD_STALL_RAMEN_DOWN_SVG,
+      food_stall_diag_down: MonsterAndItemSprites.FOOD_STALL_RAMEN_DOWN_SVG,
+      food_stall_diag_up: MonsterAndItemSprites.FOOD_STALL_RAMEN_DOWN_SVG,
+      food_stall_ramen: MonsterAndItemSprites.FOOD_STALL_RAMEN_DOWN_SVG,
+      food_stall_ramen_down: MonsterAndItemSprites.FOOD_STALL_RAMEN_DOWN_SVG,
+      food_stall_ramen_wife: MonsterAndItemSprites.FOOD_STALL_RAMEN_WIFE_DOWN_SVG,
+      food_stall_ramen_wife_down: MonsterAndItemSprites.FOOD_STALL_RAMEN_WIFE_DOWN_SVG,
+      food_stall_oden: MonsterAndItemSprites.FOOD_STALL_ODEN_DOWN_SVG,
+      food_stall_oden_down: MonsterAndItemSprites.FOOD_STALL_ODEN_DOWN_SVG,
 
       // アイテム
       item_gold: MonsterAndItemSprites.ITEM_GOLD_PILE_SVG,

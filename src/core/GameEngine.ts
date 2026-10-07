@@ -1133,6 +1133,16 @@ export class GameEngine {
           this.addLog(res.message, res.success ? 'turn-header' : 'warning');
           this.notify();
           return false;
+        } else if (action.action === 'ORDER_FOOD' && action.foodMenuId) {
+          const res = NpcSystem.orderFood(this.player, npc, action.foodMenuId);
+          this.addLog(res.message, res.success ? 'turn-header' : 'warning');
+          this.notify();
+          return false;
+        } else if (action.action === 'TALK_WIFE') {
+          const res = NpcSystem.talkWife(this.player, npc);
+          this.addLog(res.message, 'normal');
+          this.notify();
+          return false;
         }
         break;
       }

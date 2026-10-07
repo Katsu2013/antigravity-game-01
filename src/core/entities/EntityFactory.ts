@@ -76,6 +76,9 @@ export class EntityFactory {
       case 'SCOOTER_GUY':
         return this.createScooterGuy(x, y, x + 5, y + 5);
 
+      case 'FOOD_STALL':
+        return this.createFoodStall(x, y, floor);
+
       case 'SLIME': {
         // メタルスライム（全階層で約 1.5% の極低確率出現: カチコチ高防御・大量経験値）
         if (Math.random() < 0.015) {
@@ -1928,6 +1931,73 @@ export class EntityFactory {
       symbol: 'B',
       color: '#f97316',
     };
+  }
+
+  /**
+   * 極稀に出現する屋台（ラーメン屋台マルキン・おでん屋台）を生成します。
+   *
+   * @param x - 初期配置X座標
+   * @param y - 初期配置Y座標
+   * @param _floor - 現在の地下階層番号（デフォルト: 1）
+   * @returns 生成された屋台NPCモンスターオブジェクト
+   */
+  public static createFoodStall(x: number, y: number, _floor: number = 1): Monster {
+    const id = `food_stall_${++this.idCounter}`;
+    // 70%でラーメン屋台「マルキン」、30%でおでん屋台
+    const isRamen = Math.random() < 0.7;
+
+    if (isRamen) {
+      // ラーメン屋台マルキン
+      // 65%で店主「金さん」（おじさん）、35%で「奥さん」（ウチやってません）
+      const isWife = Math.random() < 0.35;
+      const stallClerk = isWife ? 'WIFE' : 'MASTER';
+      const name = isWife ? '屋台マルキン（奥さん）' : 'ラーメン屋台 マルキン';
+
+      return {
+        id,
+        name,
+        type: 'FOOD_STALL',
+        x,
+        y,
+        hp: 300,
+        maxHp: 300,
+        atk: 50,
+        def: 50,
+        expValue: 500,
+        isFriendly: true,
+        isRareNpc: true,
+        npcData: {
+          stallType: 'RAMEN_MARUKIN',
+          stallClerk,
+          wifeTalkCount: 0,
+          foodPurchased: false,
+        },
+        symbol: 'R',
+        color: '#f59e0b',
+      };
+    } else {
+      // 秘伝のおでん屋台
+      return {
+        id,
+        name: '秘伝のおでん屋台',
+        type: 'FOOD_STALL',
+        x,
+        y,
+        hp: 300,
+        maxHp: 300,
+        atk: 50,
+        def: 50,
+        expValue: 500,
+        isFriendly: true,
+        isRareNpc: true,
+        npcData: {
+          stallType: 'ODEN',
+          foodPurchased: false,
+        },
+        symbol: 'O',
+        color: '#ea580c',
+      };
+    }
   }
 
   /**

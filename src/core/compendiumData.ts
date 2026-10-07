@@ -326,6 +326,14 @@ export const COMPENDIUM_MONSTER_LIST: readonly MonsterCompendiumDef[] = [
     features: '疾走通過 / 謎の存在',
   },
   {
+    type: 'FOOD_STALL',
+    spriteId: 'food_stall_ramen',
+    name: 'ラーメン屋台 マルキン',
+    floorRange: '極稀に出現 (3F〜)',
+    description: '「あじゃあうえっぇー！」が口癖のおじさん店主（金さん）が営む奇跡のラーメン屋台。空腹を満たしてくれる迷宮のオアシス。たまに奥さんが出てきて「ウチやってません」と門前払いされる。',
+    features: '友好NPC / 満腹度全快 / 最大満腹度拡張 / コミカル門前払い',
+  },
+  {
     type: 'ABYSS_LORD',
     spriteId: 'abyss_lord',
     name: '魔王アビス・ロード',

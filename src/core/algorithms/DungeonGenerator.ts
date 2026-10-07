@@ -410,6 +410,7 @@ export class DungeonGenerator {
             'GAMBLER_SAGE',
             'HEALING_FAIRY',
             'TRAVELING_BLACKSMITH',
+            'FOOD_STALL',
           ] as const;
           const chosenType = rareTypes[Math.floor(Math.random() * rareTypes.length)];
           if (chosenType === 'WANDERING_ADVENTURER') {
@@ -420,7 +421,31 @@ export class DungeonGenerator {
             monsters.push(EntityFactory.createHealingFairy(rx, ry));
           } else if (chosenType === 'TRAVELING_BLACKSMITH') {
             monsters.push(EntityFactory.createTravelingBlacksmith(rx, ry));
+          } else if (chosenType === 'FOOD_STALL') {
+            monsters.push(EntityFactory.createFoodStall(rx, ry, floor));
           }
+        }
+      }
+    }
+
+    // 【極稀に出現する迷宮の屋台（ラーメンマルキン / おでん屋台）の確率配置】
+    // 3階以降49階まで、約10%の確率でフロア内に屋台が出現（空腹を凌ぐオアシス）
+    if (floor >= 3 && floor < 50 && Math.random() < 0.10) {
+      const candidateRooms = rooms.filter((r) => !r.isShop && (r.x !== startPos.x || r.y !== startPos.y));
+      if (candidateRooms.length > 0) {
+        const targetRoom = candidateRooms[Math.floor(Math.random() * candidateRooms.length)];
+        const rx = targetRoom.x + Math.max(0, Math.floor(Math.random() * targetRoom.w));
+        const ry = targetRoom.y + Math.max(0, Math.floor(Math.random() * targetRoom.h));
+
+        const isStairs = rx === stairsDown.x && ry === stairsDown.y;
+        const isStart = rx === startPos.x && ry === startPos.y;
+        const isOccupied =
+          monsters.some((m) => m.x === rx && m.y === ry) ||
+          obstacles.some((o) => o.x === rx && o.y === ry) ||
+          items.some((it) => it.x === rx && it.y === ry);
+
+        if (!isStairs && !isStart && !isOccupied && ry < height && rx < width && isWalkableTile(tiles[ry][rx])) {
+          monsters.push(EntityFactory.createFoodStall(rx, ry, floor));
         }
       }
     }

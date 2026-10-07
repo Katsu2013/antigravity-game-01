@@ -2172,5 +2172,122 @@ export class SoundSystem {
     osc.start(startTime);
     osc.stop(startTime + duration + 0.02);
   }
+
+  /**
+   * 昭和の哀愁漂うラーメン屋台の「チャルメラ」メロディSE。
+   * 屋台マルキンに話しかけた際やラーメン着丼時に、素朴なパルス波リード音でノスタルジックに鳴り響きます。
+   */
+  public playCharumera(): void {
+    if (this.muted) return;
+    this.unlock();
+    if (!this.ctx || !this.masterGain) return;
+
+    const now = this.ctx.currentTime;
+    // チャルメラのフレーズ（G4 -> A4 -> B4 -> A4 -> G4 / G4 -> A4 -> B4 -> A4 -> B4）
+    const melody = [
+      { f: 392.00, t: 0.00, d: 0.16 }, // ソ
+      { f: 440.00, t: 0.18, d: 0.16 }, // ラ
+      { f: 493.88, t: 0.36, d: 0.38 }, // シー
+      { f: 440.00, t: 0.76, d: 0.16 }, // ラ
+      { f: 392.00, t: 0.94, d: 0.42 }, // ソー
+      { f: 392.00, t: 1.40, d: 0.16 }, // ソ
+      { f: 440.00, t: 1.58, d: 0.16 }, // ラ
+      { f: 493.88, t: 1.76, d: 0.16 }, // シ
+      { f: 440.00, t: 1.94, d: 0.16 }, // ラ
+      { f: 493.88, t: 2.12, d: 0.60 }, // シーー
+    ];
+
+    melody.forEach((note) => {
+      if (!this.ctx || !this.masterGain) return;
+      const noteTime = now + note.t;
+
+      const osc = this.ctx.createOscillator();
+      // チャルメラの木管・笛らしい温かみのある矩形波
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(note.f, noteTime);
+
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(1400, noteTime);
+
+      const gain = this.ctx.createGain();
+      gain.gain.setValueAtTime(0.001, noteTime);
+      gain.gain.exponentialRampToValueAtTime(0.22, noteTime + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, noteTime + note.d);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.masterGain);
+
+      osc.start(noteTime);
+      osc.stop(noteTime + note.d + 0.02);
+    });
+  }
+
+  /**
+   * ラーメンを勢いよくすする音（ズルズルッ！ハフハフ…）。
+   * フィルタードノイズと高速変調による熱々ラーメンの完食音。
+   */
+  public playSlurp(): void {
+    if (this.muted) return;
+    this.unlock();
+    if (!this.ctx || !this.masterGain) return;
+
+    const now = this.ctx.currentTime;
+
+    // 1回目すすり（ズッ）
+    this.playSlurpSip(now, 0.12, 0.35);
+    // 2回目豪快すすり（ズルズルッ！）
+    this.playSlurpSip(now + 0.15, 0.24, 0.50);
+
+    // 完食後の満足感・スープ飲み干し音
+    const gulpTime = now + 0.44;
+    const osc = this.ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(320, gulpTime);
+    osc.frequency.exponentialRampToValueAtTime(180, gulpTime + 0.12);
+
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.4, gulpTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, gulpTime + 0.12);
+
+    osc.connect(gain);
+    gain.connect(this.masterGain);
+
+    osc.start(gulpTime);
+    osc.stop(gulpTime + 0.12);
+  }
+
+  /**
+   * 麺すすりノイズの1単位を合成します。
+   */
+  private playSlurpSip(startTime: number, duration: number, volume: number): void {
+    if (!this.ctx || !this.masterGain) return;
+
+    const noiseBuffer = this.createNoiseBuffer(duration);
+    if (!noiseBuffer) return;
+
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = noiseBuffer;
+
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.Q.setValueAtTime(2.2, startTime);
+    filter.frequency.setValueAtTime(800, startTime);
+    filter.frequency.linearRampToValueAtTime(1600, startTime + duration * 0.4);
+    filter.frequency.linearRampToValueAtTime(600, startTime + duration);
+
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.01, startTime);
+    gain.gain.exponentialRampToValueAtTime(volume, startTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.masterGain);
+
+    noise.start(startTime);
+    noise.stop(startTime + duration);
+  }
 }
 

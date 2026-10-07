@@ -2533,7 +2533,12 @@ export class CanvasRenderer {
 
     const cx = screenX + tileSize / 2;
     const cy = screenY + tileSize / 2;
-    const size = monster.type === 'ABYSS_LORD' ? tileSize * 1.45 : tileSize * 1.05;
+    const size =
+      monster.type === 'ABYSS_LORD'
+        ? tileSize * 1.45
+        : monster.type === 'FOOD_STALL'
+        ? tileSize * 1.35
+        : tileSize * 1.05;
 
     // アイドルおよび歩行アニメーションの計算
     const time = this.anim.globalTime * 3.5 + anim.idleOffset;
@@ -2573,6 +2578,14 @@ export class CanvasRenderer {
       monsterBase = monster.isAngryMerchant
         ? `angry_merchant${pid}`
         : `merchant${pid}`;
+    } else if (monster.type === 'FOOD_STALL') {
+      if (monster.npcData?.stallType === 'ODEN') {
+        monsterBase = 'food_stall_oden';
+      } else if (monster.npcData?.stallClerk === 'WIFE') {
+        monsterBase = 'food_stall_ramen_wife';
+      } else {
+        monsterBase = 'food_stall_ramen';
+      }
     } else {
       monsterBase = monster.type.toLowerCase();
     }

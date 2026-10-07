@@ -819,6 +819,106 @@ export class UIManager {
 
         this.npcActionEl.appendChild(btnGroup);
       }
+    } else if (dialogData.eventType === 'FOOD_STALL') {
+      const btnGroup = document.createElement('div');
+      btnGroup.className = 'npc-action-btn-group flex flex-col gap-2 w-full';
+
+      if (dialogData.alreadyDone) {
+        const doneBtn = document.createElement('button');
+        doneBtn.className =
+          'npc-choice-btn w-full justify-center bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold py-2 rounded border border-amber-600/40';
+        doneBtn.textContent = '🙏 ごちそうさまでした！（店を出る）';
+        doneBtn.addEventListener('click', () => {
+          this.closeNpcModal();
+        });
+        btnGroup.appendChild(doneBtn);
+      } else if (
+        dialogData.stallClerk === 'WIFE' &&
+        (!dialogData.foodMenuList || dialogData.foodMenuList.length === 0)
+      ) {
+        // 奥さんに門前払いされている段階
+        const begBtn = document.createElement('button');
+        begBtn.className =
+          'npc-choice-btn w-full justify-between bg-amber-950 hover:bg-amber-900 text-amber-200 font-bold py-2 px-3 rounded border border-amber-600';
+        const begText =
+          (dialogData.wifeTalkCount ?? 0) === 0
+            ? '💬 「お腹が空いて倒れそうです！何か売ってください！」'
+            : '💬 「どうか一口だけでも！お願いします…！」';
+        begBtn.innerHTML = `<span>${begText}</span><span class="text-xs text-amber-400 font-bold">懇願する ➔</span>`;
+        begBtn.addEventListener('click', () => {
+          this.engine.executeAction({
+            type: 'NPC_INTERACT',
+            monsterId: npc.id,
+            action: 'TALK_WIFE',
+          });
+          this.showNpcModal(npc);
+        });
+        btnGroup.appendChild(begBtn);
+
+        const leaveBtn = document.createElement('button');
+        leaveBtn.className =
+          'npc-choice-btn w-full justify-center bg-slate-800 hover:bg-slate-700 text-slate-300 py-1.5 rounded border border-slate-600 text-sm';
+        leaveBtn.textContent = '🚪 一旦立ち去る';
+        leaveBtn.addEventListener('click', () => {
+          this.closeNpcModal();
+        });
+        btnGroup.appendChild(leaveBtn);
+      } else if (dialogData.foodMenuList && dialogData.foodMenuList.length > 0) {
+        // 注文可能な料理メニュー一覧
+        const playerGold = this.engine.player.gold ?? 0;
+
+        for (const menu of dialogData.foodMenuList) {
+          const canAfford = playerGold >= menu.price;
+          const menuBtn = document.createElement('button');
+          menuBtn.className = `npc-choice-btn w-full flex flex-col items-start p-2.5 rounded border transition-all text-left ${
+            canAfford
+              ? 'bg-slate-800/90 hover:bg-amber-950/70 border-amber-500/60 cursor-pointer shadow-md'
+              : 'bg-slate-900/60 border-slate-700 opacity-60 cursor-not-allowed'
+          }`;
+
+          menuBtn.innerHTML = `
+            <div class="flex items-center justify-between w-full">
+              <span class="font-bold text-amber-200 text-sm flex items-center gap-1.5">
+                <span class="text-base">${menu.icon}</span> ${menu.name}
+              </span>
+              <span class="text-xs font-bold px-2 py-0.5 rounded ${
+                canAfford
+                  ? 'bg-amber-900/80 text-amber-300 border border-amber-500/40'
+                  : 'bg-red-950/80 text-red-400 border border-red-800'
+              }">
+                ${menu.price} G
+              </span>
+            </div>
+            <div class="text-xs text-slate-300 mt-1 leading-relaxed">
+              ${menu.description}
+            </div>
+          `;
+
+          if (canAfford) {
+            menuBtn.addEventListener('click', () => {
+              this.engine.executeAction({
+                type: 'NPC_INTERACT',
+                monsterId: npc.id,
+                action: 'ORDER_FOOD',
+                foodMenuId: menu.id,
+              });
+              this.showNpcModal(npc);
+            });
+          }
+          btnGroup.appendChild(menuBtn);
+        }
+
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className =
+          'npc-choice-btn w-full justify-center bg-slate-800 hover:bg-slate-700 text-slate-300 py-1.5 rounded border border-slate-600 text-sm mt-1';
+        cancelBtn.textContent = 'また今度にする';
+        cancelBtn.addEventListener('click', () => {
+          this.closeNpcModal();
+        });
+        btnGroup.appendChild(cancelBtn);
+      }
+
+      this.npcActionEl.appendChild(btnGroup);
     }
 
     this.npcModalEl.classList.remove('hidden');
