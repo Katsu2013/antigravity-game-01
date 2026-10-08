@@ -1,63 +1,87 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <!-- 接地ドロップシャドウ（飛行浮遊） -->
-  <ellipse cx="32" cy="58" rx="16" ry="4" fill="rgba(0,0,0,0.3)"/>
-  <!-- 左翼: 骨格・翼膜・爪 -->
-  <path d="M28 28 Q14 8 2 16 Q8 32 14 36 Q19 43 28 35 Z" fill="#3b0764" stroke="#1e1b4b" stroke-width="1.8"/>
-  <path d="M26 27 Q14 12 5 18 Q10 30 15 34 Q20 40 26 34 Z" fill="#581c87" opacity="0.85"/>
+  <ellipse cx="32" cy="58" rx="17" ry="4" fill="rgba(0,0,0,0.32)"/>
+
+  <!-- 左翼: 骨格・多層翼膜・鉤爪・光沢ハイライト -->
+  <path d="M28 28 Q14 7 1 15 Q7 32 14 36 Q19 43 28 35 Z" fill="#3b0764" stroke="#1e1b4b" stroke-width="1.8"/>
+  <path d="M26 27 Q14 11 4 17 Q9 30 15 34 Q20 40 26 34 Z" fill="#581c87" opacity="0.85"/>
+  <path d="M25 26 Q16 13 8 18 Q12 28 17 32 Z" fill="#7e22ce" opacity="0.4"/>
   <!-- 左翼骨格リブ（指骨） -->
-  <path d="M28 28 Q15 16 3 17" stroke="#2e1065" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <path d="M28 28 Q18 25 14 35" stroke="#2e1065" stroke-width="1.5" fill="none"/>
-  <path d="M28 28 Q23 31 19 41" stroke="#2e1065" stroke-width="1.3" fill="none"/>
-  <!-- 左翼の親指鉤爪 -->
-  <polygon points="3,17 0,13 5,16" fill="#f8fafc" stroke="#1e1b4b" stroke-width="0.8"/>
-  <path d="M12 20 Q16 26 12 30" stroke="#7e22ce" stroke-width="0.8" fill="none" opacity="0.7"/>
+  <path d="M28 28 Q15 15 3 16" stroke="#2e1065" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <path d="M28 28 Q18 24 14 35" stroke="#2e1065" stroke-width="1.6" fill="none"/>
+  <path d="M28 28 Q23 31 19 41" stroke="#2e1065" stroke-width="1.4" fill="none"/>
+  <!-- 指骨ハイライト線 -->
+  <path d="M27 27 Q15 16 5 17" stroke="#a855f7" stroke-width="0.8" fill="none" opacity="0.7"/>
+  <!-- 左翼の親指鉤爪（鋭い白銀） -->
+  <polygon points="3,16 0,12 5,15" fill="#f8fafc" stroke="#1e1b4b" stroke-width="0.8"/>
+  <polygon points="2,14 1,12 4,14" fill="#ffffff"/>
 
-  <!-- 右翼: 骨格・翼膜・爪 -->
-  <path d="M36 28 Q50 8 62 16 Q56 32 50 36 Q45 43 36 35 Z" fill="#3b0764" stroke="#1e1b4b" stroke-width="1.8"/>
-  <path d="M38 27 Q50 12 59 18 Q54 30 49 34 Q44 40 38 34 Z" fill="#581c87" opacity="0.85"/>
+  <!-- 右翼: 骨格・多層翼膜・鉤爪・光沢ハイライト -->
+  <path d="M36 28 Q50 7 63 15 Q57 32 50 36 Q45 43 36 35 Z" fill="#3b0764" stroke="#1e1b4b" stroke-width="1.8"/>
+  <path d="M38 27 Q50 11 60 17 Q55 30 49 34 Q44 40 38 34 Z" fill="#581c87" opacity="0.85"/>
+  <path d="M39 26 Q48 13 56 18 Q52 28 47 32 Z" fill="#7e22ce" opacity="0.4"/>
   <!-- 右翼骨格リブ（指骨） -->
-  <path d="M36 28 Q49 16 61 17" stroke="#2e1065" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <path d="M36 28 Q46 25 50 35" stroke="#2e1065" stroke-width="1.5" fill="none"/>
-  <path d="M36 28 Q41 31 45 41" stroke="#2e1065" stroke-width="1.3" fill="none"/>
-  <!-- 右翼の親指鉤爪 -->
-  <polygon points="61,17 64,13 59,16" fill="#f8fafc" stroke="#1e1b4b" stroke-width="0.8"/>
-  <path d="M52 20 Q48 26 52 30" stroke="#7e22ce" stroke-width="0.8" fill="none" opacity="0.7"/>
+  <path d="M36 28 Q49 15 61 16" stroke="#2e1065" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <path d="M36 28 Q46 24 50 35" stroke="#2e1065" stroke-width="1.6" fill="none"/>
+  <path d="M36 28 Q41 31 45 41" stroke="#2e1065" stroke-width="1.4" fill="none"/>
+  <!-- 指骨ハイライト線 -->
+  <path d="M37 27 Q49 16 59 17" stroke="#a855f7" stroke-width="0.8" fill="none" opacity="0.7"/>
+  <!-- 右翼の親指鉤爪（鋭い白銀） -->
+  <polygon points="61,16 64,12 59,15" fill="#f8fafc" stroke="#1e1b4b" stroke-width="0.8"/>
+  <polygon points="62,14 63,12 60,14" fill="#ffffff"/>
 
-  <!-- 胴体毛並みベース -->
-  <ellipse cx="32" cy="35" rx="9" ry="11" fill="#2e1065" stroke="#0f0728" stroke-width="1.8"/>
-  <ellipse cx="32" cy="36" rx="6.5" ry="8" fill="#3b0764"/>
+  <!-- 胴体毛並みベース（多層立体感） -->
+  <ellipse cx="32" cy="35" rx="9.5" ry="11.5" fill="#2e1065" stroke="#0f0728" stroke-width="1.8"/>
+  <ellipse cx="32" cy="36" rx="7" ry="8.5" fill="#3b0764"/>
   <!-- 胸元のふさふさ毛並みハイライト -->
-  <path d="M29 32 L32 36 L35 32 L33 39 L31 39 Z" fill="#7e22ce" opacity="0.8"/>
+  <path d="M28 31 L32 36 L36 31 L34 39 L32 41 L30 39 Z" fill="#9333ea" opacity="0.8"/>
+  <ellipse cx="32" cy="34" rx="3.5" ry="2" fill="#c084fc" opacity="0.5"/>
 
-  <!-- 尖った大耳（立体内耳） -->
-  <polygon points="26,27 22,14 30,23" fill="#3b0764" stroke="#1e1b4b" stroke-width="1.5"/>
-  <polygon points="25.5,25 23,16 28,23" fill="#c026d3"/>
-  <polygon points="38,27 42,14 34,23" fill="#3b0764" stroke="#1e1b4b" stroke-width="1.5"/>
-  <polygon points="38.5,25 41,16 36,23" fill="#c026d3"/>
+  <!-- 尖った大耳（立体多層内耳＆軟骨） -->
+  <!-- 左耳 -->
+  <polygon points="26,27 21,13 30,22" fill="#3b0764" stroke="#1e1b4b" stroke-width="1.5"/>
+  <polygon points="25.5,25 22.5,15 28.5,22" fill="#c026d3"/>
+  <polygon points="25,23 23.5,17 27,21" fill="#f472b6" opacity="0.8"/>
+  <!-- 右耳 -->
+  <polygon points="38,27 43,13 34,22" fill="#3b0764" stroke="#1e1b4b" stroke-width="1.5"/>
+  <polygon points="38.5,25 41.5,15 35.5,22" fill="#c026d3"/>
+  <polygon points="39,23 40.5,17 37,21" fill="#f472b6" opacity="0.8"/>
 
-  <!-- 頭部輪郭 -->
-  <circle cx="32" cy="27" r="8" fill="#2e1065" stroke="#0f0728" stroke-width="1.5"/>
+  <!-- 頭部輪郭（ふっくら立体球） -->
+  <circle cx="32" cy="26" r="8.5" fill="#2e1065" stroke="#0f0728" stroke-width="1.6"/>
+  <!-- おでこハイライト（スライム基準のツヤ） -->
+  <ellipse cx="32" cy="20.5" rx="5" ry="2.2" fill="#a855f7" opacity="0.65"/>
+  <ellipse cx="32" cy="19.5" rx="3" ry="1" fill="#ffffff" opacity="0.7"/>
+
   <!-- 鼻（ブタ鼻コウモリ鼻孔） -->
-  <ellipse cx="32" cy="28.5" rx="2.5" ry="1.5" fill="#581c87"/>
-  <circle cx="31" cy="28.5" r="0.6" fill="#0f0728"/>
-  <circle cx="33" cy="28.5" r="0.6" fill="#0f0728"/>
+  <ellipse cx="32" cy="28.5" rx="2.8" ry="1.8" fill="#581c87" stroke="#2e1065" stroke-width="0.8"/>
+  <circle cx="30.8" cy="28.5" r="0.7" fill="#0f0728"/>
+  <circle cx="33.2" cy="28.5" r="0.7" fill="#0f0728"/>
 
-  <!-- ギラつく赤黄の凶悪な複眼瞳 -->
-  <ellipse cx="28" cy="24" rx="2.8" ry="3" fill="#fef08a" stroke="#b45309" stroke-width="0.8"/>
-  <ellipse cx="28" cy="24" rx="1.5" ry="2" fill="#ef4444"/>
-  <circle cx="28.5" cy="23.2" r="0.7" fill="#ffffff"/>
-  <ellipse cx="36" cy="24" rx="2.8" ry="3" fill="#fef08a" stroke="#b45309" stroke-width="0.8"/>
-  <ellipse cx="36" cy="24" rx="1.5" ry="2" fill="#ef4444"/>
-  <circle cx="36.5" cy="23.2" r="0.7" fill="#ffffff"/>
+  <!-- ギラつく赤黄の凶悪な生き生き瞳（スライム基準の5層構造・2点白ハイライト） -->
+  <!-- 左目 -->
+  <ellipse cx="27.5" cy="23.5" rx="3.5" ry="3.8" fill="#451a03" stroke="#1e1b4b" stroke-width="0.8"/>
+  <ellipse cx="27.5" cy="23.5" rx="2.6" ry="3" fill="#fef08a"/>
+  <ellipse cx="27.5" cy="23.5" rx="1.5" ry="2" fill="#ef4444"/>
+  <ellipse cx="26.6" cy="22" rx="1.1" ry="1.3" fill="#ffffff"/>
+  <circle cx="28.3" cy="25" r="0.5" fill="#ffffff" opacity="0.85"/>
 
-  <!-- 口腔と鋭い吸血長牙 -->
-  <path d="M28 31 Q32 35 36 31 Z" fill="#0f0728"/>
-  <polygon points="28.5,31 29.5,35 30.5,31" fill="#ffffff"/>
-  <polygon points="33.5,31 34.5,35 35.5,31" fill="#ffffff"/>
-  <!-- 牙の血滴アクセント -->
-  <circle cx="29.5" cy="35.5" r="0.7" fill="#ef4444"/>
+  <!-- 右目 -->
+  <ellipse cx="36.5" cy="23.5" rx="3.5" ry="3.8" fill="#451a03" stroke="#1e1b4b" stroke-width="0.8"/>
+  <ellipse cx="36.5" cy="23.5" rx="2.6" ry="3" fill="#fef08a"/>
+  <ellipse cx="36.5" cy="23.5" rx="1.5" ry="2" fill="#ef4444"/>
+  <ellipse cx="35.6" cy="22" rx="1.1" ry="1.3" fill="#ffffff"/>
+  <circle cx="37.3" cy="25" r="0.5" fill="#ffffff" opacity="0.85"/>
 
-  <!-- ぶら下がる足爪 -->
-  <path d="M28 45 L26 49 L29 48" stroke="#1e1b4b" stroke-width="1.3" fill="none" stroke-linecap="round"/>
-  <path d="M36 45 L38 49 L35 48" stroke="#1e1b4b" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+  <!-- 口腔と鋭い吸血長牙（純白光沢＆血滴） -->
+  <path d="M27 30.5 Q32 35 37 30.5 Z" fill="#0f0728"/>
+  <polygon points="27.5,30.5 28.8,35.5 30.2,30.5" fill="#ffffff"/>
+  <polygon points="33.8,30.5 35.2,35.5 36.5,30.5" fill="#ffffff"/>
+  <!-- 牙の先端ハイライト & 血滴 -->
+  <circle cx="28.8" cy="35.5" r="0.5" fill="#ffffff"/>
+  <circle cx="29" cy="36.5" r="0.8" fill="#ef4444"/>
+
+  <!-- ぶら下がる足爪（立体鉤爪） -->
+  <path d="M28 45 L26 50 L29 48" stroke="#0f0728" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+  <path d="M36 45 L38 50 L35 48" stroke="#0f0728" stroke-width="1.6" fill="none" stroke-linecap="round"/>
 </svg>

@@ -1,18 +1,24 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- 足元影 -->
   <ellipse cx="32" cy="56" rx="22" ry="6" fill="rgba(0,0,0,0.35)"/>
+  <!-- ゼリー状ボディ外殻（深いエメラルドグラデーション） -->
   <path d="M32 10 C46 10 56 24 56 42 C56 52 46 56 32 56 C18 56 8 52 8 42 C8 24 18 10 32 10 Z" fill="#10b981" stroke="#064e3b" stroke-width="1.8"/>
   <path d="M32 16 C43 16 52 26 52 41 C52 49 43 53 32 53 C21 53 12 49 12 41 C12 26 21 16 32 16 Z" fill="#34d399" opacity="0.6"/>
+  <!-- 内部に透けて浮かぶ魔力核（コア） -->
   <circle cx="32" cy="38" r="9" fill="#0284c7" opacity="0.85"/>
   <circle cx="31" cy="37" r="7" fill="#38bdf8"/>
   <ellipse cx="30" cy="35" rx="3" ry="2" fill="#ffffff" opacity="0.9"/>
+  <!-- 気泡 -->
   <circle cx="21" cy="44" r="2.2" fill="#a7f3d0" opacity="0.65"/>
   <circle cx="43" cy="42" r="1.8" fill="#a7f3d0" opacity="0.6"/>
+  <!-- 生き生きとした瞳（左目・右目） -->
   <ellipse cx="24" cy="31" rx="4.5" ry="6.5" fill="#022c22"/>
   <ellipse cx="23" cy="29" rx="2.5" ry="3.5" fill="#ffffff"/>
   <circle cx="25.5" cy="34" r="1.2" fill="#ffffff"/>
   <ellipse cx="40" cy="31" rx="4.5" ry="6.5" fill="#022c22"/>
   <ellipse cx="39" cy="29" rx="2.5" ry="3.5" fill="#ffffff"/>
   <circle cx="41.5" cy="34" r="1.2" fill="#ffffff"/>
+  <!-- 表面のうるおい光沢ハイライト -->
   <path d="M22 14 Q32 12 40 16 Q34 19 22 17 Z" fill="#ffffff" opacity="0.75"/>
   <ellipse cx="46" cy="25" rx="3" ry="5" transform="rotate(25 46 25)" fill="#ffffff" opacity="0.45"/>
   <ellipse cx="16" cy="38" rx="2" ry="4" transform="rotate(-15 16 38)" fill="#a7f3d0" opacity="0.5"/>

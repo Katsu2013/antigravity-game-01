@@ -693,56 +693,96 @@ export class SVGSprites {
   /** スライム斜め奥エイリアス */
   public static readonly SLIME_DIAG_UP_SVG = SVGSprites.SLIME_UP_SVG;
 
-  /** ゴブリン正面（トゲ付き棍棒、木製バックラー、ピアス大耳、ギラつく黄赤の瞳、ツギハギ革鎧） */
+  /** ゴブリン正面（立体多層スキン、トゲ付き棍棒、金属バックラー、ピアス大耳、生き生きとした瞳、ツギハギ革鎧） */
   public static readonly GOBLIN_DOWN_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="18" ry="5.5" fill="rgba(0,0,0,0.4)"/>
+  <!-- 接地ドロップシャドウ -->
+  <ellipse cx="32" cy="58" rx="19" ry="5.5" fill="rgba(0,0,0,0.38)"/>
+  
   <!-- 左手: トゲ付き木製棍棒 -->
-  <g transform="rotate(-20 14 36)">
-    <rect x="12" y="22" width="5" height="26" rx="2" fill="#78350f" stroke="#451a03" stroke-width="1.2"/>
-    <polygon points="12,24 8,22 13,26" fill="#cbd5e1" stroke="#475569" stroke-width="0.8"/>
-    <polygon points="17,28 21,26 16,30" fill="#cbd5e1" stroke="#475569" stroke-width="0.8"/>
-    <polygon points="11,34 7,33 12,36" fill="#cbd5e1" stroke="#475569" stroke-width="0.8"/>
-    <circle cx="14.5" cy="45" r="2.5" fill="#92400e"/>
+  <g transform="rotate(-18 13 36)">
+    <!-- 棍棒本体（上太・下細の木製グラデーション） -->
+    <path d="M11 18 Q14 16 17 18 L16 46 Q13.5 48 11 46 Z" fill="#78350f" stroke="#451a03" stroke-width="1.3"/>
+    <path d="M12 20 Q14 18 16 20 L15 44" stroke="#92400e" stroke-width="1.2" fill="none"/>
+    <!-- 鉄製スパイク（ハイライト付き） -->
+    <polygon points="10,22 5,20 11,25" fill="#e2e8f0" stroke="#475569" stroke-width="0.8"/>
+    <polygon points="17,26 22,24 16,29" fill="#e2e8f0" stroke="#475569" stroke-width="0.8"/>
+    <polygon points="10,32 5,31 11,35" fill="#cbd5e1" stroke="#475569" stroke-width="0.8"/>
+    <polygon points="17,37 21,36 16,40" fill="#cbd5e1" stroke="#475569" stroke-width="0.8"/>
+    <!-- 握り革紐 -->
+    <line x1="12" y1="41" x2="15" y2="43" stroke="#d97706" stroke-width="1.5"/>
+    <line x1="12" y1="43" x2="15" y2="45" stroke="#d97706" stroke-width="1.5"/>
   </g>
-  <!-- 足と毛皮の腰巻き -->
-  <rect x="22" y="46" width="7" height="11" rx="2" fill="#4d7c0f" stroke="#1f2937" stroke-width="1.2"/>
-  <rect x="33" y="46" width="7" height="11" rx="2" fill="#4d7c0f" stroke="#1f2937" stroke-width="1.2"/>
-  <path d="M20 42 L42 42 L40 48 L22 48 Z" fill="#713f12" stroke="#451a03" stroke-width="1"/>
-  <!-- ツギハギ革鎧胴体（リベット鋲） -->
-  <path d="M19 28 L43 28 L41 45 L21 45 Z" fill="#854d0e" stroke="#451a03" stroke-width="1.5"/>
-  <path d="M20 36 L42 36" stroke="#a16207" stroke-width="1.5" stroke-dasharray="3,2"/>
-  <circle cx="23" cy="32" r="1.3" fill="#fbbf24"/>
-  <circle cx="39" cy="32" r="1.3" fill="#fbbf24"/>
-  <circle cx="24" cy="41" r="1.3" fill="#fbbf24"/>
-  <circle cx="38" cy="41" r="1.3" fill="#fbbf24"/>
-  <!-- 尖った大耳（ピアス付き） -->
-  <path d="M18 22 L2 14 Q10 27 20 28 Z" fill="#65a30d" stroke="#365314" stroke-width="1.5"/>
-  <path d="M16 21 L5 16 Q11 25 18 25 Z" fill="#f472b6" opacity="0.35"/>
-  <circle cx="5" cy="18" r="1.8" fill="#eab308" stroke="#a16207" stroke-width="0.8"/>
-  <path d="M46 22 L62 14 Q54 27 44 28 Z" fill="#65a30d" stroke="#365314" stroke-width="1.5"/>
-  <path d="M48 21 L59 16 Q53 25 46 25 Z" fill="#f472b6" opacity="0.35"/>
-  <circle cx="59" cy="18" r="1.8" fill="#eab308" stroke="#a16207" stroke-width="0.8"/>
-  <!-- 頭部（輪郭・頬骨） -->
-  <ellipse cx="32" cy="22" rx="14" ry="12.5" fill="#65a30d" stroke="#365314" stroke-width="1.8"/>
-  <path d="M26 15 Q32 12 38 15" stroke="#365314" stroke-width="1.5" fill="none"/>
-  <!-- 尖った鉤鼻 -->
-  <polygon points="32,20 29,26 35,26" fill="#4d7c0f" stroke="#365314" stroke-width="0.8"/>
-  <!-- ギラつく赤黄の邪悪な瞳 -->
-  <ellipse cx="26" cy="19" rx="3.5" ry="3" fill="#fef08a" stroke="#ca8a04" stroke-width="1"/>
-  <ellipse cx="26" cy="19" rx="1.5" ry="2.2" fill="#dc2626"/>
-  <circle cx="27" cy="18" r="0.8" fill="#ffffff"/>
-  <ellipse cx="38" cy="19" rx="3.5" ry="3" fill="#fef08a" stroke="#ca8a04" stroke-width="1"/>
-  <ellipse cx="38" cy="19" rx="1.5" ry="2.2" fill="#dc2626"/>
-  <circle cx="39" cy="18" r="0.8" fill="#ffffff"/>
-  <!-- 凶悪な口・飛び出た下牙 -->
-  <path d="M25 29 Q32 34 39 29" stroke="#18181b" stroke-width="1.8" fill="none"/>
-  <polygon points="27,31 28,26 30,31" fill="#fef3c7" stroke="#78350f" stroke-width="0.6"/>
-  <polygon points="34,31 36,26 37,31" fill="#fef3c7" stroke="#78350f" stroke-width="0.6"/>
-  <!-- 右手: 木製バックラー小盾 -->
-  <circle cx="48" cy="36" r="8" fill="#92400e" stroke="#451a03" stroke-width="1.5"/>
-  <circle cx="48" cy="36" r="5" fill="#b45309"/>
-  <circle cx="48" cy="36" r="2.5" fill="#94a3b8" stroke="#475569" stroke-width="1"/>
+
+  <!-- 脚部と毛皮ブーツ -->
+  <rect x="22" y="46" width="7" height="10" rx="2" fill="#4d7c0f" stroke="#1f2937" stroke-width="1.2"/>
+  <rect x="33" y="46" width="7" height="10" rx="2" fill="#4d7c0f" stroke="#1f2937" stroke-width="1.2"/>
+  <ellipse cx="25" cy="56" rx="4" ry="2.5" fill="#713f12" stroke="#451a03" stroke-width="1"/>
+  <ellipse cx="37" cy="56" rx="4" ry="2.5" fill="#713f12" stroke="#451a03" stroke-width="1"/>
+
+  <!-- 毛皮の腰巻き -->
+  <path d="M19 41 L43 41 L41 48 L37 46 L33 49 L29 46 L25 48 L21 46 Z" fill="#713f12" stroke="#451a03" stroke-width="1.2"/>
+
+  <!-- 胴体（ツギハギ革鎧・リベット・ステッチ） -->
+  <path d="M19 27 L43 27 L41 43 L21 43 Z" fill="#854d0e" stroke="#451a03" stroke-width="1.5"/>
+  <!-- 革鎧インナーシャドウ＆ハイライト -->
+  <path d="M21 29 L41 29 L39 41 L23 41 Z" fill="#b45309" opacity="0.6"/>
+  <!-- ステッチ縫い目 -->
+  <path d="M20 35 L42 35" stroke="#fde047" stroke-width="1.2" stroke-dasharray="2,2"/>
+  <!-- 鉄のリベット鋲 -->
+  <circle cx="23" cy="31" r="1.3" fill="#facc15" stroke="#713f12" stroke-width="0.5"/>
+  <circle cx="39" cy="31" r="1.3" fill="#facc15" stroke="#713f12" stroke-width="0.5"/>
+  <circle cx="24" cy="39" r="1.3" fill="#facc15" stroke="#713f12" stroke-width="0.5"/>
+  <circle cx="38" cy="39" r="1.3" fill="#facc15" stroke="#713f12" stroke-width="0.5"/>
+
+  <!-- 尖った大耳（左・右: 内耳ピンク＆黄金ピアス） -->
+  <path d="M18 20 L2 12 Q8 26 19 26 Z" fill="#65a30d" stroke="#365314" stroke-width="1.5"/>
+  <path d="M16 19 L6 14 Q10 23 17 23 Z" fill="#f472b6" opacity="0.45"/>
+  <circle cx="5" cy="16" r="1.8" fill="#eab308" stroke="#a16207" stroke-width="0.8"/>
+  <circle cx="4.5" cy="15.5" r="0.6" fill="#ffffff"/>
+
+  <path d="M46 20 L62 12 Q56 26 45 26 Z" fill="#65a30d" stroke="#365314" stroke-width="1.5"/>
+  <path d="M48 19 L58 14 Q54 23 47 23 Z" fill="#f472b6" opacity="0.45"/>
+  <circle cx="59" cy="16" r="1.8" fill="#eab308" stroke="#a16207" stroke-width="0.8"/>
+  <circle cx="58.5" cy="15.5" r="0.6" fill="#ffffff"/>
+
+  <!-- 頭部（ふっくらした立体感・頬骨） -->
+  <ellipse cx="32" cy="21" rx="14" ry="12.5" fill="#65a30d" stroke="#365314" stroke-width="1.8"/>
+  <!-- おでこハイライト -->
+  <ellipse cx="32" cy="15" rx="8" ry="4" fill="#84cc16" opacity="0.5"/>
+  <!-- 眉間のシワ -->
+  <path d="M26 14 Q32 12 38 14" stroke="#365314" stroke-width="1.4" fill="none"/>
+  <path d="M29 16 L31 18 M35 16 L33 18" stroke="#365314" stroke-width="1"/>
+
+  <!-- 生き生きとした瞳（スライム調の瑞々しいハイライト） -->
+  <!-- 左目 -->
+  <ellipse cx="26" cy="19" rx="3.8" ry="3.5" fill="#ca8a04" stroke="#713f12" stroke-width="0.8"/>
+  <ellipse cx="26" cy="19" rx="2.5" ry="2.8" fill="#ef4444"/>
+  <ellipse cx="26" cy="19" rx="1.2" ry="1.8" fill="#7f1d1d"/>
+  <circle cx="27" cy="17.8" r="1.2" fill="#ffffff"/>
+  <circle cx="25.2" cy="20.5" r="0.6" fill="#ffffff" opacity="0.8"/>
+
+  <!-- 右目 -->
+  <ellipse cx="38" cy="19" rx="3.8" ry="3.5" fill="#ca8a04" stroke="#713f12" stroke-width="0.8"/>
+  <ellipse cx="38" cy="19" rx="2.5" ry="2.8" fill="#ef4444"/>
+  <ellipse cx="38" cy="19" rx="1.2" ry="1.8" fill="#7f1d1d"/>
+  <circle cx="39" cy="17.8" r="1.2" fill="#ffffff"/>
+  <circle cx="37.2" cy="20.5" r="0.6" fill="#ffffff" opacity="0.8"/>
+
+  <!-- 尖った鉤鼻（陰影付き） -->
+  <polygon points="32,18 29,25 35,25" fill="#4d7c0f" stroke="#365314" stroke-width="0.8"/>
+  <ellipse cx="32" cy="24" rx="2.5" ry="1.5" fill="#365314"/>
+
+  <!-- 不敵な笑みの口・飛び出た鋭い白い牙 -->
+  <path d="M24 28 Q32 34 40 28 Q32 31 24 28 Z" fill="#18181b"/>
+  <polygon points="27,30 28.5,25 30,30" fill="#fef3c7" stroke="#78350f" stroke-width="0.6"/>
+  <polygon points="34,30 35.5,25 37,30" fill="#fef3c7" stroke="#78350f" stroke-width="0.6"/>
+
+  <!-- 右手: 金属縁の木製バックラー小盾 -->
+  <circle cx="48" cy="35" r="8.5" fill="#78350f" stroke="#1f2937" stroke-width="1.8"/>
+  <circle cx="48" cy="35" r="6" fill="#b45309"/>
+  <circle cx="48" cy="35" r="3" fill="#cbd5e1" stroke="#475569" stroke-width="1"/>
+  <circle cx="47" cy="34" r="1" fill="#ffffff"/>
 </svg>`.trim();
 
   /** ゴブリン背面（上向き） */
@@ -766,59 +806,120 @@ export class SVGSprites {
   /** ゴブリン斜め奥エイリアス */
   public static readonly GOBLIN_DIAG_UP_SVG = SVGSprites.GOBLIN_UP_SVG;
 
-  /** スケルトン正面（錆びた長剣、円盾、青白く灯るソウルアイ、精巧な頭蓋骨、破れたマント） */
+  /** スケルトン正面（立体精巧な頭蓋骨、青白く揺らめくソウルアイ、立体肋骨ケージ、錆びた騎士剣、真鍮鋲の円盾、深紅マントの陰影ドレープ） */
   public static readonly SKELETON_DOWN_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="18" ry="5.5" fill="rgba(0,0,0,0.4)"/>
-  <!-- 背面の破れた深紅マント -->
-  <path d="M22 28 Q18 42 16 52 Q26 48 32 52 Q38 48 48 52 Q46 42 42 28 Z" fill="#881337" opacity="0.85"/>
-  <!-- 右手: 錆びた片手剣 -->
+  <!-- 接地ドロップシャドウ -->
+  <ellipse cx="32" cy="58" rx="19" ry="5.5" fill="rgba(0,0,0,0.4)"/>
+  
+  <!-- 背面の破れた深紅マント（多層ドレープ＆陰影） -->
+  <path d="M22 26 Q16 42 14 53 Q24 49 32 53 Q40 49 50 53 Q48 42 42 26 Z" fill="#881337" stroke="#4c0519" stroke-width="1.2"/>
+  <path d="M24 29 Q19 43 17 50 Q25 47 32 50 Q39 47 47 50 Q45 43 40 29 Z" fill="#be123c" opacity="0.6"/>
+  <path d="M26 32 Q32 30 38 32 Q32 44 26 32 Z" fill="#e11d48" opacity="0.25"/>
+
+  <!-- 右手: 錆びた片手騎士剣（刃の稜線ハイライト・真鍮鍔） -->
   <g transform="rotate(-15 14 36)">
-    <line x1="14" y1="12" x2="14" y2="44" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
-    <line x1="14" y1="14" x2="14" y2="38" stroke="#e2e8f0" stroke-width="1.2"/>
-    <line x1="8" y1="36" x2="20" y2="36" stroke="#b45309" stroke-width="3"/>
-    <circle cx="14" cy="46" r="2" fill="#b45309"/>
+    <!-- 剣身（両刃の立体稜線） -->
+    <path d="M12 10 L14 6 L16 10 L15.5 38 L12.5 38 Z" fill="#94a3b8" stroke="#475569" stroke-width="1.2"/>
+    <path d="M14 7 L15.5 10 L15 37 L14 37 Z" fill="#cbd5e1"/>
+    <!-- 刃のハイライト光沢 -->
+    <line x1="14" y1="8" x2="14" y2="36" stroke="#ffffff" stroke-width="0.8"/>
+    <!-- 錆びの斑点アクセント -->
+    <circle cx="13" cy="20" r="0.8" fill="#b45309"/>
+    <circle cx="14.5" cy="28" r="0.7" fill="#b45309"/>
+    <!-- 真鍮ヒルト鍔 & ポメル -->
+    <rect x="7" y="38" width="14" height="3" rx="1" fill="#d97706" stroke="#78350f" stroke-width="0.8"/>
+    <rect x="12.5" y="41" width="3" height="5" rx="0.5" fill="#451a03"/>
+    <circle cx="14" cy="47" r="1.8" fill="#fbbf24" stroke="#78350f" stroke-width="0.8"/>
   </g>
-  <!-- 脚の骨（大腿骨・脛骨） -->
-  <line x1="26" y1="46" x2="25" y2="56" stroke="#f1f5f9" stroke-width="3.2" stroke-linecap="round"/>
-  <line x1="38" y1="46" x2="39" y2="56" stroke="#f1f5f9" stroke-width="3.2" stroke-linecap="round"/>
-  <ellipse cx="24" cy="57" rx="3.5" ry="2" fill="#cbd5e1"/>
-  <ellipse cx="40" cy="57" rx="3.5" ry="2" fill="#cbd5e1"/>
-  <!-- 骨盤 -->
-  <path d="M23 42 Q32 39 41 42 L38 46 L26 46 Z" fill="#e2e8f0" stroke="#64748b" stroke-width="1.2"/>
-  <!-- 脊椎と立体肋骨 -->
-  <line x1="32" y1="26" x2="32" y2="43" stroke="#cbd5e1" stroke-width="4"/>
-  <path d="M20 30 Q32 34 44 30" stroke="#f8fafc" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-  <path d="M21 34 Q32 38 43 34" stroke="#f8fafc" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-  <path d="M23 38 Q32 42 41 38" stroke="#f8fafc" stroke-width="2" stroke-linecap="round" fill="none"/>
-  <!-- 頭蓋骨（クラック入り立体造形） -->
-  <path d="M20 16 C20 7 44 7 44 16 C44 23 41 25 38 27 L26 27 C23 25 20 23 20 16 Z" fill="#f8fafc" stroke="#475569" stroke-width="1.8"/>
-  <path d="M30 9 L34 14 L32 17" stroke="#94a3b8" stroke-width="0.8" fill="none"/>
-  <!-- 青白く灯る怪奇なソウルアイ -->
-  <ellipse cx="26" cy="17" rx="4" ry="4.5" fill="#090d16"/>
-  <circle cx="26" cy="17" r="2.2" fill="#38bdf8"/>
-  <circle cx="26" cy="17" r="1" fill="#ffffff"/>
-  <ellipse cx="38" cy="17" rx="4" ry="4.5" fill="#090d16"/>
-  <circle cx="38" cy="17" r="2.2" fill="#38bdf8"/>
-  <circle cx="38" cy="17" r="1" fill="#ffffff"/>
-  <polygon points="32,20 30.5,23 33.5,23" fill="#090d16"/>
-  <!-- 歯列 -->
-  <rect x="26" y="25" width="2.5" height="3" fill="#ffffff" stroke="#475569" stroke-width="0.5"/>
-  <rect x="29.5" y="25" width="2.5" height="3" fill="#ffffff" stroke="#475569" stroke-width="0.5"/>
-  <rect x="33" y="25" width="2.5" height="3" fill="#ffffff" stroke="#475569" stroke-width="0.5"/>
-  <rect x="36.5" y="25" width="2.5" height="3" fill="#ffffff" stroke="#475569" stroke-width="0.5"/>
-  <!-- 左手: 古びた鉄の円盾 -->
-  <circle cx="48" cy="36" r="9" fill="#475569" stroke="#1e293b" stroke-width="1.8"/>
-  <circle cx="48" cy="36" r="6" fill="#64748b"/>
-  <polygon points="48,31 51,36 48,41 45,36" fill="#cbd5e1"/>
+
+  <!-- 脚の骨（大腿骨・脛骨・関節頭の立体球） -->
+  <!-- 左脚 -->
+  <circle cx="26" cy="46" r="2.2" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8"/>
+  <line x1="26" y1="46" x2="25" y2="55" stroke="#f1f5f9" stroke-width="3" stroke-linecap="round"/>
+  <line x1="25.5" y1="47" x2="24.8" y2="54" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="25" cy="55" r="2.2" fill="#cbd5e1" stroke="#64748b" stroke-width="0.8"/>
+  <ellipse cx="23" cy="57" rx="3.5" ry="2" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8"/>
+  
+  <!-- 右脚 -->
+  <circle cx="38" cy="46" r="2.2" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8"/>
+  <line x1="38" y1="46" x2="39" y2="55" stroke="#f1f5f9" stroke-width="3" stroke-linecap="round"/>
+  <line x1="38.5" y1="47" x2="39.2" y2="54" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="39" cy="55" r="2.2" fill="#cbd5e1" stroke="#64748b" stroke-width="0.8"/>
+  <ellipse cx="41" cy="57" rx="3.5" ry="2" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8"/>
+
+  <!-- 骨盤（腸骨・仙骨） -->
+  <path d="M22 41 Q32 38 42 41 L40 46 Q32 44 24 46 Z" fill="#e2e8f0" stroke="#64748b" stroke-width="1.3"/>
+  <ellipse cx="32" cy="44" rx="2.5" ry="1.5" fill="#475569"/>
+
+  <!-- 脊椎と胸腔（奥の陰影＆手前の立体肋骨ケージ） -->
+  <rect x="29" y="27" width="6" height="15" fill="#1e293b"/>
+  <line x1="32" y1="26" x2="32" y2="43" stroke="#cbd5e1" stroke-width="3.5"/>
+  <!-- 肋骨（多層立体・ハイライト） -->
+  <path d="M19 29 Q32 33 45 29" stroke="#f8fafc" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+  <path d="M20 28.5 Q32 32.5 44 28.5" stroke="#ffffff" stroke-width="1" stroke-linecap="round" fill="none"/>
+  <path d="M20 33 Q32 37 44 33" stroke="#f8fafc" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+  <path d="M21 32.5 Q32 36.5 43 32.5" stroke="#ffffff" stroke-width="1" stroke-linecap="round" fill="none"/>
+  <path d="M22 37 Q32 41 42 37" stroke="#f8fafc" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+  <path d="M23 41 Q32 44 41 41" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round" fill="none"/>
+
+  <!-- 頭蓋骨（多層立体スカル・クラック・額の光沢ハイライト） -->
+  <path d="M19 16 C19 6 45 6 45 16 C45 23 42 25 39 27 L25 27 C22 25 19 23 19 16 Z" fill="#f8fafc" stroke="#475569" stroke-width="1.8"/>
+  <path d="M21 15 C21 8 43 8 43 15 C43 21 40 23 37 25 L27 25 C24 23 21 21 21 15 Z" fill="#ffffff" opacity="0.6"/>
+  <!-- おでこのうるおい光沢ハイライト（スライム基準） -->
+  <ellipse cx="32" cy="11" rx="8" ry="3.5" fill="#ffffff" opacity="0.85"/>
+  <ellipse cx="24" cy="13" rx="2" ry="1.5" fill="#ffffff" opacity="0.6"/>
+
+  <!-- 頭蓋のクラック（ひび割れ） -->
+  <path d="M29 8 L33 13 L31 16" stroke="#94a3b8" stroke-width="0.9" fill="none"/>
+
+  <!-- 妖しく青白く灯るソウルアイ（スライム基準の多層生きた瞳光） -->
+  <!-- 左眼窩 -->
+  <ellipse cx="25.5" cy="18" rx="4.5" ry="5" fill="#090d16" stroke="#1e293b" stroke-width="0.8"/>
+  <!-- 蒼炎オーラ -->
+  <circle cx="25.5" cy="18" r="3.2" fill="#0284c7" opacity="0.65"/>
+  <circle cx="25.5" cy="18" r="2.2" fill="#38bdf8"/>
+  <circle cx="25.5" cy="17.2" r="1.2" fill="#ffffff"/>
+  <circle cx="26.8" cy="19.2" r="0.6" fill="#ffffff" opacity="0.9"/>
+
+  <!-- 右眼窩 -->
+  <ellipse cx="38.5" cy="18" rx="4.5" ry="5" fill="#090d16" stroke="#1e293b" stroke-width="0.8"/>
+  <!-- 蒼炎オーラ -->
+  <circle cx="38.5" cy="18" r="3.2" fill="#0284c7" opacity="0.65"/>
+  <circle cx="38.5" cy="18" r="2.2" fill="#38bdf8"/>
+  <circle cx="38.5" cy="17.2" r="1.2" fill="#ffffff"/>
+  <circle cx="39.8" cy="19.2" r="0.6" fill="#ffffff" opacity="0.9"/>
+
+  <!-- 鼻孔（逆三角形の立体陰影） -->
+  <polygon points="32,20 30,23 34,23" fill="#090d16"/>
+
+  <!-- 歯列（上顎・下顎の立体歯） -->
+  <rect x="25" y="24.5" width="2.6" height="3" rx="0.5" fill="#ffffff" stroke="#64748b" stroke-width="0.5"/>
+  <rect x="28.5" y="24.5" width="2.6" height="3" rx="0.5" fill="#ffffff" stroke="#64748b" stroke-width="0.5"/>
+  <rect x="32.5" y="24.5" width="2.6" height="3" rx="0.5" fill="#ffffff" stroke="#64748b" stroke-width="0.5"/>
+  <rect x="36" y="24.5" width="2.6" height="3" rx="0.5" fill="#ffffff" stroke="#64748b" stroke-width="0.5"/>
+
+  <!-- 左手: 古代鉄鋲の円盾（金属縁・木目・中央突起ボスの輝き） -->
+  <circle cx="49" cy="36" r="9.5" fill="#334155" stroke="#0f172a" stroke-width="1.8"/>
+  <circle cx="49" cy="36" r="7.5" fill="#64748b"/>
+  <circle cx="49" cy="36" r="5" fill="#475569"/>
+  <!-- 鉄鋲リベット -->
+  <circle cx="49" cy="29" r="0.9" fill="#e2e8f0"/>
+  <circle cx="49" cy="43" r="0.9" fill="#e2e8f0"/>
+  <circle cx="42" cy="36" r="0.9" fill="#e2e8f0"/>
+  <circle cx="56" cy="36" r="0.9" fill="#e2e8f0"/>
+  <!-- 中央突起ボス -->
+  <polygon points="49,32 52.5,36 49,40 45.5,36" fill="#cbd5e1" stroke="#334155" stroke-width="0.8"/>
+  <circle cx="48" cy="35" r="1.2" fill="#ffffff"/>
 </svg>`.trim();
 
   /** スケルトン背面（上向き） */
   public static readonly SKELETON_UP_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="32" cy="58" rx="18" ry="5.5" fill="rgba(0,0,0,0.4)"/>
-  <path d="M20 26 Q16 42 14 54 Q26 48 32 52 Q38 48 50 54 Q48 42 44 26 Z" fill="#9f1239"/>
-  <path d="M20 16 C20 7 44 7 44 16 C44 23 41 25 38 27 L26 27 C23 25 20 23 20 16 Z" fill="#e2e8f0" stroke="#475569" stroke-width="1.8"/>
+  <path d="M20 26 Q16 42 14 54 Q26 48 32 52 Q38 48 50 54 Q48 42 44 26 Z" fill="#9f1239" stroke="#4c0519" stroke-width="1.5"/>
+  <path d="M22 28 Q18 43 16 51 Q26 47 32 50 Q38 47 48 51 Q46 43 42 28 Z" fill="#be123c" opacity="0.6"/>
+  <path d="M20 16 C20 7 44 7 44 16 C44 23 41 25 38 27 L26 27 C23 25 20 23 20 16 Z" fill="#f8fafc" stroke="#475569" stroke-width="1.8"/>
   <line x1="26" y1="46" x2="25" y2="56" stroke="#f1f5f9" stroke-width="3.2"/>
   <line x1="38" y1="46" x2="39" y2="56" stroke="#f1f5f9" stroke-width="3.2"/>
 </svg>`.trim();
@@ -830,40 +931,82 @@ export class SVGSprites {
   /** スケルトン斜め奥エイリアス */
   public static readonly SKELETON_DIAG_UP_SVG = SVGSprites.SKELETON_UP_SVG;
 
-  /** 岩石ゴーレム（立体多面玄武岩、灼熱の古代ルーン発光、クラック陰影、巨岩ハンマーアーム） */
+  /** 岩石ゴーレム（立体多面玄武岩、灼熱の古代ルーン溶岩コア発光、クラック陰影、巨岩ハンマーアーム、生きた黄金眼光） */
   public static readonly GOLEM_DOWN_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="24" ry="6" fill="rgba(0,0,0,0.45)"/>
-  <!-- 両足巨石ブロック -->
-  <polygon points="16,46 28,44 29,57 14,57" fill="#57534e" stroke="#1c1917" stroke-width="2"/>
-  <line x1="22" y1="45" x2="21" y2="56" stroke="#a8a29e" stroke-width="1"/>
-  <polygon points="36,44 48,46 50,57 35,57" fill="#57534e" stroke="#1c1917" stroke-width="2"/>
-  <line x1="42" y1="45" x2="43" y2="56" stroke="#a8a29e" stroke-width="1"/>
-  <!-- 巨大胴体（多面体＆灼熱ルーン） -->
-  <polygon points="14,22 50,22 46,47 18,47" fill="#44403c" stroke="#1c1917" stroke-width="2.5"/>
-  <polygon points="17,25 47,25 43,36 21,36" fill="#57534e"/>
-  <!-- 胸のクラックから漏れる灼熱の溶岩魔導コア -->
-  <circle cx="32" cy="33" r="8" fill="#f59e0b" opacity="0.35"/>
-  <path d="M26 27 L32 33 L28 41 L36 37 L38 43" stroke="#f97316" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-  <polygon points="32,27 36,33 32,39 28,33" fill="#fef08a" stroke="#ea580c" stroke-width="1.2"/>
-  <circle cx="32" cy="33" r="2" fill="#ffffff"/>
-  <!-- 両肩の棘状巨石アーマー -->
-  <polygon points="8,18 18,16 20,32 9,30" fill="#78716c" stroke="#1c1917" stroke-width="2"/>
-  <line x1="10" y1="20" x2="17" y2="30" stroke="#d6d3d1" stroke-width="1.2"/>
-  <polygon points="56,18 46,16 44,32 55,30" fill="#78716c" stroke="#1c1917" stroke-width="2"/>
-  <line x1="54" y1="20" x2="47" y2="30" stroke="#d6d3d1" stroke-width="1.2"/>
-  <!-- 巨岩のハンマーハンド腕 -->
-  <ellipse cx="8" cy="38" rx="6" ry="8" fill="#57534e" stroke="#1c1917" stroke-width="1.8"/>
-  <ellipse cx="56" cy="38" rx="6" ry="8" fill="#57534e" stroke="#1c1917" stroke-width="1.8"/>
-  <!-- 頭部巨岩 -->
-  <polygon points="22,8 42,8 45,21 19,21" fill="#57534e" stroke="#1c1917" stroke-width="2"/>
-  <line x1="23" y1="10" x2="41" y2="10" stroke="#a8a29e" stroke-width="2"/>
-  <!-- 苔むした緑の風合い -->
-  <path d="M20 18 Q23 15 25 18" stroke="#84cc16" stroke-width="1.8" fill="none"/>
-  <path d="M38 18 Q41 16 43 19" stroke="#84cc16" stroke-width="1.8" fill="none"/>
-  <!-- 黄金に輝く眼光 -->
-  <rect x="25" y="14" width="4" height="3" rx="1" fill="#fef08a" stroke="#ea580c" stroke-width="0.8"/>
-  <rect x="35" y="14" width="4" height="3" rx="1" fill="#fef08a" stroke="#ea580c" stroke-width="0.8"/>
+  <!-- 接地ドロップシャドウ -->
+  <ellipse cx="32" cy="58" rx="25" ry="6.5" fill="rgba(0,0,0,0.48)"/>
+
+  <!-- 両足巨石ブロック（立体陰影面） -->
+  <!-- 左足 -->
+  <polygon points="15,45 28,43 29,57 13,57" fill="#57534e" stroke="#1c1917" stroke-width="2"/>
+  <polygon points="15,45 28,43 25,48 14,48" fill="#78716c"/>
+  <line x1="21" y1="45" x2="20" y2="56" stroke="#a8a29e" stroke-width="1.2"/>
+  
+  <!-- 右足 -->
+  <polygon points="36,43 49,45 51,57 35,57" fill="#57534e" stroke="#1c1917" stroke-width="2"/>
+  <polygon points="36,43 49,45 47,48 37,48" fill="#78716c"/>
+  <line x1="43" y1="45" x2="44" y2="56" stroke="#a8a29e" stroke-width="1.2"/>
+
+  <!-- 巨大胴体（立体多面体シェーディング） -->
+  <polygon points="13,21 51,21 47,47 17,47" fill="#44403c" stroke="#1c1917" stroke-width="2.5"/>
+  <!-- 上面ハイライト面 -->
+  <polygon points="14,21 50,21 46,26 18,26" fill="#78716c"/>
+  <!-- 正面メイン面 -->
+  <polygon points="18,26 46,26 43,44 21,44" fill="#57534e"/>
+
+  <!-- 胸のクラックから激しく漏れ出す灼熱の古代溶岩魔導コア（スライム基準の多層発光） -->
+  <!-- 外層グロー（オレンジ） -->
+  <circle cx="32" cy="34" r="10" fill="#ea580c" opacity="0.35"/>
+  <!-- 中層コア（アンバー） -->
+  <circle cx="32" cy="34" r="7" fill="#f59e0b" opacity="0.7"/>
+  <!-- 灼熱の稲妻クラック -->
+  <path d="M25 28 L32 34 L27 42 L37 38 L39 44" stroke="#f97316" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+  <!-- 内層コア（黄金） -->
+  <polygon points="32,28 37,34 32,40 27,34" fill="#fef08a" stroke="#ea580c" stroke-width="1.2"/>
+  <!-- 激熱白光ハイライト -->
+  <circle cx="32" cy="34" r="2.5" fill="#ffffff"/>
+
+  <!-- 両肩の棘状巨石ポールトロン -->
+  <!-- 左肩 -->
+  <polygon points="7,17 18,15 20,32 8,30" fill="#78716c" stroke="#1c1917" stroke-width="2"/>
+  <polygon points="8,17 18,15 15,22 7,20" fill="#a8a29e"/>
+  <line x1="10" y1="19" x2="16" y2="30" stroke="#d6d3d1" stroke-width="1.2"/>
+  <!-- 右肩 -->
+  <polygon points="57,17 46,15 44,32 56,30" fill="#78716c" stroke="#1c1917" stroke-width="2"/>
+  <polygon points="56,17 46,15 49,22 57,20" fill="#a8a29e"/>
+  <line x1="54" y1="19" x2="48" y2="30" stroke="#d6d3d1" stroke-width="1.2"/>
+
+  <!-- 巨岩のハンマーハンド腕（立体ブロックと光沢） -->
+  <!-- 左腕 -->
+  <ellipse cx="8" cy="38" rx="6.5" ry="8.5" fill="#57534e" stroke="#1c1917" stroke-width="2"/>
+  <ellipse cx="7" cy="35" rx="3.5" ry="4" fill="#78716c"/>
+  <circle cx="6" cy="33" r="1.5" fill="#d6d3d1" opacity="0.8"/>
+  <!-- 右腕 -->
+  <ellipse cx="56" cy="38" rx="6.5" ry="8.5" fill="#57534e" stroke="#1c1917" stroke-width="2"/>
+  <ellipse cx="55" cy="35" rx="3.5" ry="4" fill="#78716c"/>
+  <circle cx="54" cy="33" r="1.5" fill="#d6d3d1" opacity="0.8"/>
+
+  <!-- 頭部巨岩（立体ブロック・風化クラック） -->
+  <polygon points="21,7 43,7 46,21 18,21" fill="#57534e" stroke="#1c1917" stroke-width="2"/>
+  <polygon points="22,7 42,7 39,12 25,12" fill="#a8a29e"/>
+  <line x1="22" y1="9" x2="42" y2="9" stroke="#ffffff" stroke-width="1.2" opacity="0.8"/>
+  
+  <!-- 苔むしたエメラルドの風合い（自然なグラデーション） -->
+  <path d="M19 18 Q23 14 26 18" stroke="#84cc16" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <path d="M37 18 Q41 15 44 19" stroke="#84cc16" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <circle cx="21" cy="23" r="1.5" fill="#4d7c0f"/>
+  <circle cx="43" cy="23" r="1.5" fill="#4d7c0f"/>
+
+  <!-- 黄金にギラつく生きたゴーレム眼光（スライム基準のハイライト） -->
+  <!-- 左目 -->
+  <rect x="24" y="13.5" width="4.8" height="3.8" rx="1" fill="#090d16" stroke="#ea580c" stroke-width="0.6"/>
+  <rect x="24.5" y="14" width="3.8" height="2.8" rx="0.8" fill="#fef08a"/>
+  <rect x="25" y="14.3" width="1.8" height="1.8" rx="0.5" fill="#ffffff"/>
+  <!-- 右目 -->
+  <rect x="35" y="13.5" width="4.8" height="3.8" rx="1" fill="#090d16" stroke="#ea580c" stroke-width="0.6"/>
+  <rect x="35.5" y="14" width="3.8" height="2.8" rx="0.8" fill="#fef08a"/>
+  <rect x="36" y="14.3" width="1.8" height="1.8" rx="0.5" fill="#ffffff"/>
 </svg>`.trim();
 
   /** 岩石ゴーレム（上向きエイリアス） */
@@ -875,37 +1018,74 @@ export class SVGSprites {
   /** 岩石ゴーレム（斜め奥エイリアス） */
   public static readonly GOLEM_DIAG_UP_SVG = SVGSprites.GOLEM_DOWN_SVG;
 
-  /** マンドラゴラ（ねじれ人型根茎、狂気の叫ぶ大口、大輪の熱帯毒花、鋸歯状の葉脈） */
+  /** マンドラゴラ（ふっくら人型根茎、スライム基準の生き生きとした丸い瞳、狂気の大口、瑞々しい大葉・大輪の熱帯毒花） */
   public static readonly MANDRAGORA_DOWN_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="17" ry="5" fill="rgba(0,0,0,0.35)"/>
-  <!-- 根の触手足 -->
-  <path d="M23 45 Q16 52 14 58 Q20 55 25 48 Z" fill="#854d0e" stroke="#451a03" stroke-width="1.2"/>
-  <path d="M41 45 Q48 52 50 58 Q44 55 39 48 Z" fill="#854d0e" stroke="#451a03" stroke-width="1.2"/>
-  <!-- 根茎の肉体（筋張った樹根のうねり） -->
-  <path d="M18 26 Q32 16 46 26 Q48 46 32 53 Q16 46 18 26 Z" fill="#a16207" stroke="#451a03" stroke-width="2"/>
-  <path d="M22 32 Q32 28 42 32" stroke="#713f12" stroke-width="1.5" fill="none"/>
-  <path d="M20 40 Q32 37 44 40" stroke="#713f12" stroke-width="1.5" fill="none"/>
-  <!-- 狂気に充血した丸い目 -->
-  <circle cx="26" cy="27" r="4.5" fill="#fef08a" stroke="#ca8a04" stroke-width="1"/>
-  <circle cx="26" cy="27" r="2" fill="#dc2626"/>
-  <circle cx="27" cy="26" r="0.8" fill="#ffffff"/>
-  <circle cx="38" cy="27" r="4.5" fill="#fef08a" stroke="#ca8a04" stroke-width="1"/>
-  <circle cx="38" cy="27" r="2" fill="#dc2626"/>
-  <circle cx="39" cy="26" r="0.8" fill="#ffffff"/>
-  <!-- 狂気の大口（真っ赤な口腔・鋭い歯） -->
-  <ellipse cx="32" cy="38" rx="5.5" ry="7" fill="#450a0a" stroke="#7f1d1d" stroke-width="1.5"/>
-  <path d="M28 34 L30 36 L32 34 L34 36 L36 34" stroke="#fef3c7" stroke-width="1.5" fill="none"/>
-  <path d="M29 42 Q32 44 35 42" stroke="#ef4444" stroke-width="1.8" fill="none"/>
-  <!-- 頭頂から勢いよく繁茂する毒草の花弁・大葉 -->
-  <path d="M32 18 Q16 8 10 0 Q24 4 30 15 Z" fill="#15803d" stroke="#14532d" stroke-width="1.5"/>
-  <path d="M32 18 Q48 8 54 0 Q40 4 34 15 Z" fill="#15803d" stroke="#14532d" stroke-width="1.5"/>
-  <path d="M32 16 Q32 3 32 -2 Q38 5 33 15 Z" fill="#22c55e" stroke="#166534" stroke-width="1.5"/>
-  <!-- 毒々しい花弁と胞子 -->
-  <circle cx="22" cy="8" r="3.5" fill="#a855f7" stroke="#6b21a8" stroke-width="1"/>
-  <circle cx="42" cy="8" r="3.5" fill="#a855f7" stroke="#6b21a8" stroke-width="1"/>
-  <circle cx="32" cy="5" r="4" fill="#ec4899" stroke="#be185d" stroke-width="1"/>
-  <circle cx="32" cy="5" r="1.5" fill="#fef08a"/>
+  <!-- 接地ドロップシャドウ -->
+  <ellipse cx="32" cy="58" rx="18" ry="5.5" fill="rgba(0,0,0,0.38)"/>
+
+  <!-- 根の触手足（大地を踏み締める複数のひげ根） -->
+  <path d="M23 44 Q15 51 12 58 Q19 55 25 48 Z" fill="#854d0e" stroke="#451a03" stroke-width="1.3"/>
+  <path d="M41 44 Q49 51 52 58 Q45 55 39 48 Z" fill="#854d0e" stroke="#451a03" stroke-width="1.3"/>
+  <path d="M28 47 Q27 55 24 58 Q29 55 31 49 Z" fill="#713f12"/>
+  <path d="M36 47 Q37 55 40 58 Q35 55 33 49 Z" fill="#713f12"/>
+
+  <!-- 人型根茎の肉体（ふっくら立体感・陰影・根のシワ） -->
+  <path d="M17 25 Q32 15 47 25 Q49 46 32 54 Q15 46 17 25 Z" fill="#a16207" stroke="#451a03" stroke-width="2"/>
+  <!-- お腹のハイライト（ふっくら膨らみ） -->
+  <path d="M21 27 Q32 20 43 27 Q45 44 32 50 Q19 44 21 27 Z" fill="#ca8a04" opacity="0.6"/>
+  <ellipse cx="32" cy="35" rx="9" ry="10" fill="#eab308" opacity="0.3"/>
+  <!-- 根茎の筋・シワ -->
+  <path d="M21 32 Q32 28 43 32" stroke="#713f12" stroke-width="1.4" fill="none"/>
+  <path d="M20 41 Q32 38 44 41" stroke="#713f12" stroke-width="1.4" fill="none"/>
+
+  <!-- 頭頂から勢いよく繁茂する瑞々しい大葉（葉脈・光沢ハイライト） -->
+  <!-- 左大葉 -->
+  <path d="M32 18 Q14 7 8 -1 Q24 3 30 14 Z" fill="#15803d" stroke="#14532d" stroke-width="1.6"/>
+  <path d="M30 16 Q18 9 14 3" stroke="#86efac" stroke-width="1.2" fill="none"/>
+  <!-- 右大葉 -->
+  <path d="M32 18 Q50 7 56 -1 Q40 3 34 14 Z" fill="#15803d" stroke="#14532d" stroke-width="1.6"/>
+  <path d="M34 16 Q46 9 50 3" stroke="#86efac" stroke-width="1.2" fill="none"/>
+  <!-- 中央若葉 -->
+  <path d="M32 16 Q32 2 32 -3 Q39 4 33 14 Z" fill="#22c55e" stroke="#166534" stroke-width="1.5"/>
+  <ellipse cx="32" cy="3" rx="1.5" ry="3" fill="#ffffff" opacity="0.5"/>
+
+  <!-- 鮮やかな熱帯毒花（多層花弁＆妖しい花粉光） -->
+  <circle cx="21" cy="7" r="4.2" fill="#a855f7" stroke="#6b21a8" stroke-width="1.2"/>
+  <circle cx="21" cy="7" r="2.2" fill="#c084fc"/>
+  <circle cx="43" cy="7" r="4.2" fill="#a855f7" stroke="#6b21a8" stroke-width="1.2"/>
+  <circle cx="43" cy="7" r="2.2" fill="#c084fc"/>
+  <circle cx="32" cy="4" r="5" fill="#ec4899" stroke="#be185d" stroke-width="1.2"/>
+  <circle cx="32" cy="4" r="2.8" fill="#f472b6"/>
+  <circle cx="32" cy="4" r="1.5" fill="#fef08a"/>
+
+  <!-- スライム絶賛基準の生き生きとした大きな丸い瞳（多層構造・白ハイライト2点） -->
+  <!-- 左目 -->
+  <ellipse cx="25.5" cy="26" rx="4.8" ry="6" fill="#451a03" stroke="#1c1917" stroke-width="1"/>
+  <ellipse cx="25.5" cy="26" rx="3.8" ry="4.8" fill="#facc15"/>
+  <ellipse cx="25.5" cy="26" rx="2.2" ry="3.2" fill="#dc2626"/>
+  <ellipse cx="24.2" cy="23.8" rx="1.6" ry="2.2" fill="#ffffff"/>
+  <circle cx="26.8" cy="28.5" r="0.9" fill="#ffffff" opacity="0.9"/>
+
+  <!-- 右目 -->
+  <ellipse cx="38.5" cy="26" rx="4.8" ry="6" fill="#451a03" stroke="#1c1917" stroke-width="1"/>
+  <ellipse cx="38.5" cy="26" rx="3.8" ry="4.8" fill="#facc15"/>
+  <ellipse cx="38.5" cy="26" rx="2.2" ry="3.2" fill="#dc2626"/>
+  <ellipse cx="37.2" cy="23.8" rx="1.6" ry="2.2" fill="#ffffff"/>
+  <circle cx="39.8" cy="28.5" r="0.9" fill="#ffffff" opacity="0.9"/>
+
+  <!-- 狂気の大口（真っ赤な口腔・尖った牙列・叫びの震え） -->
+  <ellipse cx="32" cy="38" rx="6" ry="7.5" fill="#450a0a" stroke="#7f1d1d" stroke-width="1.6"/>
+  <!-- 上下の小さな尖り牙 -->
+  <polygon points="28,33 29.5,36 31,33" fill="#fef3c7"/>
+  <polygon points="33,33 34.5,36 36,33" fill="#fef3c7"/>
+  <polygon points="29,43 30.5,40 32,43" fill="#fef3c7"/>
+  <polygon points="32,43 33.5,40 35,43" fill="#fef3c7"/>
+  <!-- 叫ぶ舌 -->
+  <path d="M29 39 Q32 42 35 39 Q32 37 29 39 Z" fill="#ef4444"/>
+  <!-- 口元から立ち上る超音波の叫び輪 -->
+  <path d="M24 37 Q22 38 24 39" stroke="#fda4af" stroke-width="1" fill="none" opacity="0.7"/>
+  <path d="M40 37 Q42 38 40 39" stroke="#fda4af" stroke-width="1" fill="none" opacity="0.7"/>
 </svg>`.trim();
 
   /** マンドラゴラ（上向きエイリアス） */
@@ -917,47 +1097,84 @@ export class SVGSprites {
   /** マンドラゴラ（斜め奥エイリアス） */
   public static readonly MANDRAGORA_DIAG_UP_SVG = SVGSprites.MANDRAGORA_DOWN_SVG;
 
-  /** サハギン戦士（三叉銛トライデント、巨大トゲ背ビレ、ギョロリ魚眼、深海魚鱗グラデーション） */
+  /** サハギン戦士（三叉銛トライデント、半透明トゲ背ビレ、ギョロリ魚眼の生きた光彩、深海魚鱗グラデーション、水滴光沢） */
   public static readonly SAHAGIN_DOWN_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="19" ry="5.5" fill="rgba(0,0,0,0.4)"/>
-  <!-- 右手: 白銀に光る三叉銛（トライデント） -->
+  <!-- 接地ドロップシャドウ -->
+  <ellipse cx="32" cy="58" rx="20" ry="5.5" fill="rgba(0,0,0,0.4)"/>
+
+  <!-- 右手: 白銀に輝く三叉銛（トライデント） -->
   <g transform="rotate(-15 14 36)">
-    <line x1="14" y1="4" x2="14" y2="48" stroke="#0284c7" stroke-width="2.8" stroke-linecap="round"/>
-    <path d="M7 6 L14 16 L21 6" stroke="#38bdf8" stroke-width="2" fill="none"/>
-    <polygon points="14,2 11,8 17,8" fill="#e0f2fe" stroke="#0284c7" stroke-width="1"/>
-    <polygon points="7,4 5,9 9,9" fill="#bae6fd"/>
-    <polygon points="21,4 19,9 23,9" fill="#bae6fd"/>
+    <!-- 銛のシャフト（深海アクア） -->
+    <line x1="14" y1="3" x2="14" y2="49" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>
+    <line x1="14.5" y1="5" x2="14.5" y2="47" stroke="#38bdf8" stroke-width="1"/>
+    <!-- 銛の刃身フレーム -->
+    <path d="M6 5 L14 17 L22 5" stroke="#0284c7" stroke-width="2.4" fill="none" stroke-linejoin="round"/>
+    <!-- 中央主穂先 -->
+    <polygon points="14,1 10.5,8 17.5,8" fill="#f0f9ff" stroke="#0284c7" stroke-width="1"/>
+    <polygon points="14,3 12,8 16,8" fill="#ffffff"/>
+    <!-- 左右副穂先 -->
+    <polygon points="6,3 3.5,9 8.5,9" fill="#e0f2fe" stroke="#0284c7" stroke-width="0.8"/>
+    <polygon points="22,3 19.5,9 24.5,9" fill="#e0f2fe" stroke="#0284c7" stroke-width="0.8"/>
+    <!-- 水流の煌めき -->
+    <circle cx="14" cy="12" r="1.5" fill="#38bdf8"/>
+    <circle cx="14" cy="12" r="0.8" fill="#ffffff"/>
   </g>
-  <!-- 巨大な半透明トゲ背ビレ -->
-  <path d="M32 4 Q38 16 42 28 L30 26 Q30 14 32 4 Z" fill="#2dd4bf" stroke="#0f766e" stroke-width="1.5" opacity="0.9"/>
-  <line x1="32" y1="4" x2="42" y2="14" stroke="#14b8a6" stroke-width="1.8"/>
-  <line x1="32" y1="12" x2="44" y2="20" stroke="#14b8a6" stroke-width="1.8"/>
-  <!-- 水掻き付き両足 -->
-  <rect x="22" y="46" width="7" height="11" rx="2" fill="#0f766e" stroke="#134e4a" stroke-width="1.2"/>
-  <polygon points="18,57 28,54 27,58" fill="#2dd4bf" stroke="#0f766e" stroke-width="0.8"/>
-  <rect x="33" y="46" width="7" height="11" rx="2" fill="#0f766e" stroke="#134e4a" stroke-width="1.2"/>
-  <polygon points="46,57 36,54 37,58" fill="#2dd4bf" stroke="#0f766e" stroke-width="0.8"/>
-  <!-- 魚鱗胴体と珊瑚ブレストプレート -->
-  <path d="M19 26 L45 26 L42 46 L22 46 Z" fill="#0d9488" stroke="#134e4a" stroke-width="1.8"/>
-  <path d="M24 30 Q28 33 32 30 Q36 33 40 30" stroke="#5eead4" stroke-width="1.2" fill="none"/>
-  <path d="M23 36 Q28 39 32 36 Q36 39 41 36" stroke="#5eead4" stroke-width="1.2" fill="none"/>
-  <path d="M25 41 Q28 44 32 41 Q36 44 39 41" stroke="#5eead4" stroke-width="1.2" fill="none"/>
-  <!-- 魚面の頭部とエラヒレ -->
-  <ellipse cx="32" cy="20" rx="14" ry="12" fill="#0d9488" stroke="#134e4a" stroke-width="1.8"/>
-  <path d="M20 22 Q17 25 20 28" stroke="#115e59" stroke-width="2" fill="none"/>
-  <path d="M44 22 Q47 25 44 28" stroke="#115e59" stroke-width="2" fill="none"/>
-  <!-- ギョロリと光る大きな魚の眼球（ハイライト入り） -->
-  <circle cx="26" cy="18" r="4.5" fill="#fef08a" stroke="#ca8a04" stroke-width="1.2"/>
-  <circle cx="26" cy="18" r="2.2" fill="#020617"/>
-  <circle cx="27.5" cy="16.5" r="1.2" fill="#ffffff"/>
-  <circle cx="38" cy="18" r="4.5" fill="#fef08a" stroke="#ca8a04" stroke-width="1.2"/>
-  <circle cx="38" cy="18" r="2.2" fill="#020617"/>
-  <circle cx="39.5" cy="16.5" r="1.2" fill="#ffffff"/>
-  <!-- 鋭い口元と牙 -->
-  <path d="M27 27 Q32 31 37 27" stroke="#134e4a" stroke-width="1.8" fill="none"/>
-  <polygon points="28,27 29,24 30,27" fill="#ffffff"/>
-  <polygon points="34,27 35,24 36,27" fill="#ffffff"/>
+
+  <!-- 巨大な半透明トゲ背ビレ（多層透明レイヤー＆ヒレ骨格） -->
+  <path d="M32 3 Q40 15 44 28 L30 26 Q30 13 32 3 Z" fill="#2dd4bf" stroke="#0f766e" stroke-width="1.6" opacity="0.9"/>
+  <path d="M33 5 Q39 16 42 27 L32 25 Q32 14 33 5 Z" fill="#5eead4" opacity="0.6"/>
+  <line x1="32" y1="3" x2="44" y2="15" stroke="#14b8a6" stroke-width="2"/>
+  <line x1="32" y1="11" x2="45" y2="21" stroke="#14b8a6" stroke-width="2"/>
+  <circle cx="44" cy="15" r="1" fill="#ffffff" opacity="0.8"/>
+
+  <!-- 水掻き付き両足（立体ヒレ足） -->
+  <rect x="22" y="46" width="7" height="11" rx="2" fill="#0f766e" stroke="#134e4a" stroke-width="1.3"/>
+  <polygon points="17,57 28,54 27,58" fill="#2dd4bf" stroke="#0f766e" stroke-width="1"/>
+  <rect x="33" y="46" width="7" height="11" rx="2" fill="#0f766e" stroke="#134e4a" stroke-width="1.3"/>
+  <polygon points="47,57 36,54 37,58" fill="#2dd4bf" stroke="#0f766e" stroke-width="1"/>
+
+  <!-- 魚鱗胴体と珊瑚ブレストプレート（多層グラデーション＆水滴光沢） -->
+  <path d="M19 25 L45 25 L42 46 L22 46 Z" fill="#0d9488" stroke="#134e4a" stroke-width="1.8"/>
+  <!-- 胴体インナーハイライト -->
+  <path d="M21 27 L43 27 L40 44 L24 44 Z" fill="#14b8a6" opacity="0.6"/>
+  <!-- 魚鱗の波模様（ハイライト） -->
+  <path d="M24 30 Q28 33 32 30 Q36 33 40 30" stroke="#a7f3d0" stroke-width="1.5" fill="none"/>
+  <path d="M23 35 Q28 38 32 35 Q36 38 41 35" stroke="#a7f3d0" stroke-width="1.5" fill="none"/>
+  <path d="M25 40 Q28 43 32 40 Q36 43 39 40" stroke="#a7f3d0" stroke-width="1.5" fill="none"/>
+  <!-- 水滴ハイライト光（スライム調） -->
+  <ellipse cx="25" cy="28" rx="2" ry="1" fill="#ffffff" opacity="0.65"/>
+  <ellipse cx="39" cy="38" rx="1.5" ry="0.8" fill="#ffffff" opacity="0.65"/>
+
+  <!-- 魚面の頭部とエラヒレ（立体造形） -->
+  <ellipse cx="32" cy="19" rx="14" ry="12" fill="#0d9488" stroke="#134e4a" stroke-width="1.8"/>
+  <ellipse cx="32" cy="14" rx="8" ry="3.5" fill="#2dd4bf" opacity="0.6"/>
+  <!-- おでこ光沢 -->
+  <ellipse cx="32" cy="11" rx="5" ry="2" fill="#ffffff" opacity="0.75"/>
+  <!-- 左右のエラヒレ（半透明） -->
+  <path d="M19 20 Q15 24 18 28" stroke="#14b8a6" stroke-width="2.5" fill="none"/>
+  <path d="M45 20 Q49 24 46 28" stroke="#14b8a6" stroke-width="2.5" fill="none"/>
+
+  <!-- ギョロリと光る大きな魚の眼球（スライム基準の多層生きた瞳光） -->
+  <!-- 左目 -->
+  <ellipse cx="25.5" cy="18" rx="4.8" ry="5.5" fill="#134e4a" stroke="#042f2e" stroke-width="1"/>
+  <ellipse cx="25.5" cy="18" rx="3.8" ry="4.5" fill="#fef08a"/>
+  <ellipse cx="25.5" cy="18" rx="2.2" ry="2.8" fill="#020617"/>
+  <ellipse cx="24.2" cy="16.2" rx="1.6" ry="2" fill="#ffffff"/>
+  <circle cx="26.8" cy="19.5" r="0.8" fill="#ffffff" opacity="0.85"/>
+
+  <!-- 右目 -->
+  <ellipse cx="38.5" cy="18" rx="4.8" ry="5.5" fill="#134e4a" stroke="#042f2e" stroke-width="1"/>
+  <ellipse cx="38.5" cy="18" rx="3.8" ry="4.5" fill="#fef08a"/>
+  <ellipse cx="38.5" cy="18" rx="2.2" ry="2.8" fill="#020617"/>
+  <ellipse cx="37.2" cy="16.2" rx="1.6" ry="2" fill="#ffffff"/>
+  <circle cx="39.8" cy="19.5" r="0.8" fill="#ffffff" opacity="0.85"/>
+
+  <!-- 鋭い口元と純白の魚牙列 -->
+  <path d="M26 26 Q32 30 38 26" stroke="#134e4a" stroke-width="2" fill="none"/>
+  <polygon points="27,26 28.5,23 30,26" fill="#ffffff"/>
+  <polygon points="31,26 32.5,23 34,26" fill="#ffffff"/>
+  <polygon points="35,26 36.5,23 38,26" fill="#ffffff"/>
 </svg>`.trim();
 
   /** サハギン戦士（上向きエイリアス） */

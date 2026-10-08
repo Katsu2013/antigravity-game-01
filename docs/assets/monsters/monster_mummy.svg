@@ -1,58 +1,72 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <!-- 接地ドロップシャドウ -->
-  <ellipse cx="32" cy="58" rx="18" ry="5" fill="rgba(0,0,0,0.4)"/>
+  <ellipse cx="32" cy="58" rx="19" ry="5.2" fill="rgba(0,0,0,0.42)"/>
 
-  <!-- 宙にたなびく解けた呪文包帯の端（美しい曲線） -->
-  <path d="M44 42 Q56 46 52 56 Q48 62 44 58" stroke="#e4e4e7" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-  <path d="M18 38 Q8 44 12 52" stroke="#d4d4d8" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- 宙にたなびく解けた呪文包帯の端（美しい曲線・立体陰影） -->
+  <path d="M44 42 Q57 46 53 56 Q48 62 43 58" stroke="#e4e4e7" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+  <path d="M45 43 Q56 47 52 56" stroke="#ffffff" stroke-width="1" fill="none"/>
+  <path d="M18 38 Q7 44 11 53" stroke="#d4d4d8" stroke-width="2.4" fill="none" stroke-linecap="round"/>
 
-  <!-- 全身包帯巻きの胴体（多重交差レイヤー） -->
-  <path d="M20 28 L16 52 L48 52 L44 28 Z" fill="#d4d4d8" stroke="#71717a" stroke-width="1.8"/>
-  <path d="M17 34 Q32 30 47 35" stroke="#a1a1aa" stroke-width="2" fill="none"/>
-  <path d="M16 41 Q32 45 48 39" stroke="#71717a" stroke-width="2.2" fill="none"/>
-  <path d="M16 47 Q32 43 48 48" stroke="#a1a1aa" stroke-width="2" fill="none"/>
+  <!-- 全身包帯巻きの胴体（多重交差レイヤー＆立体陰影） -->
+  <path d="M20 27 L15 52 L49 52 L44 27 Z" fill="#d4d4d8" stroke="#71717a" stroke-width="1.8"/>
+  <path d="M17 33 Q32 29 47 34" stroke="#a1a1aa" stroke-width="2.4" fill="none"/>
+  <path d="M18 32 Q32 28 46 33" stroke="#ffffff" stroke-width="1" fill="none" opacity="0.8"/>
+  <path d="M16 40 Q32 44 48 38" stroke="#71717a" stroke-width="2.5" fill="none"/>
+  <path d="M16 46 Q32 42 48 47" stroke="#a1a1aa" stroke-width="2.4" fill="none"/>
 
-  <!-- 胸元の黄金とターコイズの古代スカラベ護符（アミュレット） -->
-  <polygon points="32,32 36,36 32,41 28,36" fill="#fbbf24" stroke="#b45309" stroke-width="1"/>
-  <circle cx="32" cy="36" r="2" fill="#06b6d4"/>
+  <!-- 胸元の黄金とターコイズの古代スカラベ護符（アミュレット・多層発光） -->
+  <polygon points="32,31 37,36 32,42 27,36" fill="#fbbf24" stroke="#b45309" stroke-width="1.2"/>
+  <circle cx="32" cy="36" r="2.5" fill="#06b6d4" stroke="#0891b2" stroke-width="0.6"/>
+  <circle cx="32" cy="36" r="1.2" fill="#a5f3fc"/>
+  <circle cx="31.6" cy="35.5" r="0.5" fill="#ffffff"/>
 
   <!-- 両手（包帯の隙間から覗く干からびた黒褐色の手と呪いの鉤爪） -->
   <!-- 左手 -->
-  <path d="M18 32 L11 38 L14 41 L20 35 Z" fill="#3f3f46" stroke="#18181b" stroke-width="1"/>
-  <polygon points="10,37 7,39 10,40" fill="#18181b"/>
+  <path d="M18 31 L10 37 L13 41 L20 35 Z" fill="#3f3f46" stroke="#18181b" stroke-width="1.2"/>
+  <polygon points="9,36 6,38 9,40" fill="#18181b"/>
   <!-- 右手 -->
-  <path d="M44 32 L51 38 L48 41 L42 35 Z" fill="#3f3f46" stroke="#18181b" stroke-width="1"/>
-  <polygon points="52,37 55,39 52,40" fill="#18181b"/>
+  <path d="M44 31 L52 37 L49 41 L42 35 Z" fill="#3f3f46" stroke="#18181b" stroke-width="1.2"/>
+  <polygon points="53,36 56,38 53,40" fill="#18181b"/>
 
-  <!-- 両足包帯巻き -->
-  <rect x="22" y="50" width="7" height="9" fill="#d4d4d8" stroke="#71717a" stroke-width="1"/>
-  <line x1="22" y1="54" x2="29" y2="55" stroke="#71717a" stroke-width="1.2"/>
-  <rect x="33" y="50" width="7" height="9" fill="#d4d4d8" stroke="#71717a" stroke-width="1"/>
-  <line x1="33" y1="54" x2="40" y2="53" stroke="#71717a" stroke-width="1.2"/>
+  <!-- 両足包帯巻き（立体筋） -->
+  <rect x="22" y="49" width="7" height="10" fill="#d4d4d8" stroke="#71717a" stroke-width="1.2"/>
+  <line x1="22" y1="53" x2="29" y2="54" stroke="#71717a" stroke-width="1.4"/>
+  <line x1="22" y1="57" x2="29" y2="58" stroke="#71717a" stroke-width="1.4"/>
+  <rect x="33" y="49" width="7" height="10" fill="#d4d4d8" stroke="#71717a" stroke-width="1.2"/>
+  <line x1="33" y1="53" x2="40" y2="52" stroke="#71717a" stroke-width="1.4"/>
+  <line x1="33" y1="57" x2="40" y2="56" stroke="#71717a" stroke-width="1.4"/>
 
-  <!-- 頭部（幾重にも巻かれた包帯球体） -->
-  <ellipse cx="32" cy="20" rx="12" ry="12.5" fill="#e4e4e7" stroke="#71717a" stroke-width="1.8"/>
-  <path d="M21 16 Q32 19 43 15" stroke="#a1a1aa" stroke-width="2" fill="none"/>
-  <path d="M20 25 Q32 22 44 26" stroke="#71717a" stroke-width="2.2" fill="none"/>
+  <!-- 頭部（幾重にも巻かれた包帯球体・光沢） -->
+  <ellipse cx="32" cy="19" rx="12.5" ry="13" fill="#e4e4e7" stroke="#71717a" stroke-width="1.8"/>
+  <ellipse cx="32" cy="13" rx="7" ry="3" fill="#ffffff" opacity="0.6"/>
+  <path d="M21 15 Q32 18 43 14" stroke="#a1a1aa" stroke-width="2.2" fill="none"/>
+  <path d="M20 24 Q32 21 44 25" stroke="#71717a" stroke-width="2.4" fill="none"/>
 
   <!-- 古代ファラオ額飾り（金とラピスラズリのネメス・ウラエウスコブラ） -->
-  <path d="M19 12 Q32 8 45 12 L43 16 Q32 12 21 16 Z" fill="#fbbf24" stroke="#b45309" stroke-width="1"/>
-  <line x1="27" y1="10" x2="26" y2="15" stroke="#1d4ed8" stroke-width="2"/>
-  <line x1="37" y1="10" x2="38" y2="15" stroke="#1d4ed8" stroke-width="2"/>
+  <path d="M18 11 Q32 7 46 11 L44 16 Q32 11 20 16 Z" fill="#fbbf24" stroke="#b45309" stroke-width="1.2"/>
+  <line x1="26" y1="9" x2="25" y2="15" stroke="#1d4ed8" stroke-width="2.2"/>
+  <line x1="38" y1="9" x2="39" y2="15" stroke="#1d4ed8" stroke-width="2.2"/>
   <!-- コブラ聖蛇の額飾りエンブレム -->
-  <polygon points="32,7 34,12 32,14 30,12" fill="#fbbf24" stroke="#b45309" stroke-width="0.8"/>
-  <circle cx="32" cy="10" r="1" fill="#dc2626"/>
+  <polygon points="32,6 34.5,12 32,14 29.5,12" fill="#fbbf24" stroke="#b45309" stroke-width="1"/>
+  <circle cx="32" cy="9.5" r="1.3" fill="#dc2626"/>
 
-  <!-- 包帯の隙間の漆黒の闇 -->
-  <path d="M22 18 Q32 16 42 18 Q32 23 22 18 Z" fill="#09090b"/>
+  <!-- 包帯の隙間の漆黒の深淵 -->
+  <path d="M21 17 Q32 15 43 17 Q32 23 21 17 Z" fill="#09090b"/>
 
-  <!-- 爛々と黄金に発光する古代の呪眼 -->
-  <circle cx="27" cy="19.5" r="2.2" fill="#facc15"/>
-  <circle cx="27" cy="19.5" r="1" fill="#ffffff"/>
-  <circle cx="37" cy="19.5" r="2.2" fill="#facc15"/>
-  <circle cx="37" cy="19.5" r="1" fill="#ffffff"/>
+  <!-- 爛々と黄金に発光する古代の呪眼（スライム基準の多層生きた瞳光・2点白ハイライト） -->
+  <!-- 左呪眼 -->
+  <ellipse cx="26.5" cy="19" rx="3.5" ry="3.8" fill="#ca8a04"/>
+  <circle cx="26.5" cy="19" r="2.5" fill="#facc15"/>
+  <circle cx="26.5" cy="19" r="1.4" fill="#ffffff"/>
+  <circle cx="27.5" cy="20.2" r="0.6" fill="#ffffff" opacity="0.9"/>
+  <!-- 右呪眼 -->
+  <ellipse cx="37.5" cy="19" rx="3.5" ry="3.8" fill="#ca8a04"/>
+  <circle cx="37.5" cy="19" r="2.5" fill="#facc15"/>
+  <circle cx="37.5" cy="19" r="1.4" fill="#ffffff"/>
+  <circle cx="38.5" cy="20.2" r="0.6" fill="#ffffff" opacity="0.9"/>
+
   <!-- 漏れ出る呪詛の紫光粒子 -->
-  <circle cx="24" cy="18" r="0.8" fill="#c084fc"/>
-  <circle cx="40" cy="18" r="0.8" fill="#c084fc"/>
-  <circle cx="32" cy="24" r="0.7" fill="#c084fc"/>
+  <circle cx="23" cy="17.5" r="1" fill="#c084fc"/>
+  <circle cx="41" cy="17.5" r="1" fill="#c084fc"/>
+  <circle cx="32" cy="24" r="0.8" fill="#c084fc"/>
 </svg>

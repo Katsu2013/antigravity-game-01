@@ -1,30 +1,67 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="17" ry="5" fill="rgba(0,0,0,0.35)"/>
-  <!-- 根の触手足 -->
-  <path d="M23 45 Q16 52 14 58 Q20 55 25 48 Z" fill="#854d0e" stroke="#451a03" stroke-width="1.2"/>
-  <path d="M41 45 Q48 52 50 58 Q44 55 39 48 Z" fill="#854d0e" stroke="#451a03" stroke-width="1.2"/>
-  <!-- 根茎の肉体（筋張った樹根のうねり） -->
-  <path d="M18 26 Q32 16 46 26 Q48 46 32 53 Q16 46 18 26 Z" fill="#a16207" stroke="#451a03" stroke-width="2"/>
-  <path d="M22 32 Q32 28 42 32" stroke="#713f12" stroke-width="1.5" fill="none"/>
-  <path d="M20 40 Q32 37 44 40" stroke="#713f12" stroke-width="1.5" fill="none"/>
-  <!-- 狂気に充血した丸い目 -->
-  <circle cx="26" cy="27" r="4.5" fill="#fef08a" stroke="#ca8a04" stroke-width="1"/>
-  <circle cx="26" cy="27" r="2" fill="#dc2626"/>
-  <circle cx="27" cy="26" r="0.8" fill="#ffffff"/>
-  <circle cx="38" cy="27" r="4.5" fill="#fef08a" stroke="#ca8a04" stroke-width="1"/>
-  <circle cx="38" cy="27" r="2" fill="#dc2626"/>
-  <circle cx="39" cy="26" r="0.8" fill="#ffffff"/>
-  <!-- 狂気の大口（真っ赤な口腔・鋭い歯） -->
-  <ellipse cx="32" cy="38" rx="5.5" ry="7" fill="#450a0a" stroke="#7f1d1d" stroke-width="1.5"/>
-  <path d="M28 34 L30 36 L32 34 L34 36 L36 34" stroke="#fef3c7" stroke-width="1.5" fill="none"/>
-  <path d="M29 42 Q32 44 35 42" stroke="#ef4444" stroke-width="1.8" fill="none"/>
-  <!-- 頭頂から勢いよく繁茂する毒草の花弁・大葉 -->
-  <path d="M32 18 Q16 8 10 0 Q24 4 30 15 Z" fill="#15803d" stroke="#14532d" stroke-width="1.5"/>
-  <path d="M32 18 Q48 8 54 0 Q40 4 34 15 Z" fill="#15803d" stroke="#14532d" stroke-width="1.5"/>
-  <path d="M32 16 Q32 3 32 -2 Q38 5 33 15 Z" fill="#22c55e" stroke="#166534" stroke-width="1.5"/>
-  <!-- 毒々しい花弁と胞子 -->
-  <circle cx="22" cy="8" r="3.5" fill="#a855f7" stroke="#6b21a8" stroke-width="1"/>
-  <circle cx="42" cy="8" r="3.5" fill="#a855f7" stroke="#6b21a8" stroke-width="1"/>
-  <circle cx="32" cy="5" r="4" fill="#ec4899" stroke="#be185d" stroke-width="1"/>
-  <circle cx="32" cy="5" r="1.5" fill="#fef08a"/>
+  <!-- 接地ドロップシャドウ -->
+  <ellipse cx="32" cy="58" rx="18" ry="5.5" fill="rgba(0,0,0,0.38)"/>
+
+  <!-- 根の触手足（大地を踏み締める複数のひげ根） -->
+  <path d="M23 44 Q15 51 12 58 Q19 55 25 48 Z" fill="#854d0e" stroke="#451a03" stroke-width="1.3"/>
+  <path d="M41 44 Q49 51 52 58 Q45 55 39 48 Z" fill="#854d0e" stroke="#451a03" stroke-width="1.3"/>
+  <path d="M28 47 Q27 55 24 58 Q29 55 31 49 Z" fill="#713f12"/>
+  <path d="M36 47 Q37 55 40 58 Q35 55 33 49 Z" fill="#713f12"/>
+
+  <!-- 人型根茎の肉体（ふっくら立体感・陰影・根のシワ） -->
+  <path d="M17 25 Q32 15 47 25 Q49 46 32 54 Q15 46 17 25 Z" fill="#a16207" stroke="#451a03" stroke-width="2"/>
+  <!-- お腹のハイライト（ふっくら膨らみ） -->
+  <path d="M21 27 Q32 20 43 27 Q45 44 32 50 Q19 44 21 27 Z" fill="#ca8a04" opacity="0.6"/>
+  <ellipse cx="32" cy="35" rx="9" ry="10" fill="#eab308" opacity="0.3"/>
+  <!-- 根茎の筋・シワ -->
+  <path d="M21 32 Q32 28 43 32" stroke="#713f12" stroke-width="1.4" fill="none"/>
+  <path d="M20 41 Q32 38 44 41" stroke="#713f12" stroke-width="1.4" fill="none"/>
+
+  <!-- 頭頂から勢いよく繁茂する瑞々しい大葉（葉脈・光沢ハイライト） -->
+  <!-- 左大葉 -->
+  <path d="M32 18 Q14 7 8 -1 Q24 3 30 14 Z" fill="#15803d" stroke="#14532d" stroke-width="1.6"/>
+  <path d="M30 16 Q18 9 14 3" stroke="#86efac" stroke-width="1.2" fill="none"/>
+  <!-- 右大葉 -->
+  <path d="M32 18 Q50 7 56 -1 Q40 3 34 14 Z" fill="#15803d" stroke="#14532d" stroke-width="1.6"/>
+  <path d="M34 16 Q46 9 50 3" stroke="#86efac" stroke-width="1.2" fill="none"/>
+  <!-- 中央若葉 -->
+  <path d="M32 16 Q32 2 32 -3 Q39 4 33 14 Z" fill="#22c55e" stroke="#166534" stroke-width="1.5"/>
+  <ellipse cx="32" cy="3" rx="1.5" ry="3" fill="#ffffff" opacity="0.5"/>
+
+  <!-- 鮮やかな熱帯毒花（多層花弁＆妖しい花粉光） -->
+  <circle cx="21" cy="7" r="4.2" fill="#a855f7" stroke="#6b21a8" stroke-width="1.2"/>
+  <circle cx="21" cy="7" r="2.2" fill="#c084fc"/>
+  <circle cx="43" cy="7" r="4.2" fill="#a855f7" stroke="#6b21a8" stroke-width="1.2"/>
+  <circle cx="43" cy="7" r="2.2" fill="#c084fc"/>
+  <circle cx="32" cy="4" r="5" fill="#ec4899" stroke="#be185d" stroke-width="1.2"/>
+  <circle cx="32" cy="4" r="2.8" fill="#f472b6"/>
+  <circle cx="32" cy="4" r="1.5" fill="#fef08a"/>
+
+  <!-- スライム絶賛基準の生き生きとした大きな丸い瞳（多層構造・白ハイライト2点） -->
+  <!-- 左目 -->
+  <ellipse cx="25.5" cy="26" rx="4.8" ry="6" fill="#451a03" stroke="#1c1917" stroke-width="1"/>
+  <ellipse cx="25.5" cy="26" rx="3.8" ry="4.8" fill="#facc15"/>
+  <ellipse cx="25.5" cy="26" rx="2.2" ry="3.2" fill="#dc2626"/>
+  <ellipse cx="24.2" cy="23.8" rx="1.6" ry="2.2" fill="#ffffff"/>
+  <circle cx="26.8" cy="28.5" r="0.9" fill="#ffffff" opacity="0.9"/>
+
+  <!-- 右目 -->
+  <ellipse cx="38.5" cy="26" rx="4.8" ry="6" fill="#451a03" stroke="#1c1917" stroke-width="1"/>
+  <ellipse cx="38.5" cy="26" rx="3.8" ry="4.8" fill="#facc15"/>
+  <ellipse cx="38.5" cy="26" rx="2.2" ry="3.2" fill="#dc2626"/>
+  <ellipse cx="37.2" cy="23.8" rx="1.6" ry="2.2" fill="#ffffff"/>
+  <circle cx="39.8" cy="28.5" r="0.9" fill="#ffffff" opacity="0.9"/>
+
+  <!-- 狂気の大口（真っ赤な口腔・尖った牙列・叫びの震え） -->
+  <ellipse cx="32" cy="38" rx="6" ry="7.5" fill="#450a0a" stroke="#7f1d1d" stroke-width="1.6"/>
+  <!-- 上下の小さな尖り牙 -->
+  <polygon points="28,33 29.5,36 31,33" fill="#fef3c7"/>
+  <polygon points="33,33 34.5,36 36,33" fill="#fef3c7"/>
+  <polygon points="29,43 30.5,40 32,43" fill="#fef3c7"/>
+  <polygon points="32,43 33.5,40 35,43" fill="#fef3c7"/>
+  <!-- 叫ぶ舌 -->
+  <path d="M29 39 Q32 42 35 39 Q32 37 29 39 Z" fill="#ef4444"/>
+  <!-- 口元から立ち上る超音波の叫び輪 -->
+  <path d="M24 37 Q22 38 24 39" stroke="#fda4af" stroke-width="1" fill="none" opacity="0.7"/>
+  <path d="M40 37 Q42 38 40 39" stroke="#fda4af" stroke-width="1" fill="none" opacity="0.7"/>
 </svg>
