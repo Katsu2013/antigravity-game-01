@@ -1,45 +1,153 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="18" ry="4" fill="rgba(0,0,0,0.3)"/>
-  <!-- 緑のマント（本家トルネコ風） -->
-  <path d="M14 26 L8 54 Q32 58 56 54 L50 26 Z" fill="#15803d" stroke="#14532d" stroke-width="1.8"/>
-  <!-- 淡い青と白の縦縞商人の服（ふくよかな胴体） -->
-  <ellipse cx="32" cy="40" rx="15" ry="14" fill="#f0f9ff" stroke="#0284c7" stroke-width="1.5"/>
-  <!-- 淡い青の縦縞ストライプ -->
-  <path d="M23 28 Q22 40 23 52" stroke="#38bdf8" stroke-width="3" fill="none"/>
-  <path d="M29 26 Q29 40 29 54" stroke="#38bdf8" stroke-width="3" fill="none"/>
-  <path d="M35 26 Q35 40 35 54" stroke="#38bdf8" stroke-width="3" fill="none"/>
-  <path d="M41 28 Q42 40 41 52" stroke="#38bdf8" stroke-width="3" fill="none"/>
-  <!-- 太い革ベルトと金バックル -->
-  <rect x="18" y="44" width="28" height="4" fill="#78350f"/>
-  <rect x="29" y="43" width="6" height="6" fill="#facc15" stroke="#b45309" stroke-width="0.8"/>
-  <!-- 右手: 商品が詰まった巨大な麻袋 -->
-  <ellipse cx="48" cy="38" rx="9" ry="11" fill="#d97706" stroke="#92400e" stroke-width="1.5"/>
-  <path d="M46 27 L48 30 L50 27 Z" fill="#b45309"/>
-  <!-- 青い後頭部・襟足の髪の毛 -->
-  <path d="M20 22 Q32 30 44 22 L44 26 Q32 34 20 26 Z" fill="#1d4ed8"/>
-  <!-- 顔（ふくよかな丸顔・大きな福耳） -->
-  <circle cx="32" cy="22" r="10" fill="#fde68a" stroke="#d97706" stroke-width="1.2"/>
-  <!-- 福耳 -->
-  <ellipse cx="21" cy="23" rx="2.5" ry="4.5" fill="#fde68a" stroke="#d97706" stroke-width="0.8"/>
-  <ellipse cx="43" cy="23" rx="2.5" ry="4.5" fill="#fde68a" stroke="#d97706" stroke-width="0.8"/>
-  <!-- 左右のふさふさした青い髪（もみあげ・側頭部） -->
-  <path d="M21 16 Q17 21 20 26 Q23 24 22 18 Z" fill="#2563eb" stroke="#1d4ed8" stroke-width="0.8"/>
-  <path d="M43 16 Q47 21 44 26 Q41 24 42 18 Z" fill="#2563eb" stroke="#1d4ed8" stroke-width="0.8"/>
-  <!-- 緑の三角ナイトキャップ帽子（先折れ） -->
-  <path d="M21 17 Q32 9 43 17 Q38 4 30 4 Q23 9 21 17 Z" fill="#16a34a" stroke="#14532d" stroke-width="1.3"/>
-  <path d="M40 10 Q45 12 43 17" stroke="#14532d" stroke-width="1.2" fill="none"/>
-  <!-- 前髪の青い毛束 -->
-  <path d="M28 15 Q32 17 31 19 Q29 17 28 15 Z" fill="#1d4ed8"/>
-  <!-- つぶらな温和な瞳 -->
-  <circle cx="28" cy="20" r="1.5" fill="#1e293b"/>
-  <circle cx="36" cy="20" r="1.5" fill="#1e293b"/>
-  <!-- 赤い丸鼻 -->
-  <ellipse cx="32" cy="22" rx="2.5" ry="2" fill="#f87171"/>
-  <!-- 立派なカイゼル髭 -->
-  <path d="M24 25 Q32 24 32 26 Q32 24 40 25 Q32 29 24 25 Z" fill="#1e293b" stroke="#0f172a" stroke-width="0.8"/>
-  <!-- 満面の商人スマイル -->
-  <path d="M29 28 Q32 31 35 28" stroke="#991b1b" stroke-width="1.2" fill="none"/>
-  <!-- 短い足 -->
-  <rect x="24" y="52" width="6" height="5" rx="2" fill="#78350f"/>
-  <rect x="34" y="52" width="6" height="5" rx="2" fill="#78350f"/>
+  <!-- 接地影 -->
+  <ellipse cx="32" cy="59" rx="21" ry="4.5" fill="rgba(0,0,0,0.35)"/>
+
+  <!-- 背中の巨大荷物（背負子の木枠・緑の風呂敷包み・青い寝袋） -->
+  <!-- 木製背負子の柱 -->
+  <rect x="18" y="14" width="2.8" height="15" rx="0.5" fill="#78350f" stroke="#451a03" stroke-width="0.8"/>
+  <rect x="43" y="14" width="2.8" height="15" rx="0.5" fill="#78350f" stroke="#451a03" stroke-width="0.8"/>
+  <!-- 頭上に高く積まれた巨大な緑の風呂敷包み -->
+  <path d="M21 17 Q32 3 43 17 Q47 27 32 27 Q17 27 21 17 Z" fill="#15803d" stroke="#14532d" stroke-width="1.6"/>
+  <path d="M24 16 Q32 8 40 16" stroke="#22c55e" stroke-width="1.2" fill="none"/>
+  <!-- 結び目 -->
+  <path d="M30 6 L32 9 L34 6" stroke="#166534" stroke-width="1.5" fill="none"/>
+  <!-- 右側（向かって左）の青い丸めた寝袋ロール -->
+  <ellipse cx="14" cy="38" rx="4.5" ry="7" fill="#0284c7" stroke="#0369a1" stroke-width="1.2"/>
+  <ellipse cx="14" cy="38" rx="2.5" ry="4.5" fill="none" stroke="#bae6fd" stroke-width="1"/>
+  <circle cx="14" cy="38" r="1" fill="#38bdf8"/>
+  <!-- 左側（向かって右）の荷物ロール -->
+  <ellipse cx="49" cy="39" rx="4" ry="6.5" fill="#0284c7" stroke="#0369a1" stroke-width="1"/>
+
+  <!-- ふくよかなロングカフタンローブ（白地に細い青の縦縞ストライプ） -->
+  <path d="M15 25 Q11 44 13 53 Q32 57 51 53 Q53 44 49 25 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+  <!-- 白地に鮮やかな青の縦縞ストライプ（トルネコ象徴パターン） -->
+  <path d="M18 27 Q17 42 18 52" stroke="#0284c7" stroke-width="1.8" fill="none"/>
+  <path d="M22 26 Q21 42 22 53" stroke="#0284c7" stroke-width="1.8" fill="none"/>
+  <path d="M26 25 Q25 42 26 54" stroke="#0284c7" stroke-width="1.8" fill="none"/>
+  <path d="M30 25 Q30 42 30 55" stroke="#0284c7" stroke-width="1.8" fill="none"/>
+  <path d="M34 25 Q34 42 34 55" stroke="#0284c7" stroke-width="1.8" fill="none"/>
+  <path d="M38 25 Q39 42 38 54" stroke="#0284c7" stroke-width="1.8" fill="none"/>
+  <path d="M42 26 Q43 42 42 53" stroke="#0284c7" stroke-width="1.8" fill="none"/>
+  <path d="M46 27 Q47 42 46 52" stroke="#0284c7" stroke-width="1.8" fill="none"/>
+
+  <!-- ワインレッド（赤紫）の前開きベスト（ジレ） -->
+  <!-- 右側ベスト（向かって左） -->
+  <path d="M16 25 L11 44 Q16 46 19 41 L21 25 Z" fill="#881337" stroke="#4c0519" stroke-width="1.2"/>
+  <path d="M17 27 L13 42" stroke="#be123c" stroke-width="0.8"/>
+  <!-- 左側ベスト（向かって右） -->
+  <path d="M48 25 L53 44 Q48 46 45 41 L43 25 Z" fill="#881337" stroke="#4c0519" stroke-width="1.2"/>
+  <path d="M47 27 L51 42" stroke="#be123c" stroke-width="0.8"/>
+
+  <!-- パフスリーブ腕（白地に青ストライプ） -->
+  <!-- 右腕（腰に手を当てる） -->
+  <path d="M16 25 Q8 32 10 39 L14 38 Q13 32 19 28 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/>
+  <path d="M12 28 Q10 33 12 37" stroke="#0284c7" stroke-width="1.4" fill="none"/>
+  <circle cx="12" cy="40" r="2.2" fill="#fde68a" stroke="#d97706" stroke-width="0.6"/>
+  <!-- 左腕（前方にそろばん杖を握る） -->
+  <path d="M48 25 Q54 31 52 38 L48 37 Q49 31 44 28 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/>
+  <path d="M49 28 Q52 33 50 37" stroke="#0284c7" stroke-width="1.4" fill="none"/>
+
+  <!-- 斜めがけの茶色い革鞄（ズタ袋ポシェット） -->
+  <path d="M23 25 L38 41" stroke="#78350f" stroke-width="2" fill="none"/>
+  <ellipse cx="33" cy="40" rx="6.5" ry="5.5" fill="#a16207" stroke="#713f12" stroke-width="1.2"/>
+  <ellipse cx="32" cy="39" rx="4.5" ry="3.5" fill="#ca8a04" opacity="0.6"/>
+  <circle cx="29" cy="37" r="1.5" fill="#78350f"/>
+
+  <!-- 左手（向かって右）: 正義のそろばん杖（長い木製シャフト ＆ 精巧なそろばん本体） -->
+  <!-- 杖の長い木製シャフト（上下に長く伸びる） -->
+  <line x1="55" y1="2" x2="55" y2="58" stroke="#d97706" stroke-width="2.4" stroke-linecap="round"/>
+  <line x1="55" y1="4" x2="55" y2="56" stroke="#fde68a" stroke-width="0.8"/>
+  <!-- 先端の金属石突きコーン -->
+  <polygon points="55,57 53.5,62 56.5,62" fill="#cbd5e1" stroke="#64748b" stroke-width="0.8"/>
+  <!-- そろばん本体（木枠と珠） -->
+  <rect x="48" y="4" width="14" height="15" rx="1.5" fill="#78350f" stroke="#451a03" stroke-width="1.2"/>
+  <rect x="49.5" y="5.5" width="11" height="12" fill="#fef3c7"/>
+  <!-- 上部の尖った装飾飾り鋲（3つの突起） -->
+  <polygon points="50,4 51.5,1 53,4" fill="#e2e8f0" stroke="#64748b" stroke-width="0.6"/>
+  <polygon points="54,4 55.5,0.5 57,4" fill="#e2e8f0" stroke="#64748b" stroke-width="0.6"/>
+  <polygon points="58,4 59.5,1 61,4" fill="#e2e8f0" stroke="#64748b" stroke-width="0.6"/>
+  <!-- そろばんの中央仕切り梁棒 -->
+  <line x1="49.5" y1="9.5" x2="60.5" y2="9.5" stroke="#451a03" stroke-width="1.2"/>
+  <!-- そろばんの珠（上段1玉・下段2玉の精密ビーズ列） -->
+  <!-- 1列目 -->
+  <circle cx="51.5" cy="7.5" r="0.9" fill="#78350f"/>
+  <circle cx="51.5" cy="11.8" r="0.9" fill="#78350f"/>
+  <circle cx="51.5" cy="14.2" r="0.9" fill="#78350f"/>
+  <!-- 2列目 -->
+  <circle cx="55" cy="7.5" r="0.9" fill="#78350f"/>
+  <circle cx="55" cy="11.8" r="0.9" fill="#78350f"/>
+  <circle cx="55" cy="14.2" r="0.9" fill="#78350f"/>
+  <!-- 3列目 -->
+  <circle cx="58.5" cy="7.5" r="0.9" fill="#78350f"/>
+  <circle cx="58.5" cy="11.8" r="0.9" fill="#78350f"/>
+  <circle cx="58.5" cy="14.2" r="0.9" fill="#78350f"/>
+  <!-- 左右の白い房飾りタッセル -->
+  <circle cx="48" cy="19" r="1.3" fill="#ffffff" stroke="#94a3b8" stroke-width="0.6"/>
+  <line x1="48" y1="19" x2="48" y2="23" stroke="#cbd5e1" stroke-width="1.2"/>
+  <circle cx="62" cy="19" r="1.3" fill="#ffffff" stroke="#94a3b8" stroke-width="0.6"/>
+  <line x1="62" y1="19" x2="62" y2="23" stroke="#cbd5e1" stroke-width="1.2"/>
+  <!-- 杖をしっかりと握る左手（素手拳） -->
+  <circle cx="55" cy="34" r="2.8" fill="#fde68a" stroke="#d97706" stroke-width="0.8"/>
+  <circle cx="54.5" cy="33.5" r="1" fill="#ffffff" opacity="0.6"/>
+
+  <!-- 頭部・髪型・顔（鳥山明先生の公式トルネコ） -->
+  <!-- 後頭部・側頭部の青いもじゃもじゃふさふさ髪 -->
+  <path d="M19 17 Q15 25 20 28 Q23 26 22 20 Z" fill="#1d4ed8" stroke="#1e3a8a" stroke-width="0.8"/>
+  <path d="M45 17 Q49 25 44 28 Q41 26 42 20 Z" fill="#1d4ed8" stroke="#1e3a8a" stroke-width="0.8"/>
+  <path d="M21 21 Q32 30 43 21" stroke="#1d4ed8" stroke-width="3" fill="none"/>
+
+  <!-- 頭頂部のワインレッド丸キャップ帽子（カロット帽） -->
+  <ellipse cx="32" cy="13.5" rx="8.5" ry="3.8" fill="#881337" stroke="#4c0519" stroke-width="1.3"/>
+  <ellipse cx="32" cy="12.5" rx="6.5" ry="2.2" fill="#be123c"/>
+  <circle cx="32" cy="10" r="0.8" fill="#fda4af"/>
+
+  <!-- 丸顔・福々しい輪郭（二重あご） -->
+  <ellipse cx="32" cy="21.5" rx="10" ry="9.5" fill="#fde68a" stroke="#d97706" stroke-width="1.2"/>
+  <!-- 福耳（左右） -->
+  <ellipse cx="21" cy="21.5" rx="2.5" ry="4.2" fill="#fde68a" stroke="#d97706" stroke-width="0.8"/>
+  <ellipse cx="43" cy="21.5" rx="2.5" ry="4.2" fill="#fde68a" stroke="#d97706" stroke-width="0.8"/>
+
+  <!-- 前髪の青いもじゃもじゃ毛束 -->
+  <path d="M24 15 Q27 17 26 19 Q23 18 24 15 Z" fill="#1d4ed8"/>
+  <path d="M38 15 Q35 17 36 19 Q39 18 38 15 Z" fill="#1d4ed8"/>
+  <path d="M29 14.5 Q32 17 35 14.5" stroke="#1d4ed8" stroke-width="2.2" fill="none"/>
+
+  <!-- 細いアーチ眉 -->
+  <path d="M25 16.5 Q27.5 14.5 30 16.5" stroke="#1e3a8a" stroke-width="1" fill="none"/>
+  <path d="M34 16.5 Q36.5 14.5 39 16.5" stroke="#1e3a8a" stroke-width="1" fill="none"/>
+
+  <!-- パッチリとしたつぶらな生きた瞳（白目に黒い瞳孔＆光沢白ハイライト） -->
+  <!-- 左目 -->
+  <ellipse cx="28" cy="19" rx="2.2" ry="2.8" fill="#ffffff" stroke="#1e293b" stroke-width="0.6"/>
+  <circle cx="28" cy="19" r="1.4" fill="#1e293b"/>
+  <circle cx="27.5" cy="18.2" r="0.6" fill="#ffffff"/>
+  <!-- 右目 -->
+  <ellipse cx="36" cy="19" rx="2.2" ry="2.8" fill="#ffffff" stroke="#1e293b" stroke-width="0.6"/>
+  <circle cx="36" cy="19" r="1.4" fill="#1e293b"/>
+  <circle cx="35.5" cy="18.2" r="0.6" fill="#ffffff"/>
+
+  <!-- 特徴的な大きなふっくら丸鼻（肌色〜ほんのりピンク） -->
+  <ellipse cx="32" cy="21" rx="3.2" ry="2.2" fill="#fbcfe8" stroke="#d97706" stroke-width="0.8"/>
+
+  <!-- 象徴的な立派な青い口髭（カイゼル髭 / 髪と同じ濃紺ブルー！） -->
+  <path d="M24 23.5 Q32 21.5 32 24.5 Q32 21.5 40 23.5 Q38 28 32 27 Q26 28 24 23.5 Z" fill="#1d4ed8" stroke="#172554" stroke-width="1.2"/>
+  <path d="M26 24 Q32 23 38 24" stroke="#3b82f6" stroke-width="0.8" fill="none"/>
+
+  <!-- 満面の温和なにっこり商人スマイル -->
+  <path d="M29 27.5 Q32 30 35 27.5" stroke="#991b1b" stroke-width="1.2" fill="none"/>
+  <!-- 二重あごのシワ -->
+  <path d="M28.5 29.5 Q32 31.5 35.5 29.5" stroke="#d97706" stroke-width="0.9" fill="none"/>
+
+  <!-- 足元（青いダボズボン裾 ＆ 素足ストラップサンダル） -->
+  <!-- 青いズボン裾 -->
+  <ellipse cx="26" cy="53" rx="4.5" ry="2.5" fill="#1e40af"/>
+  <ellipse cx="38" cy="53" rx="4.5" ry="2.5" fill="#1e40af"/>
+  <!-- 右足（向かって左）素足サンダル -->
+  <rect x="23" y="55" width="6.5" height="3" rx="1.5" fill="#fde68a" stroke="#78350f" stroke-width="0.6"/>
+  <line x1="22" y1="58" x2="30.5" y2="58" stroke="#78350f" stroke-width="1.4"/>
+  <line x1="24" y1="55" x2="28.5" y2="57.5" stroke="#78350f" stroke-width="1.1"/>
+  <!-- 左足（向かって右）素足サンダル -->
+  <rect x="34.5" y="55" width="6.5" height="3" rx="1.5" fill="#fde68a" stroke="#78350f" stroke-width="0.6"/>
+  <line x1="33.5" y1="58" x2="42" y2="58" stroke="#78350f" stroke-width="1.4"/>
+  <line x1="35.5" y1="55" x2="40" y2="57.5" stroke="#78350f" stroke-width="1.1"/>
 </svg>

@@ -795,14 +795,14 @@ $$\text{Stat} = \text{round}(\text{BaseStat} \times (1 + (\text{Floor} - 1) \tim
   <div style="background-color: #0f172a; border: 1px solid #3b82f6; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
     <img src="assets/merchants/merchant_torneko.svg" width="88" height="88" alt="大商人トルネー" style="display: inline-block;" />
     <div style="color: #60a5fa; font-weight: bold; font-size: 13px; margin-top: 6px;">大商人トルネー</div>
-    <div style="color: #94a3b8; font-size: 11px;">通常（温厚な商人）</div>
+    <div style="color: #94a3b8; font-size: 11px;">通常（青髭・縞服・そろばん杖）</div>
   </div>
 
   <!-- 大商人トルネー 激怒 -->
   <div style="background-color: #1e1111; border: 1px solid #ef4444; border-radius: 12px; padding: 16px; text-align: center; width: 140px;">
     <img src="assets/merchants/merchant_torneko_angry.svg" width="88" height="88" alt="激怒トルネー" style="display: inline-block;" />
     <div style="color: #f87171; font-weight: bold; font-size: 13px; margin-top: 6px;">激怒トルネー</div>
-    <div style="color: #ef4444; font-size: 11px;">大袋振り回し・パン投げ</div>
+    <div style="color: #ef4444; font-size: 11px;">そろばん振り回し・パン投げ</div>
   </div>
 
   <!-- 風来坊シレンス 通常 -->

@@ -2114,86 +2114,255 @@ export class MonsterAndItemSprites {
   // 18. 多種多様な名物店主たち (MERCHANT VARIANTS)
   // =========================================================================
 
-  /** 大商人トルネー (TORNEKO風: 緑の三角帽子、青いふさふさ髪、淡い青の縦縞服、緑マント、福耳、髭、抱えた大袋) */
+  /** 大商人トルネー (ユーザー提示公式トルネコ完全準拠: ワインレッド丸帽子、青いふさふさ髪＆青い口髭、白地に青の縦縞カフタンローブ、ワインレッドのベスト、左手に正義のそろばん杖、斜めがけ革鞄、背中の巨大緑風呂敷荷物＆青い寝袋、サンダル) */
   public static readonly MERCHANT_TORNEKO_DOWN_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="18" ry="4" fill="rgba(0,0,0,0.3)"/>
-  <!-- 緑のマント（本家トルネコ風） -->
-  <path d="M14 26 L8 54 Q32 58 56 54 L50 26 Z" fill="#15803d" stroke="#14532d" stroke-width="1.8"/>
-  <!-- 淡い青と白の縦縞商人の服（ふくよかな胴体） -->
-  <ellipse cx="32" cy="40" rx="15" ry="14" fill="#f0f9ff" stroke="#0284c7" stroke-width="1.5"/>
-  <!-- 淡い青の縦縞ストライプ -->
-  <path d="M23 28 Q22 40 23 52" stroke="#38bdf8" stroke-width="3" fill="none"/>
-  <path d="M29 26 Q29 40 29 54" stroke="#38bdf8" stroke-width="3" fill="none"/>
-  <path d="M35 26 Q35 40 35 54" stroke="#38bdf8" stroke-width="3" fill="none"/>
-  <path d="M41 28 Q42 40 41 52" stroke="#38bdf8" stroke-width="3" fill="none"/>
-  <!-- 太い革ベルトと金バックル -->
-  <rect x="18" y="44" width="28" height="4" fill="#78350f"/>
-  <rect x="29" y="43" width="6" height="6" fill="#facc15" stroke="#b45309" stroke-width="0.8"/>
-  <!-- 右手: 商品が詰まった巨大な麻袋 -->
-  <ellipse cx="48" cy="38" rx="9" ry="11" fill="#d97706" stroke="#92400e" stroke-width="1.5"/>
-  <path d="M46 27 L48 30 L50 27 Z" fill="#b45309"/>
-  <!-- 青い後頭部・襟足の髪の毛 -->
-  <path d="M20 22 Q32 30 44 22 L44 26 Q32 34 20 26 Z" fill="#1d4ed8"/>
-  <!-- 顔（ふくよかな丸顔・大きな福耳） -->
-  <circle cx="32" cy="22" r="10" fill="#fde68a" stroke="#d97706" stroke-width="1.2"/>
-  <!-- 福耳 -->
-  <ellipse cx="21" cy="23" rx="2.5" ry="4.5" fill="#fde68a" stroke="#d97706" stroke-width="0.8"/>
-  <ellipse cx="43" cy="23" rx="2.5" ry="4.5" fill="#fde68a" stroke="#d97706" stroke-width="0.8"/>
-  <!-- 左右のふさふさした青い髪（もみあげ・側頭部） -->
-  <path d="M21 16 Q17 21 20 26 Q23 24 22 18 Z" fill="#2563eb" stroke="#1d4ed8" stroke-width="0.8"/>
-  <path d="M43 16 Q47 21 44 26 Q41 24 42 18 Z" fill="#2563eb" stroke="#1d4ed8" stroke-width="0.8"/>
-  <!-- 緑の三角ナイトキャップ帽子（先折れ） -->
-  <path d="M21 17 Q32 9 43 17 Q38 4 30 4 Q23 9 21 17 Z" fill="#16a34a" stroke="#14532d" stroke-width="1.3"/>
-  <path d="M40 10 Q45 12 43 17" stroke="#14532d" stroke-width="1.2" fill="none"/>
-  <!-- 前髪の青い毛束 -->
-  <path d="M28 15 Q32 17 31 19 Q29 17 28 15 Z" fill="#1d4ed8"/>
-  <!-- つぶらな温和な瞳 -->
-  <circle cx="28" cy="20" r="1.5" fill="#1e293b"/>
-  <circle cx="36" cy="20" r="1.5" fill="#1e293b"/>
-  <!-- 赤い丸鼻 -->
-  <ellipse cx="32" cy="22" rx="2.5" ry="2" fill="#f87171"/>
-  <!-- 立派なカイゼル髭 -->
-  <path d="M24 25 Q32 24 32 26 Q32 24 40 25 Q32 29 24 25 Z" fill="#1e293b" stroke="#0f172a" stroke-width="0.8"/>
-  <!-- 満面の商人スマイル -->
-  <path d="M29 28 Q32 31 35 28" stroke="#991b1b" stroke-width="1.2" fill="none"/>
-  <!-- 短い足 -->
-  <rect x="24" y="52" width="6" height="5" rx="2" fill="#78350f"/>
-  <rect x="34" y="52" width="6" height="5" rx="2" fill="#78350f"/>
+  <!-- 接地影 -->
+  <ellipse cx="32" cy="59" rx="21" ry="4.5" fill="rgba(0,0,0,0.35)"/>
+
+  <!-- 背中の巨大荷物（背負子の木枠・緑の風呂敷包み・青い寝袋） -->
+  <!-- 木製背負子の柱 -->
+  <rect x="18" y="14" width="2.8" height="15" rx="0.5" fill="#78350f" stroke="#451a03" stroke-width="0.8"/>
+  <rect x="43" y="14" width="2.8" height="15" rx="0.5" fill="#78350f" stroke="#451a03" stroke-width="0.8"/>
+  <!-- 頭上に高く積まれた巨大な緑の風呂敷包み -->
+  <path d="M21 17 Q32 3 43 17 Q47 27 32 27 Q17 27 21 17 Z" fill="#15803d" stroke="#14532d" stroke-width="1.6"/>
+  <path d="M24 16 Q32 8 40 16" stroke="#22c55e" stroke-width="1.2" fill="none"/>
+  <!-- 結び目 -->
+  <path d="M30 6 L32 9 L34 6" stroke="#166534" stroke-width="1.5" fill="none"/>
+  <!-- 右側（向かって左）の青い丸めた寝袋ロール -->
+  <ellipse cx="14" cy="38" rx="4.5" ry="7" fill="#0284c7" stroke="#0369a1" stroke-width="1.2"/>
+  <ellipse cx="14" cy="38" rx="2.5" ry="4.5" fill="none" stroke="#bae6fd" stroke-width="1"/>
+  <circle cx="14" cy="38" r="1" fill="#38bdf8"/>
+  <!-- 左側（向かって右）の荷物ロール -->
+  <ellipse cx="49" cy="39" rx="4" ry="6.5" fill="#0284c7" stroke="#0369a1" stroke-width="1"/>
+
+  <!-- ふくよかなロングカフタンローブ（白地に細い青の縦縞ストライプ） -->
+  <path d="M15 25 Q11 44 13 53 Q32 57 51 53 Q53 44 49 25 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+  <!-- 白地に鮮やかな青の縦縞ストライプ（トルネコ象徴パターン） -->
+  <path d="M18 27 Q17 42 18 52" stroke="#0284c7" stroke-width="1.8" fill="none"/>
+  <path d="M22 26 Q21 42 22 53" stroke="#0284c7" stroke-width="1.8" fill="none"/>
+  <path d="M26 25 Q25 42 26 54" stroke="#0284c7" stroke-width="1.8" fill="none"/>
+  <path d="M30 25 Q30 42 30 55" stroke="#0284c7" stroke-width="1.8" fill="none"/>
+  <path d="M34 25 Q34 42 34 55" stroke="#0284c7" stroke-width="1.8" fill="none"/>
+  <path d="M38 25 Q39 42 38 54" stroke="#0284c7" stroke-width="1.8" fill="none"/>
+  <path d="M42 26 Q43 42 42 53" stroke="#0284c7" stroke-width="1.8" fill="none"/>
+  <path d="M46 27 Q47 42 46 52" stroke="#0284c7" stroke-width="1.8" fill="none"/>
+
+  <!-- ワインレッド（赤紫）の前開きベスト（ジレ） -->
+  <!-- 右側ベスト（向かって左） -->
+  <path d="M16 25 L11 44 Q16 46 19 41 L21 25 Z" fill="#881337" stroke="#4c0519" stroke-width="1.2"/>
+  <path d="M17 27 L13 42" stroke="#be123c" stroke-width="0.8"/>
+  <!-- 左側ベスト（向かって右） -->
+  <path d="M48 25 L53 44 Q48 46 45 41 L43 25 Z" fill="#881337" stroke="#4c0519" stroke-width="1.2"/>
+  <path d="M47 27 L51 42" stroke="#be123c" stroke-width="0.8"/>
+
+  <!-- パフスリーブ腕（白地に青ストライプ） -->
+  <!-- 右腕（腰に手を当てる） -->
+  <path d="M16 25 Q8 32 10 39 L14 38 Q13 32 19 28 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/>
+  <path d="M12 28 Q10 33 12 37" stroke="#0284c7" stroke-width="1.4" fill="none"/>
+  <circle cx="12" cy="40" r="2.2" fill="#fde68a" stroke="#d97706" stroke-width="0.6"/>
+  <!-- 左腕（前方にそろばん杖を握る） -->
+  <path d="M48 25 Q54 31 52 38 L48 37 Q49 31 44 28 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/>
+  <path d="M49 28 Q52 33 50 37" stroke="#0284c7" stroke-width="1.4" fill="none"/>
+
+  <!-- 斜めがけの茶色い革鞄（ズタ袋ポシェット） -->
+  <path d="M23 25 L38 41" stroke="#78350f" stroke-width="2" fill="none"/>
+  <ellipse cx="33" cy="40" rx="6.5" ry="5.5" fill="#a16207" stroke="#713f12" stroke-width="1.2"/>
+  <ellipse cx="32" cy="39" rx="4.5" ry="3.5" fill="#ca8a04" opacity="0.6"/>
+  <circle cx="29" cy="37" r="1.5" fill="#78350f"/>
+
+  <!-- 左手（向かって右）: 正義のそろばん杖（長い木製シャフト ＆ 精巧なそろばん本体） -->
+  <!-- 杖の長い木製シャフト（上下に長く伸びる） -->
+  <line x1="55" y1="2" x2="55" y2="58" stroke="#d97706" stroke-width="2.4" stroke-linecap="round"/>
+  <line x1="55" y1="4" x2="55" y2="56" stroke="#fde68a" stroke-width="0.8"/>
+  <!-- 先端の金属石突きコーン -->
+  <polygon points="55,57 53.5,62 56.5,62" fill="#cbd5e1" stroke="#64748b" stroke-width="0.8"/>
+  <!-- そろばん本体（木枠と珠） -->
+  <rect x="48" y="4" width="14" height="15" rx="1.5" fill="#78350f" stroke="#451a03" stroke-width="1.2"/>
+  <rect x="49.5" y="5.5" width="11" height="12" fill="#fef3c7"/>
+  <!-- 上部の尖った装飾飾り鋲（3つの突起） -->
+  <polygon points="50,4 51.5,1 53,4" fill="#e2e8f0" stroke="#64748b" stroke-width="0.6"/>
+  <polygon points="54,4 55.5,0.5 57,4" fill="#e2e8f0" stroke="#64748b" stroke-width="0.6"/>
+  <polygon points="58,4 59.5,1 61,4" fill="#e2e8f0" stroke="#64748b" stroke-width="0.6"/>
+  <!-- そろばんの中央仕切り梁棒 -->
+  <line x1="49.5" y1="9.5" x2="60.5" y2="9.5" stroke="#451a03" stroke-width="1.2"/>
+  <!-- そろばんの珠（上段1玉・下段2玉の精密ビーズ列） -->
+  <!-- 1列目 -->
+  <circle cx="51.5" cy="7.5" r="0.9" fill="#78350f"/>
+  <circle cx="51.5" cy="11.8" r="0.9" fill="#78350f"/>
+  <circle cx="51.5" cy="14.2" r="0.9" fill="#78350f"/>
+  <!-- 2列目 -->
+  <circle cx="55" cy="7.5" r="0.9" fill="#78350f"/>
+  <circle cx="55" cy="11.8" r="0.9" fill="#78350f"/>
+  <circle cx="55" cy="14.2" r="0.9" fill="#78350f"/>
+  <!-- 3列目 -->
+  <circle cx="58.5" cy="7.5" r="0.9" fill="#78350f"/>
+  <circle cx="58.5" cy="11.8" r="0.9" fill="#78350f"/>
+  <circle cx="58.5" cy="14.2" r="0.9" fill="#78350f"/>
+  <!-- 左右の白い房飾りタッセル -->
+  <circle cx="48" cy="19" r="1.3" fill="#ffffff" stroke="#94a3b8" stroke-width="0.6"/>
+  <line x1="48" y1="19" x2="48" y2="23" stroke="#cbd5e1" stroke-width="1.2"/>
+  <circle cx="62" cy="19" r="1.3" fill="#ffffff" stroke="#94a3b8" stroke-width="0.6"/>
+  <line x1="62" y1="19" x2="62" y2="23" stroke="#cbd5e1" stroke-width="1.2"/>
+  <!-- 杖をしっかりと握る左手（素手拳） -->
+  <circle cx="55" cy="34" r="2.8" fill="#fde68a" stroke="#d97706" stroke-width="0.8"/>
+  <circle cx="54.5" cy="33.5" r="1" fill="#ffffff" opacity="0.6"/>
+
+  <!-- 頭部・髪型・顔（鳥山明先生の公式トルネコ） -->
+  <!-- 後頭部・側頭部の青いもじゃもじゃふさふさ髪 -->
+  <path d="M19 17 Q15 25 20 28 Q23 26 22 20 Z" fill="#1d4ed8" stroke="#1e3a8a" stroke-width="0.8"/>
+  <path d="M45 17 Q49 25 44 28 Q41 26 42 20 Z" fill="#1d4ed8" stroke="#1e3a8a" stroke-width="0.8"/>
+  <path d="M21 21 Q32 30 43 21" stroke="#1d4ed8" stroke-width="3" fill="none"/>
+
+  <!-- 頭頂部のワインレッド丸キャップ帽子（カロット帽） -->
+  <ellipse cx="32" cy="13.5" rx="8.5" ry="3.8" fill="#881337" stroke="#4c0519" stroke-width="1.3"/>
+  <ellipse cx="32" cy="12.5" rx="6.5" ry="2.2" fill="#be123c"/>
+  <circle cx="32" cy="10" r="0.8" fill="#fda4af"/>
+
+  <!-- 丸顔・福々しい輪郭（二重あご） -->
+  <ellipse cx="32" cy="21.5" rx="10" ry="9.5" fill="#fde68a" stroke="#d97706" stroke-width="1.2"/>
+  <!-- 福耳（左右） -->
+  <ellipse cx="21" cy="21.5" rx="2.5" ry="4.2" fill="#fde68a" stroke="#d97706" stroke-width="0.8"/>
+  <ellipse cx="43" cy="21.5" rx="2.5" ry="4.2" fill="#fde68a" stroke="#d97706" stroke-width="0.8"/>
+
+  <!-- 前髪の青いもじゃもじゃ毛束 -->
+  <path d="M24 15 Q27 17 26 19 Q23 18 24 15 Z" fill="#1d4ed8"/>
+  <path d="M38 15 Q35 17 36 19 Q39 18 38 15 Z" fill="#1d4ed8"/>
+  <path d="M29 14.5 Q32 17 35 14.5" stroke="#1d4ed8" stroke-width="2.2" fill="none"/>
+
+  <!-- 細いアーチ眉 -->
+  <path d="M25 16.5 Q27.5 14.5 30 16.5" stroke="#1e3a8a" stroke-width="1" fill="none"/>
+  <path d="M34 16.5 Q36.5 14.5 39 16.5" stroke="#1e3a8a" stroke-width="1" fill="none"/>
+
+  <!-- パッチリとしたつぶらな生きた瞳（白目に黒い瞳孔＆光沢白ハイライト） -->
+  <!-- 左目 -->
+  <ellipse cx="28" cy="19" rx="2.2" ry="2.8" fill="#ffffff" stroke="#1e293b" stroke-width="0.6"/>
+  <circle cx="28" cy="19" r="1.4" fill="#1e293b"/>
+  <circle cx="27.5" cy="18.2" r="0.6" fill="#ffffff"/>
+  <!-- 右目 -->
+  <ellipse cx="36" cy="19" rx="2.2" ry="2.8" fill="#ffffff" stroke="#1e293b" stroke-width="0.6"/>
+  <circle cx="36" cy="19" r="1.4" fill="#1e293b"/>
+  <circle cx="35.5" cy="18.2" r="0.6" fill="#ffffff"/>
+
+  <!-- 特徴的な大きなふっくら丸鼻（肌色〜ほんのりピンク） -->
+  <ellipse cx="32" cy="21" rx="3.2" ry="2.2" fill="#fbcfe8" stroke="#d97706" stroke-width="0.8"/>
+
+  <!-- 象徴的な立派な青い口髭（カイゼル髭 / 髪と同じ濃紺ブルー！） -->
+  <path d="M24 23.5 Q32 21.5 32 24.5 Q32 21.5 40 23.5 Q38 28 32 27 Q26 28 24 23.5 Z" fill="#1d4ed8" stroke="#172554" stroke-width="1.2"/>
+  <path d="M26 24 Q32 23 38 24" stroke="#3b82f6" stroke-width="0.8" fill="none"/>
+
+  <!-- 満面の温和なにっこり商人スマイル -->
+  <path d="M29 27.5 Q32 30 35 27.5" stroke="#991b1b" stroke-width="1.2" fill="none"/>
+  <!-- 二重あごのシワ -->
+  <path d="M28.5 29.5 Q32 31.5 35.5 29.5" stroke="#d97706" stroke-width="0.9" fill="none"/>
+
+  <!-- 足元（青いダボズボン裾 ＆ 素足ストラップサンダル） -->
+  <!-- 青いズボン裾 -->
+  <ellipse cx="26" cy="53" rx="4.5" ry="2.5" fill="#1e40af"/>
+  <ellipse cx="38" cy="53" rx="4.5" ry="2.5" fill="#1e40af"/>
+  <!-- 右足（向かって左）素足サンダル -->
+  <rect x="23" y="55" width="6.5" height="3" rx="1.5" fill="#fde68a" stroke="#78350f" stroke-width="0.6"/>
+  <line x1="22" y1="58" x2="30.5" y2="58" stroke="#78350f" stroke-width="1.4"/>
+  <line x1="24" y1="55" x2="28.5" y2="57.5" stroke="#78350f" stroke-width="1.1"/>
+  <!-- 左足（向かって右）素足サンダル -->
+  <rect x="34.5" y="55" width="6.5" height="3" rx="1.5" fill="#fde68a" stroke="#78350f" stroke-width="0.6"/>
+  <line x1="33.5" y1="58" x2="42" y2="58" stroke="#78350f" stroke-width="1.4"/>
+  <line x1="35.5" y1="55" x2="40" y2="57.5" stroke="#78350f" stroke-width="1.1"/>
 </svg>`.trim();
 
-  /** 怒れる大商人トルネー (激怒・大袋振り回し) */
+  /** 怒れる大商人トルネー (激怒時: 正義のそろばん杖を頭上に振り上げ激しくシャカシャカ！立ち上る紅蓮オーラと逆立つ青髪＆青髭) */
   public static readonly ANGRY_TORNEKO_DOWN_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <ellipse cx="32" cy="58" rx="18" ry="4" fill="rgba(0,0,0,0.3)"/>
-  <!-- 激怒オーラ（赤と黄の閃光） -->
-  <circle cx="32" cy="34" r="24" fill="#fee2e2" opacity="0.35"/>
-  <!-- 逆立つ緑のマント -->
-  <path d="M12 22 L6 52 Q32 60 58 52 L52 22 Z" fill="#14532d" stroke="#052e16" stroke-width="2"/>
-  <!-- 淡い青と白の縦縞胴体 -->
-  <ellipse cx="32" cy="40" rx="15" ry="14" fill="#f0f9ff" stroke="#0284c7" stroke-width="1.5"/>
-  <path d="M23 28 Q22 40 23 52" stroke="#38bdf8" stroke-width="3" fill="none"/>
-  <path d="M29 26 Q29 40 29 54" stroke="#38bdf8" stroke-width="3" fill="none"/>
-  <path d="M35 26 Q35 40 35 54" stroke="#38bdf8" stroke-width="3" fill="none"/>
-  <path d="M41 28 Q42 40 41 52" stroke="#38bdf8" stroke-width="3" fill="none"/>
-  <!-- 振り回す巨大麻袋 -->
-  <ellipse cx="50" cy="24" rx="11" ry="13" fill="#b45309" stroke="#78350f" stroke-width="2"/>
-  <!-- 逆立つ青い髪 -->
-  <path d="M18 16 L14 12 L20 14 L16 8 L23 12 Z" fill="#2563eb"/>
-  <path d="M46 16 L50 12 L44 14 L48 8 L41 12 Z" fill="#2563eb"/>
-  <!-- 顔（怒りで真っ赤） -->
+  <!-- 接地影 -->
+  <ellipse cx="32" cy="59" rx="21" ry="4.5" fill="rgba(0,0,0,0.35)"/>
+
+  <!-- 激怒の紅蓮闘気オーラ（立ち上る火炎粒子） -->
+  <circle cx="32" cy="34" r="25" fill="#fee2e2" opacity="0.38"/>
+  <polygon points="32,2 35,8 29,8" fill="#ef4444" opacity="0.8"/>
+  <polygon points="12,18 15,24 10,24" fill="#f97316" opacity="0.7"/>
+  <polygon points="52,18 55,24 49,24" fill="#f97316" opacity="0.7"/>
+
+  <!-- 背中の巨大風呂敷包み（激怒で揺れる） -->
+  <path d="M20 18 Q32 2 44 18 Q48 28 32 28 Q16 28 20 18 Z" fill="#14532d" stroke="#052e16" stroke-width="1.8"/>
+
+  <!-- 白地に青の縦縞カフタンローブ（怒りで大きく広がる） -->
+  <path d="M14 26 Q10 44 12 53 Q32 58 52 53 Q54 44 50 26 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+  <!-- 青の縦縞ストライプ -->
+  <path d="M17 28 Q16 42 17 52" stroke="#0284c7" stroke-width="2" fill="none"/>
+  <path d="M21 27 Q20 42 21 53" stroke="#0284c7" stroke-width="2" fill="none"/>
+  <path d="M25 26 Q24 42 25 54" stroke="#0284c7" stroke-width="2" fill="none"/>
+  <path d="M30 26 Q30 42 30 55" stroke="#0284c7" stroke-width="2" fill="none"/>
+  <path d="M34 26 Q34 42 34 55" stroke="#0284c7" stroke-width="2" fill="none"/>
+  <path d="M39 26 Q40 42 39 54" stroke="#0284c7" stroke-width="2" fill="none"/>
+  <path d="M43 27 Q44 42 43 53" stroke="#0284c7" stroke-width="2" fill="none"/>
+  <path d="M47 28 Q48 42 47 52" stroke="#0284c7" stroke-width="2" fill="none"/>
+
+  <!-- ワインレッドのベスト（前開き） -->
+  <path d="M15 26 L10 45 Q15 47 18 42 L20 26 Z" fill="#881337" stroke="#4c0519" stroke-width="1.3"/>
+  <path d="M49 26 L54 45 Q49 47 46 42 L44 26 Z" fill="#881337" stroke="#4c0519" stroke-width="1.3"/>
+
+  <!-- 斜めがけ革鞄 -->
+  <ellipse cx="33" cy="41" rx="6.5" ry="5.5" fill="#a16207" stroke="#713f12" stroke-width="1.2"/>
+
+  <!-- 振り上げられた正義のそろばん杖（頭上に斜めに振りかざす！） -->
+  <g transform="rotate(-35 38 18)">
+    <line x1="38" y1="-8" x2="38" y2="46" stroke="#d97706" stroke-width="2.6" stroke-linecap="round"/>
+    <!-- そろばん枠 -->
+    <rect x="31" y="-6" width="14" height="15" rx="1.5" fill="#78350f" stroke="#451a03" stroke-width="1.3"/>
+    <rect x="32.5" y="-4.5" width="11" height="12" fill="#fef3c7"/>
+    <line x1="32.5" y1="-0.5" x2="43.5" y2="-0.5" stroke="#451a03" stroke-width="1.2"/>
+    <!-- 激しくシャカシャカ鳴り散るそろばん珠 -->
+    <circle cx="34.5" cy="-2.5" r="0.9" fill="#78350f"/>
+    <circle cx="38" cy="-2.5" r="0.9" fill="#78350f"/>
+    <circle cx="41.5" cy="-2.5" r="0.9" fill="#78350f"/>
+    <circle cx="34.5" cy="2" r="0.9" fill="#78350f"/>
+    <circle cx="38" cy="2" r="0.9" fill="#78350f"/>
+    <circle cx="41.5" cy="2" r="0.9" fill="#78350f"/>
+    <!-- そろばんの火花スパーク -->
+    <polygon points="38,-8 40,-12 36,-12" fill="#fbbf24"/>
+    <circle cx="45" cy="-5" r="1.5" fill="#fef08a"/>
+    <circle cx="30" cy="5" r="1.5" fill="#fef08a"/>
+  </g>
+  <!-- 杖を力強く振り上げる左腕拳 -->
+  <circle cx="46" cy="20" r="3.2" fill="#fde68a" stroke="#d97706" stroke-width="1"/>
+
+  <!-- 顔（怒りで真っ赤に紅潮した丸顔） -->
   <circle cx="32" cy="22" r="10" fill="#f87171" stroke="#b91c1c" stroke-width="1.5"/>
-  <!-- 吊り上がった怒りの鬼眼 -->
-  <line x1="25" y1="18" x2="30" y2="21" stroke="#450a0a" stroke-width="2"/>
-  <circle cx="28" cy="21" r="1.5" fill="#fef08a"/>
-  <line x1="39" y1="18" x2="34" y2="21" stroke="#450a0a" stroke-width="2"/>
-  <circle cx="36" cy="21" r="1.5" fill="#fef08a"/>
-  <!-- 激怒の大口 -->
-  <path d="M28 26 Q32 33 36 26 Z" fill="#450a0a"/>
-  <!-- 怒りマーク（額） -->
-  <path d="M37 13 L42 17 M42 13 L37 17" stroke="#dc2626" stroke-width="2"/>
-  <!-- 緑の三角帽子 -->
-  <path d="M21 16 Q32 7 43 16 Q36 3 28 4 Z" fill="#15803d" stroke="#14532d" stroke-width="1.5"/>
+
+  <!-- 逆立つ青い髪（怒気でトゲ立つ） -->
+  <path d="M19 16 L14 11 L20 13 L17 7 L23 11 Z" fill="#1d4ed8"/>
+  <path d="M45 16 L50 11 L44 13 L47 7 L41 11 Z" fill="#1d4ed8"/>
+
+  <!-- ワインレッドの丸キャップ帽子 -->
+  <ellipse cx="32" cy="13" rx="8" ry="3.5" fill="#881337" stroke="#4c0519" stroke-width="1.3"/>
+
+  <!-- 吊り上がった怒りの鬼眼（スライム基準の鋭い眼光） -->
+  <line x1="24" y1="17" x2="30" y2="20" stroke="#450a0a" stroke-width="2"/>
+  <circle cx="28" cy="20.5" r="1.8" fill="#fef08a"/>
+  <circle cx="28" cy="20.5" r="0.9" fill="#000000"/>
+  <circle cx="27.5" cy="20" r="0.4" fill="#ffffff"/>
+
+  <line x1="40" y1="17" x2="34" y2="20" stroke="#450a0a" stroke-width="2"/>
+  <circle cx="36" cy="20.5" r="1.8" fill="#fef08a"/>
+  <circle cx="36" cy="20.5" r="0.9" fill="#000000"/>
+  <circle cx="35.5" cy="20" r="0.4" fill="#ffffff"/>
+
+  <!-- 逆立つ青い口髭（怒りで跳ね上がる！） -->
+  <path d="M23 23 Q32 20 32 24 Q32 20 41 23 Q39 27 32 26 Q25 27 23 23 Z" fill="#1d4ed8" stroke="#172554" stroke-width="1.3"/>
+
+  <!-- 激怒の大口（泥棒を許さぬ怒号） -->
+  <path d="M27 26.5 Q32 34 37 26.5 Z" fill="#450a0a"/>
+  <polygon points="29,26.5 30,28.5 31,26.5" fill="#ffffff"/>
+  <polygon points="33,26.5 34,28.5 35,26.5" fill="#ffffff"/>
+
+  <!-- 額の怒りマーク（十字マーク） -->
+  <path d="M37 13 L42 17 M42 13 L37 17" stroke="#dc2626" stroke-width="2.2"/>
+
+  <!-- 足元（サンダル） -->
+  <rect x="23" y="55" width="6.5" height="3" rx="1.5" fill="#fde68a" stroke="#78350f" stroke-width="0.6"/>
+  <line x1="22" y1="58" x2="30.5" y2="58" stroke="#78350f" stroke-width="1.4"/>
+  <rect x="34.5" y="55" width="6.5" height="3" rx="1.5" fill="#fde68a" stroke="#78350f" stroke-width="0.6"/>
+  <line x1="33.5" y1="58" x2="42" y2="58" stroke="#78350f" stroke-width="1.4"/>
 </svg>`.trim();
 
   /** 風来坊シレンス (SHIREN風: 三度笠、青白縞合羽、竹筒、刀、肩の小動物) */
