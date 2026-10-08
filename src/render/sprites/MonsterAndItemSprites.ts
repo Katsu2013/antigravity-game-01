@@ -1942,40 +1942,47 @@ export class MonsterAndItemSprites {
   // 18. 多種多様な名物店主たち (MERCHANT VARIANTS)
   // =========================================================================
 
-  /** 大商人トルネー (TORNEKO風: 青い頭巾、赤白ストライプ服、青マント、福耳、立派な髭、抱えた大袋) */
+  /** 大商人トルネー (TORNEKO風: 緑の三角帽子、青いふさふさ髪、淡い青の縦縞服、緑マント、福耳、髭、抱えた大袋) */
   public static readonly MERCHANT_TORNEKO_DOWN_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <ellipse cx="32" cy="58" rx="18" ry="4" fill="rgba(0,0,0,0.3)"/>
-  <!-- 青いマント -->
-  <path d="M14 26 L8 54 Q32 58 56 54 L50 26 Z" fill="#1d4ed8" stroke="#1e3a8a" stroke-width="1.8"/>
-  <!-- 赤白縦縞のゆったり商人の服（ふくよかな胴体） -->
-  <ellipse cx="32" cy="40" rx="15" ry="14" fill="#ffffff" stroke="#991b1b" stroke-width="1.5"/>
-  <!-- 赤い縦縞ストライプ -->
-  <path d="M23 28 Q22 40 23 52" stroke="#dc2626" stroke-width="3" fill="none"/>
-  <path d="M29 26 Q29 40 29 54" stroke="#dc2626" stroke-width="3" fill="none"/>
-  <path d="M35 26 Q35 40 35 54" stroke="#dc2626" stroke-width="3" fill="none"/>
-  <path d="M41 28 Q42 40 41 52" stroke="#dc2626" stroke-width="3" fill="none"/>
+  <!-- 緑のマント（本家トルネコ風） -->
+  <path d="M14 26 L8 54 Q32 58 56 54 L50 26 Z" fill="#15803d" stroke="#14532d" stroke-width="1.8"/>
+  <!-- 淡い青と白の縦縞商人の服（ふくよかな胴体） -->
+  <ellipse cx="32" cy="40" rx="15" ry="14" fill="#f0f9ff" stroke="#0284c7" stroke-width="1.5"/>
+  <!-- 淡い青の縦縞ストライプ -->
+  <path d="M23 28 Q22 40 23 52" stroke="#38bdf8" stroke-width="3" fill="none"/>
+  <path d="M29 26 Q29 40 29 54" stroke="#38bdf8" stroke-width="3" fill="none"/>
+  <path d="M35 26 Q35 40 35 54" stroke="#38bdf8" stroke-width="3" fill="none"/>
+  <path d="M41 28 Q42 40 41 52" stroke="#38bdf8" stroke-width="3" fill="none"/>
   <!-- 太い革ベルトと金バックル -->
   <rect x="18" y="44" width="28" height="4" fill="#78350f"/>
   <rect x="29" y="43" width="6" height="6" fill="#facc15" stroke="#b45309" stroke-width="0.8"/>
   <!-- 右手: 商品が詰まった巨大な麻袋 -->
   <ellipse cx="48" cy="38" rx="9" ry="11" fill="#d97706" stroke="#92400e" stroke-width="1.5"/>
   <path d="M46 27 L48 30 L50 27 Z" fill="#b45309"/>
+  <!-- 青い後頭部・襟足の髪の毛 -->
+  <path d="M20 22 Q32 30 44 22 L44 26 Q32 34 20 26 Z" fill="#1d4ed8"/>
   <!-- 顔（ふくよかな丸顔・大きな福耳） -->
   <circle cx="32" cy="22" r="10" fill="#fde68a" stroke="#d97706" stroke-width="1.2"/>
   <!-- 福耳 -->
   <ellipse cx="21" cy="23" rx="2.5" ry="4.5" fill="#fde68a" stroke="#d97706" stroke-width="0.8"/>
   <ellipse cx="43" cy="23" rx="2.5" ry="4.5" fill="#fde68a" stroke="#d97706" stroke-width="0.8"/>
-  <!-- 青いターバン頭巾 -->
-  <path d="M21 19 Q32 10 43 19 Q32 14 21 19 Z" fill="#1e40af" stroke="#172554" stroke-width="1.5"/>
-  <ellipse cx="32" cy="14" rx="10" ry="6" fill="#2563eb" stroke="#1d4ed8" stroke-width="1.2"/>
+  <!-- 左右のふさふさした青い髪（もみあげ・側頭部） -->
+  <path d="M21 16 Q17 21 20 26 Q23 24 22 18 Z" fill="#2563eb" stroke="#1d4ed8" stroke-width="0.8"/>
+  <path d="M43 16 Q47 21 44 26 Q41 24 42 18 Z" fill="#2563eb" stroke="#1d4ed8" stroke-width="0.8"/>
+  <!-- 緑の三角ナイトキャップ帽子（先折れ） -->
+  <path d="M21 17 Q32 9 43 17 Q38 4 30 4 Q23 9 21 17 Z" fill="#16a34a" stroke="#14532d" stroke-width="1.3"/>
+  <path d="M40 10 Q45 12 43 17" stroke="#14532d" stroke-width="1.2" fill="none"/>
+  <!-- 前髪の青い毛束 -->
+  <path d="M28 15 Q32 17 31 19 Q29 17 28 15 Z" fill="#1d4ed8"/>
   <!-- つぶらな温和な瞳 -->
   <circle cx="28" cy="20" r="1.5" fill="#1e293b"/>
   <circle cx="36" cy="20" r="1.5" fill="#1e293b"/>
   <!-- 赤い丸鼻 -->
   <ellipse cx="32" cy="22" rx="2.5" ry="2" fill="#f87171"/>
   <!-- 立派なカイゼル髭 -->
-  <path d="M24 25 Q32 24 32 26 Q32 24 40 25 Q32 29 24 25 Z" fill="#78350f" stroke="#451a03" stroke-width="0.8"/>
+  <path d="M24 25 Q32 24 32 26 Q32 24 40 25 Q32 29 24 25 Z" fill="#1e293b" stroke="#0f172a" stroke-width="0.8"/>
   <!-- 満面の商人スマイル -->
   <path d="M29 28 Q32 31 35 28" stroke="#991b1b" stroke-width="1.2" fill="none"/>
   <!-- 短い足 -->
@@ -1989,16 +1996,19 @@ export class MonsterAndItemSprites {
   <ellipse cx="32" cy="58" rx="18" ry="4" fill="rgba(0,0,0,0.3)"/>
   <!-- 激怒オーラ（赤と黄の閃光） -->
   <circle cx="32" cy="34" r="24" fill="#fee2e2" opacity="0.35"/>
-  <!-- 青いマント（逆立ち） -->
-  <path d="M12 22 L6 52 Q32 60 58 52 L52 22 Z" fill="#991b1b" stroke="#7f1d1d" stroke-width="2"/>
-  <!-- 胴体 -->
-  <ellipse cx="32" cy="40" rx="15" ry="14" fill="#ffffff" stroke="#991b1b" stroke-width="1.5"/>
-  <path d="M23 28 Q22 40 23 52" stroke="#dc2626" stroke-width="3" fill="none"/>
-  <path d="M29 26 Q29 40 29 54" stroke="#dc2626" stroke-width="3" fill="none"/>
-  <path d="M35 26 Q35 40 35 54" stroke="#dc2626" stroke-width="3" fill="none"/>
-  <path d="M41 28 Q42 40 41 52" stroke="#dc2626" stroke-width="3" fill="none"/>
+  <!-- 逆立つ緑のマント -->
+  <path d="M12 22 L6 52 Q32 60 58 52 L52 22 Z" fill="#14532d" stroke="#052e16" stroke-width="2"/>
+  <!-- 淡い青と白の縦縞胴体 -->
+  <ellipse cx="32" cy="40" rx="15" ry="14" fill="#f0f9ff" stroke="#0284c7" stroke-width="1.5"/>
+  <path d="M23 28 Q22 40 23 52" stroke="#38bdf8" stroke-width="3" fill="none"/>
+  <path d="M29 26 Q29 40 29 54" stroke="#38bdf8" stroke-width="3" fill="none"/>
+  <path d="M35 26 Q35 40 35 54" stroke="#38bdf8" stroke-width="3" fill="none"/>
+  <path d="M41 28 Q42 40 41 52" stroke="#38bdf8" stroke-width="3" fill="none"/>
   <!-- 振り回す巨大麻袋 -->
   <ellipse cx="50" cy="24" rx="11" ry="13" fill="#b45309" stroke="#78350f" stroke-width="2"/>
+  <!-- 逆立つ青い髪 -->
+  <path d="M18 16 L14 12 L20 14 L16 8 L23 12 Z" fill="#2563eb"/>
+  <path d="M46 16 L50 12 L44 14 L48 8 L41 12 Z" fill="#2563eb"/>
   <!-- 顔（怒りで真っ赤） -->
   <circle cx="32" cy="22" r="10" fill="#f87171" stroke="#b91c1c" stroke-width="1.5"/>
   <!-- 吊り上がった怒りの鬼眼 -->
@@ -2010,8 +2020,8 @@ export class MonsterAndItemSprites {
   <path d="M28 26 Q32 33 36 26 Z" fill="#450a0a"/>
   <!-- 怒りマーク（額） -->
   <path d="M37 13 L42 17 M42 13 L37 17" stroke="#dc2626" stroke-width="2"/>
-  <!-- 青いターバン -->
-  <ellipse cx="32" cy="14" rx="10" ry="6" fill="#1e3a8a" stroke="#172554" stroke-width="1.5"/>
+  <!-- 緑の三角帽子 -->
+  <path d="M21 16 Q32 7 43 16 Q36 3 28 4 Z" fill="#15803d" stroke="#14532d" stroke-width="1.5"/>
 </svg>`.trim();
 
   /** 風来坊シレンス (SHIREN風: 三度笠、青白縞合羽、竹筒、刀、肩の小動物) */
